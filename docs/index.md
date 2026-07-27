@@ -7,10 +7,10 @@ hide:
 
 !!! note "Current release"
 
-    This site documents `v2.1.0`, which includes the structured learning
-    curriculum, community health files, and Apache License 2.0. Protected
-    remote CI settings remain an infrastructure concern; evaluate changes in
-    a bounded pilot and keep human review gates enabled.
+    This site documents `v3.0.0-rc.1`, the role-guided flow, progressive skill
+    steps, installable shared runtime, and OKF v0.2 artifact release candidate.
+    Review the 3.0 migration guide, evaluate it in a bounded pilot, and keep
+    human review gates enabled.
 
 ## The problem in one minute
 
@@ -94,7 +94,7 @@ for an exact contract without replaying onboarding.
 The canonical project- and host-scoped installation sequence is:
 
 ```bash
-HARNESS_TAG=v2.0.0-rc.1
+HARNESS_TAG=v3.0.0-rc.1
 HARNESS_TMP="$(mktemp -d)"
 HARNESS_SRC="$HARNESS_TMP/ai-sdlc-harness"
 PYTHON_BIN="${PYTHON_BIN:-python3}"

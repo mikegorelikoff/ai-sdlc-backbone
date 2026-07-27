@@ -26,7 +26,7 @@ created here is disposable.
 
 ## 0. Open the release-candidate source checkout
 
-This tutorial validates `v2.0.0-rc.1`, including the documentation, security,
+This tutorial validates `v3.0.0-rc.1`, including the documentation, security,
 and workflow fixes that are not present in `v1.2.0`. Acquire the annotated tag
 explicitly:
 
@@ -35,8 +35,8 @@ CANDIDATE_PARENT="$(mktemp -d)"
 git clone https://github.com/mikegorelikoff/ai-sdlc-harness.git "$CANDIDATE_PARENT/ai-sdlc-harness"
 cd "$CANDIDATE_PARENT/ai-sdlc-harness"
 test "$(git remote get-url origin)" = "https://github.com/mikegorelikoff/ai-sdlc-harness.git"
-git fetch --depth 1 origin refs/tags/v2.0.0-rc.1:refs/tags/v2.0.0-rc.1
-git checkout --detach 'v2.0.0-rc.1^{commit}'
+git fetch --depth 1 origin refs/tags/v3.0.0-rc.1:refs/tags/v3.0.0-rc.1
+git checkout --detach 'v3.0.0-rc.1^{commit}'
 ```
 
 The captured commit below is evidence for the bytes exercised, not a signature

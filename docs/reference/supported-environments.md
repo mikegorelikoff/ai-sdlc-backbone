@@ -35,8 +35,8 @@ files without proving that their Python helpers will run.
 | Environment | Evidence | Status |
 | --- | --- | --- |
 | Ubuntu 24.04, Python 3.10 and 3.13 | Repository continuous-integration configuration; release-candidate run pending after publication | Configured candidate; support pending passing remote runs |
-| macOS, POSIX shell | `v2.0.0-rc.1` source candidate installation and complete consumer workflow | Release candidate tested locally |
-| Codex CLI 0.144.1 on macOS, Skills CLI target `codex` | Project/global clean install and complete installed SDD/commit workflow on 2026-07-21 | `v2.0.0-rc.1` candidate manually validated |
+| macOS, POSIX shell | `v3.0.0-rc.1` candidate source checks plus project/global installation smoke | Release candidate tested locally |
+| Codex on macOS, Skills CLI target `codex` | Project/global install smoke, guided flow, SDD, validation, and commit workflow on 2026-07-27 | `v3.0.0-rc.1` candidate manually validated |
 | Windows Subsystem for Linux (WSL) | POSIX-compatible documented route; no recorded candidate run | Recommended candidate route for Windows; not yet verified |
 | Native PowerShell | Installation command only | Limited; end-to-end tutorials use WSL |
 | Offline clean machine | No cached npm or Python packages | Not supported for first bootstrap; use approved mirrors |
@@ -57,7 +57,7 @@ model host. The maintainers' behavioral examples use Codex-style agents.
 The exact manually validated host-scoped install used:
 
 ```bash
-HARNESS_TAG=v2.0.0-rc.1
+HARNESS_TAG=v3.0.0-rc.1
 HARNESS_TMP="$(mktemp -d)"
 HARNESS_SRC="$HARNESS_TMP/ai-sdlc-harness"
 git init "$HARNESS_SRC"
@@ -104,11 +104,10 @@ skills into the canonical global store while leaving them unlinked from Codex.
 ## Release candidate versus stable support
 
 Consumer installation instructions pin Skills CLI `1.5.19`, resolve annotated
-tag `v2.0.0-rc.1`, and record its exact commit. The release candidate passed
-the local installation and workflow gates, but it is not a stable support
-promise: the missing owner-selected license and pending protected remote CI
-remain explicit blockers. The older `v1.2.0` tag is reproducible historical
-evidence and retains its installed consumer-root defect.
+tag `v3.0.0-rc.1`, and record its exact commit. The release candidate passed
+local installation and workflow gates, but protected remote CI and the tagged
+remote installation are verified only after publication. The stable
+`v2.1.0` tag remains the rollback target during candidate evaluation.
 
 ## Evidence checklist
 

@@ -2,6 +2,47 @@
 
 ## Unreleased
 
+No unreleased changes.
+
+## v3.0.0-rc.1 - 2026-07-27
+
+### Added
+
+- Added one guided `ai-sdlc-flow` Explore→Apply entry point with deterministic
+  role/action selection, explicit handoffs, fingerprints, and bounded context.
+- Added five neutral role contracts and just-in-time selectors for complete
+  skill-owned prepare, execute, validation, and handoff steps.
+- Added a shared OKF v0.2 renderer, bounded parser, provenance rules, artifact
+  profiles, bundle indexes, conformance validation, and atomic migration.
+
+### Changed
+
+- Consolidated every installable helper under `ai-sdlc-shared-runtime` and
+  removed the repository-only `_shared` runtime.
+- Reduced all 44 `SKILL.md` entry points to concise routers backed by validated
+  progressive-disclosure step manifests.
+- Replaced workspace human specs indexes with feature-local `index.md` files
+  and moved runtime project context under `_ai_sdlc/context/`.
+- Changed the Harness API to `3.0.0`; bundled modules now declare
+  `>=3.0.0,<4.0.0`.
+
+### Removed
+
+- Removed `ai-sdlc-navigator`; use `ai-sdlc-flow` Explore or invoke a known
+  owning skill directly.
+- Removed flow v1 acceptance, root `project-context.md`, workspace
+  `specs-index.md`, and runtime fallbacks to legacy artifact paths.
+
+### Validation
+
+- Passed the Feature 013 11-command full-flow receipt, including 133 shared
+  runtime tests, full/selective/global installation smoke, OKF bundle checks,
+  compatibility, SDD, generated documentation, and diff hygiene.
+- Revalidated the merged release candidate against Harness API 3.0.0,
+  documentation, module, installation, and release-history gates.
+
+## v2.1.0 - 2026-07-21
+
 ### Added
 
 - Added an Apache License 2.0 `LICENSE` file so GitHub Community Standards and

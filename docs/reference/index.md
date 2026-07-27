@@ -24,11 +24,12 @@ Reference pages state the contracts precisely. Use them while configuring automa
 - [**Release 1.1 audit**](release-1.1.md) — task-to-commit and validation evidence.
 - [**Release 1.2 audit**](release-1.2.md) — guided onboarding closeout and release evidence.
 - [**Release 2.0 candidate**](release-2.0.md) — major-version scope, evidence, limitations, and rollback.
+- [**Release 3.0 candidate**](release-3.0.md) — role-guided flow, progressive disclosure, canonical runtime, OKF bundles, and migration evidence.
 
 </div>
 
 The generated [coverage manifest](catalog-coverage.toon) closes the current
-45-skill and 120-script source inventories against their documentation. It is
+44-skill and 102-script source inventories against their documentation. It is
 TOON because agents consume it for drift checks; the Markdown catalogs remain
 the human navigation surface.
 

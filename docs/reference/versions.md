@@ -7,19 +7,19 @@ description: Release, harness API, compatibility, and migration support matrix.
 
 | Release | Harness API | Status | Migration |
 | --- | --- | --- | --- |
-| [`v2.1.0`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v2.1.0) | `2.0.0` | Current release; Apache-2.0 licensed; learning curriculum and community guides included | Use the current install and validation guidance |
+| [`v3.0.0-rc.1`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v3.0.0-rc.1) | `3.0.0` | Current prerelease; role-guided flow, progressive skill steps, canonical runtime, and OKF v0.2 bundles | [Migrate to 3.0](../how-to/migrate-3.0.md); evaluate in a bounded pilot |
+| [`v2.1.0`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v2.1.0) | `2.0.0` | Previous stable release; Apache-2.0 licensed; learning curriculum and community guides included | Remain pinned or review the 3.0 migration |
 | [`v2.0.0-rc.1`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v2.0.0-rc.1) | `2.0.0` | Historical prerelease; superseded by `v2.1.0` | [Migrate to 2.0](../how-to/migrate-2.0.md) |
 | [`v1.2.0`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v1.2.0) | `1.0.0` | Published Git tag; known installed consumer-root defect blocks complete SDD/commit use | Historical comparison only; wait for a corrected reviewed release |
 | [`v1.1.0`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v1.1.0) | `1.0.0` | Compatible prior tag | Remain on an accepted pin or wait for a corrected reviewed release; do not upgrade to blocked `v1.2.0` |
 | [`v1.0.0`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v1.0.0) | `1.0.0` | Historical compatible tag | Evaluate `v1.1.0` under local policy, or wait for the corrected release |
 
-Historical versions exist as Git tags without matching GitHub Release objects.
-`v2.0.0-rc.1` is published as a GitHub prerelease. The repository version
-describes the tagged capability set. The Harness API version protects public
-skill names, flags, routes, configuration, module ranges, handoffs, artifact
-authority, and major data contracts. Context pack v3 therefore requires the
-Harness API `2.0.0` migration even though many operational surfaces remain
-source compatible.
+The repository version describes the tagged capability set. The Harness API
+version protects public skill names, flags, routes, configuration, module
+ranges, handoffs, artifact authority, and major data contracts. Release
+`v3.0.0-rc.1` intentionally removes navigator and legacy artifact routes, so
+consumers must complete the Harness API `3.0.0` migration before enabling its
+modules.
 
 The full compatibility helper requires a **harness source checkout**, including
 `compatibility/`, `modules/`, `concepts/`, and `skills/ai-sdlc-shared-runtime`. Maintainers run:

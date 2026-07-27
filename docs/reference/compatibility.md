@@ -5,10 +5,10 @@ description: Public surfaces protected across additive harness releases and the 
 
 ## Protected surfaces
 
-Release candidate `2.0.0-rc.1` implements Harness API `2.0.0` and protects the
-public surface established after `v1.2.0`. Context pack v3 is the intentional
-major change; skill names, flow flags, routes, and operating gates remain
-mechanically protected.
+Release candidate `3.0.0-rc.1` implements Harness API `3.0.0` and protects the
+public surface established after `v2.1.0`. The flow v2, canonical runtime, and
+OKF path changes are the intentional major migration; the resulting skill
+inventory, flags, routes, and operating gates remain mechanically protected.
 
 - Installed skill names and package identity.
 - Stable `--quick-flow` and `--full-flow` support.
@@ -32,9 +32,10 @@ python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_compatibility.py \
 
 A compatible result reports the release, harness API version, complete protected
 skill, flag, and route inventories, skill/module counts, and
-`result: compatible`. The gate also audits the exact contiguous T001–T007
-sequence from `v1.2.0`; an extra or missing release commit fails. Release notes must still explain meaningful additive
-behavior; passing structure alone does not replace human review.
+`result: compatible`. The gate also audits the exact reviewed release sequence
+from `v2.1.0`; an extra, missing, or reordered planned commit fails. Release
+notes must still explain meaningful behavior; passing structure alone does not
+replace human review.
 
 The Git history audit has no implicit executable lookup. Review the path printed
 by `command -v git` and pass that absolute system path. Use

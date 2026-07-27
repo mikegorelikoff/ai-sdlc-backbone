@@ -62,7 +62,7 @@ project-scoped while evaluating the harness.
 Use this when you need to pin one release tag and record its exact commit:
 
 ```bash
-HARNESS_TAG=v2.1.0
+HARNESS_TAG=v3.0.0-rc.1
 HARNESS_TMP="$(mktemp -d)"
 HARNESS_SRC="$HARNESS_TMP/ai-sdlc-harness"
 git init "$HARNESS_SRC"
@@ -75,7 +75,7 @@ DISABLE_TELEMETRY=1 npx -y skills@1.5.19 add "$HARNESS_SRC" \
   --skill '*' --agent codex -y
 # Canonical project-scoped form:
 # DISABLE_TELEMETRY=1 npx -y skills@1.5.19 add "$HARNESS_SRC" --skill '*' --agent codex -y
-# Historical validation baseline: HARNESS_TAG=v2.0.0-rc.1
+# Previous stable release: HARNESS_TAG=v2.1.0
 DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --json
 rm -rf "$HARNESS_TMP"
 ```
@@ -190,8 +190,9 @@ and the [security review guidance](docs/reference/validation.md).
 The repository is licensed under [Apache License 2.0](LICENSE). Preserve the
 license and attribution notices when redistributing it, and review third-party
 source terms listed in the [source registry](docs/_data/content_sources.yml).
-The current release is `v2.1.0`; release history and compatibility notes are
-in [docs/reference](docs/reference/index.md).
+The current release candidate is `v3.0.0-rc.1`; release history,
+compatibility notes, and migration guidance are in
+[docs/reference](docs/reference/index.md).
 
-The previous `v2.0.0-rc.1` tag remains the documented compatibility baseline
-for older validation scripts; new installs should use `v2.1.0`.
+The previous stable release is `v2.1.0`. Consumers should review the
+[3.0 migration guide](docs/how-to/migrate-3.0.md) before adopting the candidate.

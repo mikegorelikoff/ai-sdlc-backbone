@@ -7,8 +7,10 @@ The harness evolves around one goal: make AI-assisted delivery faster without ma
 
 ## Now
 
-- Validate `v2.0.0-rc.1`, close its license and protected-CI blockers, and promote the same reviewed capability set to stable `v2.0.0`.
-- Preserve the completed `1.1.0` executable delivery control plane as the compatibility foundation, with deterministic TOON as the agent representation and explicit JSON boundaries.
+- Validate `v3.0.0-rc.1` through protected CI and tagged installation, then
+  decide whether to promote the reviewed capability set to stable `v3.0.0`.
+- Preserve `v2.1.0` as the stable rollback target while the Harness API 3.0
+  migration is evaluated.
 - Measure adoption, compatibility failures, recovery outcomes, and documentation gaps without collecting source content.
 
 ## Next
@@ -21,16 +23,16 @@ The harness evolves around one goal: make AI-assisted delivery faster without ma
 
 - Add reusable regulated and high-assurance policy profiles with maintained evidence mappings.
 - Add more evidence-council execution adapters and reproducible research evidence ingestion.
-- Evolve Harness API `2.x` additively and require an explicit migration before any future API major.
+- Evolve Harness API `3.x` additively and require an explicit migration before any future API major.
 
 ## Active program
 
-The guided onboarding program is tracked in the
-[implementation specification](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/specs/005-guided-onboarding-documentation/requirements.md).
-Its ordered T001–T007 tasks close the onboarding, adoption, governance, and
-release evidence loop. The [release 2.0 candidate](reference/release-2.0.md)
-combines that foundation with context v3, production hardening, security audit,
-and field-operation fixes. The 1.2 and 1.1 audits remain completed history.
+The role-guided installable-flow program is tracked in the
+[Feature 013 implementation specification](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/specs/013-role-guided-installable-flow/requirements.md).
+The [release 3.0 candidate](reference/release-3.0.md) combines guided flow,
+progressive skill steps, one canonical runtime, and OKF v0.2 artifact bundles.
+Release 2.1 remains the stable baseline; earlier release audits remain
+completed history.
 
 ## Roadmap rules
 

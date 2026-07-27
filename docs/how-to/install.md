@@ -40,7 +40,7 @@ reference.
 
 !!! note "Current release"
 
-    These consumer commands install `v2.1.0`. Resolve the annotated tag to an
+    These consumer commands install `v3.0.0-rc.1`. Resolve the annotated tag to an
     exact commit, review the release notes, and apply your organization's trust
     policy. The harness supports multiple agent hosts; use the host-specific
     install scope documented below.
@@ -71,7 +71,7 @@ and run the same pinned CLI:
 
 ```powershell
 $env:DISABLE_TELEMETRY = "1"
-$HarnessTag = "v2.0.0-rc.1"
+$HarnessTag = "v3.0.0-rc.1"
 $HarnessSource = Join-Path ([System.IO.Path]::GetTempPath()) ("ai-sdlc-harness-" + [guid]::NewGuid())
 node --version  # expected: v22.20.0 or newer
 git init $HarnessSource
@@ -118,7 +118,7 @@ your approved npm provenance before invoking it.
 !!! terminal "Run in terminal — from the consumer repository"
 
     ```bash
-    HARNESS_TAG=v2.0.0-rc.1
+    HARNESS_TAG=v3.0.0-rc.1
     HARNESS_TMP="$(mktemp -d)"
     HARNESS_SRC="$HARNESS_TMP/ai-sdlc-harness"
     git --version
@@ -142,7 +142,7 @@ skills@1.5.19 engines --json` is the recovery check when a pinned CLI invocation
 reports an engine mismatch.
 
 This lists available skills without installing them. Review the repository
-origin and selected package names. The annotated `v2.0.0-rc.1` tag is resolved
+origin and selected package names. The annotated `v3.0.0-rc.1` tag is resolved
 to the exact revision checked above. Skills CLI `1.5.19` treats the final
 segment of a GitHub `/tree/...` URL as a branch, so installation uses the
 verified detached local checkout instead.

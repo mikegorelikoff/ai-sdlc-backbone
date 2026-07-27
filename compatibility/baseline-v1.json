@@ -1,7 +1,7 @@
 {
   "schema": "ai-sdlc-compatibility-baseline/v1",
-  "release": "2.0.0-rc.1",
-  "harness_api_version": "2.0.0",
+  "release": "3.0.0-rc.1",
+  "harness_api_version": "3.0.0",
   "python": {"min": "3.10", "ci": ["3.10", "3.13"]},
   "required_skill_names": [
     "ai-sdlc-approvals-sandbox",
@@ -56,7 +56,7 @@
     "## 0.7 Specs Index",
     "_ai_sdlc/state.toon",
     "_ai_sdlc/specs-index.toon",
-    "specs-index.md",
+    "feature-local `index.md`",
     "artifact_metadata",
     "metatags",
     "ai-sdlc-handoff/v1",
@@ -78,18 +78,22 @@
     "ids": ["architecture", "core", "evidence-council", "research", "ux"]
   },
   "install_update_guide": "guides/install-and-update.md",
-  "roadmap_git_base": "v1.2.0",
-  "roadmap_allowed_prelude_subjects": [],
+  "roadmap_git_base": "v2.1.0",
+  "roadmap_allowed_prelude_subjects": [
+    "docs(release): close guided onboarding validation"
+  ],
   "roadmap_commit_subjects": [
-    "fix(docs): hide hero permalink artifact",
-    "fix(docs): remove homepage hero block",
-    "fix(docs): align rendered validation with homepage",
-    "docs(navigation): simplify role-based reference discovery",
-    "feat(context)!: add sufficient context and interaction profiles",
-    "feat(harness): harden production readiness",
-    "docs(install): fix global Codex skill setup",
-    "fix(skills): harden marketplace security boundaries",
-    "feat(harness): harden field operations",
-    "chore(release)!: publish v2.0.0-rc.1"
+    "docs: simplify readme and complete community guides",
+    "legal: adopt apache-2.0 license",
+    "ci: pin remote install smoke test to release commit",
+    "docs: update changelog for ci and community fixes",
+    "docs: add fast path installation guide",
+    "docs: consolidate canonical role model",
+    "feat(flow): add guided explore and apply workflow",
+    "refactor(skills)!: consolidate guided routing into flow",
+    "feat(skills)!: add role-guided progressive disclosure",
+    "feat(skills)!: adopt OKF v0.2 artifact bundles",
+    "chore(merge): record feature 005 canonical integration",
+    "chore(release)!: publish v3.0.0-rc.1"
   ]
 }
