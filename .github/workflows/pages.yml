@@ -72,8 +72,8 @@ jobs:
         run: python3 docs/scripts/learning_tokens.py --config mkdocs.yml --encoding o200k_base --minimum 6000 --maximum 8000
       - name: Smoke test checked-out candidate installation
         run: python3 skills/ai-sdlc-shared-runtime/tests/install_smoke.py --mode npx --source . --agent codex
-      - name: Smoke test documented release
-        run: python3 skills/ai-sdlc-shared-runtime/tests/install_smoke.py --mode npx-remote --source https://github.com/mikegorelikoff/ai-sdlc-harness.git --revision 80c61cba7be9cce3148a5848f847d1de996e0158 --agent codex
+      - name: Smoke test previous published release
+        run: python3 skills/ai-sdlc-shared-runtime/tests/install_smoke.py --mode npx-remote --source https://github.com/mikegorelikoff/ai-sdlc-harness.git --revision 5c9c29dd25c8d38046b9908aea5f6716275f02c2 --agent codex
       - name: Run documentation tests
         run: python3 -m unittest discover -s docs/tests -v
       - name: Build documentation
