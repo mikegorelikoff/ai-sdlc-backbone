@@ -1,4 +1,15 @@
 ---
+type: "ai-sdlc.business-context"
+title: "Business Context"
+description: "Actors, workflows, rules, exceptions, and acceptance context."
+tags:
+  - "ai-sdlc"
+  - "analysis"
+  - "requirements"
+status: "draft"
+generated:
+  by: "process:ai-sdlc"
+  at: "2026-07-27T12:13:45Z"
 artifact_metadata:
   schema: "ai-sdlc-artifact-metadata/v1"
   feature: "013-role-guided-installable-flow"

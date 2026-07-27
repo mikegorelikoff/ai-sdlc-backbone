@@ -6,9 +6,12 @@ anchors. The fingerprint is SHA-256 over normalized relative path and content
 for every consumed source. Secret-named, environment, key, token, credential,
 and certificate paths are excluded.
 
-Canonical outputs are `project-context.md` and
-`_ai_sdlc/project-context.toon`. Both use the same revision and fingerprint.
+Canonical outputs are `_ai_sdlc/context/project-context.md` and
+`_ai_sdlc/context/project-context.toon`. Both use the same revision and fingerprint.
 Drift is true when either differs from the current repository scan.
+
+Durable Markdown follows the shared
+`ai-sdlc-shared-runtime/references/okf-artifact-contract.md`.
 
 ## External specification snapshots
 

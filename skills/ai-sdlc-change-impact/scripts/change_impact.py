@@ -21,6 +21,7 @@ _SHARED = SKILLS_DIR / "ai-sdlc-shared-runtime" / "scripts"
 sys.path.insert(0, str(_SHARED))
 
 from ai_sdlc_state_machine import COMPLETE_STATUSES, STAGES, STAGE_BY_SKILL, from_toon  # noqa: E402
+from ai_sdlc_okf import migrate_concept_text, write_bundle_indexes  # noqa: E402
 
 
 SCHEMA = "ai-sdlc-change-set/v1"
@@ -275,6 +276,7 @@ def main() -> int:
     parser.add_argument("--decision-ref")
     parser.add_argument("--assumption")
     parser.add_argument("--state-workspace", choices=("refinement", "implementation"))
+    parser.add_argument("--generated-by")
     args = parser.parse_args()
 
     root = args.feature_root.resolve()
@@ -305,11 +307,16 @@ def main() -> int:
             print(f"ERROR: {blocker}")
         return 1
     flow = "full" if args.full_flow else "quick" if args.quick_flow else "default"
-    markdown = render_markdown(root, flow, changes, impacts, actions, blockers)
+    markdown = migrate_concept_text(
+        render_markdown(root, flow, changes, impacts, actions, blockers),
+        profile_key=REPORT_MD,
+        generated_by_override=args.generated_by,
+    )
     machine = render_toon(root, flow, changes, impacts, actions, blockers)
     if args.write:
         atomic_write(root / REPORT_MD, markdown)
         atomic_write(root / REPORT_TOON, machine)
+        write_bundle_indexes(root)
     print(machine if args.format == "toon" else markdown, end="")
     return 0
 

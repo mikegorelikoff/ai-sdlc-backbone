@@ -1,4 +1,14 @@
 ---
+type: "ai-sdlc.validation-report"
+title: "Validation Report"
+description: "Deterministic validation commands, results, and residual risk."
+tags:
+  - "ai-sdlc"
+  - "validation"
+status: "stable"
+generated:
+  by: "process:ai-sdlc"
+  at: "2026-07-27T12:13:45Z"
 artifact_metadata:
   schema: "ai-sdlc-artifact-metadata/v1"
   feature: "013-role-guided-installable-flow"
@@ -85,3 +95,23 @@ outcomes.
 Real networked Skills CLI installation was not rerun because the implementation
 changes are validated by deterministic disposable copies. The existing pinned
 CI jobs retain the networked project and immutable-remote install checks.
+
+## OKF v0.2 Validation Addendum
+
+Full-flow validation passed for AC-017 through AC-022. The refreshed
+`ai-sdlc-validation-receipt/v1` records 11 commands and zero failures.
+
+- The shared runtime discovery suite passes 132 tests, including OKF rendering,
+  provenance/trust refresh, explicit writer profiles, bundle indexes, hard-cut
+  paths, external snapshots, and byte-identical conflict preflight.
+- Both Feature 013 directories pass the recursive OKF bundle validator.
+- Change-set, project-context, delivery-graph, install, per-skill, and SDD
+  regressions pass.
+- All SDD clarify, checklist, analyze, validate, and plan-link gates pass.
+- Documentation validation passes for 184 public pages, 44 skills, 5 modules,
+  and 102 scripts; generated catalog drift and `git diff --check` are clean.
+- Human workspace `specs-index.md` files and runtime legacy context/module
+  routes are absent.
+
+The retained residual risk is the same network boundary above; all local and
+disposable installation checks in the reviewed plan passed.

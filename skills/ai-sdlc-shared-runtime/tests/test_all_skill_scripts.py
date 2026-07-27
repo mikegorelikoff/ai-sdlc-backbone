@@ -745,7 +745,7 @@ class ScriptContractTests(unittest.TestCase):
             artifact = cwd / "specs-refiniment/write-contract/business-context.md"
             decision_log = cwd / "specs-refiniment/write-contract/decision-log.md"
             toon_index = cwd / "specs-refiniment/_ai_sdlc/specs-index.toon"
-            md_index = cwd / "specs-refiniment/specs-index.md"
+            md_index = cwd / "specs-refiniment/write-contract/index.md"
             self.assertTrue(artifact.is_file())
             self.assertTrue(decision_log.is_file())
             self.assertTrue(toon_index.is_file())
@@ -799,6 +799,10 @@ class ScriptContractTests(unittest.TestCase):
                     """,
                 )
             write_indexes_for_roots([workspace_root])
+            write(
+                feature_root / "index.md",
+                '---\nokf_version: "0.2"\n---\n\n# complete-refinement\n',
+            )
 
             script = ROOT / "skills/ai-sdlc-shared-runtime/scripts/refinement_status.py"
             complete = run_script(
@@ -927,6 +931,14 @@ class ScriptContractTests(unittest.TestCase):
                 cwd / "specs-refiniment/demo/business-context.md",
                 """
                 ---
+                type: "ai-sdlc.business-context"
+                title: "Business Context"
+                description: "Fixture"
+                tags: ["ai-sdlc"]
+                status: "draft"
+                generated:
+                  by: "process:ai-sdlc"
+                  at: "2026-07-10T00:00:00Z"
                 artifact_metadata:
                   schema: "ai-sdlc-artifact-metadata/v1"
                   feature: "demo"
@@ -964,7 +976,7 @@ class ScriptContractTests(unittest.TestCase):
             )
             self.assertEqual(result.returncode, 0, result.stderr)
             toon_index = cwd / "specs-refiniment/_ai_sdlc/specs-index.toon"
-            md_index = cwd / "specs-refiniment/specs-index.md"
+            md_index = cwd / "specs-refiniment/demo/index.md"
             self.assertTrue(toon_index.is_file())
             self.assertTrue(md_index.is_file())
             self.assertIn("features[1]", toon_index.read_text(encoding="utf-8"))
@@ -1065,7 +1077,7 @@ class ScriptContractTests(unittest.TestCase):
                 text = skill_contract_text(skill_doc)
                 self.assertIn("## 0.7 Specs Index", text)
                 self.assertIn("specs-index.toon", text)
-                self.assertIn("specs-index.md", text)
+                self.assertIn("index.md", text)
 
     def test_every_skill_routes_machine_files_and_summaries_consistently(self) -> None:
         """Every skill must hide TOON writes and keep summaries in the active host."""

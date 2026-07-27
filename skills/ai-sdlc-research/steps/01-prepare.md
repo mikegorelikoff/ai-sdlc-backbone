@@ -69,8 +69,8 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 - Read the relevant `specs/_ai_sdlc/specs-index.toon` or
   `specs-refiniment/_ai_sdlc/specs-index.toon` before broad reads.
-- Refresh the matching `specs/specs-index.md` or
-  `specs-refiniment/specs-index.md` only after durable writes.
+- Refresh the matching `specs/<feature-name>/index.md` or
+  `specs-refiniment/<feature-name>/index.md` only after durable writes.
 - Keep research inside the feature whose decisions it informs.
 
 ## Exit

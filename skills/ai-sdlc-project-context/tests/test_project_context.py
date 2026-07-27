@@ -29,8 +29,9 @@ class ProjectContextTests(unittest.TestCase):
             (root / "package.json").write_text('{"scripts":{"test":"npm test"}}\n', encoding="utf-8")
             result = self.run_context(root, "--write", "--format", "toon")
             self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertTrue((root / "project-context.md").is_file())
-            self.assertTrue((root / "_ai_sdlc/project-context.toon").is_file())
+            self.assertTrue((root / "_ai_sdlc/context/project-context.md").is_file())
+            self.assertTrue((root / "_ai_sdlc/context/project-context.toon").is_file())
+            self.assertFalse((root / "project-context.md").exists())
             self.assertIn("Node.js", result.stdout)
             self.assertIn("README.md", result.stdout)
 

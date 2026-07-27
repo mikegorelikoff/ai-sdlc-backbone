@@ -159,9 +159,9 @@ The downstream consumer rechecks artifacts and freshness; it does not trust a pr
 ??? info "Specs index"
 
     - Read `specs/_ai_sdlc/specs-index.toon` and feature state before broad reads.
-    - Refresh `specs/specs-index.md` only after a durable architecture write.
+    - Refresh `specs/<feature-name>/index.md` only after a durable architecture write.
     - Do not alter `specs-refiniment/_ai_sdlc/specs-index.toon` or
-      `specs-refiniment/specs-index.md` for implementation-owned architecture.
+      `specs-refiniment/<feature-name>/index.md` for implementation-owned architecture.
 
 ## Example
 

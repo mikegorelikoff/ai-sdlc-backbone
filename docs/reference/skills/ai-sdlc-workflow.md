@@ -154,7 +154,7 @@ The downstream consumer rechecks artifacts and freshness; it does not trust a pr
 ??? info "Specs index"
 
     - Read `_ai_sdlc/specs-index.toon` before resolving feature-local actions and
-      use `specs-index.md` for human review.
+      use feature-local `index.md` for human review.
     - Planning does not refresh either specs index.
 
 ## Example

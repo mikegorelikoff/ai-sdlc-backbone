@@ -60,7 +60,7 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 ## 0.7 Specs Index
 
-- Read `_ai_sdlc/specs-index.toon` first and use `specs-index.md` for human
+- Read `_ai_sdlc/specs-index.toon` first and use feature-local `index.md` for human
   feature discovery before constructing a plan.
 - Runtime state does not refresh either specs index.
 

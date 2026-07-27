@@ -7,11 +7,16 @@ import argparse
 import json
 import os
 import re
+import sys
 import tempfile
 from collections import Counter
 from datetime import date
 from pathlib import Path
 from typing import Any
+
+_SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+sys.path.insert(0, str(_SHARED))
+from ai_sdlc_okf import migrate_concept_text, write_bundle_indexes  # noqa: E402
 
 
 SKILL_DIR = Path(__file__).resolve().parents[1]
@@ -206,6 +211,7 @@ def main() -> int:
     parser.add_argument("--decision-ref")
     parser.add_argument("--assumption")
     parser.add_argument("--state-workspace", choices=("refinement", "implementation"))
+    parser.add_argument("--generated-by")
     args = parser.parse_args()
 
     registry = load_registry()
@@ -232,12 +238,17 @@ def main() -> int:
         return 1
     flow_mode = "full" if args.full_flow else "quick" if args.quick_flow else "default"
     artifact = args.artifact.as_posix()
-    markdown = render_markdown(artifact, args.artifact_kind, args.feature, flow_mode, selected, findings, registry)
+    markdown = migrate_concept_text(
+        render_markdown(artifact, args.artifact_kind, args.feature, flow_mode, selected, findings, registry),
+        profile_key="quality-lens-report.md",
+        generated_by_override=args.generated_by,
+    )
     machine = render_toon(artifact, args.artifact_kind, args.feature, flow_mode, selected, findings, registry)
     if args.write:
         output_root = args.output_root or args.artifact.parent
         atomic_write(output_root / "quality-lens-report.md", markdown)
         atomic_write(output_root / "_ai_sdlc" / "quality-lens-report.toon", machine)
+        write_bundle_indexes(output_root)
     print(machine if args.format == "toon" else markdown, end="")
     return 0
 

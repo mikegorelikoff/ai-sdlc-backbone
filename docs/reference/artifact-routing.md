@@ -13,6 +13,6 @@ description: Canonical locations for refinement, implementation, state, plans, d
 | Implementation decision log | `specs/<feature>/decision-log.md` |
 | Refinement decision log | `specs-refiniment/<feature>/decision-log.md` |
 | Workspace machine index | `<workspace>/_ai_sdlc/specs-index.toon` |
-| Workspace human index | `<workspace>/specs-index.md` |
+| Feature human index | `<workspace>/<feature-name>/index.md` |
 
 Legacy paths migrate through shared helpers on the next write. Do not manually merge divergent legacy and canonical files. Markdown remains authoritative for detailed truth; TOON files are bounded control projections.

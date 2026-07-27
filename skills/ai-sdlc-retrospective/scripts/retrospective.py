@@ -7,11 +7,16 @@ import argparse
 import json
 import os
 import re
+import sys
 import tempfile
 from collections import Counter
 from datetime import date
 from pathlib import Path
 from typing import Any
+
+_SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+sys.path.insert(0, str(_SHARED))
+from ai_sdlc_okf import migrate_concept_text, write_bundle_indexes  # noqa: E402
 
 
 SCHEMA = "ai-sdlc-retrospective-input/v1"
@@ -184,6 +189,7 @@ def main() -> int:
     parser.add_argument("--decision-ref")
     parser.add_argument("--assumption")
     parser.add_argument("--state-workspace", choices=("refinement", "implementation"))
+    parser.add_argument("--generated-by")
     args = parser.parse_args()
     root = args.feature_root.resolve()
     if args.begin_state or args.complete_state:
@@ -203,11 +209,16 @@ def main() -> int:
             print(f"ERROR: {error}")
         return 1
     flow = "full" if args.full_flow else "quick" if args.quick_flow else "default"
-    markdown = render_markdown(root, flow, value)
+    markdown = migrate_concept_text(
+        render_markdown(root, flow, value),
+        profile_key="retrospective.md",
+        generated_by_override=args.generated_by,
+    )
     machine = render_toon(root, flow, value)
     if args.write:
         atomic_write(root / "retrospective.md", markdown)
         atomic_write(root / "_ai_sdlc/retrospective.toon", machine)
+        write_bundle_indexes(root)
     print(machine if args.format == "toon" else markdown, end="")
     return 0
 

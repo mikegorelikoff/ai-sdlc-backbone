@@ -13,6 +13,7 @@ _SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scri
 sys.path.insert(0, str(_SHARED))
 from ai_sdlc_toon import encode_toon
 from ai_sdlc_safe_io import atomic_write_text
+from ai_sdlc_okf import migrate_concept_text, write_bundle_indexes
 
 SCHEMA = "ai-sdlc-local-metrics/v1"
 FORBIDDEN = {"content", "prompt", "command", "diff", "source", "path", "artifact", "message", "reason"}
@@ -70,18 +71,19 @@ def markdown(value: dict[str, Any]) -> str:
     return f"# Local Delivery Metrics\n\nStatus: **{value['status']}**\n\n- Runs: {value['runs']['total']}\n- Tasks: {value['tasks']['total']}\n- Retries: {value['tasks']['retries']}\n- Tokens: {value['budgets']['tokens']}\n- Fresh evidence: {value['quality']['fresh_records']}\n- Fingerprint: `{value['fingerprint']}`\n"
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__); parser.add_argument("repository", type=Path); parser.add_argument("--generate", action="store_true", required=True); parser.add_argument("--write", action="store_true"); parser.add_argument("--format", choices=("toon", "json", "markdown"), default="toon")
-    parser.add_argument("--quick-flow", action="store_true"); parser.add_argument("--full-flow", action="store_true"); parser.add_argument("--feature", default="<feature-name>"); parser.add_argument("--state-check", action="store_true"); parser.add_argument("--begin-state", action="store_true"); parser.add_argument("--complete-state", action="store_true"); parser.add_argument("--decision-ref"); parser.add_argument("--assumption"); parser.add_argument("--state-workspace", choices=("refinement", "implementation")); args = parser.parse_args()
+    parser.add_argument("--quick-flow", action="store_true"); parser.add_argument("--full-flow", action="store_true"); parser.add_argument("--feature", default="<feature-name>"); parser.add_argument("--state-check", action="store_true"); parser.add_argument("--begin-state", action="store_true"); parser.add_argument("--complete-state", action="store_true"); parser.add_argument("--decision-ref"); parser.add_argument("--assumption"); parser.add_argument("--state-workspace", choices=("refinement", "implementation")); parser.add_argument("--generated-by"); args = parser.parse_args()
     if args.begin_state or args.complete_state: print("ERROR: metrics cannot mutate feature lifecycle state"); return 1
     repository = args.repository.resolve()
     if not repository.is_dir(): print("ERROR: repository does not exist"); return 1
     try: value = generate(repository)
     except ValueError as exc: print(f"ERROR: {exc}"); return 1
+    metrics_markdown = migrate_concept_text(markdown(value), profile_key="trust-metrics.md", generated_by_override=args.generated_by)
     if args.write:
         output = repository / "_ai_sdlc/metrics/local.json"
         try:
-            atomic_write(repository, output, json.dumps(value, indent=2, sort_keys=True) + "\n"); atomic_write(repository, output.with_suffix(".toon"), encode_toon(value)); atomic_write(repository, output.with_suffix(".md"), markdown(value))
+            atomic_write(repository, output, json.dumps(value, indent=2, sort_keys=True) + "\n"); atomic_write(repository, output.with_suffix(".toon"), encode_toon(value)); atomic_write(repository, output.with_suffix(".md"), metrics_markdown); write_bundle_indexes(repository / "_ai_sdlc")
         except ValueError as exc:
             print(f"ERROR: {exc}"); return 1
-    print(json.dumps(value, indent=2, sort_keys=True) if args.format == "json" else markdown(value) if args.format == "markdown" else encode_toon(value), end="" if args.format != "json" else "\n")
+    print(json.dumps(value, indent=2, sort_keys=True) if args.format == "json" else metrics_markdown if args.format == "markdown" else encode_toon(value), end="" if args.format != "json" else "\n")
     return 0
 if __name__ == "__main__": raise SystemExit(main())

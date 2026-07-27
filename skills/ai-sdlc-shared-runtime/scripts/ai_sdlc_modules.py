@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from ai_sdlc_okf import migrate_concept_text, write_bundle_indexes
 
 SCHEMA = "ai-sdlc-module/v1"
 ID_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
@@ -230,6 +231,7 @@ def main() -> int:
     parser.add_argument("--decision-ref")
     parser.add_argument("--assumption")
     parser.add_argument("--state-workspace", choices=("refinement", "implementation"))
+    parser.add_argument("--generated-by")
     args = parser.parse_args()
     if args.begin_state or args.complete_state:
         print("ERROR: module discovery is read-only; it cannot change lifecycle state")
@@ -246,10 +248,15 @@ def main() -> int:
             print(f"ERROR: {error}")
         return 1
     machine = render_toon(modules, enabled, args.harness_version)
-    human = render_markdown(modules, enabled, args.harness_version)
+    human = migrate_concept_text(
+        render_markdown(modules, enabled, args.harness_version),
+        profile_key="modules.md",
+        generated_by_override=args.generated_by,
+    )
     if args.write_root:
-        atomic_write(args.write_root / "modules.md", human)
+        atomic_write(args.write_root / "_ai_sdlc/modules.md", human)
         atomic_write(args.write_root / "_ai_sdlc/modules.toon", machine)
+        write_bundle_indexes(args.write_root / "_ai_sdlc")
     print(machine if args.format == "toon" else human, end="")
     return 0
 

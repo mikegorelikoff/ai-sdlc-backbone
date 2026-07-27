@@ -72,7 +72,7 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 - Review the relevant `specs/_ai_sdlc/specs-index.toon` or
   `specs-refiniment/_ai_sdlc/specs-index.toon` before broad reads.
-- Refresh `specs/specs-index.md` or `specs-refiniment/specs-index.md` only when
+- Refresh `specs/<feature-name>/index.md` or `specs-refiniment/<feature-name>/index.md` only when
   the report is routed into that workspace and the owning workflow requires it.
 - Do not use a quality report as a replacement for source requirements,
   decisions, tests, tasks, or state.

@@ -88,8 +88,8 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 ## 0.7 Specs Index
 
-- The runtime exposes index helpers but does not rebuild `specs-index.md` or a
-  machine index by itself.
+- The runtime exposes feature-local OKF `index.md` and compact workspace TOON
+  helpers but does not rebuild them during read-only routing.
 - Index reads and writes remain owned by the selected lifecycle workflow.
 
 ## Exit

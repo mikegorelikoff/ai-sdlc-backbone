@@ -140,7 +140,7 @@ The downstream consumer rechecks artifacts and freshness; it does not trust a pr
 
 ??? info "Specs index"
 
-    - Read `_ai_sdlc/specs-index.toon` first and use `specs-index.md` for human review.
+    - Read `_ai_sdlc/specs-index.toon` first and use feature-local `index.md` for human review.
     - Operational reports do not refresh either index.
 
 ## Example

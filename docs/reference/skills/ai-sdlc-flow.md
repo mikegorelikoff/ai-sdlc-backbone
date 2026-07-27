@@ -162,8 +162,8 @@ The downstream consumer rechecks artifacts and freshness; it does not trust a pr
 ??? info "Specs index"
 
     Explore reads `_ai_sdlc/specs-index.toon` before broad feature scans and may
-    show the human `specs-index.md` path as evidence. It never rebuilds either
-    index. Apply delegates index updates to the one selected owning skill.
+    show feature-local OKF `index.md` paths as evidence. It never rebuilds them.
+    Apply delegates index updates to the one selected owning skill.
 
 ## Example
 

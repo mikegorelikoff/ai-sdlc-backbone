@@ -206,7 +206,7 @@ The downstream consumer rechecks artifacts and freshness; it does not trust a pr
 
 ??? info "Specs index"
 
-    - Read `_ai_sdlc/specs-index.toon` first and use `specs-index.md` for human
+    - Read `_ai_sdlc/specs-index.toon` first and use feature-local `index.md` for human
       feature discovery when canonical targets belong to existing specs.
     - A draft change workspace is not a feature spec and does not refresh either
       specs index.

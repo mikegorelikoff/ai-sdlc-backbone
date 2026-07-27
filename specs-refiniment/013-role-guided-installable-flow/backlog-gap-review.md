@@ -1,4 +1,15 @@
 ---
+type: "ai-sdlc.backlog-gap-review"
+title: "Backlog Requirements Gap Review"
+description: "Planning gaps and backlog-blocking ambiguity."
+tags:
+  - "ai-sdlc"
+  - "review"
+  - "backlog"
+status: "draft"
+generated:
+  by: "process:ai-sdlc"
+  at: "2026-07-27T12:13:45Z"
 artifact_metadata:
   schema: "ai-sdlc-artifact-metadata/v1"
   feature: "013-role-guided-installable-flow"

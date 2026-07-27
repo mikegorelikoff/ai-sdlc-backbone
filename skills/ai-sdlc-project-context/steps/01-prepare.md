@@ -61,8 +61,7 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 ### 0.4 Artifact Routing
 
-- Write the human artifact to `<root>/project-context.md`.
-- Write the machine projection to `<root>/_ai_sdlc/project-context.toon`.
+- Write both projections to `<root>/_ai_sdlc/context/project-context.{md,toon}`.
 - Do not place project-wide context inside one feature folder.
 - Do not overwrite either output when `--check` or `--emit` is used.
 - Route topology to `_ai_sdlc/context/topology.{toon,json,md}` and task packs to
@@ -83,8 +82,8 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 ## 0.6 Artifact Metadata And Metatags
 
-- `project-context.md` starts with `artifact_metadata` using schema
-  `ai-sdlc-project-context-metadata/v1`.
+- Follow `ai-sdlc-shared-runtime/references/okf-artifact-contract.md`; retain
+  project-context `artifact_metadata` producer metadata as an OKF extension.
 - Include `metatags` for `ai-sdlc`, `project-context`, `project`, and
   `evidence-backed`.
 - Metadata records revision, fingerprint, generation date, and source paths.
@@ -94,10 +93,10 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 ## 0.7 Specs Index
 
-- Project context does not replace `specs/_ai_sdlc/specs-index.toon`,
-  `specs-refiniment/_ai_sdlc/specs-index.toon`, `specs/specs-index.md`, or
-  `specs-refiniment/specs-index.md`.
-- Do not refresh feature indexes for project-wide context writes.
+- Project context does not replace the compact workspace TOON routers or
+  feature-local OKF `index.md` files.
+- Downstream feature discovery still starts with `_ai_sdlc/specs-index.toon`.
+- Refresh the `_ai_sdlc/` runtime bundle indexes for project-wide context writes.
 - Downstream skills read project context before broad code and then use feature
   indexes for feature-specific evidence.
 

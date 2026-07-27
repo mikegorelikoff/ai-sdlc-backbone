@@ -124,7 +124,7 @@ class StepManifestTests(unittest.TestCase):
             "artifact_metadata",
             "metatags",
             "specs-index.toon",
-            "specs-index.md",
+            "index.md",
             "Do not create `summary.txt`",
             "directly in the active agent response",
             ".agents/skills/",

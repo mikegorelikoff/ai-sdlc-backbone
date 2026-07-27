@@ -434,7 +434,7 @@ def discover_sources(root: Path, feature: str, explicit: Iterable[Path] = ()) ->
     root = root.resolve()
     mandatory = (
         root / "modules/core/module.json", root / "config/ai-sdlc.defaults.json",
-        root / "config/ai-sdlc-managed-skills.txt", root / "project-context.md",
+        root / "config/ai-sdlc-managed-skills.txt", root / "_ai_sdlc/context/project-context.md",
         root / REFINEMENT_ROOT / "_ai_sdlc/specs-index.toon",
         root / REFINEMENT_ROOT / feature / "_ai_sdlc/state.toon",
         root / IMPLEMENTATION_ROOT / "_ai_sdlc/specs-index.toon",
@@ -446,7 +446,7 @@ def discover_sources(root: Path, feature: str, explicit: Iterable[Path] = ()) ->
 def project_context_status(root: Path, requested: str) -> str:
     if requested != "auto":
         return requested
-    path = root.resolve() / "project-context.md"
+    path = root.resolve() / "_ai_sdlc/context/project-context.md"
     return f"present:sha256:{hashlib.sha256(path.read_bytes()).hexdigest()[:12]}" if path.is_file() else "not-found"
 
 

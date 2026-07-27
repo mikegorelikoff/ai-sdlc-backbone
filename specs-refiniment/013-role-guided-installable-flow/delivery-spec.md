@@ -1,4 +1,15 @@
 ---
+type: "ai-sdlc.delivery-spec"
+title: "Delivery Specification"
+description: "Structured implementation and cross-functional delivery contract."
+tags:
+  - "ai-sdlc"
+  - "requirements"
+  - "delivery"
+status: "draft"
+generated:
+  by: "process:ai-sdlc"
+  at: "2026-07-27T12:13:45Z"
 artifact_metadata:
   schema: "ai-sdlc-artifact-metadata/v1"
   feature: "013-role-guided-installable-flow"
@@ -102,6 +113,7 @@ artifact_metadata:
 
 ## Decisions, Assumptions, and Open Questions
 - DEC-001 accepted: five role references, one active role, automatic selection with explicit override, menu only when unclear, bounded configuration, canonical runtime, and V2 hard cut.
+- DEC-003 accepted: all durable runtime-generated Markdown is native OKF v0.2; feature, change, and runtime directories are independent bundles with progressive reserved indexes.
 - No blocking product questions remain; implementation evidence may refine technical details without changing these accepted boundaries.
 
 ## Success Measures
@@ -155,7 +167,7 @@ artifact_metadata:
 - Evidence is the accepted plan, inspected repository contracts, and completed upstream Feature 013 artifacts.
 
 ## Acceptance Traceability
-- Acceptance Traceability is defined by REQ-001..REQ-004, AC-001..AC-005, and DEC-001 with no blocking gap.
+- Acceptance Traceability is defined by REQ-001..REQ-015, AC-001..AC-022, DEC-001, and DEC-003 with no blocking gap.
 - Evidence is the accepted plan, inspected repository contracts, and completed upstream Feature 013 artifacts.
 
 ## QA and Operational Notes
@@ -165,3 +177,22 @@ artifact_metadata:
 ## Handoff Risks
 - Primary handoff risks are incomplete import migration and undocumented selector/config incompatibility.
 - Evidence is the accepted plan, inspected repository contracts, and completed upstream Feature 013 artifacts.
+
+## OKF Delivery Contract
+
+- REQ-012: one standard-library renderer owns OKF v0.2 frontmatter, concept profiles, provenance refresh, verification invalidation, and preservation of unknown extensions.
+- REQ-013: each `specs/<feature>/`, `specs-refiniment/<feature>/`, `changes/<change>/`, and `_ai_sdlc/` tree is an independently valid bundle. Reserved `index.md` files provide human navigation; compact workspace routing remains TOON-only.
+- REQ-014: write-capable commands accept `--generated-by`; absent overrides preserve an existing valid actor or default to `process:ai-sdlc`. Lifecycle state never implies `verified`.
+- REQ-015: project context exists only at `_ai_sdlc/context/project-context.md`, module knowledge only at `_ai_sdlc/modules.md`, and runtime code has no legacy path fallback.
+- The first durable write to a legacy feature preflights and migrates the complete feature bundle. Any conflict aborts before mutation.
+
+## OKF Acceptance Detail
+
+| Acceptance | Required outcome |
+| --- | --- |
+| AC-017 | Both Feature 013 trees validate as OKF v0.2 bundles and expose deterministic root indexes. |
+| AC-018 | Every durable writer family uses an explicit shared concept profile. |
+| AC-019 | Actor, timestamp, status, source, extension, and verification semantics pass deterministic unit tests. |
+| AC-020 | Human workspace indexes and root project context are absent; only the new routes are supported. |
+| AC-021 | Change and runtime trees expose progressive reserved indexes, including valid nested delta/evidence indexes. |
+| AC-022 | Legacy first-write migration is complete and atomic, or leaves the original tree byte-identical. |

@@ -1,4 +1,15 @@
 ---
+type: "ai-sdlc.prfaq"
+title: "PRFAQ Package"
+description: "Working-backwards press release, FAQ, and business requirements."
+tags:
+  - "ai-sdlc"
+  - "discovery"
+  - "requirements"
+status: "draft"
+generated:
+  by: "process:ai-sdlc"
+  at: "2026-07-27T12:13:45Z"
 artifact_metadata:
   schema: "ai-sdlc-artifact-metadata/v1"
   feature: "013-role-guided-installable-flow"

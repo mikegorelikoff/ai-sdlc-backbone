@@ -77,7 +77,7 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 ## 0.7 Specs Index
 
-- Read `_ai_sdlc/specs-index.toon` first and use `specs-index.md` for human
+- Read `_ai_sdlc/specs-index.toon` first and use feature-local `index.md` for human
   feature discovery when canonical targets belong to existing specs.
 - A draft change workspace is not a feature spec and does not refresh either
   specs index.

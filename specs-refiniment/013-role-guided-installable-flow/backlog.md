@@ -1,4 +1,15 @@
 ---
+type: "ai-sdlc.backlog"
+title: "Delivery Backlog"
+description: "Epics, stories, acceptance summaries, dependencies, and delivery tasks."
+tags:
+  - "ai-sdlc"
+  - "planning"
+  - "backlog"
+status: "draft"
+generated:
+  by: "process:ai-sdlc"
+  at: "2026-07-27T12:13:45Z"
 artifact_metadata:
   schema: "ai-sdlc-artifact-metadata/v1"
   feature: "013-role-guided-installable-flow"

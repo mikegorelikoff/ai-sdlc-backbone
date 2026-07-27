@@ -58,8 +58,8 @@ complete a task, stage, validation, or approval on behalf of an owning skill.
 ## 0.7 Specs Index
 
 Explore reads `_ai_sdlc/specs-index.toon` before broad feature scans and may
-show the human `specs-index.md` path as evidence. It never rebuilds either
-index. Apply delegates index updates to the one selected owning skill.
+show feature-local OKF `index.md` paths as evidence. It never rebuilds them.
+Apply delegates index updates to the one selected owning skill.
 
 ## Existing Phase Guidance
 

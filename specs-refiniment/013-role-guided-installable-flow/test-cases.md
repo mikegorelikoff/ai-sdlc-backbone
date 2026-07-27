@@ -1,4 +1,15 @@
 ---
+type: "ai-sdlc.test-cases"
+title: "Test Cases"
+description: "Test scenarios, expected outcomes, and coverage mapping."
+tags:
+  - "ai-sdlc"
+  - "qa"
+  - "testing"
+status: "draft"
+generated:
+  by: "process:ai-sdlc"
+  at: "2026-07-27T12:13:45Z"
 artifact_metadata:
   schema: "ai-sdlc-artifact-metadata/v1"
   feature: "013-role-guided-installable-flow"
@@ -168,3 +179,20 @@ artifact_metadata:
 ## Automation Plan
 - Add deterministic fixtures for every role/action and run complete install regression in CI.
 - Evidence is the accepted plan, inspected repository contracts, and completed upstream Feature 013 artifacts.
+
+## OKF Scenario Matrix
+
+| Test ID | Scenario | Expected result | Trace |
+| --- | --- | --- | --- |
+| TC-021 | Render and refresh representative lifecycle concepts | Required OKF fields coexist with lifecycle metadata; meaningful changes update provenance and invalidate stale verification. | REQ-012, REQ-014, AC-017, AC-019 |
+| TC-022 | Validate both Feature 013 artifact trees | Every non-reserved Markdown concept validates; root and nested indexes group and link concepts deterministically. | REQ-013, AC-017, AC-020 |
+| TC-023 | Exercise each durable writer family | Every output has an explicit concept profile and validates in its feature, change, or runtime bundle. | REQ-012, AC-018, AC-021 |
+| TC-024 | Generate project context and module knowledge | Only `_ai_sdlc/context/project-context.md` and `_ai_sdlc/modules.md` are supported; legacy reads and writes fail closed. | REQ-015, AC-020 |
+| TC-025 | Create a change set and external snapshot | Reserved indexes are metadata-free below the root; source evidence and snapshot body remain traceable. | REQ-013, REQ-014, AC-021 |
+| TC-026 | Write to a legacy feature and inject a conflict | Successful migration covers the entire tree; failed preflight leaves all original bytes unchanged. | REQ-015, AC-022 |
+
+## OKF Negative Cases
+
+- Reject an empty or inferred `type`, malformed generated actor, unsupported OKF status, nested `index.md` frontmatter, root `index.md` metadata beyond `okf_version`, and a `verified` claim without recorded evidence.
+- Reject divergent legacy/new project-context paths and frontmatter conflicts before any migration write.
+- Assert that lifecycle status changes alone never add verification and that untouched legacy features remain byte-identical.

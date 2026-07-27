@@ -199,8 +199,8 @@ The downstream consumer rechecks artifacts and freshness; it does not trust a pr
 
 ??? info "Specs index"
 
-    - The runtime exposes index helpers but does not rebuild `specs-index.md` or a
-      machine index by itself.
+    - The runtime exposes feature-local OKF `index.md` and compact workspace TOON
+      helpers but does not rebuild them during read-only routing.
     - Index reads and writes remain owned by the selected lifecycle workflow.
 
 ## Example

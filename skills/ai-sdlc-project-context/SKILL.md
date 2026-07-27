@@ -19,7 +19,7 @@ description: AI SDLC evidence-backed project context and bounded task-pack workf
 - SDLC stage: Cross-feature repository context
 - Purpose: Generate durable repository memory and task-specific, bounded,
   freshness-aware context from explained safe sources.
-- Output: `project-context.md`, `_ai_sdlc/project-context.toon`, and optional
+- Output: `_ai_sdlc/context/project-context.{md,toon}` and optional
   topology and task-pack records below `_ai_sdlc/context/`
 
 ## Step Selector

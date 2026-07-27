@@ -159,7 +159,7 @@ The downstream consumer rechecks artifacts and freshness; it does not trust a pr
 
 ??? info "Specs index"
 
-    - Read `_ai_sdlc/specs-index.toon` first and use `specs-index.md` for human
+    - Read `_ai_sdlc/specs-index.toon` first and use feature-local `index.md` for human
       discovery when evaluation context refers to feature artifacts.
     - Policy evaluation does not refresh either specs index.
 

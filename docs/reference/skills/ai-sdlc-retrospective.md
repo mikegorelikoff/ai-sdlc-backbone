@@ -167,8 +167,8 @@ The downstream consumer rechecks artifacts and freshness; it does not trust a pr
 
     - Read `specs/_ai_sdlc/specs-index.toon` or
       `specs-refiniment/_ai_sdlc/specs-index.toon` before targeted evidence reads.
-    - Do not refresh `specs/specs-index.md` or
-      `specs-refiniment/specs-index.md` for a read-only draft.
+    - Do not refresh `specs/<feature-name>/index.md` or
+      `specs-refiniment/<feature-name>/index.md` for a read-only draft.
     - Refresh indexes only through the owning workflow after durable report writes.
 
 ## Example

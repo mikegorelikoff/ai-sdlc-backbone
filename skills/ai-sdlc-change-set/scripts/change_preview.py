@@ -20,6 +20,7 @@ _SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scri
 sys.path.insert(0, str(_SHARED))
 from ai_sdlc_toon import encode_toon
 from ai_sdlc_safe_io import atomic_write_text, bounded_path
+from ai_sdlc_okf import migrate_concept_text, write_bundle_indexes
 
 
 SCHEMA = "ai-sdlc-change-preview/v1"
@@ -253,6 +254,7 @@ def main() -> int:
     parser.add_argument("--decision-ref")
     parser.add_argument("--assumption")
     parser.add_argument("--state-workspace", choices=("refinement", "implementation"))
+    parser.add_argument("--generated-by")
     args = parser.parse_args()
     if args.begin_state or args.complete_state:
         print("ERROR: apply preview cannot mutate feature lifecycle state")
@@ -266,12 +268,18 @@ def main() -> int:
         for error in errors:
             print(f"ERROR: {error}")
         return 1
+    preview_markdown = migrate_concept_text(
+        render_markdown(record),
+        profile_key="apply-preview.md",
+        generated_by_override=args.generated_by,
+    )
     if args.write:
         try:
             workspace = bounded_path(repository, repository / "changes" / args.change_id)
             atomic_write(workspace, workspace / "_ai_sdlc/apply-preview.json", json.dumps(record, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
             atomic_write(workspace, workspace / "_ai_sdlc/apply-preview.toon", encode_toon(record))
-            atomic_write(workspace, workspace / "apply-preview.md", render_markdown(record))
+            atomic_write(workspace, workspace / "apply-preview.md", preview_markdown)
+            write_bundle_indexes(workspace)
         except ValueError as exc:
             print(f"ERROR: {exc}")
             return 1
@@ -280,7 +288,7 @@ def main() -> int:
     elif args.format == "toon":
         print(render_toon(record), end="")
     else:
-        print(render_markdown(record), end="")
+        print(preview_markdown, end="")
     return 2 if record["status"] == "blocked" else 0
 
 

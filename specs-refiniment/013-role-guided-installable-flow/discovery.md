@@ -1,4 +1,14 @@
 ---
+type: "ai-sdlc.discovery"
+title: "Working Backwards Discovery"
+description: "Customer problem, audience, value, scope, and discovery evidence."
+tags:
+  - "ai-sdlc"
+  - "discovery"
+status: "draft"
+generated:
+  by: "process:ai-sdlc"
+  at: "2026-07-27T12:13:45Z"
 artifact_metadata:
   schema: "ai-sdlc-artifact-metadata/v1"
   feature: "013-role-guided-installable-flow"

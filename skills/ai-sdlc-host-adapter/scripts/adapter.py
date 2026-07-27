@@ -16,6 +16,7 @@ from typing import Any
 _SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
 sys.path.insert(0, str(_SHARED))
 from ai_sdlc_toon import encode_toon
+from ai_sdlc_okf import migrate_concept_text, write_bundle_indexes
 
 ADAPTER_SCHEMA = "ai-sdlc-host-adapter/v1"
 REQUEST_SCHEMA = "ai-sdlc-capability-request/v1"
@@ -195,6 +196,7 @@ def main() -> int:
     parser.add_argument("--decision-ref")
     parser.add_argument("--assumption")
     parser.add_argument("--state-workspace", choices=("refinement", "implementation"))
+    parser.add_argument("--generated-by")
     args = parser.parse_args()
     if args.begin_state or args.complete_state:
         print("ERROR: adapter negotiation cannot mutate feature lifecycle state")
@@ -220,15 +222,25 @@ def main() -> int:
         value["fingerprint"] = digest(value)
     else:
         value = negotiate(adapter, request)
+    negotiation_markdown = (
+        migrate_concept_text(
+            markdown(value),
+            profile_key="negotiation.md",
+            generated_by_override=args.generated_by,
+        )
+        if args.negotiate
+        else ""
+    )
     if args.write and args.negotiate:
         output = repository / f"_ai_sdlc/adapters/{adapter['id']}/negotiation.json"
         atomic_write(output, json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
         atomic_write(output.with_suffix(".toon"), encode_toon(value))
-        atomic_write(output.with_suffix(".md"), markdown(value))
+        atomic_write(output.with_suffix(".md"), negotiation_markdown)
+        write_bundle_indexes(repository / "_ai_sdlc")
     if args.format == "json":
         print(json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False))
     elif args.format == "markdown" and args.negotiate:
-        print(markdown(value), end="")
+        print(negotiation_markdown, end="")
     else:
         print(encode_toon(value), end="")
     return 0 if args.validate or value["compatible"] else 2

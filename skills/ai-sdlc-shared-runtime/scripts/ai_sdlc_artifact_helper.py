@@ -50,6 +50,13 @@ from ai_sdlc_context import (
 )
 from ai_sdlc_specs_index import parse_artifact_metadata
 from ai_sdlc_specs_index import write_indexes_for_roots
+from ai_sdlc_okf import (
+    concept_profile,
+    generated_actor,
+    okf_status,
+    render_frontmatter,
+    utc_now,
+)
 from ai_sdlc_migrate import MigrationConflict, migrate_workspace
 from ai_sdlc_paths import state_path, atomic_write_text
 from ai_sdlc_state_machine import add_state_arguments, run_state_action
@@ -182,8 +189,9 @@ def artifact_metadata_lines(
     related_artifacts: list[str] | None = None,
     validation: list[str] | None = None,
     metatags: list[str] | None = None,
+    existing_text: str = "",
 ) -> list[str]:
-    """Build canonical frontmatter for every generated skill artifact.
+    """Build portable OKF frontmatter plus AI SDLC lifecycle extensions.
 
     The metadata block is intentionally verbose enough to let future agents
     route, filter, validate, and trace artifacts without rereading the full
@@ -206,8 +214,7 @@ def artifact_metadata_lines(
         ]
     )
 
-    lines = [
-        "---",
+    extension_lines = [
         "artifact_metadata:",
         "  schema: " + yaml_quote("ai-sdlc-artifact-metadata/v1"),
         "  feature: " + yaml_quote(feature),
@@ -229,14 +236,22 @@ def artifact_metadata_lines(
         ("validation", validation or []),
     ):
         if values:
-            lines.append(f"  {key}:")
-            lines.extend(f"    - {yaml_quote(value)}" for value in values)
+            extension_lines.append(f"  {key}:")
+            extension_lines.extend(f"    - {yaml_quote(value)}" for value in values)
         else:
-            lines.append(f"  {key}: []")
-    lines.append("  metatags:")
-    lines.extend(f"    - {yaml_quote(tag)}" for tag in tags)
-    lines.extend(["---", ""])
-    return lines
+            extension_lines.append(f"  {key}: []")
+    extension_lines.append("  metatags:")
+    extension_lines.extend(f"    - {yaml_quote(tag)}" for tag in tags)
+    actor_override = (
+        getattr(state_args, "generated_by", None) if state_args is not None else None
+    )
+    return render_frontmatter(
+        profile=concept_profile(artifact_name),
+        status=okf_status(status),
+        generated_by=generated_actor(existing_text, actor_override),
+        generated_at=utc_now(),
+        extension_lines=extension_lines,
+    )
 
 
 def replace_frontmatter(text: str, metadata_lines: list[str]) -> str:
@@ -304,6 +319,7 @@ def refreshed_artifact_metadata(
         ),
         validation=[str(value) for value in existing.get("validation", ())],
         metatags=existing_tags,
+        existing_text=text,
     )
     return replace_frontmatter(text, metadata)
 
@@ -1086,9 +1102,10 @@ def emit_profile_report(
         print("## Written Files")
         print(f"- {artifact_file}")
         print(f"- {decision_file}")
-        for toon_path, md_path in index_files:
+        for toon_path, index_paths in index_files:
             print(f"- {toon_path}")
-            print(f"- {md_path}")
+            for index_path in index_paths:
+                print(f"- {index_path}")
         print()
 
     if emit_decision_log_entry:
@@ -1140,6 +1157,10 @@ def build_parser(description: str) -> argparse.ArgumentParser:
     parser.add_argument("--artifact-status", help="Metadata status; finalize defaults to review")
     parser.add_argument("--artifact-owner", help="Metadata owner; updates preserve the existing owner")
     parser.add_argument("--artifact-tag", action="append", default=[], help="Extra metadata tag; repeat for multiple tags")
+    parser.add_argument(
+        "--generated-by",
+        help="OKF generated.by actor: human:<id>, process:<id>, or <producer>/<version>",
+    )
     add_state_arguments(parser)
     return parser
 

@@ -17,6 +17,7 @@ from project_context import credential_like_content
 _SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
 sys.path.insert(0, str(_SHARED))
 from ai_sdlc_safe_io import atomic_write_text, bounded_path
+from ai_sdlc_okf import render_concept, split_frontmatter, write_bundle_indexes
 
 
 SCHEMA = "ai-sdlc-external-spec-snapshot/v1"
@@ -24,6 +25,7 @@ FEATURE_RE = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 MAX_BYTES = 1_048_576
 MANIFEST_FIELDS = {"schema", "feature", "source_id", "source_revision", "content_authority", "files", "fingerprint"}
 ROW_FIELDS = {"source", "destination", "sha256", "size_bytes"}
+SOURCE_MARKER = "<!-- ai-sdlc-external-source-body -->\n"
 
 
 def canonical(value: Any) -> str:
@@ -145,7 +147,14 @@ def load_manifest(path: Path) -> dict[str, Any] | None:
     return value
 
 
-def build_snapshot(repository: Path, source_root: Path, feature: str, source_id: str, sources: list[str]) -> tuple[dict[str, Any], dict[Path, str]]:
+def build_snapshot(
+    repository: Path,
+    source_root: Path,
+    feature: str,
+    source_id: str,
+    sources: list[str],
+    generated_by: str | None = None,
+) -> tuple[dict[str, Any], dict[Path, str]]:
     """Validate a complete snapshot set and return manifest plus writes."""
     feature_root = bounded_path(repository, repository / "specs-refiniment" / feature)
     manifest_path = bounded_path(repository, feature_root / "external-specs.json")
@@ -172,7 +181,12 @@ def build_snapshot(repository: Path, source_root: Path, feature: str, source_id:
         if target.exists() and previous_rows.get(destination) != relative:
             raise ValueError(f"destination already exists without matching snapshot ownership: {destination}")
         rows.append({"source": relative, "destination": destination, "sha256": sha256, "size_bytes": size})
-        writes[target] = text
+        writes[target] = render_concept(
+            SOURCE_MARKER + text,
+            profile_key="external-spec-snapshot.md",
+            generated_by_override=generated_by,
+            sources=(f"{source_id}:{relative}",),
+        )
     value: dict[str, Any] = {
         "schema": SCHEMA,
         "feature": feature,
@@ -210,8 +224,14 @@ def check_snapshot(repository: Path, source_root: Path, feature: str, source_id:
             errors.append(f"source drifted: {row['source']}")
         if not destination.is_file() or destination.is_symlink():
             errors.append(f"snapshot destination is missing or unsafe: {row['destination']}")
-        elif destination.read_bytes() != text.encode("utf-8"):
-            errors.append(f"snapshot destination drifted: {row['destination']}")
+        else:
+            try:
+                _, body = split_frontmatter(destination.read_text(encoding="utf-8"))
+            except ValueError as exc:
+                errors.append(f"snapshot destination is invalid: {row['destination']}: {exc}")
+                continue
+            if not body.startswith(SOURCE_MARKER) or body[len(SOURCE_MARKER):] != text:
+                errors.append(f"snapshot destination drifted: {row['destination']}")
     return manifest, errors
 
 
@@ -233,6 +253,7 @@ def main() -> int:
     parser.add_argument("--decision-ref")
     parser.add_argument("--assumption")
     parser.add_argument("--state-workspace", choices=("refinement", "implementation"))
+    parser.add_argument("--generated-by")
     args = parser.parse_args()
     if args.begin_state or args.complete_state:
         parser.error("external snapshot management cannot mutate feature lifecycle state")
@@ -253,9 +274,17 @@ def main() -> int:
         if args.write:
             if not args.source:
                 parser.error("--write requires at least one --source")
-            value, writes = build_snapshot(repository, source_root, args.feature, args.source_id, args.source)
+            value, writes = build_snapshot(
+                repository,
+                source_root,
+                args.feature,
+                args.source_id,
+                args.source,
+                args.generated_by,
+            )
             for path, content in writes.items():
                 atomic_write_text(repository, path, content)
+            write_bundle_indexes(repository / "specs-refiniment" / args.feature)
             result = {"status": "written", "manifest": f"specs-refiniment/{args.feature}/external-specs.json", **value}
             exit_code = 0
         else:

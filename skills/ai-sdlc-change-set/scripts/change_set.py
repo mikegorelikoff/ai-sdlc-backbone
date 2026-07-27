@@ -19,6 +19,7 @@ _SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scri
 sys.path.insert(0, str(_SHARED))
 from ai_sdlc_toon import encode_toon
 from ai_sdlc_safe_io import bounded_path, ensure_directory
+from ai_sdlc_okf import migrate_concept_text, validate_bundle, write_bundle_indexes
 
 
 SCHEMA = "ai-sdlc-change-set/v1"
@@ -157,7 +158,7 @@ def metadata(record: dict[str, Any], artifact: str, relative: str) -> str:
     return "\n".join(lines)
 
 
-def render_files(record: dict[str, Any]) -> dict[str, str]:
+def render_files(record: dict[str, Any], generated_by: str | None = None) -> dict[str, str]:
     """Render every required workspace artifact."""
     targets = "\n".join(f"- `{target}`" for target in record["canonical_targets"])
     prefix = metadata(record, "proposal.md", "proposal.md")
@@ -230,24 +231,20 @@ Define validation before apply.
 
 - [ ] Add implementation tasks after preview confirms scope.
 """
-    deltas = f"""{metadata(record, 'deltas/index.md', 'deltas/index.md')}
-
-# Delta Index
+    deltas = """# Delta Index
 
 No requirement deltas have been authored. Add delta documents only through the
 semantic delta workflow.
 """
-    evidence = f"""{metadata(record, 'evidence/index.md', 'evidence/index.md')}
-
-# Evidence Index
+    evidence = """# Evidence Index
 
 No evidence has been registered. Evidence entries must retain source identity,
 locator, freshness, credibility, and trace targets.
 """
     return {
-        "proposal.md": proposal.rstrip() + "\n",
-        "design.md": design.rstrip() + "\n",
-        "tasks.md": tasks.rstrip() + "\n",
+        "proposal.md": migrate_concept_text(proposal.rstrip() + "\n", profile_key="proposal.md", generated_by_override=generated_by),
+        "design.md": migrate_concept_text(design.rstrip() + "\n", profile_key="design.md", generated_by_override=generated_by),
+        "tasks.md": migrate_concept_text(tasks.rstrip() + "\n", profile_key="tasks.md", generated_by_override=generated_by),
         "deltas/index.md": deltas.rstrip() + "\n",
         "evidence/index.md": evidence.rstrip() + "\n",
         "_ai_sdlc/change-set.json": json.dumps(record, indent=2, sort_keys=True, ensure_ascii=False) + "\n",
@@ -267,6 +264,7 @@ def atomic_create(repository: Path, destination: Path, files: dict[str, str]) ->
             path = temp / relative
             ensure_directory(temp, path.parent)
             path.write_text(content, encoding="utf-8")
+        write_bundle_indexes(temp)
         os.replace(temp, destination)
     except Exception:
         shutil.rmtree(temp, ignore_errors=True)
@@ -362,7 +360,7 @@ def validate_workspace(workspace: Path, change_id: str) -> tuple[dict[str, Any],
     if toon_path.read_text(encoding="utf-8") != encode_toon(record):
         errors.append("change-set TOON projection is stale or invalid")
     for name, relative in REQUIRED_ARTIFACTS.items():
-        if name == "record":
+        if name in {"record", "deltas", "evidence"}:
             continue
         text = (workspace / relative).read_text(encoding="utf-8")
         if 'schema: "ai-sdlc-change-set-metadata/v1"' not in text:
@@ -428,6 +426,7 @@ def main() -> int:
     parser.add_argument("--decision-ref")
     parser.add_argument("--assumption")
     parser.add_argument("--state-workspace", choices=("refinement", "implementation"))
+    parser.add_argument("--generated-by")
     args = parser.parse_args()
 
     if args.begin_state or args.complete_state:
@@ -464,7 +463,7 @@ def main() -> int:
         return 1
     if args.create:
         try:
-            atomic_create(repository, workspace, render_files(record))
+            atomic_create(repository, workspace, render_files(record, args.generated_by))
         except (FileExistsError, OSError, ValueError) as exc:
             print(f"ERROR: {exc}")
             return 1
@@ -474,6 +473,11 @@ def main() -> int:
                 print(f"ERROR: {error}")
             return 1
         record = validated
+        bundle_errors = validate_bundle(workspace)
+        if bundle_errors:
+            for error in bundle_errors:
+                print(f"ERROR: {error}")
+            return 1
     emit_result(record, workspace, True, args.format)
     return 0
 

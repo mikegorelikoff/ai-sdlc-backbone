@@ -17,6 +17,7 @@ from typing import Any
 _SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
 sys.path.insert(0, str(_SHARED))
 from ai_sdlc_toon import encode_toon
+from ai_sdlc_okf import migrate_concept_text, write_bundle_indexes
 
 REPORT_SCHEMA = "ai-sdlc-doctor-report/v1"
 INVENTORY_SCHEMA = "ai-sdlc-upgrade-inventory/v1"
@@ -201,6 +202,7 @@ def main() -> int:
     parser.add_argument("--decision-ref")
     parser.add_argument("--assumption")
     parser.add_argument("--state-workspace", choices=("refinement", "implementation"))
+    parser.add_argument("--generated-by")
     args = parser.parse_args()
     if args.begin_state or args.complete_state:
         print("ERROR: diagnostics cannot mutate feature lifecycle state")
@@ -233,14 +235,20 @@ def main() -> int:
         value = upgrade_plan(current, target, args.upgrade_id, active_api)
         output = repository / f"_ai_sdlc/upgrades/{args.upgrade_id}/plan.json"
         exit_code = 0 if value["compatible"] else 2
+    report_markdown = migrate_concept_text(
+        markdown(value),
+        profile_key="doctor-report.md" if args.doctor else "upgrade-plan.md",
+        generated_by_override=args.generated_by,
+    )
     if args.write:
         atomic_write(output, json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
         atomic_write(output.with_suffix(".toon"), encode_toon(value))
-        atomic_write(output.with_suffix(".md"), markdown(value))
+        atomic_write(output.with_suffix(".md"), report_markdown)
+        write_bundle_indexes(repository / "_ai_sdlc")
     if args.format == "json":
         print(json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False))
     elif args.format == "markdown":
-        print(markdown(value), end="")
+        print(report_markdown, end="")
     else:
         print(encode_toon(value), end="")
     return exit_code

@@ -9,7 +9,12 @@
     {
       "id": "runtime-suite",
       "argv": ["python3", "-m", "unittest", "discover", "-s", "skills/ai-sdlc-shared-runtime/tests", "-p", "test*.py", "-v"],
-      "trace_ids": ["AC-001", "AC-002", "AC-009", "AC-012", "AC-013", "AC-014", "AC-015", "AC-016"]
+      "trace_ids": ["AC-001", "AC-002", "AC-009", "AC-012", "AC-013", "AC-014", "AC-015", "AC-016", "AC-017", "AC-018", "AC-019", "AC-020", "AC-021", "AC-022"]
+    },
+    {
+      "id": "okf-bundles",
+      "argv": ["python3", "skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_okf.py", "--check", "specs/013-role-guided-installable-flow", "specs-refiniment/013-role-guided-installable-flow"],
+      "trace_ids": ["AC-017", "AC-020", "AC-022"]
     },
     {
       "id": "skill-steps",

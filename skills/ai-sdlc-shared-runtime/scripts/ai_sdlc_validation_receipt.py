@@ -46,7 +46,6 @@ def workspace_fingerprint(root: Path, exclude: Path | None = None) -> str:
             workspace = feature_root.parent
             excluded.update(
                 {
-                    workspace / "specs-index.md",
                     workspace / "_ai_sdlc" / "specs-index.toon",
                 }
             )

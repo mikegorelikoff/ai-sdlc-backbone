@@ -161,8 +161,8 @@ The downstream consumer rechecks artifacts and freshness; it does not trust a pr
 
     - Read the relevant `specs/_ai_sdlc/specs-index.toon` or
       `specs-refiniment/_ai_sdlc/specs-index.toon` before targeted evidence reads.
-    - Refresh matching `specs/specs-index.md` or
-      `specs-refiniment/specs-index.md` only after the final report write.
+    - Refresh matching `specs/<feature-name>/index.md` or
+      `specs-refiniment/<feature-name>/index.md` only after the final report write.
     - Never update indexes for panel scratch outputs.
 
 ## Example

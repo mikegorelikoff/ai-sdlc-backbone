@@ -16,6 +16,7 @@ from typing import Any
 _SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
 sys.path.insert(0, str(_SHARED))
 from ai_sdlc_toon import encode_toon
+from ai_sdlc_okf import migrate_concept_text, write_bundle_indexes
 
 WORKFLOW_SCHEMA = "ai-sdlc-workflow/v1"
 PLAN_SCHEMA = "ai-sdlc-workflow-plan/v1"
@@ -274,6 +275,7 @@ def main() -> int:
     parser.add_argument("--decision-ref")
     parser.add_argument("--assumption")
     parser.add_argument("--state-workspace", choices=("refinement", "implementation"))
+    parser.add_argument("--generated-by")
     args = parser.parse_args()
     if args.begin_state or args.complete_state:
         print("ERROR: workflow planning cannot mutate feature lifecycle state")
@@ -303,15 +305,21 @@ def main() -> int:
             print("ERROR: context must be a JSON object")
             return 1
     plan = plan_workflow(workflow, context, args.concurrency, args.isolation_supported)
+    plan_markdown = migrate_concept_text(
+        markdown(plan),
+        profile_key="workflow-plan.md",
+        generated_by_override=args.generated_by,
+    )
     if args.write:
         output = repository / f"_ai_sdlc/workflows/{workflow['id']}/plan.json"
         atomic_write(output, json.dumps(plan, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
         atomic_write(output.with_suffix(".toon"), encode_toon(plan))
-        atomic_write(output.with_suffix(".md"), markdown(plan))
+        atomic_write(output.with_suffix(".md"), plan_markdown)
+        write_bundle_indexes(repository / "_ai_sdlc")
     if args.format == "json":
         print(json.dumps(plan, indent=2, sort_keys=True, ensure_ascii=False))
     elif args.format == "markdown":
-        print(markdown(plan), end="")
+        print(plan_markdown, end="")
     else:
         print(encode_toon(plan), end="")
     return 0 if args.validate or plan["executable"] else 2

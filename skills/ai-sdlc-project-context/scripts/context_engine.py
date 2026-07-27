@@ -22,6 +22,7 @@ sys.path.insert(0, str(_SHARED))
 from ai_sdlc_context import resolve_interaction_profile
 from ai_sdlc_toon import encode_toon
 from ai_sdlc_safe_io import atomic_write_text
+from ai_sdlc_okf import migrate_concept_text, write_bundle_indexes
 
 
 PACK_SCHEMA = "ai-sdlc-context-pack/v3"
@@ -279,7 +280,7 @@ def candidate_set(root: Path, topology: dict[str, Any], task: str, paths: list[s
     candidates: dict[str, dict[str, Any]] = {}
     selector_rows: list[dict[str, str]] = []
     available = git_files(root)
-    for relative in ("AGENTS.md", "project-context.md", "README.md"):
+    for relative in ("AGENTS.md", "_ai_sdlc/context/project-context.md", "README.md"):
         if relative in available:
             add_candidate(candidates, relative, 100 if relative == "AGENTS.md" else 75, 500, "repository-guidance")
     for relative in paths:
@@ -479,7 +480,9 @@ def context_sufficiency(
 def freshness(root: Path, selected_paths: set[str], current_context_fingerprint: str) -> dict[str, Any]:
     """Report saved project context drift and non-fresh evidence intersections."""
     warnings: list[dict[str, str]] = []
-    saved_revision, saved_fingerprint = saved_identity(root / "_ai_sdlc/project-context.toon")
+    saved_revision, saved_fingerprint = saved_identity(
+        root / "_ai_sdlc/context/project-context.toon"
+    )
     current_revision = revision(root)
     if not saved_fingerprint:
         context_status = "missing"
@@ -634,6 +637,7 @@ def main() -> int:
     parser.add_argument("--decision-ref")
     parser.add_argument("--assumption")
     parser.add_argument("--state-workspace", choices=("refinement", "implementation"))
+    parser.add_argument("--generated-by")
     args = parser.parse_args()
     if args.begin_state or args.complete_state:
         print("ERROR: context packs cannot mutate feature lifecycle state")
@@ -667,16 +671,22 @@ def main() -> int:
     else:
         value = topology
         output_path = root / "_ai_sdlc/context/topology.json"
+    markdown_output = migrate_concept_text(
+        markdown(value),
+        profile_key="task-pack.md" if args.build_pack else "topology.md",
+        generated_by_override=args.generated_by,
+    )
     if args.write:
         atomic_write(root, output_path, json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
         atomic_write(root, output_path.with_suffix(".toon"), encode_toon(value))
-        atomic_write(root, output_path.with_suffix(".md"), markdown(value))
+        atomic_write(root, output_path.with_suffix(".md"), markdown_output)
+        write_bundle_indexes(root / "_ai_sdlc")
     if args.format == "json":
         print(json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False))
     elif args.format == "toon":
         print(encode_toon(value), end="")
     else:
-        print(markdown(value), end="")
+        print(markdown_output, end="")
     return 0
 
 

@@ -1,4 +1,15 @@
 ---
+type: "ai-sdlc.delivery-handoff-review"
+title: "Delivery Handoff Review"
+description: "Strict delivery readiness and ownership handoff review."
+tags:
+  - "ai-sdlc"
+  - "review"
+  - "delivery"
+status: "draft"
+generated:
+  by: "process:ai-sdlc"
+  at: "2026-07-27T12:13:45Z"
 artifact_metadata:
   schema: "ai-sdlc-artifact-metadata/v1"
   feature: "013-role-guided-installable-flow"
@@ -163,13 +174,21 @@ artifact_metadata:
 - Evidence is the accepted plan, inspected repository contracts, and completed upstream Feature 013 artifacts.
 
 ## Decision Coverage
-- DEC-001 covers all material architecture and interaction choices.
+- DEC-001 and DEC-003 cover all material architecture, interaction, artifact portability, trust, bundle, index, and migration choices.
 - Evidence is the accepted plan, inspected repository contracts, and completed upstream Feature 013 artifacts.
 
 ## Implementation Handoff
-- Create the SDD package, implement runtime first, then selectors/flow/config/docs, and finish with independent validation.
+- Extend the SDD package, implement the shared OKF runtime first, migrate every durable writer and hard-cut path, migrate Feature 013 as complete bundles, then finish with independent validation.
 - Evidence is the accepted plan, inspected repository contracts, and completed upstream Feature 013 artifacts.
 
 ## Final Verdict
-- Delivery package is ready for full-flow SDD and implementation.
+- Delivery package is ready for full-flow SDD and implementation. Release handoff remains conditional on AC-017 through AC-022.
 - Evidence is the accepted plan, inspected repository contracts, and completed upstream Feature 013 artifacts.
+
+## DEC-003 Handoff Gate
+
+- Engineering owns one explicit concept-profile registry and must not let individual generators invent OKF types or duplicate frontmatter logic.
+- QA owns independent bundle validation, provenance/trust negative cases, old-path absence, and byte-identical migration-failure evidence.
+- Documentation owns one reusable OKF artifact contract referenced by applicable skill steps; router files stay concise.
+- The human workspace `specs-index.md` projections are removed, while per-bundle `index.md` and compact TOON routing remain.
+- No compatibility reader, copy, symlink, or fallback may preserve the root `project-context.md` path after migration.

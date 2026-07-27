@@ -42,6 +42,7 @@ class StateMachineTests(unittest.TestCase):
         """Serialized TOON should parse back into equivalent core fields."""
         state = sm.initial_state("demo-feature", "refinement", "discovery")
         text = sm.to_toon(state)
+        self.assertFalse(any(line.endswith(" ") for line in text.splitlines()))
         parsed = sm.from_toon(text)
         self.assertEqual(parsed["feature"], "demo-feature")
         self.assertEqual(parsed["current_stage"], "discovery")
@@ -112,6 +113,32 @@ class StateMachineTests(unittest.TestCase):
             )
             self.assertEqual(
                 sm.completion_artifact_errors(state, "ai-sdlc-working-backwards-discovery", relative.as_posix(), "full", root),
+                [],
+            )
+
+    def test_full_completion_accepts_okf_stable_status(self) -> None:
+        """OKF's stable status should count as finalized lifecycle evidence."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            state = sm.initial_state("demo-feature", "refinement", "discovery")
+            relative = Path("specs-refiniment/demo-feature/discovery.md")
+            artifact = root / relative
+            artifact.parent.mkdir(parents=True)
+            artifact.write_text(
+                '---\ntype: "ai-sdlc.discovery"\nstatus: "stable"\n'
+                'artifact_metadata:\n  schema: "ai-sdlc-artifact-metadata/v1"\n'
+                '  status: "approved"\n---\n# Discovery\n\n'
+                'Reviewed customer problem and decision evidence.\n',
+                encoding="utf-8",
+            )
+            self.assertEqual(
+                sm.completion_artifact_errors(
+                    state,
+                    "ai-sdlc-working-backwards-discovery",
+                    relative.as_posix(),
+                    "full",
+                    root,
+                ),
                 [],
             )
 

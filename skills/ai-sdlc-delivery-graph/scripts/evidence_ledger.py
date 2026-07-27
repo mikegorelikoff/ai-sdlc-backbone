@@ -19,6 +19,7 @@ from delivery_graph import build_graph, digest, resolve
 _SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
 sys.path.insert(0, str(_SHARED))
 from ai_sdlc_toon import encode_toon
+from ai_sdlc_okf import migrate_concept_text, write_bundle_indexes
 
 
 SOURCE_SCHEMA = "ai-sdlc-evidence-source/v1"
@@ -293,6 +294,7 @@ def main() -> int:
     parser.add_argument("--decision-ref")
     parser.add_argument("--assumption")
     parser.add_argument("--state-workspace", choices=("refinement", "implementation"))
+    parser.add_argument("--generated-by")
     args = parser.parse_args()
     if args.begin_state or args.complete_state:
         print("ERROR: evidence indexing cannot mutate feature lifecycle state")
@@ -311,10 +313,16 @@ def main() -> int:
         for error in errors:
             print(f"ERROR: {error}")
         return 1
+    ledger_markdown = migrate_concept_text(
+        markdown(ledger),
+        profile_key="evidence-ledger.md",
+        generated_by_override=args.generated_by,
+    )
     if args.write:
         atomic_write(repository / "_ai_sdlc/evidence-ledger.json", json.dumps(ledger, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
         atomic_write(repository / "_ai_sdlc/evidence-ledger.toon", encode_toon(ledger))
-        atomic_write(repository / "_ai_sdlc/evidence-ledger.md", markdown(ledger))
+        atomic_write(repository / "_ai_sdlc/evidence-ledger.md", ledger_markdown)
+        write_bundle_indexes(repository / "_ai_sdlc")
     if args.coverage:
         value = {"schema": "ai-sdlc-evidence-coverage/v1", "ledger_fingerprint": ledger["fingerprint"], "coverage": ledger["coverage"]}
     elif args.stale:
@@ -326,7 +334,7 @@ def main() -> int:
     elif args.format == "toon":
         print(encode_toon(value), end="")
     elif value.get("schema") == LEDGER_SCHEMA:
-        print(markdown(value), end="")
+        print(ledger_markdown, end="")
     else:
         print("```json")
         print(json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False))

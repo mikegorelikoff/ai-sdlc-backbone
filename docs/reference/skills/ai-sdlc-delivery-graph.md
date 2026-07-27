@@ -182,7 +182,7 @@ The downstream consumer rechecks artifacts and freshness; it does not trust a pr
 
 ??? info "Specs index"
 
-    - Read canonical `_ai_sdlc/specs-index.toon` first and use `specs-index.md` for
+    - Read canonical `_ai_sdlc/specs-index.toon` first and use feature-local `index.md` for
       human discovery across implementation and refinement workspaces.
     - Scope short trace IDs by feature directory to prevent cross-feature identity
       collisions.

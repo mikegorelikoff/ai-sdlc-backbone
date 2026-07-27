@@ -1,4 +1,15 @@
 ---
+type: "ai-sdlc.release-slicing"
+title: "Release Slicing and Readiness"
+description: "MVP and release slices, sequencing, and backlog readiness."
+tags:
+  - "ai-sdlc"
+  - "planning"
+  - "release"
+status: "draft"
+generated:
+  by: "process:ai-sdlc"
+  at: "2026-07-27T12:13:45Z"
 artifact_metadata:
   schema: "ai-sdlc-artifact-metadata/v1"
   feature: "013-role-guided-installable-flow"

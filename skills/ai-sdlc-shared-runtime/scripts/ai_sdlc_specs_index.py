@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Build compact TOON and human Markdown indexes for spec workspaces.
+"""Build compact TOON workspace routing and OKF feature-bundle indexes.
 
 The index lets an agent discover feature folders, current lifecycle state, and
-artifact metadata without spending tokens opening every Markdown file. The same
-scan also writes a readable Markdown table for humans who want to browse the
-workspace directly.
+artifact metadata without spending tokens opening every Markdown file. Humans
+browse each feature through its reserved progressive ``index.md``.
 """
 
 from __future__ import annotations
@@ -27,12 +26,10 @@ from ai_sdlc_paths import (
     write_lock,
 )
 from ai_sdlc_state_machine import csv_escape, from_toon
+from ai_sdlc_okf import RESERVED_MARKDOWN, concept_metadata, write_bundle_indexes
 
 
 WORKSPACE_ROOTS = ("specs-refiniment", "specs")
-INDEX_MD = "specs-index.md"
-
-
 @dataclass(frozen=True)
 class ArtifactEntry:
     """Normalized metadata for one Markdown artifact."""
@@ -47,6 +44,10 @@ class ArtifactEntry:
     updated_at: str
     trace_ids: tuple[str, ...]
     metatags: tuple[str, ...]
+    concept_type: str
+    title: str
+    generated_by: str
+    verified: bool
 
 
 @dataclass(frozen=True)
@@ -138,6 +139,7 @@ def artifact_entry(path: Path, workspace_root: Path, feature: str) -> ArtifactEn
     """Build one artifact index row from Markdown metadata plus fallbacks."""
     text = path.read_text(encoding="utf-8", errors="replace")
     metadata = parse_artifact_metadata(text)
+    portable = concept_metadata(text)
     rel_path = path.resolve().relative_to(workspace_root.parent.resolve()).as_posix()
     workspace = str(metadata.get("workspace") or workspace_for_root(workspace_root))
     tags = tuple(metadata.get("metatags", ())) or ("unindexed",)
@@ -153,6 +155,10 @@ def artifact_entry(path: Path, workspace_root: Path, feature: str) -> ArtifactEn
         updated_at=str(metadata.get("updated_at") or ""),
         trace_ids=trace_ids,
         metatags=tags,
+        concept_type=portable["type"],
+        title=portable["title"],
+        generated_by=portable["generated_by"],
+        verified="\nverified:" in text[: text.find("\n---", 4) if text.startswith("---\n") else 0],
     )
 
 
@@ -194,12 +200,30 @@ def scan_workspace(workspace_root: Path) -> tuple[list[FeatureEntry], list[Artif
     ):
         feature_artifacts = [
             artifact_entry(path, workspace_root, feature_dir.name)
-            for path in sorted(feature_dir.glob("*.md"))
-            if path.name not in {INDEX_MD, INDEX_TOON}
+            for path in sorted(feature_dir.rglob("*.md"))
+            if path.name not in RESERVED_MARKDOWN and path.name != INDEX_TOON
         ]
         artifacts.extend(feature_artifacts)
         features.append(feature_entry(feature_dir, workspace_root, feature_artifacts))
     return features, artifacts
+
+
+def is_okf_feature_bundle(feature_dir: Path) -> bool:
+    """Return true only when every existing concept already has an OKF type."""
+    concepts = [
+        path
+        for path in feature_dir.rglob("*.md")
+        if path.name not in RESERVED_MARKDOWN
+    ]
+    if not concepts:
+        return False
+    try:
+        return all(
+            bool(concept_metadata(path.read_text(encoding="utf-8", errors="replace"))["type"])
+            for path in concepts
+        )
+    except ValueError:
+        return False
 
 
 def join_values(values: tuple[str, ...]) -> str:
@@ -210,6 +234,7 @@ def join_values(values: tuple[str, ...]) -> str:
 def render_toon(workspace_root: Path, features: list[FeatureEntry], artifacts: list[ArtifactEntry]) -> str:
     """Render a compact LLM-oriented specs index in TOON."""
     lines = [
+        "schema: ai-sdlc-specs-index/v2",
         f"workspace: {workspace_for_root(workspace_root)}",
         f"root: {workspace_root.resolve().relative_to(workspace_root.parent.resolve()).as_posix()}",
         f"updated_at: {date.today().isoformat()}",
@@ -236,7 +261,10 @@ def render_toon(workspace_root: Path, features: list[FeatureEntry], artifacts: l
             )
         )
     lines.append("")
-    lines.append("artifacts[%d]{feature,path,artifact,skill,status,flow_mode,updated_at,trace_ids,metatags}:" % len(artifacts))
+    lines.append(
+        "artifacts[%d]{feature,path,artifact,type,title,status,skill,flow_mode,updated_at,generated_by,verified,trace_ids,metatags}:"
+        % len(artifacts)
+    )
     for artifact in artifacts:
         lines.append(
             "  "
@@ -246,10 +274,14 @@ def render_toon(workspace_root: Path, features: list[FeatureEntry], artifacts: l
                     artifact.feature,
                     artifact.path,
                     artifact.artifact,
-                    artifact.skill,
+                    artifact.concept_type,
+                    artifact.title,
                     artifact.status,
+                    artifact.skill,
                     artifact.flow_mode,
                     artifact.updated_at,
+                    artifact.generated_by,
+                    str(artifact.verified).lower(),
                     join_values(artifact.trace_ids),
                     join_values(artifact.metatags),
                 )
@@ -258,75 +290,8 @@ def render_toon(workspace_root: Path, features: list[FeatureEntry], artifacts: l
     return "\n".join(lines).rstrip() + "\n"
 
 
-def md_cell(value: object) -> str:
-    """Escape Markdown table cell separators."""
-    return str(value).replace("|", "\\|")
-
-
-def render_markdown(workspace_root: Path, features: list[FeatureEntry], artifacts: list[ArtifactEntry]) -> str:
-    """Render a human-readable specs index in Markdown."""
-    lines = [
-        "# Specs Index",
-        "",
-        f"- Workspace: `{workspace_for_root(workspace_root)}`",
-        f"- Root: `{workspace_root.resolve().relative_to(workspace_root.parent.resolve()).as_posix()}`",
-        f"- Updated: `{date.today().isoformat()}`",
-        "",
-        "## Feature Summary",
-        "",
-        "| Feature | Current Stage | Active Skill | Flow | Artifacts | Decision Log | State | Tags |",
-        "| --- | --- | --- | --- | ---: | --- | --- | --- |",
-    ]
-    for feature in features:
-        lines.append(
-            "| "
-            + " | ".join(
-                md_cell(value)
-                for value in (
-                    feature.feature,
-                    feature.current_stage or "-",
-                    feature.active_skill or "-",
-                    feature.flow_mode or "-",
-                    feature.artifact_count,
-                    f"`{feature.decision_log}`",
-                    f"`{feature.state_file}`",
-                    join_values(feature.metatags) or "-",
-                )
-            )
-            + " |"
-        )
-    lines.extend(
-        [
-            "",
-            "## Artifact Index",
-            "",
-            "| Feature | Artifact | Status | Skill | Flow | Updated | Trace IDs | Tags |",
-            "| --- | --- | --- | --- | --- | --- | --- | --- |",
-        ]
-    )
-    for artifact in artifacts:
-        lines.append(
-            "| "
-            + " | ".join(
-                md_cell(value)
-                for value in (
-                    artifact.feature,
-                    f"`{artifact.path}`",
-                    artifact.status,
-                    artifact.skill,
-                    artifact.flow_mode,
-                    artifact.updated_at or "-",
-                    join_values(artifact.trace_ids) or "-",
-                    join_values(artifact.metatags) or "-",
-                )
-            )
-            + " |"
-        )
-    return "\n".join(lines).rstrip() + "\n"
-
-
-def write_workspace_index(workspace_root: Path) -> tuple[Path, Path]:
-    """Write TOON and Markdown indexes for one workspace root."""
+def write_workspace_index(workspace_root: Path) -> tuple[Path, tuple[Path, ...]]:
+    """Write the TOON router and every feature bundle's progressive indexes."""
     from ai_sdlc_migrate import migrate_workspace
 
     root = authority_root(workspace_root)
@@ -334,15 +299,21 @@ def write_workspace_index(workspace_root: Path) -> tuple[Path, Path]:
     workspace_root = ensure_directory(root, workspace_root)
     migrate_workspace(root, workspace_for_root(workspace_root), apply=True)
     toon_path = index_toon_path(workspace_root)
-    md_path = workspace_root / INDEX_MD
+    index_paths: list[Path] = []
     with write_lock(workspace_root / INTERNAL_DIR):
         features, artifacts = scan_workspace(workspace_root)
         atomic_write_text(toon_path, render_toon(workspace_root, features, artifacts))
-        atomic_write_text(md_path, render_markdown(workspace_root, features, artifacts))
-    return toon_path, md_path
+        for feature_dir in sorted(
+            path for path in workspace_root.iterdir() if path.is_dir() and path.name != INTERNAL_DIR
+        ):
+            if is_okf_feature_bundle(feature_dir):
+                index_paths.extend(write_bundle_indexes(feature_dir))
+    return toon_path, tuple(index_paths)
 
 
-def write_indexes_for_roots(roots: list[Path] | None = None) -> list[tuple[Path, Path]]:
+def write_indexes_for_roots(
+    roots: list[Path] | None = None,
+) -> list[tuple[Path, tuple[Path, ...]]]:
     """Write indexes for every requested workspace root."""
     selected_roots = roots or [Path(root) for root in WORKSPACE_ROOTS]
     return [write_workspace_index(root) for root in selected_roots]
@@ -368,10 +339,11 @@ def main() -> int:
     else:
         roots = [Path(root) for root in WORKSPACE_ROOTS]
 
-    for toon_path, md_path in write_indexes_for_roots(roots):
+    for toon_path, index_paths in write_indexes_for_roots(roots):
         print(f"Wrote {toon_path}")
         if args.full_flow:
-            print(f"Wrote {md_path}")
+            for index_path in index_paths:
+                print(f"Wrote {index_path}")
     return 0
 
 

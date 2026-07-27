@@ -18,6 +18,7 @@ from typing import Any
 _SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
 sys.path.insert(0, str(_SHARED))
 from ai_sdlc_toon import encode_toon
+from ai_sdlc_okf import migrate_concept_text, write_bundle_indexes
 
 
 NODE_SCHEMA = "ai-sdlc-delivery-node/v1"
@@ -145,7 +146,7 @@ class Builder:
                 # Workspace indexes are generated projections containing IDs
                 # copied from many features. Indexing them as a synthetic
                 # `repository` feature creates false trace nodes and gaps.
-                if "_ai_sdlc" in path.parts or path.parent == root and path.name == "specs-index.md":
+                if "_ai_sdlc" in path.parts or path.name in {"index.md", "log.md"}:
                     continue
                 relative = path.relative_to(self.repository).as_posix()
                 raw = path.read_text(encoding="utf-8", errors="replace")
@@ -390,6 +391,7 @@ def main() -> int:
     parser.add_argument("--decision-ref")
     parser.add_argument("--assumption")
     parser.add_argument("--state-workspace", choices=("refinement", "implementation"))
+    parser.add_argument("--generated-by")
     args = parser.parse_args()
     if args.begin_state or args.complete_state:
         print("ERROR: delivery graph generation cannot mutate feature lifecycle state")
@@ -402,10 +404,16 @@ def main() -> int:
         print(f"ERROR: repository does not exist: {repository}")
         return 1
     graph = build_graph(repository)
+    graph_markdown = migrate_concept_text(
+        markdown_graph(graph),
+        profile_key="delivery-graph.md",
+        generated_by_override=args.generated_by,
+    )
     if args.write:
         atomic_write(repository / "_ai_sdlc/delivery-graph.json", json.dumps(graph, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
         atomic_write(repository / "_ai_sdlc/delivery-graph.toon", encode_toon(graph))
-        atomic_write(repository / "_ai_sdlc/delivery-graph.md", markdown_graph(graph))
+        atomic_write(repository / "_ai_sdlc/delivery-graph.md", graph_markdown)
+        write_bundle_indexes(repository / "_ai_sdlc")
     errors: list[str] = []
     if args.trace:
         value, errors = trace_path(graph, args.trace, args.to)
@@ -419,7 +427,10 @@ def main() -> int:
         for error in errors:
             print(f"ERROR: {error}")
         return 1
-    print(render(value, args.format), end="")
+    if args.format == "markdown" and value.get("schema") == GRAPH_SCHEMA:
+        print(graph_markdown, end="")
+    else:
+        print(render(value, args.format), end="")
     return 0
 
 

@@ -58,6 +58,7 @@ class ChangeSetTests(unittest.TestCase):
             required = {
                 "proposal.md", "design.md", "tasks.md", "deltas/index.md",
                 "evidence/index.md", "_ai_sdlc/change-set.json", "_ai_sdlc/change-set.toon",
+                "index.md",
             }
             self.assertEqual(required, {path.relative_to(workspace).as_posix() for path in workspace.rglob("*") if path.is_file()})
             self.assertEqual(target.read_bytes(), before)

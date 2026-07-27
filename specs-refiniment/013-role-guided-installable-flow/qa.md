@@ -1,4 +1,15 @@
 ---
+type: "ai-sdlc.qa-plan"
+title: "QA Plan"
+description: "Acceptance, regression, risk, and manual validation plan."
+tags:
+  - "ai-sdlc"
+  - "qa"
+  - "testing"
+status: "draft"
+generated:
+  by: "process:ai-sdlc"
+  at: "2026-07-27T12:13:45Z"
 artifact_metadata:
   schema: "ai-sdlc-artifact-metadata/v1"
   feature: "013-role-guided-installable-flow"

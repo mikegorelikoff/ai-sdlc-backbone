@@ -88,7 +88,7 @@ CONTROL_PLANE_CONTRACT = (
     ("delivery_graph", "ai-sdlc-delivery-graph", "delivery-graph.{toon,json,md}"),
     ("evidence_freshness", "ai-sdlc-delivery-graph", "evidence-ledger.{toon,json,md}"),
     ("policy_waiver", "ai-sdlc-policy", "policy-resolution.{toon,json}"),
-    ("context_pack", "ai-sdlc-project-context", "project-context.md"),
+    ("context_pack", "ai-sdlc-project-context", "_ai_sdlc/context/project-context.md"),
     ("runtime", "ai-sdlc-runtime", "journal.jsonl"),
     ("workflow_plan", "ai-sdlc-workflow", "plan.{toon,json,md}"),
     ("host_adapter", "ai-sdlc-host-adapter", "negotiation.{toon,json,md}"),

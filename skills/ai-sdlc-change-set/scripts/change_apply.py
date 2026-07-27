@@ -86,7 +86,7 @@ def load_approval(path: Path, change_id: str, preview: dict[str, Any]) -> tuple[
 def update_metadata(workspace: Path, status: str, updated_at: str) -> None:
     """Keep required human artifact lifecycle metadata aligned."""
     for name, relative in REQUIRED_ARTIFACTS.items():
-        if name == "record":
+        if name in {"record", "deltas", "evidence"}:
             continue
         path = workspace / relative
         text = path.read_text(encoding="utf-8")

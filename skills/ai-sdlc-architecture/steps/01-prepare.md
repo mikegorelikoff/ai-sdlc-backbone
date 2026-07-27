@@ -67,9 +67,9 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 ## 0.7 Specs Index
 
 - Read `specs/_ai_sdlc/specs-index.toon` and feature state before broad reads.
-- Refresh `specs/specs-index.md` only after a durable architecture write.
+- Refresh `specs/<feature-name>/index.md` only after a durable architecture write.
 - Do not alter `specs-refiniment/_ai_sdlc/specs-index.toon` or
-  `specs-refiniment/specs-index.md` for implementation-owned architecture.
+  `specs-refiniment/<feature-name>/index.md` for implementation-owned architecture.
 
 ## Exit
 

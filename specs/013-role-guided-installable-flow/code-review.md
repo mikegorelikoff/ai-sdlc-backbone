@@ -1,4 +1,15 @@
 ---
+type: "ai-sdlc.code-review"
+title: "Code Review"
+description: "Review findings, requirement alignment, and residual risk."
+tags:
+  - "ai-sdlc"
+  - "review"
+  - "code"
+status: "stable"
+generated:
+  by: "process:ai-sdlc"
+  at: "2026-07-27T12:13:45Z"
 artifact_metadata:
   schema: "ai-sdlc-artifact-metadata/v1"
   feature: "013-role-guided-installable-flow"
@@ -114,3 +125,22 @@ neutral role contracts with one active owner, loads bounded step/reference
 context just in time, validates configuration and selectors fail closed, and
 passes the ten-command validation matrix. Every installable skill now exposes a
 concise router backed by validated, skill-owned procedural steps.
+
+## OKF v0.2 Independent Review Addendum
+
+The OKF-expanded diff was reviewed independently against REQ-012 through
+REQ-015, AC-017 through AC-022, and TC-021 through TC-026. No unresolved
+finding remains.
+
+| Severity | Evidence | Independent finding | Resolution |
+| --- | --- | --- | --- |
+| Medium | `change_set.atomic_create`; AC-021/AC-022 | Root and nested bundle indexes were initially written after the temporary change workspace had been promoted, so an index failure could expose an incomplete new workspace. | Indexes are now generated inside the temporary workspace before the single directory promotion. Change-set apply/archive regressions pass. |
+| Medium | docs validation branch contract; AC-020 | The documentation validator still asserted the removed root project-context route even after runtime readers and writers were hard-cut. | The validator and control-plane contract now require `_ai_sdlc/context/project-context.md`; the full docs suite passes. |
+| Low | legacy workspace indexing; AC-022 | A workspace-wide index refresh could have created bundle indexes in untouched legacy features. | Workspace routing writes progressive indexes only for already conformant feature bundles; first durable feature writes remain responsible for complete preflight migration. |
+
+The post-fix review verified explicit concept profiles, honest generated/verified
+semantics, unknown-extension preservation, reserved-index rules, external
+snapshot evidence-body checks, removal of human workspace indexes, all
+specialized/runtime writer families, and both Feature 013 bundles. The current
+11-command receipt has zero failures; the shared runtime suite reports 132
+passing tests.

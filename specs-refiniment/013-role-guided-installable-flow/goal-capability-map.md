@@ -1,4 +1,14 @@
 ---
+type: "ai-sdlc.goal-capability-map"
+title: "Goal, Capability, and Epic Map"
+description: "Business goals mapped to roles, capabilities, and outcome-oriented epics."
+tags:
+  - "ai-sdlc"
+  - "planning"
+status: "draft"
+generated:
+  by: "process:ai-sdlc"
+  at: "2026-07-27T12:13:45Z"
 artifact_metadata:
   schema: "ai-sdlc-artifact-metadata/v1"
   feature: "013-role-guided-installable-flow"

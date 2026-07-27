@@ -1,6 +1,6 @@
 feature: 013-role-guided-installable-flow
 workspace: implementation
-current_stage: code_review
+current_stage: conventional_commit
 active_skill:
 flow_mode: full
 updated_at: 2026-07-27
@@ -31,8 +31,8 @@ stages[26]{id,skill,status,workspace,artifacts,decision_ref}:
   validation,ai-sdlc-validation,done,implementation,specs/013-role-guided-installable-flow/validation.md,DEC-001
   code_review,ai-sdlc-code-review,done,implementation,specs/013-role-guided-installable-flow/code-review.md,DEC-001
   security_testing,ai-sdlc-security-testing,not_started,implementation,security-review.md,
-  commit_prep,ai-sdlc-commit-prep,not_started,implementation,commit-readiness.md,
-  conventional_commit,ai-sdlc-conventional-commit,not_started,implementation,commit-message.md,
+  commit_prep,ai-sdlc-commit-prep,done,implementation,specs/013-role-guided-installable-flow/commit-readiness.md,DEC-003
+  conventional_commit,ai-sdlc-conventional-commit,done,implementation,specs/013-role-guided-installable-flow/commit-message.md,DEC-003
   approvals_sandbox,ai-sdlc-approvals-sandbox,not_applicable,utility,approval-plan.md,
 
 skips[0]{stage,reason,decision_ref,flow_mode}:

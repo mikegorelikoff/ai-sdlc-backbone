@@ -16,7 +16,7 @@ from ai_sdlc_paths import (
     legacy_state_path,
     state_path,
 )
-from ai_sdlc_specs_index import parse_artifact_metadata
+from ai_sdlc_specs_index import is_okf_feature_bundle, parse_artifact_metadata
 from ai_sdlc_state_machine import STAGES, from_toon
 
 
@@ -165,7 +165,7 @@ def inspect_package(root: Path, feature: str, gate: str = "default") -> tuple[li
         )
 
     toon_index = index_toon_path(workspace_root)
-    markdown_index = workspace_root / "specs-index.md"
+    bundle_index = feature_root / "index.md"
     if not toon_index.is_file():
         issues.append(
             Issue(
@@ -176,17 +176,17 @@ def inspect_package(root: Path, feature: str, gate: str = "default") -> tuple[li
                 "canonical TOON index is missing",
             )
         )
-    if not markdown_index.is_file():
+    if is_okf_feature_bundle(feature_root) and not bundle_index.is_file():
         issues.append(
             Issue(
                 "missing_index",
                 "",
                 "",
-                markdown_index.relative_to(root).as_posix(),
-                "Markdown index is missing",
+                bundle_index.relative_to(root).as_posix(),
+                "OKF bundle index is missing",
             )
         )
-    for index in (toon_index, markdown_index):
+    for index in (toon_index,):
         if not index.is_file():
             continue
         index_text = index.read_text(encoding="utf-8", errors="replace")

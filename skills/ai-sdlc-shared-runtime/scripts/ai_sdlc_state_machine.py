@@ -109,7 +109,7 @@ def to_toon(state: dict[str, object]) -> str:
         f"feature: {state.get('feature', '')}",
         f"workspace: {state.get('workspace', '')}",
         f"current_stage: {state.get('current_stage', '')}",
-        f"active_skill: {state.get('active_skill', '')}",
+        f"active_skill: {state.get('active_skill', '')}".rstrip(),
         f"flow_mode: {state.get('flow_mode', 'default')}",
         f"updated_at: {state.get('updated_at', '')}",
         f"decision_log: {state.get('decision_log', '')}",
@@ -332,7 +332,7 @@ def completion_artifact_errors(
     if not normalized.exists():
         return [f"completion artifact does not exist: {artifacts}"]
 
-    finalized_statuses = {"review", "approved", "validated"}
+    finalized_statuses = {"review", "approved", "validated", "stable"}
 
     def finalized_markdown(path: Path) -> list[str]:
         if not path.is_file():

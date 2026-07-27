@@ -8,12 +8,12 @@
         "skills.ai-sdlc-flow.tests.test_flow",
         "-v"
       ],
-      "duration_ms": 988,
+      "duration_ms": 934,
       "exit_code": 0,
       "id": "flow-v2",
       "output_limited": false,
       "stderr_bytes": 3135,
-      "stderr_sha256": "80fbed0f6f9ce557a126f3f1a07814e5bbfb489c921d2c59569136269129fd7f",
+      "stderr_sha256": "2db17fc4bbc1adf1b7246f93499b962ba3b9ea0cde534098550d30e14032a6a7",
       "stdout_bytes": 0,
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "trace_ids": [
@@ -38,12 +38,12 @@
         "test*.py",
         "-v"
       ],
-      "duration_ms": 59008,
+      "duration_ms": 59668,
       "exit_code": 0,
       "id": "runtime-suite",
       "output_limited": false,
-      "stderr_bytes": 16329,
-      "stderr_sha256": "caf98d37433b92a556cab845e6b5378ad9f00a2feb9fc71598e01bf5a02f91ae",
+      "stderr_bytes": 17180,
+      "stderr_sha256": "dd730ab5931fb72657e14d6ba6cc2aae1d03088a0763024c75d189978750b9b2",
       "stdout_bytes": 0,
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "trace_ids": [
@@ -54,7 +54,35 @@
         "AC-013",
         "AC-014",
         "AC-015",
-        "AC-016"
+        "AC-016",
+        "AC-017",
+        "AC-018",
+        "AC-019",
+        "AC-020",
+        "AC-021",
+        "AC-022"
+      ]
+    },
+    {
+      "argv": [
+        "python3",
+        "skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_okf.py",
+        "--check",
+        "specs/013-role-guided-installable-flow",
+        "specs-refiniment/013-role-guided-installable-flow"
+      ],
+      "duration_ms": 132,
+      "exit_code": 0,
+      "id": "okf-bundles",
+      "output_limited": false,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 205,
+      "stdout_sha256": "3fa568e83caaecfd0c8a0a63879b856be62431d6a989469eda92d4abe0ce3793",
+      "trace_ids": [
+        "AC-017",
+        "AC-020",
+        "AC-022"
       ]
     },
     {
@@ -67,7 +95,7 @@
         "--format",
         "toon"
       ],
-      "duration_ms": 73,
+      "duration_ms": 75,
       "exit_code": 0,
       "id": "skill-steps",
       "output_limited": false,
@@ -89,7 +117,7 @@
         "--mode",
         "emulated"
       ],
-      "duration_ms": 5787,
+      "duration_ms": 4894,
       "exit_code": 0,
       "id": "install-full",
       "output_limited": false,
@@ -108,7 +136,7 @@
         "--mode",
         "emulated-selective"
       ],
-      "duration_ms": 338,
+      "duration_ms": 396,
       "exit_code": 0,
       "id": "install-selective",
       "output_limited": false,
@@ -127,14 +155,14 @@
         "--mode",
         "emulated-global"
       ],
-      "duration_ms": 395,
+      "duration_ms": 356,
       "exit_code": 0,
       "id": "install-global",
       "output_limited": false,
       "stderr_bytes": 0,
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stdout_bytes": 109,
-      "stdout_sha256": "9d0fc91415ef0effcabf648f88df9c495ed0a6f103a7ea237ed6d48d7d3b9a44",
+      "stdout_sha256": "4c67e367cef52b40381a09aaf6ec51c923c540c01e6a2e23732c9110b89398ef",
       "trace_ids": [
         "AC-002"
       ]
@@ -144,14 +172,14 @@
         "python3",
         "docs/scripts/validate_docs.py"
       ],
-      "duration_ms": 1636,
+      "duration_ms": 1545,
       "exit_code": 0,
       "id": "docs",
       "output_limited": false,
       "stderr_bytes": 0,
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stdout_bytes": 109,
-      "stdout_sha256": "502049346d8e4a602c89de49f1a988f3446b64c16f9eee0ce5e248fc74389eac",
+      "stdout_sha256": "8993036e2f39b9615f15dff451a1529debd238c3f5face8383dee8a9ff7bef65",
       "trace_ids": [
         "AC-011",
         "AC-012"
@@ -165,7 +193,7 @@
         "--format",
         "toon"
       ],
-      "duration_ms": 131,
+      "duration_ms": 141,
       "exit_code": 0,
       "id": "compatibility",
       "output_limited": false,
@@ -185,7 +213,7 @@
         "specs/013-role-guided-installable-flow",
         "--full-flow"
       ],
-      "duration_ms": 73,
+      "duration_ms": 76,
       "exit_code": 0,
       "id": "sdd",
       "output_limited": false,
@@ -203,7 +231,7 @@
         "diff",
         "--check"
       ],
-      "duration_ms": 20,
+      "duration_ms": 21,
       "exit_code": 0,
       "id": "diff-hygiene",
       "output_limited": false,
@@ -221,11 +249,11 @@
     "python": "3.9.6"
   },
   "evidence_trust": "local-structural-not-authenticated",
-  "executed_at": "2026-07-27T10:48:17.280285Z",
+  "executed_at": "2026-07-27T12:49:16.203204Z",
   "plan_path": "specs/013-role-guided-installable-flow/_ai_sdlc/validation-plan.json",
-  "plan_sha256": "7c8d498998fafdc7ff0eea6dbd824c0d69993bb7241ee7e913cf629b68976b66",
-  "receipt_fingerprint": "33d362b4629d3ef366380de7be7d230ace2b39f402fe5a5eb79ae9358e220bf0",
-  "revision": "9629b6f07285eab3b448a3e40b83559a277aedb6",
+  "plan_sha256": "2680dd9c4070d4930f7be3e9e00cace02019c8f4b359b7c04701192851cff983",
+  "receipt_fingerprint": "85c9132909a961b277a0a0c63ddc216d09cacc871a90d2f3f46612b23d49b3b6",
+  "revision": "cec0466c041f9090b0e48ef5254098bedce18224",
   "schema": "ai-sdlc-validation-receipt/v1",
-  "workspace_fingerprint": "deaef93fb2aa7b931d77b1c29c3ceb5bd2bfbb28abf6a7828299347964536d70"
+  "workspace_fingerprint": "f5e88b8f1bdb74319c43442276ca870dce9f2c61fc324c6dbd22f689fbdf8f2c"
 }

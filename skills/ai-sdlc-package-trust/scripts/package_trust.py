@@ -15,6 +15,7 @@ _SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scri
 sys.path.insert(0, str(_SHARED))
 from ai_sdlc_toon import encode_toon
 from ai_sdlc_safe_io import atomic_write_text
+from ai_sdlc_okf import migrate_concept_text, write_bundle_indexes
 
 PACKAGE_SCHEMA = "ai-sdlc-package/v1"
 DECISION_SCHEMA = "ai-sdlc-package-trust-decision/v1"
@@ -100,7 +101,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("repository", type=Path); parser.add_argument("--package-root", type=Path, required=True); parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--allowed-origin", action="append", default=[]); parser.add_argument("--allowed-capability", action="append", default=[]); parser.add_argument("--harness-api", default="1.0.0"); parser.add_argument("--require-provenance", action="store_true"); parser.add_argument("--write", action="store_true"); parser.add_argument("--format", choices=("toon", "json", "markdown"), default="toon")
-    parser.add_argument("--quick-flow", action="store_true"); parser.add_argument("--full-flow", action="store_true"); parser.add_argument("--feature", default="<feature-name>"); parser.add_argument("--state-check", action="store_true"); parser.add_argument("--begin-state", action="store_true"); parser.add_argument("--complete-state", action="store_true"); parser.add_argument("--decision-ref"); parser.add_argument("--assumption"); parser.add_argument("--state-workspace", choices=("refinement", "implementation"))
+    parser.add_argument("--quick-flow", action="store_true"); parser.add_argument("--full-flow", action="store_true"); parser.add_argument("--feature", default="<feature-name>"); parser.add_argument("--state-check", action="store_true"); parser.add_argument("--begin-state", action="store_true"); parser.add_argument("--complete-state", action="store_true"); parser.add_argument("--decision-ref"); parser.add_argument("--assumption"); parser.add_argument("--state-workspace", choices=("refinement", "implementation")); parser.add_argument("--generated-by")
     args = parser.parse_args()
     if args.begin_state or args.complete_state: print("ERROR: package trust cannot mutate feature lifecycle state"); return 1
     repository, package_root = args.repository.resolve(), args.package_root.resolve()
@@ -113,12 +114,13 @@ def main() -> int:
         for error in errors: print(f"ERROR: {error}")
         return 1
     value = trust(package_root, manifest, set(args.allowed_origin), set(args.allowed_capability), active_api, args.require_provenance)
+    decision_markdown = migrate_concept_text(markdown(value), profile_key="package-trust-decision.md", generated_by_override=args.generated_by)
     if args.write:
         output = repository / f"_ai_sdlc/trust/{manifest['id']}/decision.json"
         try:
-            atomic_write(repository, output, json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) + "\n"); atomic_write(repository, output.with_suffix(".toon"), encode_toon(value)); atomic_write(repository, output.with_suffix(".md"), markdown(value))
+            atomic_write(repository, output, json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) + "\n"); atomic_write(repository, output.with_suffix(".toon"), encode_toon(value)); atomic_write(repository, output.with_suffix(".md"), decision_markdown); write_bundle_indexes(repository / "_ai_sdlc")
         except ValueError as exc:
             print(f"ERROR: {exc}"); return 1
-    print(json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) if args.format == "json" else markdown(value) if args.format == "markdown" else encode_toon(value), end="" if args.format != "json" else "\n")
+    print(json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) if args.format == "json" else decision_markdown if args.format == "markdown" else encode_toon(value), end="" if args.format != "json" else "\n")
     return 0 if value["decision"] == "allow" else 2
 if __name__ == "__main__": raise SystemExit(main())

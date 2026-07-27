@@ -329,6 +329,7 @@ def main() -> int:
     parser.add_argument("--artifact-status", default="draft")
     parser.add_argument("--artifact-owner", default="TBD")
     parser.add_argument("--artifact-tag", action="append", default=[])
+    parser.add_argument("--generated-by")
     add_state_arguments(parser)
     args = parser.parse_args()
 

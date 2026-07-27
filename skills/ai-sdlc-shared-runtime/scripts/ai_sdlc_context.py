@@ -266,7 +266,13 @@ def resolve_sources(
             for alias in aliases:
                 feature_dir = workspace_root / alias
                 if feature_dir.is_dir():
-                    candidates.extend(sorted(feature_dir.glob("*.md")))
+                    candidates.extend(
+                        sorted(
+                            path
+                            for path in feature_dir.glob("*.md")
+                            if path.name not in {"index.md", "log.md"}
+                        )
+                    )
 
     # State and decisions are cheap, high-value context even when body inputs
     # were supplied explicitly. Add only feature-local paths that exist.

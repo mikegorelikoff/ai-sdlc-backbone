@@ -1,4 +1,15 @@
 ---
+type: "ai-sdlc.qa-readiness"
+title: "QA Traceability and Readiness"
+description: "Requirements-to-test traceability and execution readiness."
+tags:
+  - "ai-sdlc"
+  - "qa"
+  - "review"
+status: "draft"
+generated:
+  by: "process:ai-sdlc"
+  at: "2026-07-27T12:13:45Z"
 artifact_metadata:
   schema: "ai-sdlc-artifact-metadata/v1"
   feature: "013-role-guided-installable-flow"
@@ -154,7 +165,7 @@ artifact_metadata:
 - Evidence is the accepted plan, inspected repository contracts, and completed upstream Feature 013 artifacts.
 
 ## Coverage Gaps
-- No accepted requirement is intentionally uncovered.
+- No accepted requirement is intentionally uncovered. DEC-003 remains execution-pending until the OKF writer-contract, bundle, hard-cut, and migration suites produce current evidence.
 - Evidence is the accepted plan, inspected repository contracts, and completed upstream Feature 013 artifacts.
 
 ## Execution Readiness Evidence
@@ -169,5 +180,18 @@ artifact_metadata:
 - Evidence is the accepted plan, inspected repository contracts, and completed upstream Feature 013 artifacts.
 
 ## QA Readiness Verdict
-- Ready for engineering after SDD traceability is generated.
+- Ready for engineering after SDD traceability is generated; release readiness remains pending until AC-017 through AC-022 pass.
 - Evidence is the accepted plan, inspected repository contracts, and completed upstream Feature 013 artifacts.
+
+## OKF Traceability and Exit Criteria
+
+| Requirement | Acceptance | Test coverage | Required evidence |
+| --- | --- | --- | --- |
+| REQ-012 | AC-017, AC-018 | TC-021, TC-022, TC-023 | Shared renderer/profile unit tests plus bundle conformance report |
+| REQ-013 | AC-017, AC-020, AC-021 | TC-022, TC-023, TC-025 | Deterministic root/nested indexes and TOON projection checks |
+| REQ-014 | AC-019 | TC-021, TC-025 | Provenance, verification, source, and extension preservation tests |
+| REQ-015 | AC-020, AC-022 | TC-024, TC-026 | Path hard-cut scan and atomic migration fixtures |
+
+- Exit requires zero non-reserved Markdown files without a non-empty top-level `type`.
+- Exit requires no runtime reference to `specs/specs-index.md`, `specs-refiniment/specs-index.md`, or root `project-context.md`.
+- Exit requires current full-flow validation and independent code-review evidence for the expanded diff.

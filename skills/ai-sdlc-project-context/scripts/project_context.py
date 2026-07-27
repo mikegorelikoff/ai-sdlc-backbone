@@ -17,6 +17,7 @@ from pathlib import Path
 _SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
 sys.path.insert(0, str(_SHARED))
 from ai_sdlc_safe_io import atomic_write_text
+from ai_sdlc_okf import migrate_concept_text, write_bundle_indexes
 
 
 SOURCE_NAMES = {"AGENTS.md", "README.md", "README", "Makefile", "go.mod", "package.json", "pyproject.toml", "Cargo.toml", "requirements.txt"}
@@ -176,6 +177,7 @@ def main() -> int:
     parser.add_argument("--decision-ref")
     parser.add_argument("--assumption")
     parser.add_argument("--state-workspace", choices=("refinement", "implementation"))
+    parser.add_argument("--generated-by")
     args = parser.parse_args()
     if args.begin_state or args.complete_state:
         print("ERROR: project context is cross-feature and cannot change lifecycle state")
@@ -183,19 +185,28 @@ def main() -> int:
     root = args.root.resolve()
     evidence, stack, commands, fingerprint = scan(root)
     rev = revision(root)
-    toon_path = root / "_ai_sdlc" / "project-context.toon"
+    toon_path = root / "_ai_sdlc" / "context" / "project-context.toon"
     old_rev, old_fingerprint = saved_identity(toon_path)
     drift = "not_saved" if not old_fingerprint else "yes" if (old_rev, old_fingerprint) != (rev, fingerprint) else "no"
     toon_output = render_toon(root, rev, fingerprint, stack, commands, evidence, drift)
-    markdown_output = render_markdown(root, rev, fingerprint, stack, commands, evidence, drift)
+    markdown_output = migrate_concept_text(
+        render_markdown(root, rev, fingerprint, stack, commands, evidence, drift),
+        profile_key="project-context.md",
+        generated_by_override=args.generated_by,
+    )
     if args.check:
         print(toon_output if args.format == "toon" else markdown_output, end="")
         return 1 if drift != "no" else 0
     if args.write:
         toon_output = render_toon(root, rev, fingerprint, stack, commands, evidence, "no")
-        markdown_output = render_markdown(root, rev, fingerprint, stack, commands, evidence, "no")
+        markdown_output = migrate_concept_text(
+            render_markdown(root, rev, fingerprint, stack, commands, evidence, "no"),
+            profile_key="project-context.md",
+            generated_by_override=args.generated_by,
+        )
         atomic_write(root, toon_path, toon_output)
-        atomic_write(root, root / "project-context.md", markdown_output)
+        atomic_write(root, root / "_ai_sdlc/context/project-context.md", markdown_output)
+        write_bundle_indexes(root / "_ai_sdlc")
     print(toon_output if args.format == "toon" else markdown_output, end="")
     return 0
 

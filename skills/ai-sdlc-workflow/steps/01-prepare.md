@@ -60,7 +60,7 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 ## 0.7 Specs Index
 
 - Read `_ai_sdlc/specs-index.toon` before resolving feature-local actions and
-  use `specs-index.md` for human review.
+  use feature-local `index.md` for human review.
 - Planning does not refresh either specs index.
 
 ## Exit

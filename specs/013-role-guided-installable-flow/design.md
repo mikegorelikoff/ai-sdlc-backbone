@@ -1,4 +1,15 @@
 ---
+type: "ai-sdlc.design"
+title: "Design"
+description: "Technical design, interfaces, architecture, and migration decisions."
+tags:
+  - "ai-sdlc"
+  - "sdd"
+  - "design"
+status: "draft"
+generated:
+  by: "process:ai-sdlc"
+  at: "2026-07-27T12:13:45Z"
 artifact_metadata:
   schema: "ai-sdlc-artifact-metadata/v1"
   feature: "013-role-guided-installable-flow"
@@ -76,3 +87,15 @@ Validate registry/schema fixtures, 44 manifest inventories, router line and aggr
 
 ## Migration Notes
 Mechanically preserve existing SKILL.md sections while relocating them into prepare, execute, and validate/handoff step files. Keep the Skill Card and a generated selector table in SKILL.md. Expand flow's six phase files rather than replacing them with generic steps. Add manifests after content exists, validate links and token caps, update docs generation to read the router plus ordered steps, then enable flow integration. No instruction may be deleted merely to satisfy the size budget.
+
+Migrate Feature 013 implementation and refinement directories as complete OKF bundles. Future durable writes migrate an entire legacy feature atomically; untouched historical features remain unchanged. Replace human workspace specs indexes with feature-local reserved indexes, keep the compact TOON router, and move project context to `_ai_sdlc/context/project-context.md` with no legacy runtime fallback.
+
+## OKF Artifact Architecture
+- `ai_sdlc_okf.py` is the standard-library authority for concept rendering, controlled frontmatter merge, provenance, status mapping, conformance checks, atomic bundle migration, and progressive indexes.
+- Artifact profiles own stable `type`, `title`, and `description`; generators must not infer a type at write time. Existing nested `artifact_metadata` remains an extension and preserves lifecycle status separately from OKF `status`.
+- `specs/<feature>/`, `specs-refiniment/<feature>/`, and `changes/<change-id>/` are independent bundles. `_ai_sdlc/` is the repository runtime bundle. Reserved root indexes declare OKF v0.2; nested indexes contain no frontmatter.
+- `specs[-refiniment]/_ai_sdlc/specs-index.toon` becomes a v2 compact projection. It indexes OKF type/title/status/trust plus existing trace metadata and excludes reserved `index.md` and `log.md`.
+- A concept refresh preserves `generated.by` unless explicitly overridden, updates `generated.at` only for meaningful content/provenance changes, and clears verification when body, sources, resource, type, title, or description changes.
+- Internal draft/review/blocked maps to OKF draft; approved/validated/done maps to stable; superseded/deprecated maps to deprecated. No lifecycle state creates `verified`.
+- Project context writes only `_ai_sdlc/context/project-context.md`; module discovery writes `_ai_sdlc/modules.md`; no root-path compatibility read or write remains.
+- Existing source snapshots are wrapped as `External Specification Snapshot` concepts, retain source bytes in the body, and record explicit logical source/hash evidence.

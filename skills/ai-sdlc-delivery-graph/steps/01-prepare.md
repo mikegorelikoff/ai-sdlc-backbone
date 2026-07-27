@@ -82,7 +82,7 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 ## 0.7 Specs Index
 
-- Read canonical `_ai_sdlc/specs-index.toon` first and use `specs-index.md` for
+- Read canonical `_ai_sdlc/specs-index.toon` first and use feature-local `index.md` for
   human discovery across implementation and refinement workspaces.
 - Scope short trace IDs by feature directory to prevent cross-feature identity
   collisions.

@@ -71,8 +71,8 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 - Read `specs/_ai_sdlc/specs-index.toon` or
   `specs-refiniment/_ai_sdlc/specs-index.toon` before feature analysis.
-- Do not refresh `specs/specs-index.md` or
-  `specs-refiniment/specs-index.md` during read-only analysis.
+- Do not refresh `specs/<feature-name>/index.md` or
+  `specs-refiniment/<feature-name>/index.md` during read-only analysis.
 - The owning workflow refreshes indexes only after an accepted state or
   authoritative artifact change.
 
