@@ -12,7 +12,7 @@ recommended default is a project-scoped install followed by a read-only
 ## Recommended path
 
 1. Check the [prerequisites](prerequisites.md).
-2. [Install the Harness](../how-to/install.md) into one evaluation project.
+2. [Run the one-line installer](../how-to/install.md) in one evaluation project.
 3. [Run your first request](first-run.md) without applying changes.
 4. Verify the installed skills and the Explore card.
 5. Continue to the [first-feature tutorial](../tutorials/first-feature.md).

@@ -14,6 +14,8 @@
 - Kept deep skills, learning material, release detail, and audits available
   through progressive-disclosure catalogs.
 - Added durable documentation governance and contract validation.
+- Made the one-line project installer a distinct primary action before its
+  read-only verification step.
 
 ## v3.0.0-rc.2 - 2026-07-27
 

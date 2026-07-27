@@ -9,7 +9,7 @@ This procedure installs agent skills into a project using the Skills CLI. It
 does not copy this source repository into your application and it does not
 create delivery artifacts until you ask an agent to use a workflow.
 
-## Fast path (recommended)
+## One-line install (recommended)
 
 Use this path for a first project-scoped install. Replace `codex` with your
 Skills CLI agent identifier:

@@ -13,6 +13,8 @@ maintainer guides, skill instructions, and validation references.
 - README order is product name, outcome, badges, description, Why use it?,
   Quick start, expected result, workflow, scope, documentation paths, product
   family, security/privacy, status, contributing, license.
+- Keep the primary install action in README, Home, and Start here to one shell
+  command; put verification in a separate step.
 - Use the guide template: Goal; When to use it; Prerequisites; Procedure;
   Verify; Troubleshooting; Next step.
 - Canonical sources are Start here for first run, How it works for the mental

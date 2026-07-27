@@ -21,10 +21,16 @@ decisions.
 
 ## Quick start
 
-From the project that will use the Harness, install every skill for one agent:
+From the project that will use the Harness, install every skill for one agent
+with one command:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/main/install.sh | sh -s -- codex
+```
+
+Then verify the project-scoped installation:
+
+```bash
 DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --json
 ```
 

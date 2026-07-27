@@ -55,3 +55,12 @@ detail, role detail, learning lessons, and audits remain directly addressable.
 
 See the root workspace `.docs-unification/validation-report.md` for exact
 commands and results.
+
+## One-line installation
+
+On 2026-07-28, README, Home, Start here, and the installation guide made the
+existing project-scoped `install.sh` pipeline one clearly isolated primary
+command. Verification remains separate so readers can distinguish the
+state-changing install from its read-only inventory check. The command follows
+`main`; immutable and review-first installation remains in the detailed guide
+for higher-trust environments.
