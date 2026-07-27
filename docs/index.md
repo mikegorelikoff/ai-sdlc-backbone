@@ -1,133 +1,153 @@
 ---
 title: AI SDLC Harness
-description: Understand, evaluate, and use a repository-native operating system for software delivery with AI agents.
+description: Turn a software request into traceable delivery artifacts, implementation, evidence, and handoff.
 hide:
   - navigation
 ---
 
-!!! note "Current release"
+<div class="product-hero" markdown>
+<p class="product-hero__eyebrow">AI SDLC product family · Structure delivery</p>
 
-    This site documents `v3.0.0-rc.2`, the role-guided flow, progressive skill
-    steps, installable shared runtime, and OKF v0.2 artifact release candidate.
-    Review the 3.0 migration guide, evaluate it in a bounded pilot, and keep
-    human review gates enabled.
+# AI SDLC Harness
 
-## The problem in one minute
+Turn a software request into traceable, reviewable delivery artifacts,
+implementation, evidence, and handoff.
 
-AI can generate code faster than teams can reconstruct why that code should
-exist, which decisions shaped it, what proves it works, and who approved the
-risk. Important context stays in chats, tickets, reviews, and individual memory.
-When the session ends, the next person or agent rediscovers the work—or guesses.
+Use one guided entry point to understand a request, select the right rigor,
+produce bounded artifacts, implement against an explicit plan, verify the
+result, and hand off evidence without surrendering human authority.
 
-The harness applies the software development lifecycle (SDLC) in a form AI
-agents can follow. It gives them bounded skills, deterministic helpers, visible
-artifacts, explicit state, and protected gates. Humans retain authority over
-intent, trade-offs, exceptions, and approval.
+<div class="product-hero__actions" markdown>
+[Get started](start-here/index.md){ .md-button .md-button--primary }
+[See how it works](how-it-works/index.md){ .md-button }
+</div>
+</div>
 
-```text
-intent -> requirement -> design -> task -> code -> test -> evidence -> handoff
+## The problem
+
+- **Intent gets separated from code.** Requirements and decisions often remain
+  in chat history while implementation moves into the repository.
+- **AI work is difficult to resume.** A new session or reviewer must reconstruct
+  scope, state, evidence, and unfinished work.
+- **More automation can obscure authority.** Teams still need visible human
+  decisions for scope, risk, exceptions, and release.
+
+The Harness is for developers and cross-functional delivery teams that already
+use Git and want AI-assisted changes to remain inspectable. It provides
+workflow structure; it does not replace engineering or product judgment.
+
+## How it works
+
+<div class="workflow" aria-label="AI SDLC Harness workflow">
+  <div class="workflow-step"><strong>1. Request</strong><span>State the outcome and constraints.</span></div>
+  <div class="workflow-step"><strong>2. Explore</strong><span>Inspect evidence and select a route.</span></div>
+  <div class="workflow-step"><strong>3. Specify</strong><span>Make requirements and acceptance explicit.</span></div>
+  <div class="workflow-step"><strong>4. Plan</strong><span>Connect design, tests, tasks, and ownership.</span></div>
+  <div class="workflow-step"><strong>5. Implement</strong><span>Change only the approved scope.</span></div>
+  <div class="workflow-step"><strong>6. Verify and hand off</strong><span>Record evidence and the next owner.</span></div>
+</div>
+
+Each stage produces or updates repository artifacts that the next stage can
+consume. [Explore the detailed workflow](how-it-works/workflow.md) or compare
+the [quick, full, and expert paths](how-to/choose-flow.md).
+
+## Five-minute first success
+
+Install the skills into a project for one agent, then inspect the resulting
+inventory. This path requires Node.js `>=22.20.0`:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/main/install.sh | sh -s -- codex
+DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --json
 ```
 
-New to these ideas? [Learn from the foundations](start.md). The curriculum
-starts with generative AI, prompting, context, verification, tools, and agents,
-then progresses through AI-assisted SDLC, specification-driven development
-(SDD), harness workflows, guided practice, and role-specific use.
+The second command must return JSON containing installed `ai-sdlc-*` skills.
+Then ask your agent to Explore a request without applying changes:
 
-## Choose your path
+```text
+Use ai-sdlc-flow to Explore this request. Show the route, evidence, rigor,
+roles, blockers, planned writes, and next checkpoint. Do not Apply until I
+approve the card.
 
-<div class="grid cards" markdown>
+Request: add a health endpoint to this service.
+```
 
--   **I want to learn from the foundations**
+Success is a reviewable Explore card with a selected feature/workspace/stage,
+evidence, rigor, blockers, planned writes, and next checkpoint. Continue with
+[the full first-run guide](start-here/first-run.md) before approving Apply.
 
-    ---
+## What you get
 
-    Choose a starting level and build observable competence from basic AI
-    concepts through independent, evidence-backed harness use.
+<div class="path-cards" markdown>
 
-    [Open the Learn hub →](start.md)
+- **Connected delivery artifacts**
 
--   **I want to use it**
+  Requirements, design, test cases, tasks, decisions, evidence, and handoffs
+  remain linkable in the repository.
 
-    ---
+- **Adaptive rigor**
 
-    Install project-scoped skills, use flow Explore for a safe entry point,
-    and complete a guided first session.
+  Quick flow keeps bounded work light; full flow adds questions, predecessor
+  checks, traceability, and complete handoff evidence.
 
-    [Start onboarding →](onboarding/index.md)
+- **Exact skill contracts**
 
--   **I am evaluating adoption**
+  Catalogs organize skills by lifecycle and role while every detailed skill
+  page remains built, searchable, and directly addressable.
 
-    ---
+- **Human-owned gates**
 
-    Check fit, prerequisites, non-goals, authority boundaries, maturity, and
-    the evidence you should require before a pilot.
-
-    [Evaluate the harness →](adoption/index.md)
-
--   **I need an exact contract**
-
-    ---
-
-    Look up lifecycle stages, skills, scripts, schemas, routes, flags,
-    compatibility, and validation commands.
-
-    [Open Reference →](reference/index.md)
+  People retain responsibility for product intent, risk acceptance, policy
+  exceptions, merge, release, and deployment.
 
 </div>
 
-## What it is—and is not
+## Choose your path
 
-| It is | It is not |
-| --- | --- |
-| Portable instructions for AI delivery workflows. | A new IDE or autonomous developer. |
-| Deterministic helpers for repeatable repository mechanics. | A replacement for product, engineering, QA, security, or legal judgment. |
-| Human-readable artifacts plus schema-complete state for the managed workflow. | A complete record of every project fact, decision, or external event. |
-| Evidence-backed gates, handoffs, and recovery. | A guarantee of correctness, compliance, or business impact. |
-| A layer that can complement Git, issue tracking, CI, and agent hosts. | A project-management system, CI platform, or deployment authority. |
+<div class="path-cards" markdown>
 
-## Go directly to what you need
+- **New user**
 
-The [Learn hub](start.md) owns the curriculum and starting-level diagnostic. Returning
-readers can find [skills by role](reference/skills-by-role.md) or open [Reference](reference/index.md)
-for an exact contract without replaying onboarding.
+  [Install and run a safe Explore request](start-here/index.md), then complete
+  the first-feature tutorial.
 
-The canonical project- and host-scoped installation sequence is:
+- **Evaluator or team lead**
 
-```bash
-HARNESS_TAG=v3.0.0-rc.2
-HARNESS_TMP="$(mktemp -d)"
-HARNESS_SRC="$HARNESS_TMP/ai-sdlc-harness"
-PYTHON_BIN="${PYTHON_BIN:-python3}"
-git init "$HARNESS_SRC"
-git -C "$HARNESS_SRC" remote add origin https://github.com/mikegorelikoff/ai-sdlc-harness.git
-git -C "$HARNESS_SRC" fetch --depth 1 origin "refs/tags/$HARNESS_TAG:refs/tags/$HARNESS_TAG"
-git -C "$HARNESS_SRC" checkout --detach "$HARNESS_TAG^{commit}"
-HARNESS_REV="$(git -C "$HARNESS_SRC" rev-parse HEAD)"
-test "$(git -C "$HARNESS_SRC" rev-list -n 1 "$HARNESS_TAG")" = "$HARNESS_REV"
-DISABLE_TELEMETRY=1 npx -y skills@1.5.19 add "$HARNESS_SRC" --skill '*' --agent codex -y
-mkdir -p .ai-sdlc
-cp "$HARNESS_SRC/config/ai-sdlc-managed-skills.txt" .ai-sdlc/harness-managed-skills.txt
-printf '{"schema":"ai-sdlc-install-record/v1","revision":"%s","skills_cli":"1.5.19","agent":"codex","selection":"all-skills","inventory":".ai-sdlc/harness-managed-skills.txt"}\n' "$HARNESS_REV" > .ai-sdlc/harness-install.json
-"$PYTHON_BIN" .agents/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py
-rm skills-lock.json
-rm -rf "$HARNESS_TMP"
-```
+  [Plan a bounded pilot](adoption/index.md), understand the system model, and
+  review limitations with explicit success criteria.
 
-Run it from the consumer repository only after reviewing the
-[installation prerequisites, third-party installer telemetry, and trust
-boundary](how-to/install.md). The opt-out applies to the Skills CLI; it does not
-describe the independent data behavior of an agent host or model provider.
-The pinned CLI requires Node.js `>=22.20.0`; verify `node --version` before
-starting. Review and commit only `.agents/skills/` plus the portable install
-records; the transient CLI lock contains the deleted temporary source path.
+- **Advanced user or maintainer**
 
-## What the evidence proves
+  [Open Reference](reference/index.md) for exact contracts or
+  [Project](project/index.md) for compatibility, releases, audits, and
+  contributor guidance.
+
+</div>
+
+## Scope and limitations
+
+<div class="scope-panel" markdown>
 
 Repository tests verify skill contracts, schemas, state transitions, generated
-artifacts, compatibility, recovery, and documentation mechanics. This proves
-the harness mechanisms behave as specified. It does **not** prove a causal
-improvement in your cycle time, quality, or cost. Treat those outcomes as pilot
-hypotheses and evaluate them with your own baseline and review.
+artifacts, compatibility, recovery, and documentation mechanics. They do not
+prove faster delivery, improved quality, cost reduction, compliance, or ROI in
+your environment. Human review remains required. See
+[maturity and limitations](explanation/maturity-limitations.md).
 
-[Learn from the foundations →](start.md){ .md-button .md-button--primary }
-[Evaluate a bounded pilot →](adoption/index.md){ .md-button }
+</div>
+
+## AI SDLC product family
+
+<div class="product-family" markdown>
+
+- <span class="status-badge">Current product</span> **AI SDLC Harness** —
+  structure delivery from request through evidence and handoff.
+- [Context Guard](https://github.com/mikegorelikoff/ai-sdlc-context) — control
+  avoidable context growth and retain full evidence locally.
+- [AI SDLC Metrics](https://github.com/mikegorelikoff/ai-sdlc-metrics) —
+  measure local Codex CLI and Claude Code adoption from available evidence.
+
+</div>
+
+These products are complementary and independently installed. No built-in
+technical integration is implied.

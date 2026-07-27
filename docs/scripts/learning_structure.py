@@ -349,8 +349,19 @@ def validate_learning_structure(root: Path = ROOT) -> list[str]:
     try:
         config = load_config(config_path)
         top_level = [next(iter(item)) for item in config.get("nav", []) if isinstance(item, dict) and item]
-        if top_level != ["Home", "Learn", "Reference", "Use", "Adopt", "About"]:
-            errors.append(f"{config_path}: top-level navigation must be Home, Learn, Reference, Use, Adopt, About")
+        expected_navigation = [
+            "Home",
+            "Start here",
+            "How it works",
+            "Guides",
+            "Reference",
+            "Project",
+        ]
+        if top_level != expected_navigation:
+            errors.append(
+                f"{config_path}: top-level navigation must be "
+                + ", ".join(expected_navigation)
+            )
     except ValueError as exc:
         errors.append(str(exc))
     try:

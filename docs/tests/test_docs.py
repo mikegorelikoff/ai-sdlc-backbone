@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import sys
 import tempfile
 import unittest
@@ -58,12 +59,71 @@ DOCS_ROOT = SCRIPTS.parent
 
 
 class DocumentationValidationTests(unittest.TestCase):
-    def test_global_install_is_skill_wildcard_and_agent_scoped(self) -> None:
+    def test_shared_documentation_contract(self) -> None:
+        root = DOCS_ROOT.parent
+        config = (root / "mkdocs.yml").read_text(encoding="utf-8")
+        nav_text = config.split("\nnav:\n", 1)[1]
+        self.assertEqual(
+            re.findall(r"^  - ([^:]+):", nav_text, re.MULTILINE),
+            ["Home", "Start here", "How it works", "Guides", "Reference", "Project"],
+        )
+        self.assertIn("strict: true", config)
+        self.assertIn("assets/stylesheets/ai-sdlc.css", config)
+        self.assertIn("reference/skills/*.md", config)
+        self.assertIn("audits/**/*.md", config)
+
+        readme = (root / "README.md").read_text(encoding="utf-8")
+        headings = [
+            "## Why use it?",
+            "## Quick start",
+            "## Expected first result",
+            "## Product workflow",
+            "## What it does and does not do",
+            "## Documentation paths",
+            "## AI SDLC product family",
+            "## Security and privacy",
+            "## Project status",
+            "## Contributing",
+            "## License",
+        ]
+        self.assertEqual(sorted(readme.index(heading) for heading in headings), [readme.index(heading) for heading in headings])
+
+        home = (DOCS_ROOT / "index.md").read_text(encoding="utf-8")
+        self.assertIn("[Get started](start-here/index.md)", home)
+        self.assertIn("[See how it works](how-it-works/index.md)", home)
+        self.assertIn("## AI SDLC product family", home)
+        self.assertIn("independently installed", home)
+
+    def test_new_pages_have_one_h1(self) -> None:
+        pages = [
+            "index.md",
+            "start-here/index.md",
+            "start-here/prerequisites.md",
+            "start-here/first-run.md",
+            "how-it-works/index.md",
+            "how-it-works/workflow.md",
+            "guides/index.md",
+            "reference/skills-overview.md",
+            "reference/skills-by-lifecycle.md",
+            "project/index.md",
+            "project/security-privacy.md",
+            "project/audits.md",
+            "project/decision-log.md",
+        ]
+        for relative in pages:
+            text = (DOCS_ROOT / relative).read_text(encoding="utf-8")
+            self.assertEqual(
+                len(re.findall(r"^# [^#].*$", text, re.MULTILINE)),
+                1,
+                relative,
+            )
+
+    def test_global_install_is_advanced_and_agent_scoped(self) -> None:
         install = (DOCS_ROOT / "how-to/install.md").read_text(encoding="utf-8")
         readme = (DOCS_ROOT.parent / "README.md").read_text(encoding="utf-8")
         command = "--skill '*' --agent codex --global --copy -y"
         self.assertIn(command, install)
-        self.assertIn(command, readme)
+        self.assertNotIn(command, readme)
         self.assertIn('mkdir -p "$HOME/.codex/skills"', install)
         self.assertIn('`"agents": ["Codex"]`', install)
         self.assertNotIn("--all --global -y", install)
@@ -149,8 +209,7 @@ class DocumentationValidationTests(unittest.TestCase):
                 encoding="utf-8",
             )
             errors = validate_navigation(pages, docs, config)
-            self.assertTrue(any("maximum is 6" in error for error in errors))
-            self.assertTrue(any("first three" in error for error in errors))
+            self.assertTrue(any("top-level navigation must be exactly" in error for error in errors))
 
     def test_onboarding_rejects_nonexistent_installer(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

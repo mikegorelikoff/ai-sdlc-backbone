@@ -1,5 +1,5 @@
 site_name: AI SDLC Harness
-site_description: A traceable, adaptive delivery harness for teams building software with AI assistants.
+site_description: Turn a software request into traceable delivery artifacts, implementation, evidence, and handoff.
 site_url: https://mikegorelikoff.github.io/ai-sdlc-harness/
 repo_url: https://github.com/mikegorelikoff/ai-sdlc-harness
 repo_name: mikegorelikoff/ai-sdlc-harness
@@ -38,6 +38,8 @@ theme:
     - navigation.tabs.sticky
     - navigation.sections
     - navigation.indexes
+    - navigation.path
+    - navigation.prune
     - navigation.top
     - navigation.footer
     - toc.follow
@@ -72,9 +74,20 @@ markdown_extensions:
       custom_checkbox: true
 
 extra_css:
-  - assets/stylesheets/extra.css
+  - assets/stylesheets/ai-sdlc.css
 
 extra:
+  ai_sdlc_learning_pages:
+    - start.md
+    - learn/ai-foundations.md
+    - learn/prompt-engineering.md
+    - learn/context-and-verification.md
+    - learn/agents-tools-and-subagents.md
+    - learn/multi-role-review.md
+    - learn/ai-sdlc-and-sdd.md
+    - learn/harness-essentials.md
+    - learn/guided-practice.md
+    - learn/role-learning-paths.md
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/mikegorelikoff/ai-sdlc-harness
@@ -86,199 +99,72 @@ exclude_docs: |
   scripts/
   tests/
 
+not_in_nav: |
+  reference/skills/*.md
+  audits/**/*.md
+  learn/*.md
+  reference/release-*.md
+  about/maintainers/*.md
+  adoption/*.md
+  explanation/*.md
+  flows/*.md
+  foundations/*.md
+  how-to/*.md
+  maintainers/*.md
+  onboarding/*.md
+  operations/*.md
+  roles/*.md
+  tutorials/*.md
+
 nav:
   - Home: index.md
-  - Learn:
-      - Learning hub: start.md
-      - Level 0 — AI foundations: learn/ai-foundations.md
-      - Level 1A — Prompt engineering: learn/prompt-engineering.md
-      - Level 1B — Context and verification: learn/context-and-verification.md
-      - Level 2A — Agents, tools, and subagents: learn/agents-tools-and-subagents.md
-      - Level 2B — Multi-role review: learn/multi-role-review.md
-      - Level 3 — AI SDLC and SDD: learn/ai-sdlc-and-sdd.md
-      - Level 4 — Harness essentials: learn/harness-essentials.md
-      - Level 5 — Guided practice: learn/guided-practice.md
-      - Level 6 — Role learning paths: learn/role-learning-paths.md
+  - Start here:
+      - Overview: start-here/index.md
+      - Prerequisites: start-here/prerequisites.md
+      - Install: how-to/install.md
+      - First run: start-here/first-run.md
+      - Troubleshooting: operations/troubleshooting.md
+  - How it works:
+      - Overview: how-it-works/index.md
+      - Delivery workflow: how-it-works/workflow.md
+      - Quick, full, and expert paths: how-to/choose-flow.md
+      - System model: explanation/system-model.md
+      - Artifact authority: explanation/artifact-authority.md
+      - Feature state: explanation/state-machine.md
+      - Human and agent responsibilities: foundations/responsibilities.md
+      - Governance and trust: operations/governance.md
+  - Guides:
+      - Overview: guides/index.md
+      - Ship a first feature: tutorials/first-feature.md
+      - Adopt an existing project: tutorials/existing-project.md
+      - Run the full lifecycle: tutorials/full-lifecycle.md
+      - How-to catalog: how-to/index.md
+      - Learning path: start.md
+      - Role paths: roles/index.md
+      - Pilot and adoption: adoption/index.md
+      - Operations: operations/index.md
   - Reference:
       - Overview: reference/index.md
+      - Skills overview: reference/skills-overview.md
+      - Skills by lifecycle: reference/skills-by-lifecycle.md
       - Skills by role: reference/skills-by-role.md
-      - Glossary: foundations/glossary.md
-      - Role guides:
-          - Choose your role: roles/index.md
-          - Software engineer: roles/software-engineer.md
-          - Product manager: roles/product-manager.md
-          - Product owner: roles/product-owner.md
-          - Business analyst: roles/business-analyst.md
-          - QA engineer: roles/qa-engineer.md
+      - Searchable skill catalog: reference/skills.md
       - Workflow map: reference/workflow-map.md
-      - Skill catalog: reference/skills.md
-      - Skill guides:
-          - Approvals and sandbox: reference/skills/ai-sdlc-approvals-sandbox.md
-          - Architecture: reference/skills/ai-sdlc-architecture.md
-          - Business analysis: reference/skills/ai-sdlc-ba.md
-          - Backlog decomposition: reference/skills/ai-sdlc-backlog-decomposition-and-task-planning.md
-          - Backlog gap review: reference/skills/ai-sdlc-backlog-requirements-gap-review.md
-          - Branching: reference/skills/ai-sdlc-branching.md
-          - Change impact: reference/skills/ai-sdlc-change-impact.md
-          - Change set: reference/skills/ai-sdlc-change-set.md
-          - Code review: reference/skills/ai-sdlc-code-review.md
-          - Commit preparation: reference/skills/ai-sdlc-commit-prep.md
-          - Conventional commit: reference/skills/ai-sdlc-conventional-commit.md
-          - Delivery graph: reference/skills/ai-sdlc-delivery-graph.md
-          - Delivery handoff review: reference/skills/ai-sdlc-delivery-handoff-review.md
-          - Delivery package gap review: reference/skills/ai-sdlc-delivery-package-gap-review.md
-          - Delivery spec synthesis: reference/skills/ai-sdlc-delivery-spec-synthesis.md
-          - Doctor and upgrade: reference/skills/ai-sdlc-doctor.md
-          - Evidence council: reference/skills/ai-sdlc-evidence-council.md
-          - Goal capability and epic mapping: reference/skills/ai-sdlc-goal-capability-and-epic-mapping.md
-          - Host adapter: reference/skills/ai-sdlc-host-adapter.md
-          - Guided Explore and Apply: reference/skills/ai-sdlc-flow.md
-          - Package trust and metrics: reference/skills/ai-sdlc-package-trust.md
-          - Policy: reference/skills/ai-sdlc-policy.md
-          - PRFAQ package synthesis: reference/skills/ai-sdlc-prfaq-package-synthesis.md
-          - Project context: reference/skills/ai-sdlc-project-context.md
-          - QA planning: reference/skills/ai-sdlc-qa.md
-          - QA requirements gap review: reference/skills/ai-sdlc-qa-requirements-gap-review.md
-          - QA traceability and readiness: reference/skills/ai-sdlc-qa-traceability-and-readiness-review.md
-          - Quality lenses: reference/skills/ai-sdlc-quality-lenses.md
-          - Release slicing and backlog readiness: reference/skills/ai-sdlc-release-slicing-and-backlog-readiness-review.md
-          - Requirements readiness: reference/skills/ai-sdlc-requirements-readiness-review.md
-          - Research: reference/skills/ai-sdlc-research.md
-          - Retrospective: reference/skills/ai-sdlc-retrospective.md
-          - Runtime: reference/skills/ai-sdlc-runtime.md
-          - Specification-driven development: reference/skills/ai-sdlc-sdd.md
-          - Security testing: reference/skills/ai-sdlc-security-testing.md
-          - Shared runtime: reference/skills/ai-sdlc-shared-runtime.md
-          - Test suite synthesis: reference/skills/ai-sdlc-test-case-and-suite-synthesis.md
-          - Test cases: reference/skills/ai-sdlc-test-cases.md
-          - Test strategy: reference/skills/ai-sdlc-test-scope-and-strategy-design.md
-          - User story decomposition: reference/skills/ai-sdlc-user-story-decomposition.md
-          - UX: reference/skills/ai-sdlc-ux.md
-          - Validation: reference/skills/ai-sdlc-validation.md
-          - Workflow: reference/skills/ai-sdlc-workflow.md
-          - Working-backwards discovery: reference/skills/ai-sdlc-working-backwards-discovery.md
+      - Flow flags: reference/flow-flags.md
+      - Artifact routing: reference/artifact-routing.md
+      - Data contracts: reference/data-contracts.md
       - Script catalog: reference/scripts.md
       - Module catalog: reference/modules.md
-      - Artifact routing: reference/artifact-routing.md
-      - Flow flags: reference/flow-flags.md
-      - Data contracts: reference/data-contracts.md
-      - Validation commands: reference/validation.md
       - Directory layout: reference/directory-layout.md
-      - Compatibility contract: reference/compatibility.md
+      - Validation commands: reference/validation.md
+      - Compatibility: reference/compatibility.md
       - Supported environments: reference/supported-environments.md
       - Supported versions: reference/versions.md
-      - Release 3.0 candidate: reference/release-3.0.md
-      - Release 2.0 candidate: reference/release-2.0.md
-      - Release 1.2 audit: reference/release-1.2.md
-      - Release 1.1 audit: reference/release-1.1.md
-  - Use:
-      - Onboarding:
-          - Overview: onboarding/index.md
-          - Your first 30 minutes: onboarding/first-30-minutes.md
-      - Tutorials:
-          - Overview: tutorials/index.md
-          - Ship a first feature: tutorials/first-feature.md
-          - Adopt an existing project: tutorials/existing-project.md
-          - Run the full lifecycle: tutorials/full-lifecycle.md
-          - Common change patterns: tutorials/change-patterns.md
-      - Workflow journeys:
-          - Choose a journey: flows/index.md
-          - Complete refinement: flows/refinement.md
-          - Implementation: flows/implementation.md
-          - Control plane: flows/control-plane.md
-          - Recovery and learning: flows/recovery.md
-      - How-to guides:
-          - Overview: how-to/index.md
-          - Install the harness: how-to/install.md
-          - Set up Codex CLI: how-to/setup-codex.md
-          - Update safely: how-to/update.md
-          - Migrate to 3.0: how-to/migrate-3.0.md
-          - Migrate to 2.0: how-to/migrate-2.0.md
-          - Migrate to 1.1: how-to/migrate-1.1.md
-          - Choose a flow mode: how-to/choose-flow.md
-          - Navigate a new request: how-to/navigate-request.md
-          - Build project context: how-to/project-context.md
-          - Use external specifications: how-to/external-specifications.md
-          - Build a task context pack: how-to/build-context-pack.md
-          - Continue after a specification: how-to/after-specification.md
-          - Resume a delivery run: how-to/resume-runtime.md
-          - Plan a declarative workflow: how-to/plan-workflow.md
-          - Negotiate a host adapter: how-to/negotiate-host-adapter.md
-          - Diagnose and plan an upgrade: how-to/diagnose-and-plan-upgrade.md
-          - Verify a package and local metrics: how-to/verify-package-and-metrics.md
-          - Customize team policy: how-to/customize.md
-          - Evaluate delivery policy: how-to/evaluate-policy.md
-          - Add a capability module: how-to/add-module.md
-          - Recover from change: how-to/recover-change.md
-          - Query the delivery graph: how-to/query-delivery-graph.md
-          - Manage evidence freshness: how-to/manage-evidence-freshness.md
-          - Run an evidence council: how-to/evidence-council.md
-          - Research with sources: how-to/research.md
-          - Prepare a commit: how-to/prepare-commit.md
-          - Open, review, and merge a change: how-to/review-and-merge.md
-          - Record product acceptance: how-to/record-product-acceptance.md
-          - Validate a release: how-to/validate-release.md
-  - Adopt:
-      - Evaluate and adopt:
-          - Overview: adoption/index.md
-          - Run a bounded pilot: adoption/pilot.md
-          - Interpret pilot metrics: adoption/metrics.md
-          - Stage a rollout: adoption/rollout.md
-      - Operate and govern:
-          - Overview: operations/index.md
-          - Operating model and RACI: operations/operating-model.md
-          - Governance and trust: operations/governance.md
-          - Troubleshooting and recovery: operations/troubleshooting.md
-          - Field feedback disposition: operations/field-feedback.md
-  - About:
-      - Foundations:
-          - Overview: foundations/index.md
-          - Git and terminal primer: foundations/git-and-terminal-primer.md
-          - Software delivery foundations: foundations/software-delivery.md
-          - Artificial intelligence foundations: foundations/ai-foundations.md
-          - Agents, sub-agents, and skills: foundations/agents-and-skills.md
-          - What is AI SDLC?: foundations/ai-sdlc.md
-          - What is SDD?: foundations/sdd.md
-          - Why use a harness?: foundations/why-harness.md
-          - Mental model: foundations/mental-model.md
-          - Human and agent responsibilities: foundations/responsibilities.md
-          - Context, prompts, and personalization: foundations/context-prompt-personalization.md
-      - Explanation:
-          - Overview: explanation/index.md
-          - System model: explanation/system-model.md
-          - Adaptive rigor: explanation/adaptive-rigor.md
-          - Artifact authority: explanation/artifact-authority.md
-          - Feature state machine: explanation/state-machine.md
-          - Traceability: explanation/traceability.md
-          - Context and quality: explanation/context-quality.md
-          - Decision continuity: explanation/decisions.md
-          - Workflow handoffs: explanation/handoffs.md
-          - TOON-first artifacts: explanation/toon-first.md
-          - Layered configuration: explanation/configuration.md
-          - Optional modules: explanation/modules.md
-          - Change and learning: explanation/change-learning.md
-          - Controlled changes: explanation/controlled-changes.md
-          - Agent portability: explanation/agent-portability.md
-          - Maturity and limitations: explanation/maturity-limitations.md
-      - Maintainers:
-          - Maintain and contribute: maintainers/index.md
-          - Extend skills and modules: maintainers/extend.md
-          - Prepare and release: maintainers/release.md
-          - Learn curriculum governance: about/maintainers/curriculum-governance.md
-          - Source reuse and adaptation: about/maintainers/source-reuse-and-adaptation.md
-          - Learn review record (2026-07-21): about/maintainers/learn-review-2026-07-21.md
-      - Audit archive:
-          - Executive summary: audits/2026-07-21-production-readiness/index.md
-          - Repository inventory: audits/2026-07-21-production-readiness/repository-inventory.md
-          - Issue register: audits/2026-07-21-production-readiness/issue-register.md
-          - Contradiction register: audits/2026-07-21-production-readiness/contradiction-register.md
-          - Installation validation: audits/2026-07-21-production-readiness/installation-validation.md
-          - Skills audit: audits/2026-07-21-production-readiness/skills-audit.md
-          - Skills.sh security: audits/2026-07-21-production-readiness/skills-sh-security.md
-          - Documentation coverage: audits/2026-07-21-production-readiness/documentation-coverage.md
-          - Research sources: audits/2026-07-21-production-readiness/research-sources.md
-          - Test and validation: audits/2026-07-21-production-readiness/validation-report.md
-          - Sub-agent reviews: audits/2026-07-21-production-readiness/sub-agent-reviews.md
-          - Assumptions and limitations: audits/2026-07-21-production-readiness/assumptions-and-limitations.md
-          - Final readiness: audits/2026-07-21-production-readiness/final-readiness.md
+  - Project:
+      - Overview: project/index.md
+      - Status and limitations: explanation/maturity-limitations.md
+      - Security and privacy: project/security-privacy.md
       - Roadmap: roadmap.md
+      - Maintain and contribute: maintainers/index.md
+      - Documentation decisions: project/decision-log.md
+      - Audit archive: project/audits.md

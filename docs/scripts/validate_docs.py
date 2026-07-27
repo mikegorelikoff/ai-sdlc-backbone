@@ -6,6 +6,7 @@ from __future__ import annotations
 import re
 import subprocess
 import sys
+from fnmatch import fnmatch
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
@@ -24,7 +25,7 @@ REQUIRED_FILES = {
     "mkdocs.yml",
     "requirements-docs.txt",
     "requirements-docs.lock",
-    "docs/assets/stylesheets/extra.css",
+    "docs/assets/stylesheets/ai-sdlc.css",
 }
 MODE_MINIMUMS = {"tutorials": 4, "how-to": 13, "explanation": 13, "reference": 10}
 GENERATED_PAGES = {"reference/skills-by-role.md", "reference/skills.md", "reference/modules.md"}
@@ -292,19 +293,39 @@ def validate_navigation(pages: list[Page], docs: Path = DOCS, config: Optional[P
     public = [page.path.relative_to(docs).as_posix() for page in pages]
     if len(public) < 43:
         errors.append(f"public documentation depth is {len(public)} pages; expected at least 43")
-    missing = sorted((set(public) - set(nav_paths)) - NON_CANONICAL_ROLE_PAGES)
+    config_text = config.read_text(encoding="utf-8")
+    hidden_patterns: list[str] = []
+    hidden_block = re.search(
+        r"^not_in_nav:\s*\|\s*$\n(?P<body>.*?)(?=^nav:\s*$)",
+        config_text,
+        re.MULTILINE | re.DOTALL,
+    )
+    if hidden_block:
+        for line in hidden_block.group("body").splitlines():
+            pattern = line.strip()
+            if pattern and not pattern.startswith("#"):
+                hidden_patterns.append(pattern)
+    intentionally_hidden = {
+        relative
+        for relative in public
+        if any(fnmatch(relative, pattern) for pattern in hidden_patterns)
+    }
+    missing = sorted(
+        (set(public) - set(nav_paths) - intentionally_hidden)
+        - NON_CANONICAL_ROLE_PAGES
+    )
     unknown = sorted(set(nav_paths) - set(public))
     if missing:
         errors.append("public pages missing from navigation: " + ", ".join(missing))
     if unknown:
         errors.append("navigation targets missing pages: " + ", ".join(unknown))
-    config_text = config.read_text(encoding="utf-8")
     nav_text = config_text.split("\nnav:\n", 1)[-1]
     top_level = re.findall(r"^  - ([^:]+):", nav_text, re.MULTILINE)
-    if len(top_level) > 6:
-        errors.append(f"navigation has {len(top_level)} top-level entries; maximum is 6")
-    if "Reference" not in top_level[:3]:
-        errors.append("Reference must be one of the first three top-level navigation entries")
+    expected = ["Home", "Start here", "How it works", "Guides", "Reference", "Project"]
+    if top_level != expected:
+        errors.append(
+            "top-level navigation must be exactly: " + ", ".join(expected)
+        )
     for mode, minimum in MODE_MINIMUMS.items():
         count = len(list((docs / mode).glob("*.md")))
         if count < minimum:
@@ -357,7 +378,17 @@ def validate_onboarding(root: Path = ROOT) -> list[str]:
         if path != docs / "reference/scripts.md" and "config/ai-sdlc.defaults.json" in text:
             errors.append(f"{display_path(path)}: uses source-only presentation configuration path")
 
-    for relative in ("README.md", "docs/index.md", "docs/how-to/install.md"):
+    short_install = (
+        "curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/"
+        "ai-sdlc-harness/main/install.sh | sh -s -- codex"
+    )
+    for relative in ("README.md", "docs/index.md"):
+        path = root / relative
+        text = path.read_text(encoding="utf-8") if path.is_file() else ""
+        if short_install not in text:
+            errors.append(f"{relative}: missing short project-scoped installer")
+
+    for relative in ("docs/how-to/install.md",):
         path = root / relative
         text = path.read_text(encoding="utf-8") if path.is_file() else ""
         if CANONICAL_INSTALL not in text:
@@ -976,7 +1007,7 @@ def validate_adoption_operations(root: Path = ROOT) -> list[str]:
 
     for relative in ("README.md", "docs/index.md"):
         text = (root / relative).read_text(encoding="utf-8") if (root / relative).is_file() else ""
-        for target in ("adoption/index.md", "onboarding/index.md"):
+        for target in ("adoption/index.md", "start-here/index.md"):
             if target not in text:
                 errors.append(f"{relative}: missing distinct evaluate/use route {target}")
 
@@ -1043,6 +1074,8 @@ def validate_material(root: Path = ROOT) -> list[str]:
             "navigation.instant",
             "navigation.tabs",
             "navigation.indexes",
+            "navigation.path",
+            "navigation.prune",
             "navigation.top",
             "search.suggest",
             "search.highlight",

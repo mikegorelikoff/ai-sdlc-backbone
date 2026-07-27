@@ -2,7 +2,18 @@
 
 ## Unreleased
 
-No unreleased changes.
+### Documentation
+
+- Redesigned the README around a short verified start and expected result.
+- Reorganized GitHub Pages into the shared six-section product-family
+  architecture.
+- Added outcome-first Home and onboarding paths with lifecycle and role skill
+  discovery.
+- Aligned navigation, components, and accessibility tokens with Context Guard
+  and AI SDLC Metrics.
+- Kept deep skills, learning material, release detail, and audits available
+  through progressive-disclosure catalogs.
+- Added durable documentation governance and contract validation.
 
 ## v3.0.0-rc.2 - 2026-07-27
 

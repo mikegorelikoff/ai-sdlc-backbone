@@ -1,193 +1,126 @@
 # AI SDLC Harness
 
-AI SDLC Harness is a small, repository-native operating system for building
-software with AI agents. It gives teams repeatable skills, specifications,
-plans, tests, validation evidence, and human approval points.
+Turn a software request into traceable, reviewable delivery artifacts,
+implementation, evidence, and handoff.
 
-It is designed to make AI-assisted delivery easier to understand, review, and
-resume—not to replace engineering judgment or product ownership.
+[![Skills CI](https://github.com/mikegorelikoff/ai-sdlc-harness/actions/workflows/skills-ci.yml/badge.svg)](https://github.com/mikegorelikoff/ai-sdlc-harness/actions/workflows/skills-ci.yml)
+[![Documentation](https://github.com/mikegorelikoff/ai-sdlc-harness/actions/workflows/pages.yml/badge.svg)](https://github.com/mikegorelikoff/ai-sdlc-harness/actions/workflows/pages.yml)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-[Documentation](https://mikegorelikov.github.io/ai-sdlc-harness/) ·
-[Start learning](https://mikegorelikov.github.io/ai-sdlc-harness/start/) ·
-[Install guide](docs/how-to/install.md) ·
-[Skills catalog](docs/reference/skills.md)
+AI SDLC Harness gives people and AI agents a repository-native path from intent
+to verified delivery. Skills guide each stage, deterministic helpers maintain
+artifacts and state, and human approval remains explicit at consequential
+decisions.
 
-## What you get
+## Why use it?
 
-- A clear path from request → specification → plan → implementation → tests →
-  review → commit.
-- Reusable skills for product discovery, business analysis, SDD, coding,
-  QA, security, release, and recovery.
-- Deterministic scripts that scaffold and validate artifacts.
-- Markdown records for people plus compact TOON state for agents.
-- Explicit boundaries for secrets, permissions, generated output, and human
-  decisions.
-
-## Is it for you?
-
-Use it when your team already works in Git and wants AI work to remain
-traceable across chats, agents, and handoffs. It works for developers, QA,
-product, business analysis, delivery, platform, and security roles.
-
-It is not an IDE, project-management system, deployment platform, compliance
-certification, or guarantee that AI output is correct. Every generated change
-still needs a human-owned review and validation decision.
+- Keep requirements, decisions, tasks, tests, and evidence connected.
+- Choose lightweight or complete rigor based on change risk.
+- Resume work across sessions and agent hosts from repository artifacts.
+- Preserve human authority over scope, trade-offs, exceptions, and release.
 
 ## Quick start
 
-### 1. Install into a project
-
-Run the following from the project that will use the skills. Keep the install
-project-scoped while evaluating the harness.
-
-Prerequisites: Git, Node.js `>=22.20.0`, npm, Python `3.10+`, and an AI agent
-host. Replace `codex` with your Skills CLI agent identifier:
+From the project that will use the Harness, install every skill for one agent:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/main/install.sh | sh -s -- codex
-```
-
-That is the complete project-scoped install. The wrapper pins the installer,
-opts out of its telemetry, and installs every harness skill only for the agent
-you name. Review the installed files before using an agent.
-
-<details>
-<summary>Reproducible pinned install (optional)</summary>
-
-Use this when you need to pin one release tag and record its exact commit:
-
-```bash
-HARNESS_TAG=v3.0.0-rc.2
-HARNESS_TMP="$(mktemp -d)"
-HARNESS_SRC="$HARNESS_TMP/ai-sdlc-harness"
-git init "$HARNESS_SRC"
-git -C "$HARNESS_SRC" remote add origin https://github.com/mikegorelikoff/ai-sdlc-harness.git
-git -C "$HARNESS_SRC" fetch --depth 1 origin "refs/tags/$HARNESS_TAG:refs/tags/$HARNESS_TAG"
-git -C "$HARNESS_SRC" checkout --detach "$HARNESS_TAG^{commit}"
-HARNESS_REV="$(git -C "$HARNESS_SRC" rev-parse HEAD)"
-test "$(git -C "$HARNESS_SRC" rev-list -n 1 "$HARNESS_TAG")" = "$HARNESS_REV"
-DISABLE_TELEMETRY=1 npx -y skills@1.5.19 add "$HARNESS_SRC" \
-  --skill '*' --agent codex -y
-# Canonical project-scoped form:
-# DISABLE_TELEMETRY=1 npx -y skills@1.5.19 add "$HARNESS_SRC" --skill '*' --agent codex -y
-# Previous stable release: HARNESS_TAG=v2.1.0
 DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --json
-rm -rf "$HARNESS_TMP"
 ```
 
-</details>
+Prerequisites are Git, Node.js `>=22.20.0`, npm, Python `3.10+`, and a
+supported AI agent host. Replace `codex` with your Skills CLI agent identifier.
+Review remote scripts before running them.
 
-For a complete install record, update, rollback, and host-specific setup, see
-[Install the harness](docs/how-to/install.md).
+## Expected first result
 
-### 2. Global installs are host-specific
-
-Global skill directories and permissions differ by host. Select exactly one
-host and follow its documented global directory. For example, Codex uses:
-
-```bash
-mkdir -p "$HOME/.codex/skills"
-DISABLE_TELEMETRY=1 npx -y skills@1.5.19 add "$HARNESS_SRC" \
-  --skill '*' --agent codex --global --copy -y
-```
-
-Do not combine `--all` with `--global`: `--all` asks the CLI to install into
-every recognized agent, including hosts that do not support global skill
-installation. Install locally when a host has no global directory. See the
-[global installation notes](docs/how-to/install.md#optional-install-globally-for-codex)
-and the host-specific sections for other agents.
-
-### 3. Run your first request
-
-Start with the guided, read-only Explore entrypoint:
+The installer adds project-scoped Harness skills for the named agent. The
+verification command returns a JSON inventory that includes the installed
+`ai-sdlc-*` skills. Start with a read-only Explore request:
 
 ```text
-Use ai-sdlc-flow to Explore this request.
-Show the intent, selected feature/workspace/stage, evidence, rigor, roles,
-context economics, blockers, planned writes, next checkpoint, and fingerprint.
-Do not Apply until I explicitly approve that card.
+Use ai-sdlc-flow to Explore this request. Show the route, evidence, rigor,
+roles, blockers, planned writes, and next checkpoint. Do not Apply until I
+approve the card.
 
 Request: add a health endpoint to this service.
 ```
 
-Experienced contributors can still invoke any owning skill directly; that
-remains the supported advanced path.
-
-Then follow [Your first 30 minutes](docs/onboarding/first-30-minutes.md) and
-the [first feature tutorial](docs/tutorials/first-feature.md).
-
-## The basic workflow
+## Product workflow
 
 ```text
-request
-  ↓
-discovery and requirements
-  ↓
-specification and acceptance criteria
-  ↓
-design, plan, and tasks
-  ↓
-bounded implementation
-  ↓
-tests, security checks, and review
-  ↓
-validated commit and handoff
+Request → Explore → Specify → Plan → Implement → Verify → Handoff
 ```
 
-Use `--quick-flow` for low-risk, bounded work. Use `--full-flow` when you need
-questions, predecessor checks, traceability, and a complete handoff. For a
-medium or large change, use [specification-driven development (SDD)](docs/foundations/sdd.md).
+Use `ai-sdlc-flow` as the recommended entry point. Choose `--quick-flow` for a
+bounded, low-risk change, `--full-flow` for complete predecessor checks and
+traceability, or invoke a known owning skill directly when you already
+understand its contract.
 
-## Where to go next
+## What it does and does not do
 
-- **New to AI or SDLC:** [Learning hub](docs/start.md)
-- **First installation:** [Install](docs/how-to/install.md)
-- **Evaluate a team rollout:** [Onboarding](docs/onboarding/index.md)
-- **First feature:** [Tutorials](docs/tutorials/index.md)
-- **Choose a workflow:** [Workflow map](docs/reference/workflow-map.md)
-- **Find a skill:** [Skills by role](docs/reference/skills-by-role.md)
-- **Understand the model:** [System model](docs/explanation/system-model.md)
-- **Adopt with a team:** [Pilot and adoption](docs/adoption/index.md)
-- **Operate and recover:** [Operations](docs/operations/index.md)
-- **Extend or release:** [Maintainer guide](docs/maintainers/index.md)
+The Harness structures delivery with skills, Markdown artifacts, compact
+machine state, deterministic helpers, validation evidence, and explicit
+handoffs. It does not replace product ownership, engineering judgment, code
+review, security review, CI, deployment authority, or proof of business
+impact. Repository tests verify mechanisms; they do not prove ROI, faster
+delivery, lower cost, or better quality in your environment.
 
-## Contributing
+## Documentation paths
 
-Before changing the harness, read [Contributing](CONTRIBUTING.md), the [Code
-of Conduct](.github/CODE_OF_CONDUCT.md), and [Support](SUPPORT.md). Check the
-[community guides](.github/) and run documentation validation locally:
+- [Start here](docs/start-here/index.md) for installation and a first Explore
+  request.
+- [How it works](https://mikegorelikoff.github.io/ai-sdlc-harness/how-it-works/)
+  for the workflow, paths, artifacts, and authority model.
+- [Guides](https://mikegorelikoff.github.io/ai-sdlc-harness/guides/) for first
+  features, existing projects, roles, adoption, and operations.
+- [Pilot and adoption](docs/adoption/index.md) for a bounded evaluation with
+  explicit evidence and stop criteria.
+- [Reference](https://mikegorelikoff.github.io/ai-sdlc-harness/reference/) for
+  exact skill, script, schema, flag, and compatibility contracts.
+- [Project](https://mikegorelikoff.github.io/ai-sdlc-harness/project/) for
+  maturity, limitations, security, releases, audits, and maintenance.
 
-```bash
-python3 -m pip install -r requirements-docs.txt
-python3 docs/scripts/validate_docs.py
-python3 -m pytest -q docs/tests
-git diff --check
-```
+## AI SDLC product family
 
-Keep changes focused, do not commit secrets or generated caches, and include
-validation evidence in the pull request. See [how maintainers release](docs/maintainers/release.md)
-for versioning and rollback rules.
+**Structure delivery. Control context. Measure adoption.**
+
+- **AI SDLC Harness — current:** structures AI-assisted software delivery.
+- [Context Guard](https://github.com/mikegorelikoff/ai-sdlc-context) controls
+  avoidable context growth while retaining full local evidence.
+- [AI SDLC Metrics](https://github.com/mikegorelikoff/ai-sdlc-metrics)
+  measures local Codex CLI and Claude Code adoption from available evidence.
+
+The products are complementary and independently installed. This repository
+does not claim a built-in technical integration with the other two.
 
 ## Security and privacy
 
-Treat agent instructions, scripts, generated commands, and external content as
-untrusted until reviewed. Do not provide secrets or confidential data to an AI
-provider unless your organization explicitly allows it. The Skills CLI may
-send anonymous telemetry; the install examples opt out with
-`DISABLE_TELEMETRY=1`.
+Treat agent instructions, generated commands, packages, and external content
+as untrusted until reviewed. The installer disables Skills CLI telemetry, but
+that does not change the data behavior of your agent host or model provider.
+Do not send secrets or restricted data unless your organization permits it.
+Report vulnerabilities privately through [SECURITY.md](SECURITY.md).
 
-Report vulnerabilities privately using [SECURITY.md](SECURITY.md). For threat
-boundaries and safe automation, read [Security testing](docs/how-to/verify-package-and-metrics.md)
-and the [security review guidance](docs/reference/validation.md).
+## Project status
 
-## License and release status
+The documentation currently targets release candidate `v3.0.0-rc.2`; the
+previous stable release is `v2.1.0`. Review
+[compatibility](docs/reference/compatibility.md), [limitations](docs/explanation/maturity-limitations.md),
+and the [3.0 migration guide](docs/how-to/migrate-3.0.md) before adoption.
 
-The repository is licensed under [Apache License 2.0](LICENSE). Preserve the
-license and attribution notices when redistributing it, and review third-party
-source terms listed in the [source registry](docs/_data/content_sources.yml).
-The current release candidate is `v3.0.0-rc.2`; release history,
-compatibility notes, and migration guidance are in
-[docs/reference](docs/reference/index.md).
+## Contributing
 
-The previous stable release is `v2.1.0`. Consumers should review the
-[3.0 migration guide](docs/how-to/migrate-3.0.md) before adopting the candidate.
+Read [CONTRIBUTING.md](CONTRIBUTING.md) and the
+[maintainer guide](docs/maintainers/index.md). Validate documentation with:
+
+```bash
+python3 docs/scripts/validate_docs.py
+python3 -m unittest discover -s docs/tests -v
+mkdocs build --strict
+```
+
+## License
+
+Licensed under the [Apache License 2.0](LICENSE). Third-party source review and
+attribution records are maintained in `docs/_data/content_sources.yml`.

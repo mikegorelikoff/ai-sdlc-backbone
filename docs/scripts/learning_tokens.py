@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Measure and validate Markdown pages listed under the visible Learn navigation."""
+"""Measure and validate the canonical Markdown learning curriculum."""
 
 from __future__ import annotations
 
@@ -48,14 +48,31 @@ def _markdown_paths(value: Any) -> Iterable[str]:
 
 
 def learn_navigation(config_path: Path) -> list[str]:
-    """Return the recursively ordered Markdown inventory under visible Learn."""
+    """Return the ordered learning inventory from metadata or legacy Learn nav."""
     config = load_config(config_path)
+    extra = config.get("extra")
+    if isinstance(extra, dict):
+        configured = extra.get("ai_sdlc_learning_pages")
+        if isinstance(configured, list) and all(
+            isinstance(path, str) and path.endswith(".md") for path in configured
+        ):
+            duplicates = sorted(
+                {path for path in configured if configured.count(path) > 1}
+            )
+            if duplicates:
+                raise ValueError(
+                    f"{config_path}: duplicated learning pages: {', '.join(duplicates)}"
+                )
+            if configured:
+                return configured
     nav = config.get("nav")
     if not isinstance(nav, list):
         raise ValueError(f"{config_path}: nav must be a list")
     matches = [item["Learn"] for item in nav if isinstance(item, dict) and "Learn" in item]
     if len(matches) != 1:
-        raise ValueError(f"{config_path}: expected exactly one visible Learn navigation section")
+        raise ValueError(
+            f"{config_path}: expected ai_sdlc_learning_pages metadata or one legacy Learn section"
+        )
     paths = list(_markdown_paths(matches[0]))
     duplicates = sorted({path for path in paths if paths.count(path) > 1})
     if duplicates:
