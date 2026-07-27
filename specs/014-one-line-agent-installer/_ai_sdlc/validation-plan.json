@@ -1,0 +1,50 @@
+{
+  "schema": "ai-sdlc-validation-command-plan/v1",
+  "commands": [
+    {
+      "id": "installer-contract",
+      "argv": ["python3", "-m", "unittest", "tests/test_install_sh.py", "-v"],
+      "trace_ids": ["AC-001", "AC-002", "AC-003", "AC-004", "AC-005", "TC-001", "TC-002", "TC-003", "TC-004", "TC-005"]
+    },
+    {
+      "id": "installed-package-smoke",
+      "argv": ["python3", "skills/ai-sdlc-shared-runtime/tests/install_smoke.py", "--mode", "emulated"],
+      "trace_ids": ["AC-001", "AC-005", "TC-001"]
+    },
+    {
+      "id": "documentation-contract",
+      "argv": ["python3", "docs/scripts/validate_docs.py"],
+      "trace_ids": ["AC-006", "TC-006"]
+    },
+    {
+      "id": "sdd-clarify",
+      "argv": ["python3", "skills/ai-sdlc-sdd/scripts/check_clarify.py", "specs/014-one-line-agent-installer", "--quick-flow"],
+      "trace_ids": ["AC-001", "AC-002", "AC-003", "AC-004", "AC-005", "AC-006"]
+    },
+    {
+      "id": "sdd-checklist",
+      "argv": ["python3", "skills/ai-sdlc-sdd/scripts/check_checklist.py", "specs/014-one-line-agent-installer", "--quick-flow"],
+      "trace_ids": ["AC-001", "AC-002", "AC-003", "AC-004", "AC-005", "AC-006"]
+    },
+    {
+      "id": "sdd-analysis",
+      "argv": ["python3", "skills/ai-sdlc-sdd/scripts/analyze_spec.py", "specs/014-one-line-agent-installer", "--quick-flow"],
+      "trace_ids": ["AC-001", "AC-002", "AC-003", "AC-004", "AC-005", "AC-006"]
+    },
+    {
+      "id": "sdd-validation",
+      "argv": ["python3", "skills/ai-sdlc-sdd/scripts/validate_spec.py", "specs/014-one-line-agent-installer", "--quick-flow"],
+      "trace_ids": ["AC-001", "AC-002", "AC-003", "AC-004", "AC-005", "AC-006"]
+    },
+    {
+      "id": "sdd-plan-links",
+      "argv": ["python3", "skills/ai-sdlc-sdd/scripts/plan_links.py", "specs/014-one-line-agent-installer", "--check", "--quick-flow"],
+      "trace_ids": ["AC-001", "AC-002", "AC-003", "AC-004", "AC-005", "AC-006"]
+    },
+    {
+      "id": "diff-hygiene",
+      "argv": ["git", "diff", "--check"],
+      "trace_ids": ["AC-005", "AC-006"]
+    }
+  ]
+}

@@ -11,21 +11,28 @@ create delivery artifacts until you ask an agent to use a workflow.
 
 ## Fast path (recommended)
 
-Use this path for a first project-scoped install. It works with any agent host
-supported by the Skills CLI; replace `codex` with your host identifier.
+Use this path for a first project-scoped install. Replace `codex` with your
+Skills CLI agent identifier:
 
 ```bash
-DISABLE_TELEMETRY=1 npx -y skills@1.5.19 add \
-  mikegorelikoff/ai-sdlc-harness --skill '*' --agent codex -y
-DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --json
+curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/main/install.sh | sh -s -- codex
 ```
 
-You need Node.js `22.20.0+`, npm, and a configured agent host. Run the
-commands from the consumer project, review the files the installer reports,
+The wrapper pins Skills CLI, disables its telemetry, selects every harness
+skill, and targets only the agent you name. You need Node.js `22.20.0+`, npm,
+and a configured agent host. Run the command from the consumer project,
+review the files the installer reports,
 then run one bounded flow Explore request. If this works, stop here and use the
 [first 30 minutes](../onboarding/first-30-minutes.md). The detailed sections
 below are only for pinned revisions, privacy review, global installs, or
 troubleshooting.
+
+If you already cloned the harness, the equivalent direct command is
+`./install.sh codex`. The wrapper accepts `AI_SDLC_SOURCE` and
+`AI_SDLC_SKILLS_CLI_VERSION` overrides for reviewed mirrors and maintainer
+testing. Use the pinned-revision procedure below when immutable source
+verification is required; a `curl` command against `main` is intentionally the
+convenience path, not a reproducible audit record.
 
 The install must contain `ai-sdlc-flow` and its sibling
 `ai-sdlc-shared-runtime`. Explore activates exactly one of five documented

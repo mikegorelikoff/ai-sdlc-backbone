@@ -41,20 +41,15 @@ Run the following from the project that will use the skills. Keep the install
 project-scoped while evaluating the harness.
 
 Prerequisites: Git, Node.js `>=22.20.0`, npm, Python `3.10+`, and an AI agent
-host. The harness is tool-agnostic; choose an agent host supported by your
-installer (for example Claude Code, Codex, Cursor, or another Skills CLI
-target). The short command below shows the host flag; replace `codex` with
-your target:
+host. Replace `codex` with your Skills CLI agent identifier:
 
 ```bash
-DISABLE_TELEMETRY=1 npx -y skills@1.5.19 add \
-  mikegorelikoff/ai-sdlc-harness --skill '*' --agent codex -y
-DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --json
+curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/main/install.sh | sh -s -- codex
 ```
 
-Replace `codex` with your supported host. Review the installed files before
-using an agent. Keep the install
-project-scoped while evaluating the harness.
+That is the complete project-scoped install. The wrapper pins the installer,
+opts out of its telemetry, and installs every harness skill only for the agent
+you name. Review the installed files before using an agent.
 
 <details>
 <summary>Reproducible pinned install (optional)</summary>

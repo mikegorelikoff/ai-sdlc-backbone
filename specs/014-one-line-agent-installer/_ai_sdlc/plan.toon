@@ -1,0 +1,30 @@
+feature: 014-one-line-agent-installer
+workspace: implementation
+flow_mode: quick
+updated_at: 2026-07-27
+source_artifacts[6]{artifact,path}:
+  requirements,requirements.md
+  design,design.md
+  test_cases,test-cases.md
+  qa,qa.md
+  tasks,tasks.md
+  decisions,decision-log.md
+trace[6]{acceptance_id,test_cases,tasks}:
+  AC-001,TC-001,T001/T005
+  AC-002,TC-002,T001/T005
+  AC-003,TC-003,T001/T005
+  AC-004,TC-004,T001/T005
+  AC-005,TC-005,T004/T005
+  AC-006,TC-006,T002/T004/T005
+tasks[5]{id,status,refs,tests,depends_on,artifact,decision_ref}:
+  T001,done,FR-001/FR-002/FR-003/FR-004/AC-001/AC-002/AC-003/AC-004/DEC-001,TC-001/TC-002/TC-003/TC-004,none,`install.sh`,TBD
+  T002,done,FR-005/AC-006/DEC-001,TC-006,T001,updated public installation documentation,TBD
+  T003,done,TC-001/TC-002/TC-003/TC-004/TC-005,none,T001,`tests/test_install_sh.py`,TBD
+  T004,done,TC-005/TC-006/AC-005/AC-006,TC-005/TC-006,T002/T003,passing validation evidence,TBD
+  T005,done,AC-001/AC-002/AC-003/AC-004/AC-005/AC-006/DEC-001,TC-001/TC-002/TC-003/TC-004/TC-005/TC-006,T004,complete SDD package and traceable plan,TBD
+validation_sequence[5]{step,command}:
+  1,check_refinement_context.py --full-flow
+  2,check_clarify.py --full-flow
+  3,check_checklist.py --full-flow
+  4,plan_links.py --check --full-flow
+  5,analyze_spec.py --full-flow && validate_spec.py --full-flow
