@@ -93,7 +93,7 @@ def checkout_revision(repository: str, revision: str, destination: Path) -> None
         raise RuntimeError(f"expected source revision {revision}, found {actual.stdout.strip()}")
 
 
-def verify(consumer: Path, source_checkout: Path | None = None, expected_skill_count: int = 44) -> None:
+def verify(consumer: Path, source_checkout: Path | None = None, expected_skill_count: int = 45) -> None:
     """Execute installed imports, one complete write, and finalization."""
     require(run(["git", "init"], consumer), "navigator fixture git init")
     require(run(["git", "checkout", "-B", "dev"], consumer), "navigator fixture dev branch")
@@ -125,6 +125,7 @@ def verify(consumer: Path, source_checkout: Path | None = None, expected_skill_c
     runtime = installed / "ai-sdlc-shared-runtime" / "scripts"
     config_resolver = runtime / "ai_sdlc_config.py"
     navigator = installed / "ai-sdlc-navigator" / "scripts" / "navigate.py"
+    flow = installed / "ai-sdlc-flow" / "scripts" / "flow.py"
     sdd_scripts = installed / "ai-sdlc-sdd" / "scripts"
     scaffold = sdd_scripts / "sdd_artifact_scaffold.py"
     commit_ready = installed / "ai-sdlc-commit-prep" / "scripts" / "check_commit_ready.py"
@@ -151,7 +152,7 @@ def verify(consumer: Path, source_checkout: Path | None = None, expected_skill_c
         installed / "ai-sdlc-doctor" / "scripts" / "doctor.py",
         installed / "ai-sdlc-policy" / "scripts" / "policy.py",
     )
-    for script in (runtime / "state_machine.py", navigator, scaffold, commit_ready, *documented_how_to_scripts):
+    for script in (runtime / "state_machine.py", navigator, flow, scaffold, commit_ready, *documented_how_to_scripts):
         if not script.is_file():
             raise RuntimeError(f"installed helper missing: {script.relative_to(consumer)}")
         require(run([sys.executable, str(script), "--help"], consumer), script.name)

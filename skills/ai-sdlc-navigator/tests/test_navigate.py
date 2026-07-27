@@ -157,6 +157,41 @@ class NavigateTests(unittest.TestCase):
             self.assertIn("Resume $ai-sdlc-sdd", result.stdout)
             self.assertNotIn("Skill: `ai-sdlc-commit-prep`", result.stdout)
 
+    def test_new_feedback_intent_does_not_reuse_latest_completed_feature(self) -> None:
+        """Clear new-work intent must outrank inactive feature recency."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            subprocess.run(["git", "init"], cwd=root, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            install_skill(root, "ai-sdlc-working-backwards-discovery")
+            write(
+                root / "specs" / "010-completed" / "_ai_sdlc" / "state.toon",
+                """
+                feature: 010-completed
+                workspace: implementation
+                current_stage: sdd
+                active_skill:
+                flow_mode: full
+                updated_at: 2026-07-26
+                decision_log: specs/010-completed/decision-log.md
+
+                stages[1]{id,skill,status,workspace,artifacts,decision_ref}:
+                  sdd,ai-sdlc-sdd,done,implementation,specs/010-completed,DEC-001
+
+                skips[0]{stage,reason,decision_ref,flow_mode}:
+                """,
+            )
+            result = self.run_nav(
+                root,
+                "--intent",
+                "Create a new refinement from this user feedback",
+                "--format",
+                "toon",
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn("ai-sdlc-working-backwards-discovery", result.stdout)
+            self.assertIn("selected_feature: none", result.stdout)
+            self.assertNotIn("Feature 010-completed", result.stdout)
+
     def test_explicit_missing_feature_is_a_blocker(self) -> None:
         """A missing explicit feature must not silently route to another feature."""
         with tempfile.TemporaryDirectory() as temp_dir:

@@ -42,15 +42,16 @@ Write down:
 - known risk or uncertainty;
 - what evidence would make you comfortable continuing.
 
-## Minute 10–15: ask the navigator
+## Minute 10–15: Explore the guided flow
 
 !!! example "Tell your agent"
 
     ```text
-    Use ai-sdlc-navigator --quick-flow.
-    Read the repository without modifying it. For the request below, report:
-    detected context and exact evidence anchors; one required next action;
-    optional actions; blockers; reasons; invocation; expected artifact.
+    Use ai-sdlc-flow to Explore this request with quick rigor.
+    Read the repository without modifying it. Report the intent, proposed
+    feature/workspace/stage, evidence, roles, rigor, context economics,
+    blockers, planned writes, next checkpoint, and route fingerprint.
+    Do not Apply until I explicitly accept the card.
 
     Request: <your bounded request>
     Must not change: <your constraint>
@@ -58,10 +59,11 @@ Write down:
 
 !!! info "Agent does automatically"
 
-    The navigator inventories installed skills and inspects branch, feature,
-    state, specs, and repository signals. It should not create or edit artifacts.
+    Explore inventories installed skills and inspects branch, feature, state,
+    specs, and repository signals. It must not create or edit artifacts.
 
-Expected response: an `ai-sdlc-handoff/v1` result with evidence-backed routing.
+Expected response: an `ai-sdlc-flow/v1` decision card and
+`ai-sdlc-handoff/v1` result with evidence-backed routing.
 If it presents a generic menu without explaining repository evidence, ask it to
 show the anchors or stop.
 

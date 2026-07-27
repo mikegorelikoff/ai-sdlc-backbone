@@ -375,9 +375,9 @@ class DocumentationValidationTests(unittest.TestCase):
         outputs = generated_outputs()
         skills = skill_sources()
         records = [script_record(path) for path in script_sources()]
-        self.assertEqual(len(skills), 44)
-        self.assertEqual(len(records), 117)
-        self.assertEqual(len(SKILL_SELECTION_BOUNDARIES), 44)
+        self.assertEqual(len(skills), 45)
+        self.assertEqual(len(records), 120)
+        self.assertEqual(len(SKILL_SELECTION_BOUNDARIES), 45)
         self.assertEqual(validate_selection_contract(skills), [])
         self.assertEqual(validate_role_skill_groups(skills), [])
         role_page = outputs[CATALOG_DOCS / "reference/skills-by-role.md"]
@@ -394,7 +394,7 @@ class DocumentationValidationTests(unittest.TestCase):
         self.assertTrue(coverage.startswith("schema: ai-sdlc-documentation-coverage/v1\n"))
         self.assertEqual(
             sum(record.classification == "installed runtime mirror" for record in records),
-            20,
+            21,
         )
 
     def test_generated_catalog_rejects_missing_sections_and_paths(self) -> None:

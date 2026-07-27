@@ -162,7 +162,7 @@ provider content.
 Preserve specifications, decisions, evidence, configuration, and product code.
 The acceptance evidence is a reviewed Git diff showing removal of exactly the
 skill directories named by the pre-removal
-`.ai-sdlc/harness-managed-skills.txt` (44 only for an all-skills install) and
+`.ai-sdlc/harness-managed-skills.txt` (45 only for an all-skills install) and
 both portable record files, no unrelated path, and no empty installer-created
 directory that the project does not own. Retain a reviewed copy of the managed
 inventory with the removal commit or ticket so the ownership decision remains

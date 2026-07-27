@@ -63,7 +63,7 @@ INTENT_ROUTES: tuple[tuple[tuple[str, ...], Action], ...] = (
     (("code review", "review diff", "review pr"), Action("ai-sdlc-code-review", "The intent asks for implementation review.", "Use $ai-sdlc-code-review for the current diff.", "code-review.md")),
     (("test", "qa", "regression"), Action("ai-sdlc-qa-requirements-gap-review", "The intent is primarily about testability or QA coverage.", "Use $ai-sdlc-qa-requirements-gap-review for the relevant artifacts.", "qa-gap-review.md")),
     (("story", "backlog", "epic"), Action("ai-sdlc-user-story-decomposition", "The intent asks to decompose delivery scope.", "Use $ai-sdlc-user-story-decomposition for the feature.", "user-stories.md")),
-    (("idea", "customer problem", "product", "discover"), Action("ai-sdlc-working-backwards-discovery", "The intent begins with an idea or customer problem.", "Use $ai-sdlc-working-backwards-discovery for the initiative.", "discovery.md")),
+    (("feedback", "refinement", "new feature", "new request", "idea", "customer problem", "product", "discover"), Action("ai-sdlc-working-backwards-discovery", "The intent begins new refinement work or supplies product feedback.", "Use $ai-sdlc-working-backwards-discovery for the initiative.", "discovery.md")),
     (("bug", "fix", "implement", "refactor", "api", "architecture"), Action("ai-sdlc-sdd", "The intent requests a repository implementation or design change.", "Use $ai-sdlc-sdd to classify and specify the change.", "specs/<feature>")),
 )
 
@@ -186,6 +186,12 @@ def intent_action(intent: str, root: Path) -> Action:
     return Action("ai-sdlc-working-backwards-discovery", "No active feature state or established codebase signal was detected.", "Use $ai-sdlc-working-backwards-discovery to clarify the initiative.", "discovery.md")
 
 
+def has_explicit_intent_route(intent: str) -> bool:
+    """Return whether intent contains a documented routing signal."""
+    normalized = intent.lower()
+    return any(keyword in normalized for keywords, _action in INTENT_ROUTES for keyword in keywords)
+
+
 def optional_actions(required: Action, installed: set[str]) -> list[Action]:
     """Return small, non-mandatory follow-up choices."""
     candidates = [
@@ -263,7 +269,14 @@ def main() -> int:
             if not (root / index_base / "_ai_sdlc" / "specs-index.toon").is_file():
                 blockers.append(f"workspace index not found: {index_base}/_ai_sdlc/specs-index.toon")
     required: Action | None = None
-    if selected:
+    selected_has_active = bool(selected and str(selected.state.get("active_skill", "")).strip())
+    # Intent is classified before recency-based feature continuation. An
+    # explicit feature and an already-active lifecycle stage remain deliberate
+    # resume signals and therefore retain precedence.
+    if args.intent and not args.feature and not selected_has_active and has_explicit_intent_route(args.intent):
+        required = intent_action(args.intent, root)
+        selected = None
+    elif selected:
         required, state_blockers = next_state_action(selected)
         blockers.extend(state_blockers)
     if required is None:

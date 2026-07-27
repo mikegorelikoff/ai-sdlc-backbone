@@ -104,15 +104,19 @@ and the host-specific sections for other agents.
 
 ### 3. Run your first request
 
-Start with the read-only navigator:
+Start with the guided, read-only Explore entrypoint:
 
 ```text
-Use ai-sdlc-navigator --quick-flow.
-Inspect this repository and my request. Report the evidence you found,
-the smallest safe next action, expected artifact, blockers, and validation.
+Use ai-sdlc-flow to Explore this request.
+Show the intent, selected feature/workspace/stage, evidence, rigor, roles,
+context economics, blockers, planned writes, next checkpoint, and fingerprint.
+Do not Apply until I explicitly approve that card.
 
 Request: add a health endpoint to this service.
 ```
+
+Experienced contributors can still invoke `ai-sdlc-navigator` or any owning
+skill directly; those remain supported advanced paths.
 
 Then follow [Your first 30 minutes](docs/onboarding/first-30-minutes.md) and
 the [first feature tutorial](docs/tutorials/first-feature.md).

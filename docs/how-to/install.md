@@ -147,7 +147,7 @@ verified detached local checkout instead.
     ```
 
 Run this in the same terminal session as the inspection block so
-`HARNESS_SRC` still names the verified checkout. `--skill '*'` selects all 44
+`HARNESS_SRC` still names the verified checkout. `--skill '*'` selects all 45
 harness skills—including the shared runtime—while `--agent codex` selects the
 one manually validated host target. `--all` would override that scope: a clean
 baseline test of CLI
@@ -173,7 +173,7 @@ or unrelated pre-existing directory is a blocker for manual comparison, not
 permission for recursive cleanup.
 
 For a smaller installation, create the reviewed inventory first and use it as
-the exact installer input; do not copy the 44-name full inventory afterward:
+the exact installer input; do not copy the 45-name full inventory afterward:
 
 ```bash
 mkdir -p .ai-sdlc
@@ -210,7 +210,7 @@ DISABLE_TELEMETRY=1 npx -y skills@1.5.19 add "$HARNESS_SRC" --skill '*' --agent 
 DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --global --agent codex
 ```
 
-Expected: 44 skills install for the single `codex` target and the list command
+Expected: 45 skills install for the single `codex` target and the list command
 shows `"agents": ["Codex"]` for every global inventory item. `--copy` makes
 the selected installation method explicit before the temporary checkout is
 removed. Pre-creating `$HOME/.codex/skills` is required for a clean-home test
@@ -227,7 +227,7 @@ The upstream CLI defines these flags differently:
 
 Never combine global scope with `--all` or `--agent '*'` for this harness.
 Skills CLI `1.5.19` recognizes agents that do not define global installation,
-including Eve and PromptScript. With 44 skills, those two unsupported targets
+including Eve and PromptScript. With 45 skills, those two unsupported targets
 produce exactly 88 failures even when supported targets installed correctly.
 Rerun the explicit command above; do not interpret the failure count as 88
 broken harness skills. The flag meanings are defined by the
@@ -271,7 +271,7 @@ conformance issue. Do not install every recognized agent as a workaround.
 
 Expected result:
 
-- for `all-skills`, the list contains all 44 managed names; for
+- for `all-skills`, the list contains all 45 managed names; for
   `explicit-skills`, every name in the reviewed managed inventory is present;
   either list may also contain unrelated project or third-party skills;
 - Git shows only the agent/skill files you intended to add;

@@ -15,6 +15,9 @@ from typing import Any
 
 SCHEMA = "ai-sdlc-module/v1"
 ID_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+MODULE_VERSION_PATTERN = re.compile(
+    r"^\d+\.\d+\.\d+(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$"
+)
 
 
 @dataclass(frozen=True)
@@ -38,6 +41,11 @@ def version(value: object) -> tuple[int, int, int] | None:
     if not isinstance(value, str) or not re.fullmatch(r"\d+\.\d+\.\d+", value):
         return None
     return tuple(int(part) for part in value.split("."))  # type: ignore[return-value]
+
+
+def module_version(value: object) -> str | None:
+    """Validate a SemVer module identity, including prerelease/build labels."""
+    return value if isinstance(value, str) and MODULE_VERSION_PATTERN.fullmatch(value) else None
 
 
 def safe_path(root: Path, value: object) -> Path | None:
@@ -72,9 +80,9 @@ def read_manifest(root: Path, path: Path, harness_version: tuple[int, int, int])
     module_id = value.get("id")
     if not isinstance(module_id, str) or not ID_PATTERN.fullmatch(module_id):
         errors.append(f"{prefix}: invalid module id")
-    module_version = version(value.get("version"))
-    if module_version is None:
-        errors.append(f"{prefix}: version must use x.y.z")
+    parsed_module_version = module_version(value.get("version"))
+    if parsed_module_version is None:
+        errors.append(f"{prefix}: version must use semantic versioning")
     if value.get("kind") not in {"core", "optional"}:
         errors.append(f"{prefix}: kind must be core or optional")
     api = value.get("harness_api")

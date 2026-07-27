@@ -169,31 +169,32 @@ Expected: the base is clean, `dev` tracks the disposable local origin, and
 `git pull --ff-only` can be proven rather than assumed. A real project uses its
 existing reviewed remote and never creates this fixture-only exception.
 
-## 3. Ask for read-only routing
+## 3. Explore the guided route
 
 !!! example "Tell your agent"
 
     ```text
-    Use ai-sdlc-navigator --quick-flow.
-    Do not modify the repository. Find the smallest safe workflow for:
+    Use ai-sdlc-flow to Explore with quick rigor.
+    Do not modify the repository. Use feature `001-health-endpoint` and find
+    the smallest safe workflow for:
     Implement GET /health behavior while preserving existing route behavior.
     The new route must return status 200 and {"status": "ok"}.
     The existing /version and unknown-path behavior must not change.
-    Report evidence anchors, blockers, next_required, next_optional, commands,
-    and expected artifacts.
+    Report evidence, roles, rigor, context economics, blockers, planned writes,
+    next checkpoint, and fingerprint. Do not Apply yet.
     ```
 
 !!! info "Agent does automatically"
 
-    The navigator inspects project-scoped installed capabilities, Git state,
-    feature state, and repository structure. It must not write a file.
+    Explore inspects project-scoped installed capabilities, Git state, feature
+    state, and repository structure. It must not write a file.
 
 The deterministic routing record uses its own schema:
 
 ```toon
 schema: ai-sdlc-navigator/v1
 branch: dev
-installed_skill_count: 44
+installed_skill_count: 45
 features: none
 selected_feature: none
 workspace: none

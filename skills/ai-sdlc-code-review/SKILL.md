@@ -143,14 +143,16 @@ Review AI SDLC code, diffs, branches, commits, or completed implementations for 
 
 1. Identify review mode: normal review or deep-audit review.
 2. Define the exact review boundary before judging code.
-3. Use the `review` subagent only when the user requested review work and the active runtime policy permits delegation; otherwise perform the review locally.
-4. Inspect high-risk files first: handlers, services, workflows, providers, config, schema, migrations, generated contracts, tests, and repo-local automation runtime files.
-5. Compare implementation against spec requirements, design contracts, task scope, and validation evidence.
-6. Check authorization, data integrity, state transitions, decimal math, asset identifiers, provider routing, errors, observability, and exported Go doc comments when touched.
-7. Escalate to `$ai-sdlc-security-testing` when exploitability, auth boundaries, secrets, or abuse paths are the primary concern.
-8. Report findings first, ordered by severity.
-9. Report no findings explicitly when none are found.
-10. Report validation gaps and residual risks after findings.
+3. Read requirements, acceptance criteria, tests, and the diff first. Do not read AI implementation rationale, prior review verdicts, or approval summaries yet.
+4. Record independent findings, including an explicit `No findings.` result for a clean pass.
+5. Only after step 4, reveal AI rationale or prior verdicts and compare them with the independent findings; preserve disagreements in the review evidence.
+6. Use the `review` subagent only when the user requested review work and the active runtime policy permits delegation; otherwise perform the review locally.
+7. Inspect high-risk files first: handlers, services, workflows, providers, config, schema, migrations, generated contracts, tests, and repo-local automation runtime files.
+8. Compare implementation against spec requirements, design contracts, task scope, and validation evidence.
+9. Check authorization, data integrity, state transitions, decimal math, asset identifiers, provider routing, errors, observability, and exported Go doc comments when touched.
+10. Escalate to `$ai-sdlc-security-testing` when exploitability, auth boundaries, secrets, or abuse paths are the primary concern.
+11. Report findings first, ordered by severity.
+12. Report validation gaps and residual risks after findings.
 
 ## Output Spec
 

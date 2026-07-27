@@ -205,8 +205,9 @@ The downstream consumer rechecks artifacts and freshness; it does not trust a pr
     - The navigator is a utility and is not a lifecycle transition.
     - Read canonical `specs-refiniment/<feature>/_ai_sdlc/state.toon` or
       `specs/<feature>/_ai_sdlc/state.toon` before broad artifacts.
-    - Prefer an explicit feature, then an active skill, then a feature matching the
-      current branch, then the most recently updated state.
+    - Prefer an explicit feature, then an active skill, then a clear intent route,
+      then a feature matching the current branch, then the most recently updated
+      state. Intent classification must happen before recency-based continuation.
     - When a feature has an active skill, recommend resuming it before intent-based
       routing.
     - When no skill is active, recommend the first incomplete stage in the selected

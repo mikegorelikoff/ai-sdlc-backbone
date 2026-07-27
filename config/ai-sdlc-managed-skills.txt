@@ -15,6 +15,7 @@ ai-sdlc-delivery-package-gap-review
 ai-sdlc-delivery-spec-synthesis
 ai-sdlc-doctor
 ai-sdlc-evidence-council
+ai-sdlc-flow
 ai-sdlc-goal-capability-and-epic-mapping
 ai-sdlc-host-adapter
 ai-sdlc-navigator

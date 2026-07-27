@@ -28,7 +28,7 @@ Reference pages state the contracts precisely. Use them while configuring automa
 </div>
 
 The generated [coverage manifest](catalog-coverage.toon) closes the current
-44-skill and 112-script source inventories against their documentation. It is
+45-skill and 120-script source inventories against their documentation. It is
 TOON because agents consume it for drift checks; the Markdown catalogs remain
 the human navigation surface.
 

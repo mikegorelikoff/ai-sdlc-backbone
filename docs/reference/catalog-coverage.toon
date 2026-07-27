@@ -1,9 +1,9 @@
 schema: ai-sdlc-documentation-coverage/v1
-skill_count: 44
-script_count: 117
+skill_count: 45
+script_count: 120
 documentation_root: docs
 
-skills[44]{skill,source,page,module,package_scripts}:
+skills[45]{skill,source,page,module,package_scripts}:
   ai-sdlc-approvals-sandbox,skills/ai-sdlc-approvals-sandbox/SKILL.md,reference/skills/ai-sdlc-approvals-sandbox.md,core,1
   ai-sdlc-architecture,skills/ai-sdlc-architecture/SKILL.md,reference/skills/ai-sdlc-architecture.md,architecture,1
   ai-sdlc-ba,skills/ai-sdlc-ba/SKILL.md,reference/skills/ai-sdlc-ba.md,core,1
@@ -21,6 +21,7 @@ skills[44]{skill,source,page,module,package_scripts}:
   ai-sdlc-delivery-spec-synthesis,skills/ai-sdlc-delivery-spec-synthesis/SKILL.md,reference/skills/ai-sdlc-delivery-spec-synthesis.md,core,1
   ai-sdlc-doctor,skills/ai-sdlc-doctor/SKILL.md,reference/skills/ai-sdlc-doctor.md,core,1
   ai-sdlc-evidence-council,skills/ai-sdlc-evidence-council/SKILL.md,reference/skills/ai-sdlc-evidence-council.md,evidence-council,1
+  ai-sdlc-flow,skills/ai-sdlc-flow/SKILL.md,reference/skills/ai-sdlc-flow.md,core,1
   ai-sdlc-goal-capability-and-epic-mapping,skills/ai-sdlc-goal-capability-and-epic-mapping/SKILL.md,reference/skills/ai-sdlc-goal-capability-and-epic-mapping.md,core,1
   ai-sdlc-host-adapter,skills/ai-sdlc-host-adapter/SKILL.md,reference/skills/ai-sdlc-host-adapter.md,core,1
   ai-sdlc-navigator,skills/ai-sdlc-navigator/SKILL.md,reference/skills/ai-sdlc-navigator.md,core,1
@@ -39,7 +40,7 @@ skills[44]{skill,source,page,module,package_scripts}:
   ai-sdlc-runtime,skills/ai-sdlc-runtime/SKILL.md,reference/skills/ai-sdlc-runtime.md,core,1
   ai-sdlc-sdd,skills/ai-sdlc-sdd/SKILL.md,reference/skills/ai-sdlc-sdd.md,core,11
   ai-sdlc-security-testing,skills/ai-sdlc-security-testing/SKILL.md,reference/skills/ai-sdlc-security-testing.md,core,1
-  ai-sdlc-shared-runtime,skills/ai-sdlc-shared-runtime/SKILL.md,reference/skills/ai-sdlc-shared-runtime.md,core,20
+  ai-sdlc-shared-runtime,skills/ai-sdlc-shared-runtime/SKILL.md,reference/skills/ai-sdlc-shared-runtime.md,core,21
   ai-sdlc-test-case-and-suite-synthesis,skills/ai-sdlc-test-case-and-suite-synthesis/SKILL.md,reference/skills/ai-sdlc-test-case-and-suite-synthesis.md,core,1
   ai-sdlc-test-cases,skills/ai-sdlc-test-cases/SKILL.md,reference/skills/ai-sdlc-test-cases.md,core,1
   ai-sdlc-test-scope-and-strategy-design,skills/ai-sdlc-test-scope-and-strategy-design/SKILL.md,reference/skills/ai-sdlc-test-scope-and-strategy-design.md,core,1
@@ -49,7 +50,7 @@ skills[44]{skill,source,page,module,package_scripts}:
   ai-sdlc-workflow,skills/ai-sdlc-workflow/SKILL.md,reference/skills/ai-sdlc-workflow.md,core,1
   ai-sdlc-working-backwards-discovery,skills/ai-sdlc-working-backwards-discovery/SKILL.md,reference/skills/ai-sdlc-working-backwards-discovery.md,core,1
 
-scripts[117]{path,owner,classification,documentation}:
+scripts[120]{path,owner,classification,documentation}:
   skills/ai-sdlc-approvals-sandbox/scripts/approval_plan.py,ai-sdlc-approvals-sandbox,skill package helper,reference/scripts.md
   skills/ai-sdlc-architecture/scripts/architecture.py,ai-sdlc-architecture,skill package helper,reference/scripts.md
   skills/ai-sdlc-ba/scripts/ba_context_scaffold.py,ai-sdlc-ba,skill package helper,reference/scripts.md
@@ -71,6 +72,7 @@ scripts[117]{path,owner,classification,documentation}:
   skills/ai-sdlc-delivery-spec-synthesis/scripts/delivery_spec_scaffold.py,ai-sdlc-delivery-spec-synthesis,skill package helper,reference/scripts.md
   skills/ai-sdlc-doctor/scripts/doctor.py,ai-sdlc-doctor,skill package helper,reference/scripts.md
   skills/ai-sdlc-evidence-council/scripts/evidence_council.py,ai-sdlc-evidence-council,skill package helper,reference/scripts.md
+  skills/ai-sdlc-flow/scripts/flow.py,ai-sdlc-flow,skill package helper,reference/scripts.md
   skills/ai-sdlc-goal-capability-and-epic-mapping/scripts/goal_capability_map.py,ai-sdlc-goal-capability-and-epic-mapping,skill package helper,reference/scripts.md
   skills/ai-sdlc-host-adapter/scripts/adapter.py,ai-sdlc-host-adapter,skill package helper,reference/scripts.md
   skills/ai-sdlc-navigator/scripts/navigate.py,ai-sdlc-navigator,skill package helper,reference/scripts.md
@@ -108,6 +110,7 @@ scripts[117]{path,owner,classification,documentation}:
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_config.py,ai-sdlc-shared-runtime,installed runtime mirror,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_context.py,ai-sdlc-shared-runtime,installed runtime mirror,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_context_benchmark.py,ai-sdlc-shared-runtime,installed runtime mirror,reference/scripts.md
+  skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_flow.py,ai-sdlc-shared-runtime,installed runtime mirror,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_handoff.py,ai-sdlc-shared-runtime,installed runtime mirror,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py,ai-sdlc-shared-runtime,installed runtime mirror,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_migrate.py,ai-sdlc-shared-runtime,installed runtime mirror,reference/scripts.md
@@ -137,6 +140,7 @@ scripts[117]{path,owner,classification,documentation}:
   skills/_shared/ai_sdlc_config.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/_shared/ai_sdlc_context.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/_shared/ai_sdlc_context_benchmark.py,shared runtime,canonical shared helper,reference/scripts.md
+  skills/_shared/ai_sdlc_flow.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/_shared/ai_sdlc_handoff.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/_shared/ai_sdlc_install_record.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/_shared/ai_sdlc_install_smoke.py,shared runtime,repository validation runner,reference/scripts.md

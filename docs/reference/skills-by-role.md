@@ -37,6 +37,7 @@ Own testability, coverage strategy, acceptance evidence, and QA readiness; produ
 
 | Group | Role relationship | Skill |
 | --- | --- | --- |
+| Entry and context | Supply intent or evidence | [`ai-sdlc-flow`](skills/ai-sdlc-flow.md) |
 | Entry and context | Supply intent or evidence | [`ai-sdlc-navigator`](skills/ai-sdlc-navigator.md) |
 | Governance and operations | Consult or apply within role authority | [`ai-sdlc-policy`](skills/ai-sdlc-policy.md) |
 | Handoff and recovery | Produce, consume, or reopen evidence | [`ai-sdlc-change-impact`](skills/ai-sdlc-change-impact.md) |
@@ -70,6 +71,7 @@ Own actors, workflows, business rules, assumptions, and acceptance logic; produc
 
 | Group | Role relationship | Skill |
 | --- | --- | --- |
+| Entry and context | Supply intent or evidence | [`ai-sdlc-flow`](skills/ai-sdlc-flow.md) |
 | Entry and context | Supply intent or evidence | [`ai-sdlc-navigator`](skills/ai-sdlc-navigator.md) |
 | Entry and context | Supply intent or evidence | [`ai-sdlc-research`](skills/ai-sdlc-research.md) |
 | Entry and context | Supply intent or evidence | [`ai-sdlc-working-backwards-discovery`](skills/ai-sdlc-working-backwards-discovery.md) |
@@ -105,6 +107,7 @@ Own customer problem, value, outcomes, scope, priority, and product trade-offs; 
 
 | Group | Role relationship | Skill |
 | --- | --- | --- |
+| Entry and context | Supply intent or evidence | [`ai-sdlc-flow`](skills/ai-sdlc-flow.md) |
 | Entry and context | Supply intent or evidence | [`ai-sdlc-research`](skills/ai-sdlc-research.md) |
 | Governance and operations | Consult or apply within role authority | [`ai-sdlc-policy`](skills/ai-sdlc-policy.md) |
 | Handoff and recovery | Produce, consume, or reopen evidence | [`ai-sdlc-change-impact`](skills/ai-sdlc-change-impact.md) |
@@ -142,6 +145,7 @@ Own day-to-day backlog readiness, acceptance clarity, sequencing, and product ha
 
 | Group | Role relationship | Skill |
 | --- | --- | --- |
+| Entry and context | Supply intent or evidence | [`ai-sdlc-flow`](skills/ai-sdlc-flow.md) |
 | Entry and context | Supply intent or evidence | [`ai-sdlc-working-backwards-discovery`](skills/ai-sdlc-working-backwards-discovery.md) |
 | Handoff and recovery | Produce, consume, or reopen evidence | [`ai-sdlc-change-impact`](skills/ai-sdlc-change-impact.md) |
 | Handoff and recovery | Produce, consume, or reopen evidence | [`ai-sdlc-delivery-graph`](skills/ai-sdlc-delivery-graph.md) |
@@ -178,6 +182,7 @@ Own technical design, implementation correctness, testable task boundaries, revi
 
 | Group | Role relationship | Skill |
 | --- | --- | --- |
+| Entry and context | Supply intent or evidence | [`ai-sdlc-flow`](skills/ai-sdlc-flow.md) |
 | Entry and context | Supply intent or evidence | [`ai-sdlc-research`](skills/ai-sdlc-research.md) |
 | Governance and operations | Consult or apply within role authority | [`ai-sdlc-approvals-sandbox`](skills/ai-sdlc-approvals-sandbox.md) |
 | Governance and operations | Consult or apply within role authority | [`ai-sdlc-doctor`](skills/ai-sdlc-doctor.md) |

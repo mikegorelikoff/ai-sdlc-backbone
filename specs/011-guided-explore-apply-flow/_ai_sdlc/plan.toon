@@ -1,0 +1,40 @@
+feature: 011-guided-explore-apply-flow
+workspace: implementation
+flow_mode: full
+updated_at: 2026-07-27
+source_artifacts[6]{artifact,path}:
+  requirements,requirements.md
+  design,design.md
+  test_cases,test-cases.md
+  qa,qa.md
+  tasks,tasks.md
+  decisions,decision-log.md
+trace[10]{acceptance_id,test_cases,tasks}:
+  AC-001,TC-001/TC-002,T003/T006/T008
+  AC-002,TC-003/TC-004,T004/T006/T008/T009
+  AC-003,TC-005/TC-006,T002/T004/T006/T008
+  AC-004,TC-007/TC-008/TC-009/TC-010,T002/T004/T006/T008
+  AC-005,TC-011/TC-012,T002/T004/T006/T008
+  AC-006,TC-013/TC-014,T002/T004/T006/T008
+  AC-007,TC-015/TC-016,T002/T004/T006/T008
+  AC-008,TC-017/TC-018,T004/T007/T008/T009/T011
+  AC-009,TC-019,T005/T007/T008/T009/T010/T011
+  AC-010,TC-020,T001/T007/T008/T009/T010/T011
+tasks[11]{id,status,refs,tests,depends_on,artifact,decision_ref}:
+  T001,done,FR-001/FR-002/FR-003/FR-004/FR-005/FR-006/FR-007/FR-008/FR-009/FR-010/AC-010/DEC-008/DEC-009/DEC-010,TC-020,none,finalized implementation notes in design.md and stable affected-file inventory,TBD
+  T002,done,FR-003/FR-005/FR-006/FR-007/FR-008/AC-003/AC-004/AC-005/AC-006/AC-007/DEC-009/DEC-010,TC-005/TC-006/TC-007/TC-008/TC-009/TC-010/TC-011/TC-012/TC-013/TC-014/TC-015/TC-016,T001,skills/_shared/ai_sdlc_flow.py; shared-runtime mirror; focused helper updates,TBD
+  T003,done,FR-001/AC-001/DEC-001,TC-001/TC-002,T001/T002,skills/ai-sdlc-navigator/scripts/navigate.py,TBD
+  T004,done,FR-002/FR-003/FR-004/FR-006/FR-007/FR-008/FR-009/AC-002/AC-003/AC-004/AC-005/AC-006/AC-007/AC-008/DEC-008/DEC-012,TC-003/TC-004/TC-005/TC-006/TC-007/TC-008/TC-009/TC-010/TC-011/TC-012/TC-013/TC-014/TC-015/TC-016/TC-017/TC-018,T002/T003,skills/ai-sdlc-flow/SKILL.md; references/flow-contract.md; scripts/flow.py,TBD
+  T005,done,FR-010/AC-009/DEC-007,TC-019,T004,module inventory; managed-skill inventory; compatibility/install-smoke updates,TBD
+  T006,done,TC-001/TC-002/TC-003/TC-004/TC-005/TC-006/TC-007/TC-008/TC-009/TC-010/TC-011/TC-012/TC-013/TC-014/TC-015/TC-016/AC-001/AC-002/AC-003/AC-004/AC-005/AC-006/AC-007,TC-001/TC-002/TC-003/TC-004/TC-005/TC-006/TC-007/TC-008/TC-009/TC-010/TC-011/TC-012/TC-013/TC-014/TC-015/TC-016,T002/T003/T004,flow; navigator; shared-runtime; path; and context test modules,TBD
+  T007,done,TC-017/TC-018/TC-019/TC-020/AC-008/AC-009/AC-010,TC-017/TC-018/TC-019/TC-020,T004/T005,review fixtures and compatibility/catalog/docs test updates,TBD
+  T008,done,AC-001/AC-002/AC-003/AC-004/AC-005/AC-006/AC-007/AC-008/AC-009/AC-010/TC-001/TC-002/TC-003/TC-004/TC-005/TC-006/TC-007/TC-008/TC-009/TC-010/TC-011/TC-012/TC-013/TC-014/TC-015/TC-016/TC-017/TC-018/TC-019/TC-020,TC-001/TC-002/TC-003/TC-004/TC-005/TC-006/TC-007/TC-008/TC-009/TC-010/TC-011/TC-012/TC-013/TC-014/TC-015/TC-016/TC-017/TC-018/TC-019/TC-020,T006/T007,validation evidence in QA/plan status,TBD
+  T009,done,AC-002/AC-008/AC-009/AC-010/TC-003/TC-004/TC-017/TC-018/TC-019/TC-020,TC-003/TC-004/TC-017/TC-018/TC-019/TC-020,T008,final validation receipt and signoff evidence,TBD
+  T010,done,FR-010/AC-009/AC-010/DEC-001,TC-019/TC-020,T004/T005,generated catalogs and canonical docs sources,TBD
+  T011,done,FR-009/AC-008/AC-009/AC-010/DEC-006/DEC-012,TC-017/TC-018/TC-019/TC-020,T009/T010,approved SDD status; review evidence; updated plan.md and plan.toon,TBD
+validation_sequence[5]{step,command}:
+  1,check_refinement_context.py --full-flow
+  2,check_clarify.py --full-flow
+  3,check_checklist.py --full-flow
+  4,plan_links.py --check --full-flow
+  5,analyze_spec.py --full-flow && validate_spec.py --full-flow

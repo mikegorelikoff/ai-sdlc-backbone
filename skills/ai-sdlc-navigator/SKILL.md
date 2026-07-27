@@ -97,8 +97,9 @@ description: AI SDLC context-aware navigation workflow. Use when an AI assistant
 - The navigator is a utility and is not a lifecycle transition.
 - Read canonical `specs-refiniment/<feature>/_ai_sdlc/state.toon` or
   `specs/<feature>/_ai_sdlc/state.toon` before broad artifacts.
-- Prefer an explicit feature, then an active skill, then a feature matching the
-  current branch, then the most recently updated state.
+- Prefer an explicit feature, then an active skill, then a clear intent route,
+  then a feature matching the current branch, then the most recently updated
+  state. Intent classification must happen before recency-based continuation.
 - When a feature has an active skill, recommend resuming it before intent-based
   routing.
 - When no skill is active, recommend the first incomplete stage in the selected
@@ -186,9 +187,11 @@ state, or artifact paths.
 2. Inspect detected repository, branch, installed-skill count, discovered
    features, selected feature, workspace, stage, active skill, and dirty count.
 3. Stop on an explicit-feature blocker; do not fall back to another feature.
-4. Prefer the reported active or incomplete lifecycle action.
-5. When no feature state exists, use intent routing and established-codebase
-   signals to choose discovery, SDD, QA, review, security, or commit prep.
+4. Resume an active lifecycle action, but classify explicit intent before
+   continuing a merely recent inactive feature.
+5. Use intent routing and established-codebase signals to choose discovery,
+   SDD, QA, review, security, or commit prep when no explicit or active feature
+   controls the route.
 6. Confirm the required skill is installed; report a blocker when it is absent.
 7. Present the required action first and optional actions separately.
 8. Execute the downstream skill only when the user requested action; for an

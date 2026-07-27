@@ -26,6 +26,7 @@ This compact alphabetical inventory links every installed capability to its cano
 | [`ai-sdlc-delivery-spec-synthesis`](skills/ai-sdlc-delivery-spec-synthesis.md) | BA, PO, Software Engineer | Delivery specification | `core` | Structured delivery specification for engineering and cross-functional planning |
 | [`ai-sdlc-doctor`](skills/ai-sdlc-doctor.md) | Software Engineer | Installation and upgrade operations | `core` | `_ai_sdlc/doctor/report.{toon,json,md}` or `_ai_sdlc/upgrades/<id>/plan.{toon,json,md}` |
 | [`ai-sdlc-evidence-council`](skills/ai-sdlc-evidence-council.md) | QA, PM, Software Engineer | Cross-lifecycle high-impact review | `evidence-council` | `evidence-council.md` and `_ai_sdlc/evidence-council.toon` |
+| [`ai-sdlc-flow`](skills/ai-sdlc-flow.md) | QA, BA, PM, PO, Software Engineer | Cross-lifecycle guided entry | `core` | `ai-sdlc-flow/v1` Markdown, TOON, or JSON decision card and one bounded Apply result |
 | [`ai-sdlc-goal-capability-and-epic-mapping`](skills/ai-sdlc-goal-capability-and-epic-mapping.md) | BA, PM | Planning architecture | `core` | Goal-to-capability map and outcome-oriented epics |
 | [`ai-sdlc-host-adapter`](skills/ai-sdlc-host-adapter.md) | Software Engineer | Portable execution handoff | `core` | `_ai_sdlc/adapters/<adapter-id>/negotiation.{toon,json,md}` |
 | [`ai-sdlc-navigator`](skills/ai-sdlc-navigator.md) | QA, BA, PM, PO, Software Engineer | Cross-lifecycle navigation | `core` | Read-only Markdown or TOON navigation report |

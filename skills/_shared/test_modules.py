@@ -33,9 +33,9 @@ class ModuleTests(unittest.TestCase):
 
     def test_repo_core_manifest_is_valid(self) -> None:
         """The shipped core registry should discover every listed skill."""
-        result = self.run_modules(ROOT, "--format", "toon")
+        result = self.run_modules(ROOT, "--harness-version", "2.0.0", "--format", "toon")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn("core,1.11.0,core,yes,yes", result.stdout)
+        self.assertIn("core,2.0.0-rc.1,core,yes,yes", result.stdout)
         self.assertIn("ai-sdlc-change-set", result.stdout)
         self.assertIn("ai-sdlc-delivery-graph", result.stdout)
         self.assertIn("ai-sdlc-policy", result.stdout)
@@ -45,6 +45,20 @@ class ModuleTests(unittest.TestCase):
         self.assertIn("ai-sdlc-doctor", result.stdout)
         self.assertIn("ai-sdlc-package-trust", result.stdout)
         self.assertIn("ai-sdlc-navigator", result.stdout)
+        self.assertIn("ai-sdlc-flow", result.stdout)
+
+    def test_module_version_accepts_semver_prerelease(self) -> None:
+        """Release-candidate module identities remain valid SemVer."""
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            module(root, "core", "core", "ai-sdlc-core")
+            manifest = root / "modules" / "core" / "module.json"
+            value = json.loads(manifest.read_text(encoding="utf-8"))
+            value["version"] = "2.0.0-rc.1"
+            manifest.write_text(json.dumps(value), encoding="utf-8")
+            result = self.run_modules(root, "--format", "toon")
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn("core,2.0.0-rc.1,core,yes,yes", result.stdout)
 
     def test_optional_compatible_skill_is_listed_without_core_dependency(self) -> None:
         """Optional discovery should not make core require the module."""

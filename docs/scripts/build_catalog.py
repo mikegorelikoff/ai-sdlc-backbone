@@ -101,6 +101,10 @@ SKILL_SELECTION_BOUNDARIES: dict[str, tuple[str, ...]] = {
     "ai-sdlc-goal-capability-and-epic-mapping": (
         "Do not use it while the customer problem, audience, or outcome is unclear. Use `ai-sdlc-working-backwards-discovery` instead.",
     ),
+    "ai-sdlc-flow": (
+        "Do not use it to Apply before a matching Explore card exists. Use `ai-sdlc-navigator` instead for read-only routing when no mutation is requested.",
+        "Do not use it to bypass lifecycle prerequisites. Use `ai-sdlc-sdd` or the selected owning skill instead.",
+    ),
     "ai-sdlc-host-adapter": (
         "Do not use it before a validated workflow declares the host capability it needs. Use `ai-sdlc-workflow` to define that contract instead.",
     ),
@@ -207,7 +211,7 @@ ROLE_SKILL_GROUPS: dict[str, dict[str, object]] = {
             "ai-sdlc-qa-traceability-and-readiness-review", "ai-sdlc-validation",
         ),
         "shared": (
-            "ai-sdlc-navigator", "ai-sdlc-requirements-readiness-review",
+            "ai-sdlc-flow", "ai-sdlc-navigator", "ai-sdlc-requirements-readiness-review",
             "ai-sdlc-delivery-handoff-review", "ai-sdlc-quality-lenses",
             "ai-sdlc-change-impact", "ai-sdlc-delivery-graph",
             "ai-sdlc-evidence-council", "ai-sdlc-security-testing",
@@ -223,7 +227,7 @@ ROLE_SKILL_GROUPS: dict[str, dict[str, object]] = {
             "ai-sdlc-user-story-decomposition", "ai-sdlc-delivery-spec-synthesis",
         ),
         "shared": (
-            "ai-sdlc-navigator", "ai-sdlc-working-backwards-discovery",
+            "ai-sdlc-flow", "ai-sdlc-navigator", "ai-sdlc-working-backwards-discovery",
             "ai-sdlc-prfaq-package-synthesis",
             "ai-sdlc-goal-capability-and-epic-mapping",
             "ai-sdlc-backlog-decomposition-and-task-planning",
@@ -244,7 +248,7 @@ ROLE_SKILL_GROUPS: dict[str, dict[str, object]] = {
             "ai-sdlc-release-slicing-and-backlog-readiness-review",
         ),
         "shared": (
-            "ai-sdlc-research", "ai-sdlc-ba",
+            "ai-sdlc-flow", "ai-sdlc-research", "ai-sdlc-ba",
             "ai-sdlc-delivery-package-gap-review",
             "ai-sdlc-requirements-readiness-review",
             "ai-sdlc-backlog-requirements-gap-review",
@@ -265,7 +269,7 @@ ROLE_SKILL_GROUPS: dict[str, dict[str, object]] = {
             "ai-sdlc-release-slicing-and-backlog-readiness-review",
         ),
         "shared": (
-            "ai-sdlc-working-backwards-discovery",
+            "ai-sdlc-flow", "ai-sdlc-working-backwards-discovery",
             "ai-sdlc-prfaq-package-synthesis", "ai-sdlc-ba",
             "ai-sdlc-delivery-spec-synthesis",
             "ai-sdlc-qa-requirements-gap-review",
@@ -284,7 +288,7 @@ ROLE_SKILL_GROUPS: dict[str, dict[str, object]] = {
             "ai-sdlc-code-review", "ai-sdlc-commit-prep",
         ),
         "shared": (
-            "ai-sdlc-conventional-commit", "ai-sdlc-architecture",
+            "ai-sdlc-flow", "ai-sdlc-conventional-commit", "ai-sdlc-architecture",
             "ai-sdlc-approvals-sandbox", "ai-sdlc-security-testing",
             "ai-sdlc-change-set", "ai-sdlc-change-impact",
             "ai-sdlc-delivery-graph", "ai-sdlc-evidence-council",
@@ -302,6 +306,7 @@ ROLE_SKILL_GROUPS: dict[str, dict[str, object]] = {
 # only the routing questions that role metadata cannot: what evidence should
 # already exist and who normally consumes the result next.
 TASK_SELECTION_HINTS: dict[str, tuple[str, str, str]] = {
+    "ai-sdlc-flow": ("Explore a readable route and apply one checkpoint", "Request, repository controls, and explicit feature", "One owning skill"),
     "ai-sdlc-qa": ("Plan acceptance or regression work", "Accepted behavior and changed surface", "QA gap review or test strategy"),
     "ai-sdlc-qa-requirements-gap-review": ("Find testability blockers", "Stories, specification, or QA scope", "Requirements owner or test strategy"),
     "ai-sdlc-test-scope-and-strategy-design": ("Choose coverage and execution priorities", "Testable requirements and risk context", "Test-case design"),
@@ -362,7 +367,7 @@ def start_relationship(role: str, skill_id: str) -> str:
 
 def shared_skill_group(skill_id: str) -> tuple[str, str]:
     """Return a compact discovery group and relationship for a shared skill."""
-    if skill_id in {"ai-sdlc-navigator", "ai-sdlc-project-context", "ai-sdlc-research", "ai-sdlc-working-backwards-discovery"}:
+    if skill_id in {"ai-sdlc-flow", "ai-sdlc-navigator", "ai-sdlc-project-context", "ai-sdlc-research", "ai-sdlc-working-backwards-discovery"}:
         return "Entry and context", "Supply intent or evidence"
     if skill_id in {"ai-sdlc-change-impact", "ai-sdlc-change-set", "ai-sdlc-delivery-graph", "ai-sdlc-delivery-handoff-review", "ai-sdlc-retrospective", "ai-sdlc-commit-prep", "ai-sdlc-conventional-commit"}:
         return "Handoff and recovery", "Produce, consume, or reopen evidence"

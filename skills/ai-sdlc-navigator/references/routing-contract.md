@@ -4,9 +4,15 @@
 
 1. Explicit feature argument.
 2. Feature with an active skill.
-3. Feature slug contained in the current Git branch.
-4. Most recently updated feature state.
-5. Natural-language intent and repository shape.
+3. Explicit natural-language intent route.
+4. Feature slug contained in the current Git branch.
+5. Most recently updated feature state.
+6. Repository shape fallback.
+
+Intent classification happens before recency-based feature continuation. New
+feedback, refinement, or feature intent must not inherit the latest completed
+feature merely because it has the newest state timestamp. An explicit feature
+or already-active lifecycle stage remains a deliberate resume signal.
 
 ## Required action fields
 
