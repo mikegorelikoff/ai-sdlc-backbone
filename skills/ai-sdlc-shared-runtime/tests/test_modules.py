@@ -35,7 +35,7 @@ class ModuleTests(unittest.TestCase):
         """The shipped core registry should discover every listed skill."""
         result = self.run_modules(ROOT, "--harness-version", "3.0.0", "--format", "toon")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn("core,3.0.0-rc.1,core,yes,yes", result.stdout)
+        self.assertIn("core,3.0.0-rc.2,core,yes,yes", result.stdout)
         self.assertIn("ai-sdlc-change-set", result.stdout)
         self.assertIn("ai-sdlc-delivery-graph", result.stdout)
         self.assertIn("ai-sdlc-policy", result.stdout)
@@ -53,11 +53,11 @@ class ModuleTests(unittest.TestCase):
             module(root, "core", "core", "ai-sdlc-core")
             manifest = root / "modules" / "core" / "module.json"
             value = json.loads(manifest.read_text(encoding="utf-8"))
-            value["version"] = "3.0.0-rc.1"
+            value["version"] = "3.0.0-rc.2"
             manifest.write_text(json.dumps(value), encoding="utf-8")
             result = self.run_modules(root, "--format", "toon")
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            self.assertIn("core,3.0.0-rc.1,core,yes,yes", result.stdout)
+            self.assertIn("core,3.0.0-rc.2,core,yes,yes", result.stdout)
 
     def test_optional_compatible_skill_is_listed_without_core_dependency(self) -> None:
         """Optional discovery should not make core require the module."""

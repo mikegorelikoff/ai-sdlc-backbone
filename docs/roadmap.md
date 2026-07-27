@@ -7,7 +7,7 @@ The harness evolves around one goal: make AI-assisted delivery faster without ma
 
 ## Now
 
-- Validate `v3.0.0-rc.1` through protected CI and tagged installation, then
+- Validate `v3.0.0-rc.2` through protected CI and tagged installation, then
   decide whether to promote the reviewed capability set to stable `v3.0.0`.
 - Preserve `v2.1.0` as the stable rollback target while the Harness API 3.0
   migration is evaluated.

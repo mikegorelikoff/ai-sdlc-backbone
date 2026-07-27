@@ -1,7 +1,7 @@
 {
   "schema": "ai-sdlc-module/v1",
   "id": "evidence-council",
-  "version": "3.0.0-rc.1",
+  "version": "3.0.0-rc.2",
   "kind": "optional",
   "harness_api": {"min": "3.0.0", "max_exclusive": "4.0.0"},
   "requires": ["core"],

@@ -62,7 +62,7 @@ BEGINNER_TERMS = (
     "handoff",
 )
 CANONICAL_INSTALL = 'DISABLE_TELEMETRY=1 npx -y skills@1.5.19 add "$HARNESS_SRC" --skill \'*\' --agent codex -y'
-CANONICAL_RELEASE_TAG = "v3.0.0-rc.1"
+CANONICAL_RELEASE_TAG = "v3.0.0-rc.2"
 FLOW_PAGES = {
     "flows/index.md",
     "flows/refinement.md",

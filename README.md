@@ -62,7 +62,7 @@ project-scoped while evaluating the harness.
 Use this when you need to pin one release tag and record its exact commit:
 
 ```bash
-HARNESS_TAG=v3.0.0-rc.1
+HARNESS_TAG=v3.0.0-rc.2
 HARNESS_TMP="$(mktemp -d)"
 HARNESS_SRC="$HARNESS_TMP/ai-sdlc-harness"
 git init "$HARNESS_SRC"
@@ -190,7 +190,7 @@ and the [security review guidance](docs/reference/validation.md).
 The repository is licensed under [Apache License 2.0](LICENSE). Preserve the
 license and attribution notices when redistributing it, and review third-party
 source terms listed in the [source registry](docs/_data/content_sources.yml).
-The current release candidate is `v3.0.0-rc.1`; release history,
+The current release candidate is `v3.0.0-rc.2`; release history,
 compatibility notes, and migration guidance are in
 [docs/reference](docs/reference/index.md).
 

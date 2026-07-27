@@ -5,7 +5,7 @@ description: Move from Harness API 2.0 to the role-guided flow, canonical runtim
 
 # Migrate to 3.0
 
-Release `v3.0.0-rc.1` introduces Harness API `3.0.0`. Use a disposable branch
+Release `v3.0.0-rc.2` introduces Harness API `3.0.0`. Use a disposable branch
 and preserve consumer-owned specifications, decisions, evidence, and policy
 before changing harness-managed files.
 
@@ -31,7 +31,7 @@ before changing harness-managed files.
    state.
 2. Back up consumer-owned `specs/`, `specs-refiniment/`, `_ai_sdlc/`, and
    policy/evidence files.
-3. Install `v3.0.0-rc.1` project-scoped from its resolved immutable commit.
+3. Install `v3.0.0-rc.2` project-scoped from its resolved immutable commit.
 4. Remove only harness-managed files reported obsolete by the reviewed install
    diff; do not recursively delete consumer artifact trees.
 5. Run the explicit OKF migration check before apply:

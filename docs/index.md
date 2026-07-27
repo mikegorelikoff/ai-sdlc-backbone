@@ -7,7 +7,7 @@ hide:
 
 !!! note "Current release"
 
-    This site documents `v3.0.0-rc.1`, the role-guided flow, progressive skill
+    This site documents `v3.0.0-rc.2`, the role-guided flow, progressive skill
     steps, installable shared runtime, and OKF v0.2 artifact release candidate.
     Review the 3.0 migration guide, evaluate it in a bounded pilot, and keep
     human review gates enabled.
@@ -94,7 +94,7 @@ for an exact contract without replaying onboarding.
 The canonical project- and host-scoped installation sequence is:
 
 ```bash
-HARNESS_TAG=v3.0.0-rc.1
+HARNESS_TAG=v3.0.0-rc.2
 HARNESS_TMP="$(mktemp -d)"
 HARNESS_SRC="$HARNESS_TMP/ai-sdlc-harness"
 PYTHON_BIN="${PYTHON_BIN:-python3}"

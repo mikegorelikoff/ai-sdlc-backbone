@@ -5,7 +5,7 @@ description: Public surfaces protected across additive harness releases and the 
 
 ## Protected surfaces
 
-Release candidate `3.0.0-rc.1` implements Harness API `3.0.0` and protects the
+Release candidate `3.0.0-rc.2` implements Harness API `3.0.0` and protects the
 public surface established after `v2.1.0`. The flow v2, canonical runtime, and
 OKF path changes are the intentional major migration; the resulting skill
 inventory, flags, routes, and operating gates remain mechanically protected.

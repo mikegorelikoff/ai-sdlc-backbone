@@ -4,6 +4,21 @@
 
 No unreleased changes.
 
+## v3.0.0-rc.2 - 2026-07-27
+
+### Fixed
+
+- Checked out complete tagged history in skills CI so the release-roadmap audit
+  can validate the sequence from `v2.1.0`.
+- Updated the immutable remote installation smoke target from the pre-v3
+  package to the published `v3.0.0-rc.1` commit.
+
+### Validation
+
+- Re-ran all 133 shared-runtime tests after the history correction.
+- Verified a fresh remote Skills CLI installation from the exact
+  `v3.0.0-rc.1` commit before preparing this corrected candidate.
+
 ## v3.0.0-rc.1 - 2026-07-27
 
 ### Added

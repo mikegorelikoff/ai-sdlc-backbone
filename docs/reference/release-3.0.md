@@ -1,13 +1,18 @@
 ---
 title: Release 3.0 candidate
-description: Scope, compatibility, validation, migration, and rollback for v3.0.0-rc.1.
+description: Scope, compatibility, validation, migration, and rollback for v3.0.0-rc.2.
 ---
 
-# Release `v3.0.0-rc.1`
+# Release `v3.0.0-rc.2`
 
-`v3.0.0-rc.1` packages the guided Explore→Apply workflow, role-aware
+`v3.0.0-rc.2` packages the guided Explore→Apply workflow, role-aware
 progressive disclosure, one installable runtime, and native OKF v0.2 artifact
 bundles accumulated after `v2.1.0`.
+
+This candidate supersedes `v3.0.0-rc.1`. It keeps the same Harness API and
+feature scope while correcting protected CI: compatibility checks now receive
+the complete tagged history, and remote installation smoke targets the
+published v3 package contract.
 
 ## Delivered scope
 

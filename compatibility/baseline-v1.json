@@ -1,6 +1,6 @@
 {
   "schema": "ai-sdlc-compatibility-baseline/v1",
-  "release": "3.0.0-rc.1",
+  "release": "3.0.0-rc.2",
   "harness_api_version": "3.0.0",
   "python": {"min": "3.10", "ci": ["3.10", "3.13"]},
   "required_skill_names": [
@@ -94,6 +94,8 @@
     "feat(skills)!: add role-guided progressive disclosure",
     "feat(skills)!: adopt OKF v0.2 artifact bundles",
     "chore(merge): record feature 005 canonical integration",
-    "chore(release)!: publish v3.0.0-rc.1"
+    "chore(release)!: publish v3.0.0-rc.1",
+    "fix(ci): validate complete history and v3 install",
+    "chore(release): publish v3.0.0-rc.2"
   ]
 }

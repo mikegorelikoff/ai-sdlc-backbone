@@ -7,7 +7,7 @@ description: Installed capability modules, compatibility ranges, dependencies, a
 
 <div class="grid cards" markdown>
 
--   **Architecture** · `optional` · `v3.0.0-rc.1`
+-   **Architecture** · `optional` · `v3.0.0-rc.2`
 
     Traceable system architecture decisions, interfaces, risks, and validation.
 
@@ -19,7 +19,7 @@ description: Installed capability modules, compatibility ranges, dependencies, a
 
     [Open manifest →](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/modules/architecture/module.json)
 
--   **Core** · `core` · `v3.0.0-rc.1`
+-   **Core** · `core` · `v3.0.0-rc.2`
 
     Core AI SDLC lifecycle, control-plane, and delivery skills.
 
@@ -31,7 +31,7 @@ description: Installed capability modules, compatibility ranges, dependencies, a
 
     [Open manifest →](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/modules/core/module.json)
 
--   **Evidence Council** · `optional` · `v3.0.0-rc.1`
+-   **Evidence Council** · `optional` · `v3.0.0-rc.2`
 
     Authority-safe simulated and independent evidence review orchestration.
 
@@ -43,7 +43,7 @@ description: Installed capability modules, compatibility ranges, dependencies, a
 
     [Open manifest →](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/modules/evidence-council/module.json)
 
--   **Research** · `optional` · `v3.0.0-rc.1`
+-   **Research** · `optional` · `v3.0.0-rc.2`
 
     Sourced research questions, evidence inventory, confidence, limitations, and delivery traces.
 
@@ -55,7 +55,7 @@ description: Installed capability modules, compatibility ranges, dependencies, a
 
     [Open manifest →](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/modules/research/module.json)
 
--   **Ux** · `optional` · `v3.0.0-rc.1`
+-   **Ux** · `optional` · `v3.0.0-rc.2`
 
     Traceable actors, journeys, interaction states, accessibility, and UX acceptance.
 

@@ -35,8 +35,8 @@ files without proving that their Python helpers will run.
 | Environment | Evidence | Status |
 | --- | --- | --- |
 | Ubuntu 24.04, Python 3.10 and 3.13 | Repository continuous-integration configuration; release-candidate run pending after publication | Configured candidate; support pending passing remote runs |
-| macOS, POSIX shell | `v3.0.0-rc.1` candidate source checks plus project/global installation smoke | Release candidate tested locally |
-| Codex on macOS, Skills CLI target `codex` | Project/global install smoke, guided flow, SDD, validation, and commit workflow on 2026-07-27 | `v3.0.0-rc.1` candidate manually validated |
+| macOS, POSIX shell | `v3.0.0-rc.2` candidate source checks plus project/global installation smoke | Release candidate tested locally |
+| Codex on macOS, Skills CLI target `codex` | Project/global install smoke, guided flow, SDD, validation, and commit workflow on 2026-07-27 | `v3.0.0-rc.2` candidate manually validated |
 | Windows Subsystem for Linux (WSL) | POSIX-compatible documented route; no recorded candidate run | Recommended candidate route for Windows; not yet verified |
 | Native PowerShell | Installation command only | Limited; end-to-end tutorials use WSL |
 | Offline clean machine | No cached npm or Python packages | Not supported for first bootstrap; use approved mirrors |
@@ -57,7 +57,7 @@ model host. The maintainers' behavioral examples use Codex-style agents.
 The exact manually validated host-scoped install used:
 
 ```bash
-HARNESS_TAG=v3.0.0-rc.1
+HARNESS_TAG=v3.0.0-rc.2
 HARNESS_TMP="$(mktemp -d)"
 HARNESS_SRC="$HARNESS_TMP/ai-sdlc-harness"
 git init "$HARNESS_SRC"
@@ -104,7 +104,7 @@ skills into the canonical global store while leaving them unlinked from Codex.
 ## Release candidate versus stable support
 
 Consumer installation instructions pin Skills CLI `1.5.19`, resolve annotated
-tag `v3.0.0-rc.1`, and record its exact commit. The release candidate passed
+tag `v3.0.0-rc.2`, and record its exact commit. The release candidate passed
 local installation and workflow gates, but protected remote CI and the tagged
 remote installation are verified only after publication. The stable
 `v2.1.0` tag remains the rollback target during candidate evaluation.
