@@ -34,7 +34,7 @@ repository will deliver and verify the change.
 A typo, log text fix, or test-only correction may use a small path with focused
 validation and no new SDD. Observable behavior, API, architecture, data,
 security, multi-component work, or meaningful rollout risk requires the SDD
-package before implementation. The navigator can recommend the earliest missing
+package before implementation. Flow Explore can recommend the earliest missing
 evidence but does not decide accountable product risk.
 
 Create and verify the task branch before SDD writes. The specification is

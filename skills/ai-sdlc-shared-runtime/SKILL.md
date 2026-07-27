@@ -6,7 +6,7 @@ description: Portable AI SDLC shared-helper runtime. Use when an AI assistant in
 # ai-sdlc-shared-runtime: Portable Helper Dependency
 
 > Internal AI SDLC dependency, not a client-facing lifecycle skill.
-> Do not select it instead of the navigator or an owning workflow.
+> Do not select it instead of the guided flow or an owning workflow.
 > Every installed capability that imports shared helpers must resolve this
 > sibling package before it executes.
 

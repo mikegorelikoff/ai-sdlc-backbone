@@ -22,7 +22,7 @@ DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --json
 
 You need Node.js `22.20.0+`, npm, and a configured agent host. Run the
 commands from the consumer project, review the files the installer reports,
-then run one bounded navigator request. If this works, stop here and use the
+then run one bounded flow Explore request. If this works, stop here and use the
 [first 30 minutes](../onboarding/first-30-minutes.md). The detailed sections
 below are only for pinned revisions, privacy review, global installs, or
 troubleshooting.
@@ -173,14 +173,14 @@ or unrelated pre-existing directory is a blocker for manual comparison, not
 permission for recursive cleanup.
 
 For a smaller installation, create the reviewed inventory first and use it as
-the exact installer input; do not copy the 45-name full inventory afterward:
+the exact installer input; do not copy the 44-name full inventory afterward:
 
 ```bash
 mkdir -p .ai-sdlc
 printf '%s\n' \
   ai-sdlc-commit-prep \
   ai-sdlc-conventional-commit \
-  ai-sdlc-navigator \
+  ai-sdlc-flow \
   ai-sdlc-project-context \
   ai-sdlc-sdd \
   ai-sdlc-shared-runtime \
@@ -210,7 +210,7 @@ DISABLE_TELEMETRY=1 npx -y skills@1.5.19 add "$HARNESS_SRC" --skill '*' --agent 
 DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --global --agent codex
 ```
 
-Expected: 45 skills install for the single `codex` target and the list command
+Expected: 44 skills install for the single `codex` target and the list command
 shows `"agents": ["Codex"]` for every global inventory item. `--copy` makes
 the selected installation method explicit before the temporary checkout is
 removed. Pre-creating `$HOME/.codex/skills` is required for a clean-home test
@@ -227,10 +227,10 @@ The upstream CLI defines these flags differently:
 
 Never combine global scope with `--all` or `--agent '*'` for this harness.
 Skills CLI `1.5.19` recognizes agents that do not define global installation,
-including Eve and PromptScript. With 45 skills, those two unsupported targets
-produce exactly 88 failures even when supported targets installed correctly.
-Rerun the explicit command above; do not interpret the failure count as 88
-broken harness skills. The flag meanings are defined by the
+including Eve and PromptScript. With 44 skills, those two unsupported targets
+produce a batch of target-specific failures even when supported targets
+installed correctly. Rerun the explicit command above; do not interpret that
+failure count as broken harness skills. The flag meanings are defined by the
 [official Skills CLI documentation](https://github.com/vercel-labs/skills#options),
 and the clean-home behavior is tracked in the upstream
 [global directory issue](https://github.com/vercel-labs/skills/issues/537).
@@ -245,15 +245,15 @@ and peer review are required.
 After changing a global inventory, start a fresh agent-host session. A host may
 cache its skill registry for one conversation. This refreshes host discovery;
 it does not replace filesystem verification. For a direct POSIX diagnostic,
-run the packaged navigator and inspect `skill_roots`:
+run the packaged flow Explore diagnostic:
 
 ```bash
-python3 "$HOME/.agents/skills/ai-sdlc-navigator/scripts/navigate.py" \
-  --root /path/to/consumer --intent "<request>" --quick-flow --format toon
+python3 "$HOME/.agents/skills/ai-sdlc-flow/scripts/flow.py" explore \
+  --root /path/to/consumer --intent "<request>" \
+  --feature 001-example --quick-flow --format toon
 ```
 
-The navigator discovers siblings from the package it is executing. If that
-report is correct but the host cannot invoke a skill after a new session,
+If that flow report is correct but the host cannot invoke a skill after a new session,
 record host, version, target, scope, and `skills list` evidence as a host
 conformance issue. Do not install every recognized agent as a workaround.
 
@@ -265,18 +265,18 @@ conformance issue. Do not install every recognized agent as a workaround.
     DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --json
     git status --short
     "$PYTHON_BIN" --version
-    "$PYTHON_BIN" .agents/skills/ai-sdlc-navigator/scripts/navigate.py --help
+    "$PYTHON_BIN" .agents/skills/ai-sdlc-flow/scripts/flow.py --help
     "$PYTHON_BIN" .agents/skills/ai-sdlc-sdd/scripts/sdd_artifact_scaffold.py --help
     ```
 
 Expected result:
 
-- for `all-skills`, the list contains all 45 managed names; for
+- for `all-skills`, the list contains all 44 managed names; for
   `explicit-skills`, every name in the reviewed managed inventory is present;
   either list may also contain unrelated project or third-party skills;
 - Git shows only the agent/skill files you intended to add;
 - Python reports 3.10 or newer;
-- navigator and SDD helper usage render without an import traceback;
+- flow and SDD helper usage render without an import traceback;
 - no application source, secrets, or existing project artifacts were replaced.
 
 The Codex-scoped command creates `.agents/skills/` and a transient
@@ -335,7 +335,7 @@ a shortcut.
 !!! example "Tell your agent"
 
     ```text
-    Use ai-sdlc-navigator --quick-flow.
+    Use ai-sdlc-flow to Explore with quick rigor.
     Inspect this repository without modifying it. Report the detected context,
     one required next action, optional actions, reasons, expected artifacts,
     and blockers for this request: add a health endpoint.
@@ -383,7 +383,7 @@ HTTPS credential with read access. Never paste tokens into an agent prompt.
 | `list --json` requires network | This CLI behavior is expected; use an approved registry/cache or record the offline limitation. |
 | Skill helper path missing | Confirm `.agents/skills/ai-sdlc-shared-runtime` and the selected skill both exist; reinstall the pair if either is absent. |
 | Unexpected agent directories | Do not commit or use the generic CLI remover. If the repository is disposable, delete that whole verified fixture from its parent. Otherwise follow the ownership-safe [uninstall procedure](update.md#remove-and-verify-cleanup), review every managed path, inspect status, and reinstall with an explicit `--agent`. |
-| Navigator says a global sibling skill is missing | Start a fresh host session, run the packaged navigator diagnostic above, and inspect `skill_roots`. Repair the explicit Codex-scoped install only when the root or sibling `SKILL.md` is absent; otherwise record a host-conformance issue. |
+| Flow reports a missing runtime or owning skill | Start a fresh host session and run the packaged flow diagnostic above. Repair the explicit Codex-scoped install only when the required sibling `SKILL.md` is absent; otherwise record a host-conformance issue. |
 | Project and global installations both exist | Treat the committed project inventory as repository authority. Compare revisions and update workstation state separately; do not assume host precedence or mix evidence from two revisions. |
 | Authentication or certificate failure | Stop and ask the repository/network owner. Never disable TLS verification or paste a token into chat. |
 

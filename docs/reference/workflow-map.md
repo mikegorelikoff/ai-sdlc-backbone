@@ -9,7 +9,7 @@ The map has four connected lanes. Use the earliest lane whose required evidence
 is missing; reuse valid upstream work.
 
 ```text
-request/evidence → navigator ┬→ 18-stage refinement → implementation SDD ┐
+request/evidence → flow Explore ┬→ 18-stage refinement → implementation SDD ┐
                              ├→ implementation SDD                       ├→ release evidence
                              └→ validation/review only ──────────────────┘
                                       ↑                                      ↓
@@ -20,7 +20,7 @@ changed intent/stale evidence → control plane ← learning/retrospective/metri
 
 | Lane | Entry | Capabilities | Completion |
 | --- | --- | --- | --- |
-| Navigate | Goal known, workflow unclear | Navigator, project context, rigor | Evidence-backed required/optional handoff; no mutation. |
+| Explore | Goal known, workflow unclear | Flow Explore, project context, rigor | Evidence-backed required/optional handoff; no mutation. |
 | Refine | Product/business/QA evidence incomplete | Exact 18 stages in [Complete refinement](../flows/refinement.md) | Delivery specification + QA readiness + accepted handoff. |
 | Implement | Behavior/design change ready to build | SDD, branching, context, validation, review, security, commit | Bounded task evidence and traceable commits. |
 | Control | Change, automation, policy, runtime, portability, operations | Change set, graph, evidence, policy, context v2, runtime, workflow, adapter, doctor, trust, metrics | Explained decision/result with recovery and handoff. |

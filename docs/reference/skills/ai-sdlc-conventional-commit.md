@@ -17,7 +17,7 @@ Draft, validate, or repair an AI SDLC commit message that uses Conventional Comm
 
 AI SDLC Conventional Commit workflow. Use when an AI assistant drafts, validates, reviews, or fixes commit messages in this repository, especially when commits must include SDD spec references, validation summaries, or safe conventional commit subjects. Supports `--quick-flow` for fast assumption-driven execution and `--full-flow` for question-driven verified execution.
 
-If the correct entry point is still unclear, ask the read-only navigator first instead of guessing.
+If the correct entry point is still unclear, use `ai-sdlc-flow` Explore first instead of guessing.
 
 ## Do not use it when
 

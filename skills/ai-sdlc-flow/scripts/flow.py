@@ -66,9 +66,14 @@ def current_card(card: object, root: Path) -> object:
 def state_command(card: object, root: Path) -> list[str]:
     """Return one exact allow-listed lifecycle transition command."""
     allowed = {
+        "ai-sdlc-branching",
+        "ai-sdlc-commit-prep",
         "ai-sdlc-working-backwards-discovery",
+        "ai-sdlc-qa-requirements-gap-review",
+        "ai-sdlc-user-story-decomposition",
         "ai-sdlc-sdd",
         "ai-sdlc-code-review",
+        "ai-sdlc-security-testing",
         "ai-sdlc-validation",
     }
     if card.skill not in allowed:

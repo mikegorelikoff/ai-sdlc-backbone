@@ -298,9 +298,9 @@ This preserves one observable outcome, read-only scope, an output schema, and a 
 
 **Scenario:** You have a supported host, a clean practice repository, and one real but low-risk request.
 
-**Supplied starting state:** Use the [disposable consumer fixture](../assets/learning-fixtures/first-30-minutes-consumer.txt), which supplies instructions, a tracked tree, a request, project-scoped inventory, a navigator result, and reset guidance. The emulated path is reproducible without an installed host; label it emulated. Replace its outputs with actual evidence only in an authorized disposable repository.
+**Supplied starting state:** Use the [disposable consumer fixture](../assets/learning-fixtures/first-30-minutes-consumer.txt), which supplies instructions, a tracked tree, a request, project-scoped inventory, a flow result, and reset guidance. The emulated path is reproducible; label it emulated. Replace its outputs with actual evidence only in an authorized disposable repository.
 
-**Exact learner task:** Verify environment, ask the navigator read-only, inspect routing, run one bounded skill, inspect artifacts, and stop.
+**Exact learner task:** Verify environment, Explore read-only, inspect routing, run one bounded skill, inspect artifacts, and stop.
 
 **Prerequisites:** Completed Labs 1–5. A real project-scoped install is optional transfer practice.
 
@@ -308,7 +308,7 @@ This preserves one observable outcome, read-only scope, an output schema, and a 
 
 **Prohibited actions:** Install into an unrelated global host; implement beyond the chosen step; skip repository status; publish or merge.
 
-**Expected artifact:** `06-first-30-minutes.md` with environment facts, navigator request and result, selected skill, created files, actual checks, and stop reason.
+**Expected artifact:** `06-first-30-minutes.md` with environment facts, flow request and result, selected skill, created files, actual checks, and stop reason.
 
 **Expected evidence:** Fixture or actual inventory, before/after status, cited routing, validation output, and honest execution mode.
 
@@ -316,7 +316,7 @@ This preserves one observable outcome, read-only scope, an output schema, and a 
 
 **Common mistakes:** Starting in the harness source checkout instead of the consumer; treating installation as skill discovery; allowing the agent to continue after the learning boundary.
 
-**Failure path:** Navigator cannot find installed skills or recommends a stale name.
+**Failure path:** Flow cannot load its installed runtime or recommends a stale skill name.
 
 **Reset or recovery path:** Stop, confirm host scope and installed revision, restart agent context when required, run the documented doctor/verification, and record the mismatch before retrying.
 

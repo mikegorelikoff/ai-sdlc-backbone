@@ -61,7 +61,7 @@ Classify mismatches:
 
 ## 5. Navigate the pilot request
 
-Ask the read-only navigator for the earliest missing stage. Reuse existing valid
+Ask flow Explore for the earliest missing stage. Reuse existing valid
 requirements, designs, tests, or tickets; do not recreate artifacts merely to
 match a template. If observable behavior changes and no implementation contract
 exists, create a proportionate SDD.

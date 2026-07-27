@@ -50,7 +50,7 @@ then progresses through AI-assisted SDLC, specification-driven development
 
     ---
 
-    Install project-scoped skills, ask the navigator for a safe entry point,
+    Install project-scoped skills, use flow Explore for a safe entry point,
     and complete a guided first session.
 
     [Start onboarding →](onboarding/index.md)

@@ -17,7 +17,7 @@ Convert planning structure into a delivery-oriented backlog with cross-functiona
 
 Use when goals, capabilities, and epics are defined and you need to decompose them into features, user stories, acceptance summaries, and cross-functional delivery tasks. Supports `--quick-flow` for fast assumption-driven execution and `--full-flow` for question-driven verified execution. Explicit full or end-to-end spec refinement requests continue through the existing 18-stage refinement cascade.
 
-If the correct entry point is still unclear, ask the read-only navigator first instead of guessing.
+If the correct entry point is still unclear, use `ai-sdlc-flow` Explore first instead of guessing.
 
 ## Do not use it when
 

@@ -17,7 +17,7 @@ Build a deterministic repository-wide lifecycle graph and answer trace, gap, cov
 
 AI SDLC repository delivery-graph and evidence-freshness workflow. Use when an AI assistant needs to index lifecycle traceability, resolve end-to-end paths, report gaps or orphans, register evidence identity, propagate stale dependencies, or calculate fresh evidence coverage. Supports `--quick-flow` for deterministic local analysis and `--full-flow` for strict trace and evidence review.
 
-If the correct entry point is still unclear, ask the read-only navigator first instead of guessing.
+If the correct entry point is still unclear, use `ai-sdlc-flow` Explore first instead of guessing.
 
 ## Do not use it when
 

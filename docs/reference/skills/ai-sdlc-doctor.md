@@ -17,7 +17,7 @@ Explain installation health and upgrade impact before mutation.
 
 AI SDLC installation diagnostics and safe upgrade planning. Use when an AI assistant needs to inspect harness prerequisites, repository layout, module and skill registration, detect actionable installation problems, compare versioned file inventories, preview additions/modifications/removals/schema migrations, or produce backup and rollback plans without applying an upgrade. Supports `--quick-flow` and `--full-flow`.
 
-If the correct entry point is still unclear, ask the read-only navigator first instead of guessing.
+If the correct entry point is still unclear, use `ai-sdlc-flow` Explore first instead of guessing.
 
 ## Do not use it when
 

@@ -591,7 +591,7 @@ def validate_flows(root: Path = ROOT) -> list[str]:
             "git diff --check",
             "feature/001-health-endpoint",
             "test_deliberate_unknown_route_regression.py",
-            "ai-sdlc-navigator/v1",
+            "ai-sdlc-flow/v1",
             TUTORIAL_NAVIGATOR_INTENT,
         )
         for token in required:
@@ -616,11 +616,11 @@ def validate_flows(root: Path = ROOT) -> list[str]:
                 errors.append("docs/tutorials/first-feature.md: handoff next_required must contain four populated columns")
         for source in (
             root / "skills/_shared/ai_sdlc_install_smoke.py",
-            root / "skills/ai-sdlc-navigator/tests/test_navigate.py",
+            root / "skills/ai-sdlc-flow/tests/test_flow.py",
         ):
             if not source.is_file() or TUTORIAL_NAVIGATOR_INTENT not in source.read_text(encoding="utf-8"):
                 errors.append(
-                    f"{display_path(source, root)}: tutorial navigator intent is not exercised exactly"
+                    f"{display_path(source, root)}: tutorial flow intent is not exercised exactly"
                 )
 
     fixture = root / "examples" / "onboarding-health-service"

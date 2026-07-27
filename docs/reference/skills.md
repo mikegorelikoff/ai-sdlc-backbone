@@ -29,7 +29,6 @@ This compact alphabetical inventory links every installed capability to its cano
 | [`ai-sdlc-flow`](skills/ai-sdlc-flow.md) | QA, BA, PM, PO, Software Engineer | Cross-lifecycle guided entry | `core` | `ai-sdlc-flow/v1` Markdown, TOON, or JSON decision card and one bounded Apply result |
 | [`ai-sdlc-goal-capability-and-epic-mapping`](skills/ai-sdlc-goal-capability-and-epic-mapping.md) | BA, PM | Planning architecture | `core` | Goal-to-capability map and outcome-oriented epics |
 | [`ai-sdlc-host-adapter`](skills/ai-sdlc-host-adapter.md) | Software Engineer | Portable execution handoff | `core` | `_ai_sdlc/adapters/<adapter-id>/negotiation.{toon,json,md}` |
-| [`ai-sdlc-navigator`](skills/ai-sdlc-navigator.md) | QA, BA, PM, PO, Software Engineer | Cross-lifecycle navigation | `core` | Read-only Markdown or TOON navigation report |
 | [`ai-sdlc-package-trust`](skills/ai-sdlc-package-trust.md) | Software Engineer | Package trust and local observability | `core` | `_ai_sdlc/trust/<package-id>/decision.{toon,json,md}` or `_ai_sdlc/metrics/local.{toon,json,md}` |
 | [`ai-sdlc-policy`](skills/ai-sdlc-policy.md) | QA, PM, Software Engineer | Governance and control evaluation | `core` | `_ai_sdlc/policy-resolution.{toon,json}` or fingerprint-addressed TOON/JSON records below `_ai_sdlc/policy-decisions/` when `--write` is requested |
 | [`ai-sdlc-prfaq-package-synthesis`](skills/ai-sdlc-prfaq-package-synthesis.md) | BA, PM, PO | PRFAQ / business requirements synthesis | `core` | PRFAQ, FAQ package, and BRD-style requirements summary |

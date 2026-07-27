@@ -419,7 +419,7 @@ The harness's deeper [context, prompts, and personalization](../foundations/cont
 
 Harness skills have their own input, output, failure, and validation contracts. A prompt should invoke or request the appropriate activity rather than restating an entire skill contract. The [skills-by-role reference](../reference/skills-by-role.md) helps discover relevant skills, but role labels do not grant permission.
 
-When you know the intended workflow, name the outcome and context rather than asking the navigator to “do everything.” When you do not know the workflow, formulate a navigator request with the same five sections. The navigator can recommend a next skill and artifact; a human still owns decisions and approvals.
+When you know the intended workflow, name the outcome and context rather than asking flow to “do everything.” When you do not know the workflow, formulate a flow Explore request with the same five sections. Explore can recommend a next skill and artifact; a human still owns decisions and approvals.
 
 Durable artifacts carry accepted information forward. Do not paste a stale specification into each prompt. Point to the current feature context and ask the agent to report freshness or conflicts. Prompt text initiates work; repository state and evidence support handoff.
 

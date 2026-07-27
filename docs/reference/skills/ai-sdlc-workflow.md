@@ -17,7 +17,7 @@ Compile portable workflow intent into deterministic, gated, host-safe waves.
 
 AI SDLC declarative workflow planning. Use when an AI assistant needs to validate a versioned workflow, plan typed dependency steps, evaluate bounded conditions, enforce approval gates, attach deterministic hooks, detect cycles, or create safe dependency waves with sequential fallback when host concurrency or isolation is unavailable. Supports `--quick-flow` and `--full-flow`.
 
-If the correct entry point is still unclear, ask the read-only navigator first instead of guessing.
+If the correct entry point is still unclear, use `ai-sdlc-flow` Explore first instead of guessing.
 
 ## Do not use it when
 

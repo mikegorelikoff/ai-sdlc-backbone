@@ -375,9 +375,9 @@ class DocumentationValidationTests(unittest.TestCase):
         outputs = generated_outputs()
         skills = skill_sources()
         records = [script_record(path) for path in script_sources()]
-        self.assertEqual(len(skills), 45)
-        self.assertEqual(len(records), 120)
-        self.assertEqual(len(SKILL_SELECTION_BOUNDARIES), 45)
+        self.assertEqual(len(skills), 44)
+        self.assertEqual(len(records), 119)
+        self.assertEqual(len(SKILL_SELECTION_BOUNDARIES), 44)
         self.assertEqual(validate_selection_contract(skills), [])
         self.assertEqual(validate_role_skill_groups(skills), [])
         role_page = outputs[CATALOG_DOCS / "reference/skills-by-role.md"]
@@ -400,23 +400,25 @@ class DocumentationValidationTests(unittest.TestCase):
     def test_generated_catalog_rejects_missing_sections_and_paths(self) -> None:
         outputs = generated_outputs()
         records = [script_record(path) for path in script_sources()]
-        navigator = outputs[SKILL_GUIDES / "ai-sdlc-navigator.md"]
-        broken_guide = navigator.replace("## Handoff", "## Missing handoff", 1)
+        flow = outputs[SKILL_GUIDES / "ai-sdlc-flow.md"]
+        broken_guide = flow.replace("## Handoff", "## Missing handoff", 1)
         self.assertTrue(
             any(
                 "missing guide section ## Handoff" in error
-                for error in validate_skill_guide(broken_guide, "ai-sdlc-navigator")
+                for error in validate_skill_guide(broken_guide, "ai-sdlc-flow")
             )
         )
 
-        broken_selection = navigator.replace(
-            "Use that owning skill instead", "Use that owning skill", 1
+        broken_selection = flow.replace(
+            "Explore instead", "Explore", 1
+        ).replace(
+            "owning skill instead", "owning skill", 1
         )
         self.assertTrue(
             any(
                 "non-use guidance must name a concrete alternative" in error
                 for error in validate_skill_guide(
-                    broken_selection, "ai-sdlc-navigator"
+                    broken_selection, "ai-sdlc-flow"
                 )
             )
         )

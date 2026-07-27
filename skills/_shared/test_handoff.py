@@ -22,7 +22,7 @@ class HandoffTests(unittest.TestCase):
     def test_complete_toon_contains_all_contract_fields(self) -> None:
         """A complete handoff should expose required and optional action fields."""
         result = self.run_handoff(
-            "--result", "complete", "--summary", "Navigator delivered",
+            "--result", "complete", "--summary", "Flow delivered",
             "--next-required", "ai-sdlc-validation|Validate the diff|Use validation|validation evidence",
             "--next-optional", "ai-sdlc-security-testing|Review trust boundaries|Use security testing|security-review.md",
             "--format", "toon",

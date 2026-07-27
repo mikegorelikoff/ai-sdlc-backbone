@@ -21,7 +21,7 @@ ambiguous.
 PYTHON_BIN="${PYTHON_BIN:-python3}"
 DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --json
 git status --short
-"$PYTHON_BIN" .agents/skills/ai-sdlc-navigator/scripts/navigate.py --help
+"$PYTHON_BIN" .agents/skills/ai-sdlc-flow/scripts/flow.py --help
 "$PYTHON_BIN" .agents/skills/ai-sdlc-sdd/scripts/sdd_artifact_scaffold.py --help
 ```
 

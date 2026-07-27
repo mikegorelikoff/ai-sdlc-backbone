@@ -115,8 +115,8 @@ Do not Apply until I explicitly approve that card.
 Request: add a health endpoint to this service.
 ```
 
-Experienced contributors can still invoke `ai-sdlc-navigator` or any owning
-skill directly; those remain supported advanced paths.
+Experienced contributors can still invoke any owning skill directly; that
+remains the supported advanced path.
 
 Then follow [Your first 30 minutes](docs/onboarding/first-30-minutes.md) and
 the [first feature tutorial](docs/tutorials/first-feature.md).

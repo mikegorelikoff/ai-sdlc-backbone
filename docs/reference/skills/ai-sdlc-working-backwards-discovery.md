@@ -17,11 +17,11 @@ Run the discovery interview that turns an initiative idea into a structured, bus
 
 Use when a user needs a staged working-backwards interview to clarify the customer problem, audience, value proposition, business case, MVP, requirements, risks, and success metrics before any PRFAQ is written. Supports `--quick-flow` for fast assumption-driven execution and `--full-flow` for question-driven verified execution. Explicit full or end-to-end spec refinement requests continue through the existing 18-stage refinement cascade.
 
-If the correct entry point is still unclear, ask the read-only navigator first instead of guessing.
+If the correct entry point is still unclear, use `ai-sdlc-flow` Explore first instead of guessing.
 
 ## Do not use it when
 
-- Do not use it when the problem and behavior are already accepted and implementation can start. Use `ai-sdlc-navigator` or `ai-sdlc-sdd` instead.
+- Do not use it when the problem and behavior are already accepted and implementation can start. Use `ai-sdlc-flow` Explore or `ai-sdlc-sdd` instead.
 - Do not use it to synthesize the final PRFAQ package. Use `ai-sdlc-prfaq-package-synthesis` instead.
 
 

@@ -24,10 +24,10 @@ def display_name(value):
   Clarify the error shown for an empty display name.
 
 [Emulated installed inventory]
-  ai-sdlc-navigator, ai-sdlc-ba, ai-sdlc-validation
+  ai-sdlc-flow, ai-sdlc-ba, ai-sdlc-validation
   scope: project; revision: practice-fixture; host: emulated
 
-[Emulated navigator result]
+[Emulated flow Explore result]
   route: ai-sdlc-ba read-only framing
   reason: desired empty-state wording and owner are missing
   expected next artifact: bounded ambiguity/question record
@@ -39,4 +39,4 @@ Create a temporary directory, copy this fixture there as `fixture.txt`, run
 `git init`, then create only `learning-evidence/`. The paper path needs no code
 execution. Delete only that temporary directory to reset; never reset the
 harness checkout. If using a real installed host, replace emulated evidence
-with actual inventory and navigator output and keep the same write boundary.
+with actual inventory and flow Explore output and keep the same write boundary.

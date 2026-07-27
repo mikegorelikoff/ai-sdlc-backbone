@@ -93,10 +93,10 @@ def checkout_revision(repository: str, revision: str, destination: Path) -> None
         raise RuntimeError(f"expected source revision {revision}, found {actual.stdout.strip()}")
 
 
-def verify(consumer: Path, source_checkout: Path | None = None, expected_skill_count: int = 45) -> None:
+def verify(consumer: Path, source_checkout: Path | None = None, expected_skill_count: int = 44) -> None:
     """Execute installed imports, one complete write, and finalization."""
-    require(run(["git", "init"], consumer), "navigator fixture git init")
-    require(run(["git", "checkout", "-B", "dev"], consumer), "navigator fixture dev branch")
+    require(run(["git", "init"], consumer), "flow fixture git init")
+    require(run(["git", "checkout", "-B", "dev"], consumer), "flow fixture dev branch")
     require(
         run(
             [
@@ -114,7 +114,7 @@ def verify(consumer: Path, source_checkout: Path | None = None, expected_skill_c
             ],
             consumer,
         ),
-        "navigator fixture base commit",
+        "flow fixture base commit",
     )
     installed = consumer / ".agents" / "skills"
     installed_skills = [path for path in installed.iterdir() if path.is_dir() and path.name != "_shared"]
@@ -124,7 +124,6 @@ def verify(consumer: Path, source_checkout: Path | None = None, expected_skill_c
         raise RuntimeError("smoke must not depend on source-only skills/_shared")
     runtime = installed / "ai-sdlc-shared-runtime" / "scripts"
     config_resolver = runtime / "ai_sdlc_config.py"
-    navigator = installed / "ai-sdlc-navigator" / "scripts" / "navigate.py"
     flow = installed / "ai-sdlc-flow" / "scripts" / "flow.py"
     sdd_scripts = installed / "ai-sdlc-sdd" / "scripts"
     scaffold = sdd_scripts / "sdd_artifact_scaffold.py"
@@ -152,7 +151,7 @@ def verify(consumer: Path, source_checkout: Path | None = None, expected_skill_c
         installed / "ai-sdlc-doctor" / "scripts" / "doctor.py",
         installed / "ai-sdlc-policy" / "scripts" / "policy.py",
     )
-    for script in (runtime / "state_machine.py", navigator, flow, scaffold, commit_ready, *documented_how_to_scripts):
+    for script in (runtime / "state_machine.py", flow, scaffold, commit_ready, *documented_how_to_scripts):
         if not script.is_file():
             raise RuntimeError(f"installed helper missing: {script.relative_to(consumer)}")
         require(run([sys.executable, str(script), "--help"], consumer), script.name)
@@ -160,20 +159,43 @@ def verify(consumer: Path, source_checkout: Path | None = None, expected_skill_c
     routed = run(
         [
             sys.executable,
-            str(navigator),
+            str(flow),
+            "explore",
             "--intent",
             "Implement GET /health behavior while preserving existing route behavior.",
+            "--feature",
+            "001-runtime-smoke",
             "--format",
             "toon",
             "--quick-flow",
         ],
         consumer,
     )
-    require(routed, "installed navigator routing")
-    if "recommended skill is not installed" in routed.stdout:
-        raise RuntimeError("navigator did not discover project-scoped installed skills")
-    if "  ai-sdlc-branching," not in routed.stdout:
-        raise RuntimeError("tutorial intent on dev did not route to ai-sdlc-branching")
+    require(routed, "installed flow routing")
+    if "skill: ai-sdlc-branching" not in routed.stdout:
+        raise RuntimeError("shared-base implementation did not route to ai-sdlc-branching")
+    require(
+        run(["git", "checkout", "-b", "feature/001-runtime-smoke"], consumer),
+        "flow fixture feature branch",
+    )
+    routed = run(
+        [
+            sys.executable,
+            str(flow),
+            "explore",
+            "--intent",
+            "Implement GET /health behavior while preserving existing route behavior.",
+            "--feature",
+            "001-runtime-smoke",
+            "--format",
+            "toon",
+            "--quick-flow",
+        ],
+        consumer,
+    )
+    require(routed, "installed flow feature routing")
+    if "skill: ai-sdlc-sdd" not in routed.stdout:
+        raise RuntimeError("tutorial intent did not route to ai-sdlc-sdd")
 
     spec = consumer / "specs" / "001-runtime-smoke"
     artifact_sections = {

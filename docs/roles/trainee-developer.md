@@ -16,7 +16,7 @@ test, or generated change is wrong.
 ## Where you participate
 
 Start with the [Learn hub](../start.md) and complete the beginner prerequisites,
-then install in a disposable consumer repository, ask the read-only navigator for one next action, and follow
+then install in a disposable consumer repository, ask flow Explore for one next action, and follow
 the [first feature tutorial](../tutorials/first-feature.md) with a mentor review
 at every human checkpoint.
 
@@ -44,7 +44,7 @@ explain. Escalate those decisions to the named owner.
 
 1. Verify Git, Node.js, npm, Python, network, and agent host.
 2. Install project-scoped skills and inspect every created path.
-3. Ask `ai-sdlc-navigator --quick-flow` to route one low-risk request.
+3. Ask `ai-sdlc-flow` Explore with quick rigor to route one low-risk request.
 4. Create a task branch, specification, tests, and implementation in that order.
 5. Run the exact validation, introduce the tutorial failure, and recover it.
 6. Ask a lead or mentor to review the diff and evidence before merge.

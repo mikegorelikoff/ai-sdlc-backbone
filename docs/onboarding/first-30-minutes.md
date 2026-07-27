@@ -100,7 +100,7 @@ stop before asking the agent to write.
 
     ```text
     Use <recommended-skill> --quick-flow.
-    Follow the navigator handoff. Before writing anything, state the inputs,
+    Follow the flow Explore handoff. Before writing anything, state the inputs,
     target path, authority boundary, expected output, and validation command.
     Stop if a material decision or permission is missing.
     ```

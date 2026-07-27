@@ -30,8 +30,16 @@ consumers that parse only `ai-sdlc-context/v2` or
 3. Change module compatibility ranges to accept Harness API `2.0.0` only after
    the module passes its own tests. Bundled modules declare `>=2.0.0,<3.0.0`.
 4. Start a new agent session so the host reloads the installed skill inventory.
-5. Run the navigator diagnostic, a complete disposable SDD workflow, the
+5. Run the flow Explore diagnostic, a complete disposable SDD workflow, the
    project tests, and the install-record validator.
+
+## Migrate from navigator to flow
+
+`ai-sdlc-navigator` was removed during the `2.0.0` release-candidate line
+because it duplicated the guided routing responsibility now owned by
+`ai-sdlc-flow`. Replace navigator requests with a read-only flow Explore card
+using the same intent plus an explicit `NNN-feature` slug. Invoke a known owning
+skill directly when routing is unnecessary.
 
 Existing context command flags, selector v2, topology v2, canonical artifact
 routes, and quick/full flow flags remain available. Compatibility at those

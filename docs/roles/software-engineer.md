@@ -39,7 +39,7 @@ risk acceptance, and release authority remain with their named owners.
 
 ## Example workflow
 
-`navigator → branching → SDD → test cases → implementation → validation → code
+`flow Explore → branching → SDD → test cases → implementation → validation → code
 review → security review when applicable → commit preparation → pull request`.
 If output is wrong, preserve the diff, reopen the earliest stale contract,
 repair the smallest surface, and rerun downstream checks.

@@ -14,7 +14,7 @@ import ai_sdlc_install_record as install_record
 class InstallRecordTests(unittest.TestCase):
     def fixture(self, root: Path, *, selection: str = "explicit-skills") -> tuple[Path, Path]:
         skills = root / ".agents/skills"
-        names = ["ai-sdlc-navigator", "ai-sdlc-shared-runtime"]
+        names = ["ai-sdlc-flow", "ai-sdlc-shared-runtime"]
         for name in names:
             (skills / name).mkdir(parents=True)
         record = root / ".ai-sdlc/harness-install.json"
@@ -41,13 +41,13 @@ class InstallRecordTests(unittest.TestCase):
     def test_missing_managed_skill_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             record, skills = self.fixture(Path(temp))
-            (skills / "ai-sdlc-navigator").rmdir()
+            (skills / "ai-sdlc-flow").rmdir()
             self.assertTrue(any("managed skills are not installed" in error for error in install_record.validate(record, skills)))
 
     def test_explicit_subset_requires_shared_runtime(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             record, skills = self.fixture(Path(temp))
-            (record.parent / "harness-managed-skills.txt").write_text("ai-sdlc-navigator\n", encoding="utf-8")
+            (record.parent / "harness-managed-skills.txt").write_text("ai-sdlc-flow\n", encoding="utf-8")
             self.assertTrue(any("must include ai-sdlc-shared-runtime" in error for error in install_record.validate(record, skills)))
 
     def test_truncated_all_skills_inventory_is_rejected(self) -> None:

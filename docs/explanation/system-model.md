@@ -15,4 +15,4 @@ Markdown holds detailed delivery truth for people: requirements, design, cases, 
 
 ## Control through evidence
 
-The navigator reads installed capabilities and current repository state. The rigor engine reads explicit risk factors. State machines and plans record progress. Validation, review, and commit preparation attach evidence to completion. Humans retain authority over product decisions, approvals, and policy changes.
+Flow Explore reads bounded repository evidence and classifies intent before selecting a route. The rigor engine reads explicit risk factors. State machines and plans record progress. Validation, review, and commit preparation attach evidence to completion. Humans retain authority over product decisions, approvals, and policy changes.

@@ -19,7 +19,7 @@ UNTRUSTED_INPUT_SKILLS = (
     "ai-sdlc-conventional-commit",
     "ai-sdlc-delivery-graph",
     "ai-sdlc-evidence-council",
-    "ai-sdlc-navigator",
+    "ai-sdlc-flow",
     "ai-sdlc-project-context",
     "ai-sdlc-qa-requirements-gap-review",
     "ai-sdlc-sdd",

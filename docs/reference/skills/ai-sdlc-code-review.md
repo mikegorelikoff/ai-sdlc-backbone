@@ -17,7 +17,7 @@ Review AI SDLC code, diffs, branches, commits, or completed implementations for 
 
 AI SDLC code review workflow. Use when an AI assistant is asked to review a diff, PR, branch, commit, staged changes, or completed implementation against SDD requirements, tests, API contracts, security, and scope discipline. Supports `--quick-flow` for fast assumption-driven execution and `--full-flow` for question-driven verified execution.
 
-If the correct entry point is still unclear, ask the read-only navigator first instead of guessing.
+If the correct entry point is still unclear, use `ai-sdlc-flow` Explore first instead of guessing.
 
 ## Do not use it when
 

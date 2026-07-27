@@ -17,7 +17,7 @@ Run the final planning gate on the backlog package before estimation, roadmap sl
 
 Use after backlog decomposition to define prioritization, MVP and release slices, sequencing, readiness, traceability, and JIRA-ready outputs, then score backlog quality for planning and estimation. Supports `--quick-flow` for fast assumption-driven execution and `--full-flow` for question-driven verified execution. Explicit full or end-to-end spec refinement requests continue through the existing 18-stage refinement cascade.
 
-If the correct entry point is still unclear, ask the read-only navigator first instead of guessing.
+If the correct entry point is still unclear, use `ai-sdlc-flow` Explore first instead of guessing.
 
 ## Do not use it when
 

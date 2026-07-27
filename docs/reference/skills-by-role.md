@@ -38,7 +38,6 @@ Own testability, coverage strategy, acceptance evidence, and QA readiness; produ
 | Group | Role relationship | Skill |
 | --- | --- | --- |
 | Entry and context | Supply intent or evidence | [`ai-sdlc-flow`](skills/ai-sdlc-flow.md) |
-| Entry and context | Supply intent or evidence | [`ai-sdlc-navigator`](skills/ai-sdlc-navigator.md) |
 | Governance and operations | Consult or apply within role authority | [`ai-sdlc-policy`](skills/ai-sdlc-policy.md) |
 | Handoff and recovery | Produce, consume, or reopen evidence | [`ai-sdlc-change-impact`](skills/ai-sdlc-change-impact.md) |
 | Handoff and recovery | Produce, consume, or reopen evidence | [`ai-sdlc-delivery-graph`](skills/ai-sdlc-delivery-graph.md) |
@@ -72,7 +71,6 @@ Own actors, workflows, business rules, assumptions, and acceptance logic; produc
 | Group | Role relationship | Skill |
 | --- | --- | --- |
 | Entry and context | Supply intent or evidence | [`ai-sdlc-flow`](skills/ai-sdlc-flow.md) |
-| Entry and context | Supply intent or evidence | [`ai-sdlc-navigator`](skills/ai-sdlc-navigator.md) |
 | Entry and context | Supply intent or evidence | [`ai-sdlc-research`](skills/ai-sdlc-research.md) |
 | Entry and context | Supply intent or evidence | [`ai-sdlc-working-backwards-discovery`](skills/ai-sdlc-working-backwards-discovery.md) |
 | Handoff and recovery | Produce, consume, or reopen evidence | [`ai-sdlc-change-impact`](skills/ai-sdlc-change-impact.md) |
@@ -96,7 +94,7 @@ Own customer problem, value, outcomes, scope, priority, and product trade-offs; 
 
 | Choose when… | Role relationship | Start with | Required input | Next handoff |
 | --- | --- | --- | --- | --- |
-| Find the smallest safe next action | Own product decision inputs | [`ai-sdlc-navigator`](skills/ai-sdlc-navigator.md) | Request plus current repository control records | One owning skill |
+| Explore a readable route and apply one checkpoint | Own product decision inputs | [`ai-sdlc-flow`](skills/ai-sdlc-flow.md) | Request, repository controls, and explicit feature | One owning skill |
 | Frame an unclear customer problem | Own product decision inputs | [`ai-sdlc-working-backwards-discovery`](skills/ai-sdlc-working-backwards-discovery.md) | Audience, observed problem, and available evidence | PRFAQ synthesis |
 | Create a decision-ready product package | Own product decision inputs | [`ai-sdlc-prfaq-package-synthesis`](skills/ai-sdlc-prfaq-package-synthesis.md) | Validated discovery notes | Requirements readiness |
 | Map outcomes to delivery structure | Own product decision inputs | [`ai-sdlc-goal-capability-and-epic-mapping`](skills/ai-sdlc-goal-capability-and-epic-mapping.md) | Ready requirements package | Backlog gap review |
@@ -107,7 +105,6 @@ Own customer problem, value, outcomes, scope, priority, and product trade-offs; 
 
 | Group | Role relationship | Skill |
 | --- | --- | --- |
-| Entry and context | Supply intent or evidence | [`ai-sdlc-flow`](skills/ai-sdlc-flow.md) |
 | Entry and context | Supply intent or evidence | [`ai-sdlc-research`](skills/ai-sdlc-research.md) |
 | Governance and operations | Consult or apply within role authority | [`ai-sdlc-policy`](skills/ai-sdlc-policy.md) |
 | Handoff and recovery | Produce, consume, or reopen evidence | [`ai-sdlc-change-impact`](skills/ai-sdlc-change-impact.md) |
@@ -134,7 +131,7 @@ Own day-to-day backlog readiness, acceptance clarity, sequencing, and product ha
 
 | Choose when… | Role relationship | Start with | Required input | Next handoff |
 | --- | --- | --- | --- | --- |
-| Find the smallest safe next action | Use to route work | [`ai-sdlc-navigator`](skills/ai-sdlc-navigator.md) | Request plus current repository control records | One owning skill |
+| Explore a readable route and apply one checkpoint | Use to route work | [`ai-sdlc-flow`](skills/ai-sdlc-flow.md) | Request, repository controls, and explicit feature | One owning skill |
 | Check planning inputs before backlog work | Collaborate and review | [`ai-sdlc-backlog-requirements-gap-review`](skills/ai-sdlc-backlog-requirements-gap-review.md) | Goals, roles, capabilities, and epics | Backlog decomposition or planning owner |
 | Create delivery backlog and stories | Prioritize and review | [`ai-sdlc-backlog-decomposition-and-task-planning`](skills/ai-sdlc-backlog-decomposition-and-task-planning.md) | Ready goals, capabilities, and epics | Release slicing |
 | Turn clarified scope into stories | Collaborate and accept clarity | [`ai-sdlc-user-story-decomposition`](skills/ai-sdlc-user-story-decomposition.md) | Goals/epics and resolved delivery gaps | Delivery specification |
@@ -145,7 +142,6 @@ Own day-to-day backlog readiness, acceptance clarity, sequencing, and product ha
 
 | Group | Role relationship | Skill |
 | --- | --- | --- |
-| Entry and context | Supply intent or evidence | [`ai-sdlc-flow`](skills/ai-sdlc-flow.md) |
 | Entry and context | Supply intent or evidence | [`ai-sdlc-working-backwards-discovery`](skills/ai-sdlc-working-backwards-discovery.md) |
 | Handoff and recovery | Produce, consume, or reopen evidence | [`ai-sdlc-change-impact`](skills/ai-sdlc-change-impact.md) |
 | Handoff and recovery | Produce, consume, or reopen evidence | [`ai-sdlc-delivery-graph`](skills/ai-sdlc-delivery-graph.md) |
@@ -169,8 +165,8 @@ Own technical design, implementation correctness, testable task boundaries, revi
 
 | Choose when… | Role relationship | Start with | Required input | Next handoff |
 | --- | --- | --- | --- | --- |
-| Find the smallest safe next action | Own or execute engineering work | [`ai-sdlc-navigator`](skills/ai-sdlc-navigator.md) | Request plus current repository control records | One owning skill |
-| Ground work in repository evidence | Own or execute engineering work | [`ai-sdlc-project-context`](skills/ai-sdlc-project-context.md) | Repository sources and one task intent | Navigator or SDD |
+| Explore a readable route and apply one checkpoint | Own or execute engineering work | [`ai-sdlc-flow`](skills/ai-sdlc-flow.md) | Request, repository controls, and explicit feature | One owning skill |
+| Ground work in repository evidence | Own or execute engineering work | [`ai-sdlc-project-context`](skills/ai-sdlc-project-context.md) | Repository sources and one task intent | Flow Explore or SDD |
 | Create or verify the task branch | Own or execute engineering work | [`ai-sdlc-branching`](skills/ai-sdlc-branching.md) | Accepted task/spec and Git state | SDD or implementation |
 | Specify a behavior or architecture change | Own or execute engineering work | [`ai-sdlc-sdd`](skills/ai-sdlc-sdd.md) | Clear behavior and affected system | Bounded implementation tasks |
 | Derive verifiable implementation scenarios | Own or execute engineering work | [`ai-sdlc-test-cases`](skills/ai-sdlc-test-cases.md) | Requirement IDs and expected outcomes | Automated tests or suite synthesis |
@@ -182,7 +178,6 @@ Own technical design, implementation correctness, testable task boundaries, revi
 
 | Group | Role relationship | Skill |
 | --- | --- | --- |
-| Entry and context | Supply intent or evidence | [`ai-sdlc-flow`](skills/ai-sdlc-flow.md) |
 | Entry and context | Supply intent or evidence | [`ai-sdlc-research`](skills/ai-sdlc-research.md) |
 | Governance and operations | Consult or apply within role authority | [`ai-sdlc-approvals-sandbox`](skills/ai-sdlc-approvals-sandbox.md) |
 | Governance and operations | Consult or apply within role authority | [`ai-sdlc-doctor`](skills/ai-sdlc-doctor.md) |

@@ -19,4 +19,4 @@ Schema `ai-sdlc-handoff/v1` contains:
 Use `skills/_shared/ai_sdlc_handoff.py` to validate and render Markdown or TOON.
 The emitter is read-only: the owning workflow completes artifacts and state
 before producing its handoff. When the next required action is unclear, use
-`ai-sdlc-navigator` and then emit the selected action.
+`ai-sdlc-flow` Explore and then emit the selected action.

@@ -159,4 +159,4 @@ mixes observation and policy mutation and has no evidence or decision.
 - Do not accept proposals on behalf of owners.
 - Do not turn anecdotes into observations without durable evidence.
 - Do not advance feature lifecycle or hide failed proposals.
-- Use `$ai-sdlc-navigator` to route accepted implementation work.
+- Use `$ai-sdlc-flow` Explore to route accepted implementation work.

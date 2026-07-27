@@ -170,4 +170,4 @@ trace target, owner, status, or executable next action.
 - Do not accept, reject, or defer findings without the accountable owner.
 - Do not use generic model opinion as evidence.
 - Do not advance lifecycle state or weaken protected rigor gates.
-- Use `$ai-sdlc-navigator` when the owning remediation workflow is unclear.
+- Use `$ai-sdlc-flow` Explore when the owning remediation workflow is unclear.

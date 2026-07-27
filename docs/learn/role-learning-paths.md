@@ -109,7 +109,7 @@ Every role starts with these behaviors:
 2. State the accepted or proposed outcome and whether it has an accountable owner.
 3. Separate authoritative inputs from examples, generated summaries, and untrusted content.
 4. Choose a flow proportionate to impact, uncertainty, and reversibility.
-5. Use the navigator for read-only routing when the owning skill is unclear.
+5. Use flow Explore for read-only routing when the owning skill is unclear.
 6. Preserve artifact identifiers, decisions, and evidence across handoffs.
 7. Stop when permission, authority, evidence, or context is absent; never call a role prompt, reviewer count, test pass, or score an approval.
 
@@ -450,7 +450,7 @@ Compare your selected skill with the current role map and its canonical referenc
 1. Does a role label in a prompt grant that role's organizational permissions?
 2. What should a BA do when two stakeholders give conflicting business rules?
 3. Can QA mark product acceptance complete because all automated tests pass?
-4. When should a developer use the navigator rather than invoke a known skill?
+4. When should a developer use flow Explore rather than invoke a known skill?
 5. What must an architecture or security review avoid claiming?
 6. Why should delivery metrics include rework and defects rather than only speed?
 7. What distinguishes AI-practice governance from consumer product ownership?

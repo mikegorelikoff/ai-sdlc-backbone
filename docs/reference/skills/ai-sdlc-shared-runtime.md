@@ -17,11 +17,11 @@ Make the deterministic shared Python runtime portable when Skills CLI installs i
 
 Portable AI SDLC shared-helper runtime. Use when an AI assistant installs, verifies, diagnoses, or repairs project-scoped AI SDLC skills whose deterministic scripts depend on shared state, artifact, context, path, TOON, migration, or index modules. This is an installation dependency, not a lifecycle entry point.
 
-If the correct entry point is still unclear, ask the read-only navigator first instead of guessing.
+If the correct entry point is still unclear, use `ai-sdlc-flow` Explore first instead of guessing.
 
 ## Do not use it when
 
-- Do not use shared helpers as a lifecycle entry point. Use `ai-sdlc-navigator` or the owning skill instead.
+- Do not use shared helpers as a lifecycle entry point. Use `ai-sdlc-flow` Explore or the owning skill instead.
 - Do not edit installed mirrors to repair packaging. Use the authorized install or update workflow and canonical `_shared` sources instead.
 
 

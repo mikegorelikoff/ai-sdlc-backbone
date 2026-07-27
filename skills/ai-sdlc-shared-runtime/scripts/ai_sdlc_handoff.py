@@ -37,7 +37,7 @@ def validate(result: str, blockers: list[str], required: NextAction | None) -> l
     if result == "blocked" and not blockers:
         errors.append("blocked result requires at least one blocker")
     if result in {"complete", "partial"} and required is None:
-        errors.append(f"{result} result requires next_required; use ai-sdlc-navigator when no downstream action is known")
+        errors.append(f"{result} result requires next_required; use ai-sdlc-flow Explore when no downstream action is known")
     return errors
 
 

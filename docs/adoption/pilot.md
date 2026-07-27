@@ -71,7 +71,7 @@ The baseline is a local comparison, not an industry ranking.
 | Time | Work | Required evidence | Decision |
 | --- | --- | --- | --- |
 | Day 0 | Charter, baseline, governance, install, training. | Signed scope, inventory, owners, thresholds. | Start or do not start. |
-| Week 1 | One bounded quick-flow change. | Navigator handoff, artifacts, validation, corrections, user notes. | Continue, narrow, or stop. |
+| Week 1 | One bounded quick-flow change. | Flow Explore handoff, artifacts, validation, corrections, user notes. | Continue, narrow, or stop. |
 | Week 2 | Two representative changes and one interrupted handoff. | Trace links, resume evidence, review findings, time/effort observations. | Continue or adjust controls. |
 | Week 3 | One higher-rigor or cross-role change, if safe. | Human gates, security/QA evidence, exception log. | Proceed only if earlier controls held. |
 | Week 4 | Repeat a common work type and close analysis. | Metric comparison, qualitative evidence, incidents, residual risks. | Stop, adjust, continue, or propose scale. |

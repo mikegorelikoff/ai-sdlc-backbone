@@ -165,7 +165,11 @@ class ValidationReceiptTests(unittest.TestCase):
             result = self.cli(repository, plan, output, "--timeout", "1")
             self.assertEqual(result.returncode, 1)
             receipt = json.loads(output.read_text(encoding="utf-8"))
-            self.assertEqual(receipt["commands"][0]["exit_code"], 124)
+            self.assertEqual(
+                receipt["commands"][0]["exit_code"],
+                124,
+                receipt["commands"][0],
+            )
             time.sleep(1)
             self.assertFalse((repository / "escaped").exists())
 

@@ -168,4 +168,4 @@ which durable source changed or which downstream artifacts are stale.
 - Do not reopen a stage solely because it follows another stage chronologically.
 - Do not treat filename similarity or model intuition as impact evidence.
 - Do not approve recovery actions on behalf of artifact owners.
-- Use `$ai-sdlc-navigator` when the owning workflow is unclear.
+- Use `$ai-sdlc-flow` Explore when the owning workflow is unclear.

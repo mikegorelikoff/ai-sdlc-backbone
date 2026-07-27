@@ -65,7 +65,7 @@ SKILL_SELECTION_BOUNDARIES: dict[str, tuple[str, ...]] = {
         "Do not use it for an unaccepted proposal that has no baseline change set. Use `ai-sdlc-change-set` instead.",
     ),
     "ai-sdlc-change-set": (
-        "Do not use it for an ordinary new feature with no accepted downstream baseline. Use `ai-sdlc-navigator` to select refinement or `ai-sdlc-sdd` instead.",
+        "Do not use it for an ordinary new feature with no accepted downstream baseline. Use `ai-sdlc-flow` Explore or `ai-sdlc-sdd` instead.",
     ),
     "ai-sdlc-code-review": (
         "Do not use it when no diff and no accepted contract exist. Use the implementation path in `ai-sdlc-sdd` instead.",
@@ -102,14 +102,11 @@ SKILL_SELECTION_BOUNDARIES: dict[str, tuple[str, ...]] = {
         "Do not use it while the customer problem, audience, or outcome is unclear. Use `ai-sdlc-working-backwards-discovery` instead.",
     ),
     "ai-sdlc-flow": (
-        "Do not use it to Apply before a matching Explore card exists. Use `ai-sdlc-navigator` instead for read-only routing when no mutation is requested.",
+        "Do not use it to Apply before a matching Explore card exists. Use `ai-sdlc-flow` Explore instead for read-only routing.",
         "Do not use it to bypass lifecycle prerequisites. Use `ai-sdlc-sdd` or the selected owning skill instead.",
     ),
     "ai-sdlc-host-adapter": (
         "Do not use it before a validated workflow declares the host capability it needs. Use `ai-sdlc-workflow` to define that contract instead.",
-    ),
-    "ai-sdlc-navigator": (
-        "Do not use it when the correct skill is already known and execution is requested. Use that owning skill instead; the navigator is read-only.",
     ),
     "ai-sdlc-package-trust": (
         "Do not use package verification to install, execute, publish, sign, approve, or delete a package. Use the separately authorized package lifecycle workflow instead.",
@@ -164,7 +161,7 @@ SKILL_SELECTION_BOUNDARIES: dict[str, tuple[str, ...]] = {
         "Do not use it before trust boundaries and protected assets are defined. Use `ai-sdlc-sdd` or `ai-sdlc-architecture` instead.",
     ),
     "ai-sdlc-shared-runtime": (
-        "Do not use shared helpers as a lifecycle entry point. Use `ai-sdlc-navigator` or the owning skill instead.",
+        "Do not use shared helpers as a lifecycle entry point. Use `ai-sdlc-flow` Explore or the owning skill instead.",
         "Do not edit installed mirrors to repair packaging. Use the authorized install or update workflow and canonical `_shared` sources instead.",
     ),
     "ai-sdlc-test-case-and-suite-synthesis": (
@@ -192,7 +189,7 @@ SKILL_SELECTION_BOUNDARIES: dict[str, tuple[str, ...]] = {
         "Do not use it to execute an accepted plan. Use `ai-sdlc-runtime` instead.",
     ),
     "ai-sdlc-working-backwards-discovery": (
-        "Do not use it when the problem and behavior are already accepted and implementation can start. Use `ai-sdlc-navigator` or `ai-sdlc-sdd` instead.",
+        "Do not use it when the problem and behavior are already accepted and implementation can start. Use `ai-sdlc-flow` Explore or `ai-sdlc-sdd` instead.",
         "Do not use it to synthesize the final PRFAQ package. Use `ai-sdlc-prfaq-package-synthesis` instead.",
     ),
 }
@@ -211,7 +208,7 @@ ROLE_SKILL_GROUPS: dict[str, dict[str, object]] = {
             "ai-sdlc-qa-traceability-and-readiness-review", "ai-sdlc-validation",
         ),
         "shared": (
-            "ai-sdlc-flow", "ai-sdlc-navigator", "ai-sdlc-requirements-readiness-review",
+            "ai-sdlc-flow", "ai-sdlc-requirements-readiness-review",
             "ai-sdlc-delivery-handoff-review", "ai-sdlc-quality-lenses",
             "ai-sdlc-change-impact", "ai-sdlc-delivery-graph",
             "ai-sdlc-evidence-council", "ai-sdlc-security-testing",
@@ -227,7 +224,7 @@ ROLE_SKILL_GROUPS: dict[str, dict[str, object]] = {
             "ai-sdlc-user-story-decomposition", "ai-sdlc-delivery-spec-synthesis",
         ),
         "shared": (
-            "ai-sdlc-flow", "ai-sdlc-navigator", "ai-sdlc-working-backwards-discovery",
+            "ai-sdlc-flow", "ai-sdlc-working-backwards-discovery",
             "ai-sdlc-prfaq-package-synthesis",
             "ai-sdlc-goal-capability-and-epic-mapping",
             "ai-sdlc-backlog-decomposition-and-task-planning",
@@ -241,14 +238,14 @@ ROLE_SKILL_GROUPS: dict[str, dict[str, object]] = {
     "PM": {
         "boundary": "Own customer problem, value, outcomes, scope, priority, and product trade-offs; agents may synthesize evidence but never accept these decisions.",
         "start": (
-            "ai-sdlc-navigator", "ai-sdlc-working-backwards-discovery",
+            "ai-sdlc-flow", "ai-sdlc-working-backwards-discovery",
             "ai-sdlc-prfaq-package-synthesis",
             "ai-sdlc-goal-capability-and-epic-mapping",
             "ai-sdlc-backlog-decomposition-and-task-planning",
             "ai-sdlc-release-slicing-and-backlog-readiness-review",
         ),
         "shared": (
-            "ai-sdlc-flow", "ai-sdlc-research", "ai-sdlc-ba",
+            "ai-sdlc-research", "ai-sdlc-ba",
             "ai-sdlc-delivery-package-gap-review",
             "ai-sdlc-requirements-readiness-review",
             "ai-sdlc-backlog-requirements-gap-review",
@@ -262,14 +259,14 @@ ROLE_SKILL_GROUPS: dict[str, dict[str, object]] = {
     "PO": {
         "boundary": "Own day-to-day backlog readiness, acceptance clarity, sequencing, and product handoffs within delegated product authority.",
         "start": (
-            "ai-sdlc-navigator", "ai-sdlc-backlog-requirements-gap-review",
+            "ai-sdlc-flow", "ai-sdlc-backlog-requirements-gap-review",
             "ai-sdlc-backlog-decomposition-and-task-planning",
             "ai-sdlc-user-story-decomposition",
             "ai-sdlc-requirements-readiness-review",
             "ai-sdlc-release-slicing-and-backlog-readiness-review",
         ),
         "shared": (
-            "ai-sdlc-flow", "ai-sdlc-working-backwards-discovery",
+            "ai-sdlc-working-backwards-discovery",
             "ai-sdlc-prfaq-package-synthesis", "ai-sdlc-ba",
             "ai-sdlc-delivery-spec-synthesis",
             "ai-sdlc-qa-requirements-gap-review",
@@ -283,12 +280,12 @@ ROLE_SKILL_GROUPS: dict[str, dict[str, object]] = {
     "Software Engineer": {
         "boundary": "Own technical design, implementation correctness, testable task boundaries, review resolution, and engineering risk recommendations.",
         "start": (
-            "ai-sdlc-navigator", "ai-sdlc-project-context", "ai-sdlc-branching",
+            "ai-sdlc-flow", "ai-sdlc-project-context", "ai-sdlc-branching",
             "ai-sdlc-sdd", "ai-sdlc-test-cases", "ai-sdlc-validation",
             "ai-sdlc-code-review", "ai-sdlc-commit-prep",
         ),
         "shared": (
-            "ai-sdlc-flow", "ai-sdlc-conventional-commit", "ai-sdlc-architecture",
+            "ai-sdlc-conventional-commit", "ai-sdlc-architecture",
             "ai-sdlc-approvals-sandbox", "ai-sdlc-security-testing",
             "ai-sdlc-change-set", "ai-sdlc-change-impact",
             "ai-sdlc-delivery-graph", "ai-sdlc-evidence-council",
@@ -320,13 +317,12 @@ TASK_SELECTION_HINTS: dict[str, tuple[str, str, str]] = {
     "ai-sdlc-backlog-requirements-gap-review": ("Check planning inputs before backlog work", "Goals, roles, capabilities, and epics", "Backlog decomposition or planning owner"),
     "ai-sdlc-user-story-decomposition": ("Turn clarified scope into stories", "Goals/epics and resolved delivery gaps", "Delivery specification"),
     "ai-sdlc-delivery-spec-synthesis": ("Create the engineering behavior contract", "Clarified stories, rules, and scenarios", "QA strategy and delivery handoff"),
-    "ai-sdlc-navigator": ("Find the smallest safe next action", "Request plus current repository control records", "One owning skill"),
     "ai-sdlc-working-backwards-discovery": ("Frame an unclear customer problem", "Audience, observed problem, and available evidence", "PRFAQ synthesis"),
     "ai-sdlc-prfaq-package-synthesis": ("Create a decision-ready product package", "Validated discovery notes", "Requirements readiness"),
     "ai-sdlc-goal-capability-and-epic-mapping": ("Map outcomes to delivery structure", "Ready requirements package", "Backlog gap review"),
     "ai-sdlc-backlog-decomposition-and-task-planning": ("Create delivery backlog and stories", "Ready goals, capabilities, and epics", "Release slicing"),
     "ai-sdlc-release-slicing-and-backlog-readiness-review": ("Define MVP/release sequence", "Decomposed backlog and dependencies", "Delivery handoff or planning approval"),
-    "ai-sdlc-project-context": ("Ground work in repository evidence", "Repository sources and one task intent", "Navigator or SDD"),
+    "ai-sdlc-project-context": ("Ground work in repository evidence", "Repository sources and one task intent", "Flow Explore or SDD"),
     "ai-sdlc-branching": ("Create or verify the task branch", "Accepted task/spec and Git state", "SDD or implementation"),
     "ai-sdlc-sdd": ("Specify a behavior or architecture change", "Clear behavior and affected system", "Bounded implementation tasks"),
     "ai-sdlc-code-review": ("Review a completed change", "Diff plus accepted contract and tests", "Finding resolution or commit prep"),
@@ -344,7 +340,7 @@ TASK_SELECTION_HINTS: dict[str, tuple[str, str, str]] = {
 
 
 PO_START_RELATIONSHIPS = {
-    "ai-sdlc-navigator": "Use to route work",
+    "ai-sdlc-flow": "Use to route work",
     "ai-sdlc-backlog-requirements-gap-review": "Collaborate and review",
     "ai-sdlc-backlog-decomposition-and-task-planning": "Prioritize and review",
     "ai-sdlc-user-story-decomposition": "Collaborate and accept clarity",
@@ -367,7 +363,7 @@ def start_relationship(role: str, skill_id: str) -> str:
 
 def shared_skill_group(skill_id: str) -> tuple[str, str]:
     """Return a compact discovery group and relationship for a shared skill."""
-    if skill_id in {"ai-sdlc-flow", "ai-sdlc-navigator", "ai-sdlc-project-context", "ai-sdlc-research", "ai-sdlc-working-backwards-discovery"}:
+    if skill_id in {"ai-sdlc-flow", "ai-sdlc-project-context", "ai-sdlc-research", "ai-sdlc-working-backwards-discovery"}:
         return "Entry and context", "Supply intent or evidence"
     if skill_id in {"ai-sdlc-change-impact", "ai-sdlc-change-set", "ai-sdlc-delivery-graph", "ai-sdlc-delivery-handoff-review", "ai-sdlc-retrospective", "ai-sdlc-commit-prep", "ai-sdlc-conventional-commit"}:
         return "Handoff and recovery", "Produce, consume, or reopen evidence"
@@ -712,9 +708,7 @@ def script_record(path: Path) -> ScriptRecord:
         '"--begin-state"',
         '"--complete-state"',
     )
-    if owner == "ai-sdlc-navigator":
-        effect = "Read-only router; mutation-shaped flags are rejected and reported as blockers."
-    elif classification == "installed runtime mirror":
+    if classification == "installed runtime mirror":
         effect = "Generated copy; repository behavior is defined by its canonical shared source."
     elif classification == "repository validation runner":
         effect = "Read-only for delivery files; may use temporary directories for deterministic checks."
@@ -902,7 +896,7 @@ def render_skill_guide(
         "",
         metadata["description"],
         "",
-        "If the correct entry point is still unclear, ask the read-only navigator first instead of guessing.",
+        "If the correct entry point is still unclear, use `ai-sdlc-flow` Explore first instead of guessing.",
         "",
         "## Do not use it when",
         "",

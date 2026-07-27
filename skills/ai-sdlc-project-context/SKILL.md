@@ -167,7 +167,7 @@ depending on chat history or unsupported generic claims.
 4. Run `--write` to create both canonical outputs atomically.
 5. Run `--check` before reusing saved context after repository changes.
 6. Regenerate when drift is reported; never patch the fingerprint manually.
-7. Route feature-specific work through Navigator and the owning skill.
+7. Route feature-specific work through flow Explore and the owning skill.
 8. Build repository ownership and source-to-test topology before a medium or
    large task pack.
 9. Apply built-in and optional conditional selectors, then select goal-relevant
@@ -243,4 +243,4 @@ Reject unsupported inference without repository evidence.
 - Do not replace state, indexes, decisions, or validation evidence.
 - Do not return secret-like content, follow symlinks, or exceed the requested
   task-pack budget.
-- Use `$ai-sdlc-navigator` for downstream workflow selection.
+- Use `$ai-sdlc-flow` Explore for downstream workflow selection.

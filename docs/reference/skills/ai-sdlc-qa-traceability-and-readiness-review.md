@@ -17,7 +17,7 @@ Run the final QA gate on the generated test pack before execution starts.
 
 Use after QA strategy and test-case synthesis to build the requirements-to-test traceability matrix, identify missing coverage and test blockers, and score readiness for QA execution. Supports `--quick-flow` for fast assumption-driven execution and `--full-flow` for question-driven verified execution. Explicit full or end-to-end spec refinement requests continue through the existing 18-stage refinement cascade.
 
-If the correct entry point is still unclear, ask the read-only navigator first instead of guessing.
+If the correct entry point is still unclear, use `ai-sdlc-flow` Explore first instead of guessing.
 
 ## Do not use it when
 

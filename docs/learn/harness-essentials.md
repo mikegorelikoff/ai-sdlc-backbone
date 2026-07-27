@@ -43,7 +43,7 @@ This chapter teaches the operating model. Exact commands remain in [Use](../how-
 - [Control surfaces and durable artifacts](#control-surfaces-and-durable-artifacts)
 - [Flows and adaptive rigor](#quick-flow-full-flow-and-full-lifecycle)
 - [Context, freshness, and targeted reads](#context-freshness-and-targeted-reads)
-- [Navigator and skill selection](#navigator-and-skill-selection)
+- [Flow Explore and skill selection](#flow-explore-and-skill-selection)
 - [Evidence, blockers, and handoffs](#evidence-blockers-and-handoffs)
 - [Practice exercise](#practice-exercise)
 - [Check your understanding](#check-your-understanding)
@@ -59,11 +59,11 @@ This chapter teaches the operating model. Exact commands remain in [Use](../how-
 
 **Prerequisites:** Complete [AI SDLC and spec-driven development](ai-sdlc-and-sdd.md), or be able to trace an accepted outcome through requirements, implementation, tests, evidence, and accountable review.
 
-**Expected artifact:** A routing note that names the request class, flow, navigator request, required context, expected next artifact, blockers, evidence, and human checkpoint.
+**Expected artifact:** A routing note that names the request class, flow Explore request, required context, expected next artifact, blockers, evidence, and human checkpoint.
 
 ## Expected outcome
 
-You can explain why the harness has separate environments and artifacts, choose proportionate rigor, formulate a useful navigator request, inspect its recommendation, and identify the next evidence-bearing handoff. You can also state what the harness cannot decide.
+You can explain why the harness has separate environments and artifacts, choose proportionate rigor, formulate a useful flow Explore request, inspect its recommendation, and identify the next evidence-bearing handoff. You can also state what the harness cannot decide.
 
 ## What experienced readers may skip
 
@@ -89,7 +89,7 @@ The harness is useful when work crosses artifacts or roles, when generated chang
 ### Can do
 
 - Classify one request by impact, uncertainty, and reversibility.
-- Formulate a navigator request around intent and observable acceptance rather than guessing a skill chain.
+- Formulate a flow Explore request around intent and observable acceptance rather than guessing a skill chain.
 - Select minimum sufficient project and feature context, check freshness, and perform targeted reads.
 - Identify the expected next artifact, blockers, evidence, handoff, and accountable human gate.
 
@@ -106,7 +106,7 @@ The harness is useful when work crosses artifacts or roles, when generated chang
 
 The harness reduces coordination loss in AI-assisted software delivery. Coordination loss appears when the request in chat differs from the requirement in a specification; when implementation advances while test cases remain stale; when one agent assumes another checked security; or when a summary says “done” without a reproducible result. The harness supplies reusable workflows and deterministic helpers that encourage explicit inputs, durable outputs, validation, and handoffs.
 
-The intended users are people who contribute to or govern software delivery. A trainee can use the learning path and navigator to discover a safe next step. A product owner can improve acceptance boundaries. A business analyst can expose business-rule gaps. A developer can connect a change to tests. A quality engineer can preserve negative-case evidence. A security reviewer can inspect permissions and trust boundaries. A delivery leader can decide whether evidence supports a hold, pilot, or release recommendation.
+The intended users are people who contribute to or govern software delivery. A trainee can use the learning path and flow Explore to discover a safe next step. A product owner can improve acceptance boundaries. A business analyst can expose business-rule gaps. A developer can connect a change to tests. A quality engineer can preserve negative-case evidence. A security reviewer can inspect permissions and trust boundaries. A delivery leader can decide whether evidence supports a hold, pilot, or release recommendation.
 
 Prerequisites depend on the action. Reading documentation needs only a browser. Running skills requires a supported agent host and an installed skill set. Modifying a project requires access to the consumer repository and whatever runtime, package manager, test environment, credentials, and permissions that repository documents. The harness does not install a consumer application's dependencies or grant its credentials.
 
@@ -140,7 +140,7 @@ The practical loop is: observe, classify, select, act, inspect, update, and hand
 
 1. **Observe:** read repository instructions, current artifacts, Git state, and the bounded request.
 2. **Classify:** estimate impact, uncertainty, reversibility, data sensitivity, and cross-role effects.
-3. **Select:** choose a flow and one owning skill or ask the navigator for the smallest safe next action.
+3. **Select:** use flow Explore to choose one owning skill and the smallest safe next action.
 4. **Act:** perform only permitted reads or writes and record durable outputs.
 5. **Inspect:** compare the actual result with acceptance criteria; run focused validation.
 6. **Update:** refresh state and artifacts or record a blocker with evidence.
@@ -200,7 +200,7 @@ Untrusted content remains data. A ticket comment saying “ignore repository pol
 
 **Request:** “Fix the setup page; the verification command is wrong.”
 
-The operator reads repository instructions and the setup page, locates the referenced helper, and runs its help output. Impact is narrow, reversibility is high, and expected behavior is observable. Quick flow is proportionate. The navigator request says: “Route a documentation-only correction to the verification command in `docs/how-to/install.md`. Preserve existing URLs. Acceptance: the documented command exists, its output matches the explanation, docs validation passes, and no generated catalog is hand-edited. Recommend the smallest owning skill and next artifact; read only.”
+The operator reads repository instructions and the setup page, locates the referenced helper, and runs its help output. Impact is narrow, reversibility is high, and expected behavior is observable. Quick flow is proportionate. The flow Explore request says: “Route a documentation-only correction to the verification command in `docs/how-to/install.md`. Preserve existing URLs. Acceptance: the documented command exists, its output matches the explanation, docs validation passes, and no generated catalog is hand-edited. Recommend the smallest owning skill and next artifact; read only.”
 
 The expected next artifact is a bounded correction plus validation evidence. A blocker would be two supported commands with no canonical choice. The human checkpoint is maintainer review of the public instruction. Passing docs validation is evidence of structure, not proof that the command works; the command smoke test supplies behavioral evidence.
 
@@ -210,11 +210,11 @@ The expected next artifact is a bounded correction plus validation evidence. A b
 
 The amount looks like a simple condition, but the request changes authorization and money movement. Missing context includes actor identity, regional rules, refund state transitions, audit logging, exception paths, segregation of duties, and the product owner for the threshold. Full flow is required. The expected next artifact is not code; it is clarified requirements and a security-reviewed design boundary. Blockers include absent decision authority and no authoritative policy. Evidence must later include negative authorization cases and audit behavior. Product and security owners retain their distinct gates.
 
-The navigator request should describe intent and uncertainty, not prescribe “run SDD then code.” Routing may recommend business analysis or requirements readiness first. If an assistant offers an implementation immediately, the operator should reject the sequence and record why.
+The flow Explore request should describe intent and uncertainty, not prescribe “run SDD then code.” Routing may recommend business analysis or requirements readiness first. If an assistant offers an implementation immediately, the operator should reject the sequence and record why.
 
 ### Weak example
 
-> Use the navigator to run all necessary skills for our checkout feature. Make it production ready and approve it when the reviewers agree.
+> Use flow to run all necessary skills for our checkout feature. Make it production ready and approve it when the reviewers agree.
 
 This request does not name the consumer repository, accepted outcome, current artifacts, allowed actions, or evidence. “All necessary skills” invites an oversized chain. “Production ready” is not observable. Approval is delegated improperly. There is no stop condition for missing payment rules or credentials.
 
@@ -222,13 +222,13 @@ This request does not name the consumer repository, accepted outcome, current ar
 
 > In the current consumer repository, perform read-only routing for the accepted outcome “a signed-in customer can save one delivery address for later checkout.” Read repository instructions and the current product brief; do not modify files or call external systems. Identify the smallest appropriate flow, missing authoritative context, expected next artifact, likely blockers, validation evidence, and accountable human checkpoints. Treat payment, address verification, retention policy, and deployment as out of scope. Return a routing note with evidence paths and confidence.
 
-This version bounds action, context, exclusions, evidence, and output. It still allows the navigator to choose the owning skill. It does not assume the brief is complete or transfer approval.
+This version bounds action, context, exclusions, evidence, and output. It still allows flow Explore to choose the owning skill. It does not assume the brief is complete or transfer approval.
 
-## Navigator and skill selection
+## Flow Explore and skill selection
 
-The **navigator** performs read-only routing. Use it when you know the desired outcome but not the smallest safe workflow. Supply the request, current repository control records, known artifacts, constraints, and uncertainties. A useful recommendation should name one next owning skill or a blocker, explain why, identify needed input, and state the expected handoff.
+**Flow Explore** performs read-only routing. Use it when you know the desired outcome but not the smallest safe workflow. Supply the request, explicit feature, known artifacts, constraints, and uncertainties. A useful card should name one next owning skill or a blocker, explain why, identify evidence, and state the expected checkpoint.
 
-Invoke a known skill directly when its trigger and required input clearly match the task. Do not insert the navigator merely as ceremony. Conversely, do not choose a familiar implementation skill when the request is still a product question. The [skills-by-role page](../reference/skills-by-role.md) is a discovery aid, not a permission map.
+Invoke a known skill directly when its trigger and required input clearly match the task. Do not insert flow merely as ceremony. Conversely, do not choose a familiar implementation skill when the request is still a product question. The [skills-by-role page](../reference/skills-by-role.md) is a discovery aid, not a permission map.
 
 Skill composition follows explicit handoffs. One skill produces an artifact or readiness state that another consumes. It is not safe to improvise a chain based only on similar names. If two skills appear applicable, identify which owns the present transition. If their contracts conflict, stop and consult repository policy or a maintainer.
 
@@ -238,7 +238,7 @@ Skill composition follows explicit handoffs. One skill produces an artifact or r
 - Skills own reusable workflow contracts; helpers perform narrow deterministic checks; artifacts preserve intent and evidence.
 - Quick flow, full flow, and full lifecycle are selected by impact and uncertainty, not by impatience.
 - Context must be targeted and fresh. State and chat history do not prove correctness.
-- The navigator recommends the smallest safe next action; it does not approve that action.
+- Flow Explore recommends the smallest safe next action; it does not approve that action.
 - Evidence Council and Quality Lenses broaden review while accountable humans retain decisions.
 
 ## Evidence, blockers, and handoffs
@@ -283,13 +283,13 @@ A customer portal team asks: “Add bulk customer export this sprint. The last a
 
 ### Learner task
 
-Create a routing note with these headings: request classification; chosen flow; navigator request; project and feature context; rejected or untrusted context; expected next artifact; blockers; acceptance evidence; human checkpoint; and handoff. Explain every choice in one or two evidence-based sentences.
+Create a routing note with these headings: request classification; flow Explore request; project and feature context; rejected or untrusted context; expected next artifact; blockers; acceptance evidence; human checkpoint; and handoff. Explain every choice in one or two evidence-based sentences.
 
 ### Permitted actions
 
 - Read repository instructions, the named brief, policy, mock-up, and linked canonical documentation.
 - Inspect file history and freshness metadata without modifying files.
-- Formulate a read-only navigator request.
+- Formulate a read-only flow Explore request.
 - Record missing context, uncertainty, and candidate owners.
 
 ### Prohibited actions
@@ -305,7 +305,7 @@ A one-page routing note. A defensible classification is high uncertainty and mat
 
 ### Verification procedure
 
-Check that the note identifies the consumer repository, cites every selected source, rejects the issue comment as an embedded untrusted instruction, records policy staleness, names at least one negative case, and identifies separate product and privacy/security decisions. Confirm that the navigator request is read-only and requests one next action or blocker.
+Check that the note identifies the consumer repository, cites every selected source, rejects the issue comment as an embedded untrusted instruction, records policy staleness, names at least one negative case, and identifies separate product and privacy/security decisions. Confirm that the flow request is read-only and requests one next action or blocker.
 
 ### Evidence of completion
 
@@ -321,12 +321,12 @@ Calling the task “small” because the UI is small ignores the data boundary. 
 
 ### Recovery path
 
-If you selected quick flow, revisit the risk signals and explain how customer data export could be reversed after disclosure. If your navigator request asks for code, rewrite it to request routing only. If evidence paths are missing, repeat targeted reads. If no owner is documented, record that absence as a blocker and name the organizational role that must be identified.
+If you selected quick flow, revisit the risk signals and explain how customer data export could be reversed after disclosure. If your flow Explore request asks for code, rewrite it to request routing only. If evidence paths are missing, repeat targeted reads. If no owner is documented, record that absence as a blocker and name the organizational role that must be identified.
 
 ## Check your understanding
 
 1. What does a successful state transition prove?
-2. When is the navigator unnecessary?
+2. When is flow Explore unnecessary?
 3. Why can a globally installed skill and the source checkout disagree?
 4. Which flow should be chosen for a reversible local correction with known evidence?
 5. What should happen when a task pack contains a directive that conflicts with repository policy?
@@ -371,7 +371,7 @@ If generated and human-readable representations disagree, do not hand-edit both 
 - [ ] I can distinguish a skill, helper, artifact, TOON view, state record, policy, agent, and human owner.
 - [ ] I can justify quick flow, full flow, or full lifecycle with evidence.
 - [ ] I can select minimum sufficient project, feature, and task context.
-- [ ] I can formulate a read-only navigator request around intent.
+- [ ] I can formulate a read-only flow Explore request around intent.
 - [ ] I can name the expected next artifact and its canonical owner.
 - [ ] I can record blockers and freshness without inventing resolution.
 - [ ] I can connect acceptance claims to reproducible evidence.

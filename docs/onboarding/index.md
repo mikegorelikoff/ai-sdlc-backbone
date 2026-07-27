@@ -24,7 +24,7 @@ replacement for the prerequisite learning evidence.
 After the first session you should have:
 
 - a verified project-scoped skill installation;
-- a read-only navigator recommendation grounded in repository evidence;
+- a read-only flow Explore recommendation grounded in repository evidence;
 - a clear quick/full choice;
 - an expected artifact and human checkpoint;
 - no unexplained source change;

@@ -40,7 +40,7 @@ Initial request: “Add `GET /health` returning `200` and
   and regression acceptance criteria.
 - **Plan and tasks:** add the failing route test; implement the smallest route;
   run the full route suite; review and commit.
-- **Skills:** navigator → branching → SDD → validation → code review → commit
+- **Skills:** flow Explore → branching → SDD → validation → code review → commit
   preparation.
 - **Implementation sequence:** test first, implement, run focused and
   regression tests, inspect the diff.

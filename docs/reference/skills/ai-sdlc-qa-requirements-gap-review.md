@@ -17,7 +17,7 @@ Review the incoming delivery package and determine whether it is specific enough
 
 Use when stories, specs, BRDs, APIs, workflows, or equivalent delivery artifacts exist and you need to review them for testability, missing business rules, unclear behavior, scope ambiguity, and QA blocking gaps before generating tests. Supports `--quick-flow` for fast assumption-driven execution and `--full-flow` for question-driven verified execution. Explicit full or end-to-end spec refinement requests continue through the existing 18-stage refinement cascade.
 
-If the correct entry point is still unclear, ask the read-only navigator first instead of guessing.
+If the correct entry point is still unclear, use `ai-sdlc-flow` Explore first instead of guessing.
 
 ## Do not use it when
 

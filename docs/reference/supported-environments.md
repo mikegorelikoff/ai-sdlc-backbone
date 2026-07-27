@@ -71,7 +71,7 @@ rm -rf "$HARNESS_TMP"
 ```
 
 It produced the canonical `.agents/skills/` inventory and 44 installed skills;
-navigator routing, global packaged discovery, and the complete installed
+flow routing, project-scoped discovery, and the complete installed
 SDD/validation/commit workflow passed. For organizational rollout, select
 an explicit target with `--agent`, run the
 [first feature tutorial](../tutorials/first-feature.md), and record the exact
@@ -115,7 +115,7 @@ evidence and retains its installed consumer-root defect.
 - [ ] Runtime versions meet the floors above.
 - [ ] Installation uses the documented immutable commit and pinned CLI version.
 - [ ] The target agent is named in pilot evidence.
-- [ ] Navigator and SDD helper `--help` commands succeed.
+- [ ] Flow and SDD helper `--help` commands succeed.
 - [ ] One complete workflow passes in a disposable repository.
 - [ ] Unsupported combinations and skipped tests are recorded.
 

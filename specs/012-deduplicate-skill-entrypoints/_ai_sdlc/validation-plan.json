@@ -1,0 +1,65 @@
+{
+  "schema": "ai-sdlc-validation-command-plan/v1",
+  "commands": [
+    {
+      "id": "flow-contracts",
+      "argv": ["python3", "skills/ai-sdlc-flow/tests/test_flow.py"],
+      "trace_ids": ["AC-001", "AC-002", "AC-004", "TC-001", "TC-002", "TC-004"]
+    },
+    {
+      "id": "validation-planner",
+      "argv": ["python3", "skills/ai-sdlc-validation/tests/test_validation_helpers.py"],
+      "trace_ids": ["AC-006", "TC-006"]
+    },
+    {
+      "id": "all-skill-tests",
+      "argv": ["python3", "skills/_shared/test_each_skill_tests.py"],
+      "trace_ids": ["AC-001", "AC-002", "AC-003", "AC-004", "AC-006", "TC-001", "TC-002", "TC-003", "TC-004", "TC-006"]
+    },
+    {
+      "id": "skill-contracts",
+      "argv": ["python3", "skills/_shared/test_all_skill_scripts.py"],
+      "trace_ids": ["AC-001", "AC-003", "AC-006", "TC-001", "TC-003", "TC-006"]
+    },
+    {
+      "id": "module-registry",
+      "argv": ["python3", "skills/_shared/test_modules.py"],
+      "trace_ids": ["AC-002", "AC-003", "TC-002", "TC-003"]
+    },
+    {
+      "id": "compatibility",
+      "argv": ["python3", "skills/_shared/ai_sdlc_compatibility.py", "--skip-git-audit", "--format", "toon"],
+      "trace_ids": ["AC-002", "AC-003", "TC-002", "TC-003"]
+    },
+    {
+      "id": "runtime-mirrors",
+      "argv": ["python3", "skills/_shared/sync_installed_runtime.py", "--check", "--quick-flow"],
+      "trace_ids": ["AC-005", "TC-005"]
+    },
+    {
+      "id": "docs-catalog",
+      "argv": ["python3", "docs/scripts/validate_docs.py"],
+      "trace_ids": ["AC-002", "AC-003", "AC-006", "TC-002", "TC-003", "TC-006"]
+    },
+    {
+      "id": "docs-tests",
+      "argv": ["python3", "docs/tests/test_docs.py"],
+      "trace_ids": ["AC-002", "AC-003", "AC-006", "TC-002", "TC-003", "TC-006"]
+    },
+    {
+      "id": "install-smoke",
+      "argv": ["python3", "skills/_shared/ai_sdlc_install_smoke.py", "--source", ".", "--mode", "emulated", "--quick-flow"],
+      "trace_ids": ["AC-001", "AC-003", "AC-006", "TC-001", "TC-003", "TC-006"]
+    },
+    {
+      "id": "sdd-gate",
+      "argv": ["python3", "skills/ai-sdlc-sdd/scripts/validate_spec.py", "specs/012-deduplicate-skill-entrypoints", "--quick-flow"],
+      "trace_ids": ["AC-006", "TC-006"]
+    },
+    {
+      "id": "diff-hygiene",
+      "argv": ["git", "diff", "--check"],
+      "trace_ids": ["AC-006", "TC-006"]
+    }
+  ]
+}

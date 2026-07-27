@@ -17,4 +17,4 @@ Accept only reopen actions that name the lifecycle stage, stale artifacts, owner
 
 ## Resume from the earliest affected stage
 
-Run the navigator after the reopen is recorded. It should route to the first required correction, not restart the entire lifecycle or continue from a now-invalid downstream task.
+Run flow Explore after the reopen is recorded. It should route to the first required correction, not restart the entire lifecycle or continue from a now-invalid downstream task.

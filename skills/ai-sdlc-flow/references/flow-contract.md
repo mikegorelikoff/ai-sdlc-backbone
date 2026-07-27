@@ -22,6 +22,13 @@ a complete card and has no planned writes.
 Explicit sources extend rather than replace mandatory configuration, state,
 index, module, and project-context evidence.
 
+For an existing explicit feature, an active skill or the earliest incomplete
+prerequisite for the requested stage controls resume order. Unrelated optional
+stages do not hijack the route. When no feature state exists, implementation
+on `dev`, `main`, or `master` routes to branching first.
+Explore discovers owning skills from source, project-scoped, and packaged
+sibling roots and blocks when the selected skill is unavailable.
+
 ## Apply
 
 Apply accepts a complete JSON DecisionCard, rebuilds the card from current

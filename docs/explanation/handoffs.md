@@ -15,7 +15,7 @@ Skill names and flags are public workflow contracts. An exact command reduces ro
 
 ## Relationship to navigation
 
-The navigator infers next actions from current repository state. A workflow handoff knows what just happened. When both use the same state, policy, capability registry, and artifact contracts, their recommendations should agree.
+Flow Explore infers the next action from intent and bounded repository evidence. A workflow handoff knows what just happened. When both use the same state, policy, capability registry, and artifact contracts, their recommendations should agree.
 
 ## Resumable runtime
 

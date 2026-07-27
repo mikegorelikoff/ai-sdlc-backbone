@@ -159,7 +159,10 @@ def skill_metadata_warnings(files: list[str], full_repo: bool) -> list[str]:
             )
             continue
         if not (skill_dir / "SKILL.md").is_file():
-            warnings.append(f"skill change detected but {skill_dir / 'SKILL.md'} is missing")
+            warnings.append(
+                f"skill deletion detected; verify {skill_dir} is absent from "
+                "manifests, compatibility, installation, catalogs, docs, and tests"
+            )
         else:
             warnings.append(f"skill change detected; inspect {skill_dir}/SKILL.md")
         if changed_python:

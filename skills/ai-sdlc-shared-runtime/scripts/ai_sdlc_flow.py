@@ -6,6 +6,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import subprocess
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Iterable
@@ -15,6 +16,26 @@ SCHEMA = "ai-sdlc-flow/v1"
 REFINEMENT_ROOT = "specs-refiniment"
 IMPLEMENTATION_ROOT = "specs"
 PACK_SAVINGS_MINIMUM = 15.0
+COMPLETE_STATUSES = {"done", "skipped", "not_applicable"}
+DEFAULT_BASE_BRANCHES = {"dev", "main", "master"}
+STAGE_PREDECESSORS: dict[str, tuple[str, ...]] = {
+    "discovery": (),
+    "prfaq": ("discovery",),
+    "delivery_package_gap_review": ("prfaq",),
+    "requirements_readiness": ("delivery_package_gap_review",),
+    "goal_epic_mapping": ("requirements_readiness",),
+    "backlog_gap_review": ("goal_epic_mapping",),
+    "backlog_decomposition": ("backlog_gap_review",),
+    "story_decomposition": ("backlog_decomposition",),
+    "qa_plan": ("requirements_readiness",),
+    "qa_gap_review": ("qa_plan",),
+    "branching": (),
+    "sdd": ("branching",),
+    "validation": ("sdd",),
+    "code_review": ("validation",),
+    "security_testing": ("sdd",),
+    "commit_prep": ("code_review",),
+}
 
 
 @dataclass(frozen=True)
@@ -64,11 +85,39 @@ class DecisionCard:
 
 INTENT_RULES: tuple[tuple[str, tuple[str, ...], str, str, str], ...] = (
     (
+        "commit",
+        ("commit", "stage changes"),
+        "implementation",
+        "commit_prep",
+        "ai-sdlc-commit-prep",
+    ),
+    (
+        "security_review",
+        ("security", "owasp", "authz", "abuse case"),
+        "implementation",
+        "security_testing",
+        "ai-sdlc-security-testing",
+    ),
+    (
         "new_refinement",
-        ("feedback", "refinement", "new feature", "new request", "idea", "customer problem"),
+        ("feedback", "refinement", "new feature", "new request", "idea", "customer problem", "product", "discover"),
         "refinement",
         "discovery",
         "ai-sdlc-working-backwards-discovery",
+    ),
+    (
+        "qa_planning",
+        ("testability", "qa coverage", "test plan"),
+        "refinement",
+        "qa_gap_review",
+        "ai-sdlc-qa-requirements-gap-review",
+    ),
+    (
+        "story_decomposition",
+        ("story", "backlog", "epic"),
+        "refinement",
+        "story_decomposition",
+        "ai-sdlc-user-story-decomposition",
     ),
     (
         "review",
@@ -79,7 +128,7 @@ INTENT_RULES: tuple[tuple[str, tuple[str, ...], str, str, str], ...] = (
     ),
     (
         "validation",
-        ("validate", "regression", "smoke test", "qa"),
+        ("validate", "validation", "regression", "smoke test"),
         "implementation",
         "validation",
         "ai-sdlc-validation",
@@ -120,8 +169,134 @@ def classify_intent(intent: str) -> tuple[str, str, str, str, tuple[str, ...]]:
         "",
         "",
         "",
-        ("FLOW_AMBIGUOUS_INTENT: provide refinement, implementation, review, or validation intent",),
+        ("FLOW_AMBIGUOUS_INTENT: provide refinement, implementation, QA, review, security, commit, or validation intent",),
     )
+
+
+def discover_skills(root: Path) -> tuple[frozenset[str], tuple[str, ...]]:
+    """Return owning skills visible from source, project, or packaged roots."""
+    module = Path(__file__).resolve()
+    packaged = (
+        module.parent.parent
+        if module.parent.name == "_shared"
+        else module.parents[2]
+    )
+    candidates = (
+        ("source", root.resolve() / "skills"),
+        ("project", root.resolve() / ".agents" / "skills"),
+        ("packaged", packaged),
+    )
+    names: set[str] = set()
+    roots: list[str] = []
+    seen: set[Path] = set()
+    for label, candidate in candidates:
+        resolved = candidate.resolve()
+        if resolved in seen or not resolved.is_dir():
+            continue
+        seen.add(resolved)
+        discovered = {
+            path.name
+            for path in resolved.iterdir()
+            if path.is_dir() and (path / "SKILL.md").is_file()
+        }
+        if discovered:
+            names.update(discovered)
+            roots.append(f"{label}={resolved.as_posix()}")
+    return frozenset(names), tuple(roots)
+
+
+def current_branch(root: Path) -> str:
+    """Return the current Git branch without mutating repository state."""
+    result = subprocess.run(
+        ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+        cwd=root,
+        check=False,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+    )
+    return result.stdout.strip()
+
+
+def state_route(
+    root: Path, feature: str, workspace: str, requested_skill: str
+) -> tuple[str, str, str, str] | None:
+    """Return an active skill or earliest incomplete requested prerequisite."""
+    base = REFINEMENT_ROOT if workspace == "refinement" else IMPLEMENTATION_ROOT
+    path = root.resolve() / base / feature / "_ai_sdlc" / "state.toon"
+    if not path.is_file():
+        return None
+    state: dict[str, object] = {"stages": []}
+    in_stages = False
+    for raw_line in path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.rstrip()
+        if line.startswith("stages["):
+            in_stages = True
+            continue
+        if line.startswith("skips["):
+            in_stages = False
+            continue
+        if in_stages and line.startswith("  "):
+            values = [value.strip() for value in line.strip().split(",")]
+            values.extend([""] * (6 - len(values)))
+            state["stages"].append(  # type: ignore[union-attr]
+                dict(
+                    zip(
+                        (
+                            "id",
+                            "skill",
+                            "status",
+                            "workspace",
+                            "artifacts",
+                            "decision_ref",
+                        ),
+                        values,
+                    )
+                )
+            )
+            continue
+        if not line.startswith("  ") and ":" in line:
+            key, value = line.split(":", 1)
+            state[key.strip()] = value.strip()
+    state_workspace = str(state.get("workspace") or workspace)
+    stages = [
+        row
+        for row in state.get("stages", [])
+        if isinstance(row, dict) and row.get("workspace") == state_workspace
+    ]
+    active = str(state.get("active_skill", "")).strip()
+    if active:
+        row = next((item for item in stages if item.get("skill") == active), {})
+        return (
+            state_workspace,
+            str(row.get("id") or state.get("current_stage") or ""),
+            active,
+            f"active feature state: {active}",
+        )
+    rows_by_id = {str(item.get("id", "")): item for item in stages}
+    requested = next(
+        (item for item in stages if item.get("skill") == requested_skill), None
+    )
+    if not requested:
+        return None
+
+    def earliest_missing(stage_id: str) -> dict[str, str] | None:
+        for predecessor in STAGE_PREDECESSORS.get(stage_id, ()):
+            row = rows_by_id.get(predecessor)
+            if not row or str(row.get("status", "")) in COMPLETE_STATUSES:
+                continue
+            return earliest_missing(predecessor) or row
+        return None
+
+    prerequisite = earliest_missing(str(requested.get("id", "")))
+    if prerequisite:
+        return (
+            state_workspace,
+            str(prerequisite.get("id", "")),
+            str(prerequisite.get("skill", "")),
+            f"earliest incomplete prerequisite stage: {prerequisite.get('id', '')}",
+        )
+    return None
 
 
 def select_roles(intent: str, *, stage: str) -> tuple[tuple[str, ...], tuple[str, ...]]:
@@ -334,6 +509,19 @@ def build_card(
 ) -> DecisionCard:
     """Build a read-only decision card from explicit evidence."""
     intent_class, workspace, stage, skill, intent_evidence = classify_intent(intent)
+    route_evidence = list(intent_evidence)
+    existing_route = (
+        state_route(root, feature, workspace, skill) if workspace else None
+    )
+    if existing_route:
+        workspace, stage, skill, reason = existing_route
+        route_evidence.append(reason)
+    elif workspace == "implementation" and current_branch(root) in DEFAULT_BASE_BRANCHES:
+        stage = "branching"
+        skill = "ai-sdlc-branching"
+        route_evidence.append(
+            "shared base branch requires task branching before SDD writes"
+        )
     roles, role_evidence = select_roles(intent, stage=stage)
     rigor, rigor_reason, rigor_blockers = select_rigor(
         intent, requested=requested_rigor, policy_requires_full=policy_requires_full
@@ -342,7 +530,23 @@ def build_card(
     context = economics or choose_context(
         raw_tokens=0, packed_tokens=0, reread_tokens=0, critical_total=0, critical_retained=0
     )
-    blockers = tuple(intent_evidence if intent_class == "ambiguous" else ()) + rigor_blockers + path_blockers
+    installed, skill_roots = discover_skills(root)
+    availability_blockers = (
+        (
+            "FLOW_MISSING_SKILL: "
+            + skill
+            + " is unavailable in "
+            + (";".join(skill_roots) or "all searched roots")
+        ,)
+        if skill and skill not in installed
+        else ()
+    )
+    blockers = (
+        tuple(intent_evidence if intent_class == "ambiguous" else ())
+        + rigor_blockers
+        + path_blockers
+        + availability_blockers
+    )
     planned_writes = () if blockers or target is None else (target.relative_to(root.resolve()).as_posix(),)
     semantic = {
         "schema": SCHEMA,
@@ -371,7 +575,7 @@ def build_card(
         intent=" ".join(intent.split()),
         intent_class=intent_class,
         intent_confidence=0.0 if intent_class == "ambiguous" else 1.0,
-        intent_reason="; ".join(intent_evidence),
+        intent_reason="; ".join(route_evidence),
         feature=feature,
         workspace=workspace,
         stage=stage,

@@ -31,8 +31,8 @@ contract. Build a bounded task context pack for a medium, large, or unfamiliar
 change. Implement one coherent task, derive tests from acceptance criteria, and
 stop when required context is insufficient.
 
-Navigator is optional when the feature and exact next skill are known. Invoke
-that skill directly to save context. Use navigator when state, blockers, or the
+Flow Explore is optional when the feature and exact next skill are known. Invoke
+that skill directly to save context. Use Explore when state, blockers, or the
 next capability is unclear; it is not a mandatory wrapper around every skill.
 
 ## 3. Validate the current diff

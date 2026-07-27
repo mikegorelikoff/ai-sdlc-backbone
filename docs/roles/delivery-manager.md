@@ -40,7 +40,7 @@ for their accountable owners.
 
 ## Example workflow
 
-Use navigator and delivery graph to find the earliest missing producer; choose a
+Use flow Explore and delivery graph to find the earliest missing producer; choose a
 proportionate flow; name one accountable owner per gate; sequence dependencies;
 track blocker age and decisions; after a change, reopen stale stages; hand off
 only when evidence and owner acceptance are current.

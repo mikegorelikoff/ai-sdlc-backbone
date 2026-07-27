@@ -34,6 +34,174 @@ class FlowTests(unittest.TestCase):
         self.assertEqual(result[0], "ambiguous")
         self.assertIn("FLOW_AMBIGUOUS_INTENT", result[4][0])
 
+    def test_former_navigator_routes_are_preserved(self) -> None:
+        fixtures = {
+            "Prepare a commit": "ai-sdlc-commit-prep",
+            "Run an OWASP security review": "ai-sdlc-security-testing",
+            "Review QA coverage and testability": "ai-sdlc-qa-requirements-gap-review",
+            "Decompose this backlog into stories": "ai-sdlc-user-story-decomposition",
+            "Discover a new product idea": "ai-sdlc-working-backwards-discovery",
+            "Review PR": "ai-sdlc-code-review",
+            "Run regression validation": "ai-sdlc-validation",
+            "Implement GET /health behavior while preserving existing route behavior.": "ai-sdlc-sdd",
+        }
+        for intent, expected in fixtures.items():
+            with self.subTest(intent=intent):
+                self.assertEqual(FLOW.classify_intent(intent)[3], expected)
+
+    def test_guided_entrypoint_is_unique_in_active_inventories(self) -> None:
+        navigator = "ai-sdlc-navigator"
+        self.assertFalse((ROOT / "skills" / navigator / "SKILL.md").exists())
+        inventories = (
+            ROOT / "compatibility" / "baseline-v1.json",
+            ROOT / "config" / "ai-sdlc-managed-skills.txt",
+            ROOT / "modules" / "core" / "module.json",
+            ROOT / "skills" / "ai-sdlc-shared-runtime"
+            / "references" / "ai-sdlc-managed-skills.txt",
+        )
+        for inventory in inventories:
+            with self.subTest(inventory=inventory):
+                self.assertNotIn(
+                    navigator, inventory.read_text(encoding="utf-8")
+                )
+
+    def test_active_feature_state_has_priority_over_new_intent(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            state = (
+                root
+                / "specs"
+                / "011-guided-explore-apply-flow"
+                / "_ai_sdlc"
+                / "state.toon"
+            )
+            state.parent.mkdir(parents=True)
+            state.write_text(
+                "feature: 011-guided-explore-apply-flow\n"
+                "workspace: implementation\n"
+                "current_stage: sdd\n"
+                "active_skill: ai-sdlc-sdd\n\n"
+                "stages[1]{id,skill,status,workspace,artifacts,decision_ref}:\n"
+                "  sdd,ai-sdlc-sdd,in_progress,implementation,specs/011-guided-explore-apply-flow,DEC-001\n\n"
+                "skips[0]{stage,reason,decision_ref,flow_mode}:\n",
+                encoding="utf-8",
+            )
+
+            card = FLOW.build_card(
+                root=root,
+                intent="Prepare a commit",
+                feature="011-guided-explore-apply-flow",
+            )
+
+            self.assertEqual(card.skill, "ai-sdlc-sdd")
+            self.assertIn("active feature state", card.intent_reason)
+
+    def test_earliest_incomplete_state_stage_guides_apply_order(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            state = (
+                root
+                / "specs"
+                / "011-guided-explore-apply-flow"
+                / "_ai_sdlc"
+                / "state.toon"
+            )
+            state.parent.mkdir(parents=True)
+            state.write_text(
+                "feature: 011-guided-explore-apply-flow\n"
+                "workspace: implementation\n"
+                "current_stage: branching\n"
+                "active_skill:\n\n"
+                "stages[2]{id,skill,status,workspace,artifacts,decision_ref}:\n"
+                "  branching,ai-sdlc-branching,not_started,implementation,branch-plan.md,\n"
+                "  sdd,ai-sdlc-sdd,not_started,implementation,specs/011-guided-explore-apply-flow,\n\n"
+                "skips[0]{stage,reason,decision_ref,flow_mode}:\n",
+                encoding="utf-8",
+            )
+
+            card = FLOW.build_card(
+                root=root,
+                intent="Implement API",
+                feature="011-guided-explore-apply-flow",
+            )
+
+            self.assertEqual(card.skill, "ai-sdlc-branching")
+            self.assertIn("earliest incomplete", card.intent_reason)
+
+    def test_unrelated_optional_stage_does_not_hijack_commit_route(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            state = (
+                root
+                / "specs"
+                / "011-guided-explore-apply-flow"
+                / "_ai_sdlc"
+                / "state.toon"
+            )
+            state.parent.mkdir(parents=True)
+            state.write_text(
+                "feature: 011-guided-explore-apply-flow\n"
+                "workspace: implementation\n"
+                "current_stage: commit_prep\n"
+                "active_skill:\n\n"
+                "stages[6]{id,skill,status,workspace,artifacts,decision_ref}:\n"
+                "  branching,ai-sdlc-branching,done,implementation,branch-plan.md,\n"
+                "  sdd,ai-sdlc-sdd,done,implementation,specs/011-guided-explore-apply-flow,\n"
+                "  validation,ai-sdlc-validation,done,implementation,validation.md,\n"
+                "  code_review,ai-sdlc-code-review,done,implementation,code-review.md,\n"
+                "  security_testing,ai-sdlc-security-testing,not_started,implementation,security-review.md,\n"
+                "  commit_prep,ai-sdlc-commit-prep,not_started,implementation,commit-readiness.md,\n\n"
+                "skips[0]{stage,reason,decision_ref,flow_mode}:\n",
+                encoding="utf-8",
+            )
+
+            card = FLOW.build_card(
+                root=root,
+                intent="Prepare a commit",
+                feature="011-guided-explore-apply-flow",
+            )
+
+            self.assertEqual(card.skill, "ai-sdlc-commit-prep")
+
+    def test_shared_base_branch_routes_implementation_to_branching(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            subprocess.run(
+                ["git", "init", "-b", "main"],
+                cwd=root,
+                check=True,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            subprocess.run(
+                [
+                    "git",
+                    "-c",
+                    "user.name=Fixture",
+                    "-c",
+                    "user.email=fixture@example.invalid",
+                    "-c",
+                    "commit.gpgsign=false",
+                    "commit",
+                    "--allow-empty",
+                    "-m",
+                    "fixture",
+                ],
+                cwd=root,
+                check=True,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+
+            card = FLOW.build_card(
+                root=root,
+                intent="Implement API",
+                feature="011-guided-explore-apply-flow",
+            )
+
+            self.assertEqual(card.skill, "ai-sdlc-branching")
+            self.assertIn("shared base branch", card.intent_reason)
+
     def test_context_pack_requires_recall_and_net_savings(self) -> None:
         accepted = FLOW.choose_context(
             raw_tokens=1000, packed_tokens=700, reread_tokens=100,

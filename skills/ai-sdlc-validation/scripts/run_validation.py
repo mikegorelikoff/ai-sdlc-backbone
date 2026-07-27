@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import errno
 import hashlib
 import json
 import os
@@ -47,7 +48,20 @@ def atomic_json(root: Path, path: Path, value: dict[str, Any]) -> None:
 
 def execute_bounded(argv: list[str], root: Path, timeout: int, limit: int) -> tuple[int, bytes, bytes, int, int, bool]:
     """Drain output while hashing at most limit bytes and terminate the process group on overflow."""
-    process = subprocess.Popen(argv, cwd=root, stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=os.name != "nt")
+    for attempt in range(3):
+        try:
+            process = subprocess.Popen(
+                argv,
+                cwd=root,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                start_new_session=os.name != "nt",
+            )
+            break
+        except OSError as exc:
+            if exc.errno != errno.EAGAIN or attempt == 2:
+                raise
+            time.sleep(0.05 * (attempt + 1))
     lock = threading.Lock()
     total = 0
     limited = False
@@ -231,19 +245,24 @@ def main() -> int:
     results: list[dict[str, Any]] = []
     for item in commands:
         started = time.monotonic()
+        launch_error = ""
         try:
             code, stdout, stderr, stdout_bytes, stderr_bytes, limited = execute_bounded(
                 execution_argv(item["argv"]), root, args.timeout, args.max_output_bytes
             )
         except OSError as exc:
+            launch_error = f"{type(exc).__name__}: {exc}"
             code, stdout, stderr, stdout_bytes, stderr_bytes, limited = 127, b"", str(exc).encode(), 0, len(str(exc).encode()), False
-        results.append({
+        result = {
             "id": item["id"], "argv": item["argv"], "trace_ids": item["trace_ids"],
             "exit_code": code, "duration_ms": int((time.monotonic() - started) * 1000),
             "stdout_sha256": hashlib.sha256(stdout).hexdigest(),
             "stderr_sha256": hashlib.sha256(stderr).hexdigest(),
             "stdout_bytes": stdout_bytes, "stderr_bytes": stderr_bytes, "output_limited": limited,
-        })
+        }
+        if launch_error:
+            result["launch_error"] = launch_error
+        results.append(result)
     try:
         current_revision = revision(root)
         current_fingerprint = workspace_fingerprint(root, output)

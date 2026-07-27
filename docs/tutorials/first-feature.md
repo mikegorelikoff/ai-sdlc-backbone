@@ -129,7 +129,7 @@ installer adds.
     test "$(git -C "$HARNESS_SRC" rev-parse HEAD)" = "$HARNESS_REV"
     DISABLE_TELEMETRY=1 npx -y skills@1.5.19 add "$HARNESS_SRC" --skill '*' --agent codex -y
     DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --json
-    "$PYTHON_BIN" .agents/skills/ai-sdlc-navigator/scripts/navigate.py --help
+    "$PYTHON_BIN" .agents/skills/ai-sdlc-flow/scripts/flow.py --help
     "$PYTHON_BIN" .agents/skills/ai-sdlc-sdd/scripts/sdd_artifact_scaffold.py --help
     mkdir -p .ai-sdlc
     cp "$HARNESS_SRC/config/ai-sdlc-managed-skills.txt" .ai-sdlc/harness-managed-skills.txt
@@ -192,22 +192,14 @@ existing reviewed remote and never creates this fixture-only exception.
 The deterministic routing record uses its own schema:
 
 ```toon
-schema: ai-sdlc-navigator/v1
-branch: dev
-installed_skill_count: 45
-features: none
-selected_feature: none
-workspace: none
-current_stage: none
-active_skill: none
-dirty_change_count: 0
-flow_mode: quick
-
-next_required[1]{skill,reason,command,expected_artifact}:
-  ai-sdlc-branching,Repository-tracked specification and implementation work must not start on shared base branch dev.,Use $ai-sdlc-branching to create a task branch before SDD writes.,task branch
-
-next_optional[0]{skill,reason,command,expected_artifact}:
-
+schema: ai-sdlc-flow/v1
+mode: explore
+intent_class: implementation
+feature: 001-health-endpoint
+workspace: implementation
+stage: sdd
+skill: ai-sdlc-sdd
+rigor: quick
 blockers[0]{message}:
 ```
 
@@ -226,8 +218,8 @@ next_required[1]{skill,reason,command,expected_artifact}:
 next_optional[0]{skill,reason,command,expected_artifact}:
 ```
 
-If the navigator reports `recommended skill is not installed`, stop: the
-project-scoped inventory is incomplete. If it changes a file, inspect and
+If flow reports a missing runtime or unsupported route, stop: the
+project-scoped inventory is incomplete. If Explore changes a file, inspect and
 restore that unexpected mutation before continuing.
 
 ## 4. Create the task branch before SDD mutation

@@ -127,7 +127,7 @@ Use these short foundation pages when a term is unfamiliar:
 
 Reading is an input, not completion. Each chapter asks you to create something:
 a task contract, context inventory, evidence table, delegation brief,
-multi-role review report, trace map, navigator request, lab artifact, or role
+multi-role review report, trace map, flow Explore request, lab artifact, or role
 handoff. Your artifact is then checked against visible criteria. This mirrors
 the harness: a claim is stronger when it has a durable artifact and current
 validation evidence.
@@ -180,7 +180,7 @@ column names the minimum artifact that allows you to move forward.
 | 2A | Agents, tools, and subagents | Delegate one safe read-only task | Delegation brief with permissions and stop condition |
 | 2B | Multi-role review | Run independent role reviews without voting approval | Structured findings and accountable-owner synthesis |
 | 3 | AI SDLC and SDD | Trace intent through artifacts and evidence | Request-to-handoff trace map |
-| 4 | Harness essentials | Choose a flow and formulate a navigator request | Flow decision and expected-artifact record |
+| 4 | Harness essentials | Choose a flow and formulate an Explore request | Flow decision and expected-artifact record |
 | 5 | Guided practice | Recover from realistic failures in a safe workspace | Completed lab portfolio with verification outcomes |
 | 6 | Role learning paths | Apply the harness from your role without taking another owner’s authority | Role-specific first-task handoff |
 
@@ -276,12 +276,12 @@ an old artifact that no longer matches implementation.
 You learn the three environments: source checkout, installed agent environment,
 and consumer repository. You distinguish skills, helpers, Markdown artifacts,
 Token-Oriented Object Notation (TOON), state, policies, agents, and humans. You
-classify requests, select quick, full, or lifecycle flow, use the navigator,
+classify requests, select quick, full, or lifecycle flow, use flow Explore,
 read targeted context, identify blockers, and name the next artifact and human
 gate.
 
 Move on when your flow choice is tied to risk and evidence rather than task
-size alone, and when your navigator request asks for a recommendation rather
+size alone, and when your Explore request asks for a recommendation rather
 than pretending to know the workflow.
 
 ### Level 5 outcome: recover, not just succeed
@@ -381,7 +381,7 @@ If any box is unchecked, begin with
 - [ ] I can distinguish source checkout, installed skills, and consumer
   repository.
 - [ ] I can choose quick flow, full flow, or full lifecycle and state why.
-- [ ] I can formulate a navigator request and predict the next artifact without
+- [ ] I can formulate a flow Explore request and predict the next artifact without
   treating that prediction as fact.
 
 If the trace is weak, begin with [AI SDLC and SDD](learn/ai-sdlc-and-sdd.md). If
@@ -521,7 +521,7 @@ The curriculum’s evidence model matches the harness operating model:
 7. hand off a traceable result.
 
 The [workflow map](reference/workflow-map.md) is the canonical cross-reference.
-The [navigator how-to](how-to/navigate-request.md) owns exact operational
+The [flow Explore how-to](how-to/navigate-request.md) owns exact operational
 guidance. The [glossary](foundations/glossary.md) owns terminology. Learn uses
 those owners; it does not replace them.
 

@@ -123,7 +123,11 @@ def main() -> int:
         for skill in changed_skills:
             if skill == "_shared":
                 continue
-            commands.append(f"test -f skills/{skill}/SKILL.md")
+            skill_root = Path("skills") / skill
+            if (skill_root / "SKILL.md").exists():
+                commands.append(f"test -f skills/{skill}/SKILL.md")
+            else:
+                commands.append(f"test ! -e skills/{skill}/SKILL.md")
         if "_shared" in changed_skills:
             commands.append("python3 skills/_shared/sync_installed_runtime.py --check")
     compile_targets = python_compile_targets(files)

@@ -30,7 +30,7 @@ sources:
     license_url: https://github.com/mikegorelikoff/ai-sdlc-harness
     reuse_class: internal-authority
     material_consulted: [skill metadata, flow modes, input and output contracts, state helpers, validation helpers]
-    adopted_concepts: [skill selection, quick and full flow, state, evidence, navigator, delegation boundaries]
+    adopted_concepts: [skill selection, quick and full flow, state, evidence, flow Explore, delegation boundaries]
     excluded_material: [full SKILL.md contracts, scripts, generated catalogs]
     destination_pages: [docs/learn/agents-tools-and-subagents.md, docs/learn/multi-role-review.md, docs/learn/ai-sdlc-and-sdd.md, docs/learn/harness-essentials.md, docs/learn/guided-practice.md, docs/learn/role-learning-paths.md]
     adaptation_summary: Stable skill behavior was translated into learner decisions and original scenarios; exact invocation and contract details remain in generated reference pages.

@@ -17,11 +17,11 @@ Replace skill-order guesswork with one auditable Explore decision card and one f
 
 Guided AI SDLC Explore then Apply workflow. Use when a contributor needs one readable entrypoint that classifies intent before feature selection, explains context, rigor, roles, workspaces, blockers, and planned writes, then revalidates and starts exactly one lifecycle checkpoint.
 
-If the correct entry point is still unclear, ask the read-only navigator first instead of guessing.
+If the correct entry point is still unclear, use `ai-sdlc-flow` Explore first instead of guessing.
 
 ## Do not use it when
 
-- Do not use it to Apply before a matching Explore card exists. Use `ai-sdlc-navigator` instead for read-only routing when no mutation is requested.
+- Do not use it to Apply before a matching Explore card exists. Use `ai-sdlc-flow` Explore instead for read-only routing.
 - Do not use it to bypass lifecycle prerequisites. Use `ai-sdlc-sdd` or the selected owning skill instead.
 
 

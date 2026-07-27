@@ -11,12 +11,12 @@ The notes are field evidence, not proof that every interpretation is correct.
 | Feedback or difficulty | Disposition | Resolution or owner |
 | --- | --- | --- |
 | Global installation reported 88 failures for Eve and PromptScript. | Resolved | Broad `--all --global` selected unsupported targets. Use `--skill '*' --agent codex --global`; see [Install](../how-to/install.md#optional-install-globally-for-codex). The skills themselves did not fail 88 times. |
-| Navigator did not see globally installed skills. | Resolved | Navigator discovers siblings from its executing packaged root and reports searched roots. A fresh host session may still be needed for the host registry. |
-| Navigator recommended skills outside the current package. | Resolved for deterministic navigator | Required unavailable skills are blockers; optional actions are limited to discovered skills. Challenge host/model suggestions against `skill_roots`. |
+| Guided routing did not see globally installed skills. | Resolved | Flow discovers siblings from its executing packaged root and reports searched roots. A fresh host session may still be needed for the host registry. |
+| Guided routing recommended skills outside the current package. | Resolved for deterministic flow | Required unavailable skills are blockers; optional actions are limited to discovered skills. Challenge host/model suggestions against `skill_roots`. |
 | Local installation created an additional agent directory. | Clarified | `.agents/skills/` is the canonical project store. A host may create aliases or links. Inspect the CLI inventory, Git status, and symlinks; do not delete `.agents` as a duplicate. |
 | Old skills are not automatically removed. | Accepted safety property | Reinstall cannot prove ownership or local modification. The update procedure produces retired inventory for review and never deletes by name alone. |
 | Installation and updates differ between environments. | Resolved pattern | Commit project inventory and portable provenance; pin CLI and harness revision; promote one reviewed revision. Treat global installs as separate workstation state. |
-| Navigator should always be used / wastes context. | Clarified | It is optional when the exact skill and lifecycle state are known. Use it for ambiguous entry, resume, or blockers; rely on durable state, not chat memory. |
+| Guided routing should always be used / wastes context. | Clarified | Flow Explore is optional when the exact skill and lifecycle state are known. Use it for ambiguous entry, resume, or blockers; rely on durable state, not chat memory. |
 | Skills can run in any order. | Corrected | Independent read-only lenses may run directly. Stateful lifecycle skills must respect predecessors, state, artifact authority, and gates. |
 | Automation after a specification is unclear. | Resolved | Follow readiness → one ready task → validation → review/security → commit. Workflow plans do not execute; runtime requires reviewed plans and budgets. |
 | Specifications in a separate repository were invisible. | Resolved | Keep discovery repository-bounded and use [external specification snapshots](../how-to/external-specifications.md) with hashes and drift checks. |
@@ -34,7 +34,7 @@ The notes are field evidence, not proof that every interpretation is correct.
 
 1. Prefer reviewed project scope for teams.
 2. Start a fresh host session after changing capability inventory.
-3. Inspect navigator `skill_roots` when discovery is disputed.
+3. Inspect flow `skill_roots` when discovery is disputed.
 4. Keep specifications, decisions, plans, and evidence in Git.
 5. Import external specifications through a reviewed snapshot.
 6. Execute one bounded task at a time unless isolation is enforced.

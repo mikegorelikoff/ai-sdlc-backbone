@@ -17,11 +17,11 @@ Create and validate an isolated, reviewable workspace before any authoritative s
 
 AI SDLC controlled change-workspace and specification-delta workflow. Use when an AI assistant needs to create or validate an isolated proposal workspace, author and validate requirement deltas, preview canonical changes, or apply and archive an explicitly approved change with rollback evidence. Supports `--quick-flow` for assumption-driven drafts and `--full-flow` for strict owner, target, evidence, and authority checks.
 
-If the correct entry point is still unclear, ask the read-only navigator first instead of guessing.
+If the correct entry point is still unclear, use `ai-sdlc-flow` Explore first instead of guessing.
 
 ## Do not use it when
 
-- Do not use it for an ordinary new feature with no accepted downstream baseline. Use `ai-sdlc-navigator` to select refinement or `ai-sdlc-sdd` instead.
+- Do not use it for an ordinary new feature with no accepted downstream baseline. Use `ai-sdlc-flow` Explore or `ai-sdlc-sdd` instead.
 
 
 ## Who is involved

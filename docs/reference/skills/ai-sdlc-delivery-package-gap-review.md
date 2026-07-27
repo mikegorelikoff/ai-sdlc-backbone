@@ -17,7 +17,7 @@ Review an upstream discovery package and decide whether it is specific enough to
 
 Use when a PRFAQ, BRD, or equivalent discovery package exists and you need to review it for delivery gaps, contradictions, missing business rules, and insufficient implementation handoff detail before writing user stories or specs. Supports `--quick-flow` for fast assumption-driven execution and `--full-flow` for question-driven verified execution. Explicit full or end-to-end spec refinement requests continue through the existing 18-stage refinement cascade.
 
-If the correct entry point is still unclear, ask the read-only navigator first instead of guessing.
+If the correct entry point is still unclear, use `ai-sdlc-flow` Explore first instead of guessing.
 
 ## Do not use it when
 

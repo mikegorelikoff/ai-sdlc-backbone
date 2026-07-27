@@ -14,11 +14,11 @@ because it exists.
 | Starting signal | Begin with | Typical path |
 | --- | --- | --- |
 | New idea or unclear customer problem | Working-backwards discovery | [Complete refinement](refinement.md) or a bounded discovery package |
-| Clear small behavior change | Navigator, task branch, then proportionate SDD | [Implementation](implementation.md) |
-| Existing repository with implicit conventions | Project context, then navigator | [Adopt an existing project](../tutorials/existing-project.md) |
-| Bug with reproducible expected behavior | Navigator, task branch, then tests or SDD depending contract impact | [Implementation](implementation.md) |
+| Clear small behavior change | Flow Explore, task branch, then proportionate SDD | [Implementation](implementation.md) |
+| Existing repository with implicit conventions | Project context, then flow Explore | [Adopt an existing project](../tutorials/existing-project.md) |
+| Bug with reproducible expected behavior | Flow Explore, task branch, then tests or SDD depending contract impact | [Implementation](implementation.md) |
 | Review-only request | Code review or security testing | Validation/review branch in [Implementation](implementation.md) |
-| Security-sensitive feature | Navigator with risk stated; full SDD/security | Refinement + implementation with Security checkpoints |
+| Security-sensitive feature | Flow Explore with risk stated; full SDD/security | Refinement + implementation with Security checkpoints |
 | Requirement changed after work began | Change set and impact analysis | [Control plane](control-plane.md) and [Recovery](recovery.md) |
 | Interrupted multi-task run | Runtime resume | Runtime branch in [Control plane](control-plane.md) |
 | Release/update problem | Doctor and upgrade preview | Operations branch in [Control plane](control-plane.md) |

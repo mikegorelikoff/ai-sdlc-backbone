@@ -632,7 +632,7 @@ Return to [Independent multi-role review with subagents](multi-role-review.md) i
 
 ## Next learning step
 
-Continue to [Harness essentials](harness-essentials.md) to learn the installed harness environment, navigator, skills, flow choices, state, artifacts, Evidence Council, Quality Lenses, blockers, and handoffs.
+Continue to [Harness essentials](harness-essentials.md) to learn the installed harness environment, flow routing, skills, state, artifacts, Evidence Council, Quality Lenses, blockers, and handoffs.
 
 ## Sources and adaptation notes
 

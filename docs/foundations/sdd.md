@@ -74,8 +74,8 @@ it? What must reopen if the rule changes?
 Use SDD when a change affects observable behavior, public or internal APIs,
 architecture, data, security, multiple components, meaningful rollout risk, or
 several team roles. Use a smaller path for a well-understood, low-risk change
-with no contract impact. If unsure, let the read-only navigator inspect current
-evidence and recommend the earliest missing stage.
+with no contract impact. If unsure, use read-only flow Explore to inspect
+current evidence and recommend the earliest missing stage.
 
 `--full-flow` makes the **selected SDD workflow** stricter. It does not silently
 run every product, BA, QA, and delivery stage. A full lifecycle is an explicit

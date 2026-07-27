@@ -81,9 +81,9 @@ commits, pushes, deployment, or access to secrets.
 Enter this first read-only prompt in the Codex interface:
 
 ```text
-Use ai-sdlc-navigator --quick-flow.
-Inspect this repository without modifying it. Report the repository evidence,
-smallest safe next action, expected artifact, blockers, and optional actions.
+Use ai-sdlc-flow to Explore with quick rigor.
+Inspect this repository without modifying it. Report the route, evidence,
+smallest safe next action, expected artifact, blockers, and fingerprint.
 Request: add a health endpoint.
 ```
 
@@ -99,7 +99,7 @@ step.
 | `codex: command not found` | Run `npm prefix --global`, correct the approved npm executable path, and rerun `codex --version`; expected: one version line. |
 | Login does not complete | Cancel, run `codex login` once, and follow only the official flow it prints; escalate proxy, account, or policy failures to the owner. |
 | Wrong repository opened | Exit Codex, `cd` to the consumer root, verify `git rev-parse --show-toplevel`, and relaunch. |
-| Skill not found | Verify `.agents/skills/ai-sdlc-navigator/SKILL.md` and the project-scoped inventory from [Install](install.md); do not switch to a global install as a shortcut. |
+| Skill not found | Verify `.agents/skills/ai-sdlc-flow/SKILL.md` and the project-scoped inventory from [Install](install.md); do not switch to a global install as a shortcut. |
 | Unexpected file or command request | Deny the action, inspect `git status --short`, and review the host permission plus [security model](../operations/governance.md). |
 
 The authoritative product references are the official
