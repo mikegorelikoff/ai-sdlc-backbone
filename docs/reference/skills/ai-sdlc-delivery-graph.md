@@ -78,9 +78,21 @@ Humans accept or reject material product, security, QA, policy, rollout, release
 - Full flow requires reviewers to resolve every reported ambiguity and high-value
   requirement coverage gap before claiming readiness.
 
+## Procedural step selectors
+
+The router loads these skill-owned procedures just in time. Read only the selector matching the current phase, active role, and action; a selected step is normative and an unselected step stays out of context.
+
+| Selector | Phases | Roles | Load rule | Step | Reason |
+| --- | --- | --- | --- | --- | --- |
+| `prepare` | `prepare`, `clarify`, `route` | `product-manager`, `software-architect`, `software-engineer`, `qa-engineer` | `required` | [`steps/01-prepare.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-delivery-graph/steps/01-prepare.md) | establish inputs, authority, lifecycle state, and safe artifact routing |
+| `execute` | `execute` | `product-manager`, `software-architect`, `software-engineer`, `qa-engineer` | `on-demand` | [`steps/02-execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-delivery-graph/steps/02-execute.md) | perform only the selected owning-skill procedure |
+| `validate-and-handoff` | `validate`, `handoff`, `complete` | `product-manager`, `software-architect`, `software-engineer`, `qa-engineer` | `before-completion` | [`steps/03-validate-and-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-delivery-graph/steps/03-validate-and-handoff.md) | verify outputs and return an explicit evidence-backed handoff |
+
+Resolve the current step with `ai-sdlc-shared-runtime/scripts/ai_sdlc_steps.py`. A missing, unsafe, oversized, or unmatched step is a blocker rather than permission to broad-load the package.
+
 ## Deterministic helpers
 
-Paths beginning with `skills/` below are canonical **source-checkout** forms for maintainers and CI. In a consumer repository, normally tell the installed skill to act; for human diagnosis, use the matching project-scoped `.agents/skills/<skill>/...` path reported by your host. Do not expect source-only `skills/_shared` to exist after installation.
+Paths beginning with `skills/` below are canonical **source-checkout** forms for maintainers and CI. In a consumer repository, normally tell the installed skill to act; for human diagnosis, use the matching project-scoped `.agents/skills/<skill>/...` path reported by your host. The canonical runtime is installed as the sibling `ai-sdlc-shared-runtime` skill.
 
 | Helper | Purpose | Direct starting point | Repository effect |
 | --- | --- | --- | --- |
@@ -184,6 +196,6 @@ acceptance criterion. A following `Refs: AC-004` under `T006` creates a task
 
 ## Source contract
 
-This page is generated from [`skills/ai-sdlc-delivery-graph/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-delivery-graph/SKILL.md). Edit the source contract, rerun the catalog generator, and review both changes together; never hand-edit this page.
+This page is generated from [`skills/ai-sdlc-delivery-graph/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-delivery-graph/SKILL.md) plus its linked `steps/manifest.json` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
 
 [Back to the skill catalog](../skills.md) · [Script reference](../scripts.md) · [Choose a workflow](../../flows/index.md)

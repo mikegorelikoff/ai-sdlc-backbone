@@ -14,9 +14,7 @@ from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 
-_SHARED = Path(__file__).resolve().parents[2] / "_shared"
-if not _SHARED.is_dir():
-    _SHARED = _SHARED.parent / "ai-sdlc-shared-runtime" / "scripts"
+_SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
 sys.path.insert(0, str(_SHARED))
 from ai_sdlc_safe_io import atomic_write_text
 

@@ -75,14 +75,14 @@ should still be repaired.
 The AI refreshes both refinement and implementation indexes with:
 
 ```bash
-python3 skills/_shared/ai_sdlc_specs_index.py --workspace all --quick-flow
+python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_specs_index.py --workspace all --quick-flow
 ```
 
 The AI refreshes one workspace with:
 
 ```bash
-python3 skills/_shared/ai_sdlc_specs_index.py --workspace refinement --quick-flow
-python3 skills/_shared/ai_sdlc_specs_index.py --workspace implementation --full-flow
+python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_specs_index.py --workspace refinement --quick-flow
+python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_specs_index.py --workspace implementation --full-flow
 ```
 
 `--quick-flow` is enough after routine scaffold writes. The AI uses

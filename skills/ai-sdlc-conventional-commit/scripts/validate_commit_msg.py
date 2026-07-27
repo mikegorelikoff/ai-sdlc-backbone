@@ -14,10 +14,7 @@ import sys
 from pathlib import Path
 
 _SKILLS_ROOT = Path(__file__).resolve().parents[2]
-_CANDIDATES = (
-    _SKILLS_ROOT / "_shared",
-    _SKILLS_ROOT / "ai-sdlc-shared-runtime" / "scripts",
-)
+_CANDIDATES = (_SKILLS_ROOT / "ai-sdlc-shared-runtime" / "scripts",)
 _SHARED = next(
     (
         candidate.resolve()

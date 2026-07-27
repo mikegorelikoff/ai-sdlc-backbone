@@ -10,10 +10,7 @@ from pathlib import Path
 # bounding the directory first prevents environment input, the current working
 # directory, or a symlink from redirecting the import outside the skills root.
 _SKILLS_ROOT = Path(__file__).resolve().parents[2]
-_CANDIDATES = (
-    _SKILLS_ROOT / "_shared",
-    _SKILLS_ROOT / "ai-sdlc-shared-runtime" / "scripts",
-)
+_CANDIDATES = (_SKILLS_ROOT / "ai-sdlc-shared-runtime" / "scripts",)
 _SHARED = next(
     (
         candidate.resolve()

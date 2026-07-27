@@ -22,10 +22,10 @@ Harness API `2.0.0` migration even though many operational surfaces remain
 source compatible.
 
 The full compatibility helper requires a **harness source checkout**, including
-`compatibility/`, `modules/`, `concepts/`, and `skills/_shared`. Maintainers run:
+`compatibility/`, `modules/`, `concepts/`, and `skills/ai-sdlc-shared-runtime`. Maintainers run:
 
 ```bash
-python3 skills/_shared/ai_sdlc_compatibility.py --skip-git-audit --format toon
+python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_compatibility.py --skip-git-audit --format toon
 ```
 
 Consumer repositories instead verify the installed inventory and portable

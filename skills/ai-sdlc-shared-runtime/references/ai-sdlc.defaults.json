@@ -8,6 +8,11 @@
       "response_style": "balanced",
       "technical_depth": "adaptive",
       "status_updates": "milestones"
+    },
+    "flow": {
+      "role_aliases": {},
+      "menu_mode": "ambiguous",
+      "context_selectors": []
     }
   },
   "protected": []

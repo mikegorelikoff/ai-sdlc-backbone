@@ -8,9 +8,7 @@ from pathlib import Path
 
 # Resolve the shared helper relative to this skill directory so the script stays
 # portable when called from any working directory.
-_SHARED = Path(__file__).resolve().parents[2] / "_shared"
-if not _SHARED.is_dir():
-    _SHARED = _SHARED.parent / "ai-sdlc-shared-runtime" / "scripts"
+_SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
 sys.path.insert(0, str(_SHARED))
 from ai_sdlc_artifact_helper import build_parser, emit_profile_report, flow_mode
 

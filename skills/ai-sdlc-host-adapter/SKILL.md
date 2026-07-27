@@ -18,100 +18,21 @@ description: AI SDLC host adapter and capability negotiation workflow. Use when 
 - Purpose: Preserve workflow semantics across hosts with explicit mappings and safe fallbacks.
 - Output: `_ai_sdlc/adapters/<adapter-id>/negotiation.{toon,json,md}`
 
-### 0.1 Required Inputs
+## Step Selector
 
-- Versioned adapter manifest and capability request.
-- Exact portable operations, required capabilities, isolation need, and desired concurrency.
+Read `steps/manifest.json` and load only the step selected for the current phase, active role, and action. Treat every selected step as normative.
 
-### 0.2 Clarification Rules
+| Selector | Read when | Step | Load rule |
+| --- | --- | --- | --- |
+| `prepare` | `prepare`, `clarify`, `route` | [`steps/01-prepare.md`](steps/01-prepare.md) | `required` |
+| `execute` | `execute` | [`steps/02-execute.md`](steps/02-execute.md) | `on-demand` |
+| `validate-and-handoff` | `validate`, `handoff`, `complete` | [`steps/03-validate-and-handoff.md`](steps/03-validate-and-handoff.md) | `before-completion` |
 
-- Ask when required semantics or host operation identity is ambiguous.
-- Reject unknown fields, duplicate operations, invalid API ranges, undeclared
-  capabilities, or non-equivalent native mappings.
-- Never infer shell, filesystem, network, isolation, concurrency, or approval support.
+## Progressive Disclosure Contract
 
-### 0.2.1 Flow Mode Flags
-
-- Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Both modes use identical compatibility and fallback rules.
-- Full flow reviews every mapping, limit, fallback, and unsupported requirement.
-
-### 0.3 Output Rules
-
-- Default to complete TOON with mappings, missing requirements, fallbacks,
-  effective limits, compatibility, source fingerprint, and result fingerprint.
-- Return summaries directly in the active agent response.
-- Emit `ai-sdlc-handoff/v1` with `result`, `blockers`, `next_required`, and
-  `next_optional`; actions include `reason`, `command`, and `expected_artifact`.
-- Do not create `summary.txt`, `*-summary.txt`, or another standalone summary file.
-
-### 0.4 Artifact Routing
-
-- Write negotiations only below `_ai_sdlc/adapters/<adapter-id>/`.
-- Keep manifests in repository-owned visible paths or skill conformance fixtures.
-- Never mutate a manifest during negotiation.
-
-## 0.4.1 Runtime Path Resolution
-
-- Treat `skills/` in commands as a logical skill root. In a harness source checkout, use `skills/`; in a project-scoped consumer installation, resolve it to `.agents/skills/`. Before running a helper, verify that the selected root contains both this skill and `ai-sdlc-shared-runtime`; block with the missing path if neither layout exists.
-
-## 0.5 Feature State Machine
-
-- Read owning feature `_ai_sdlc/state.toon` before execution handoff.
-- Negotiation does not advance feature or runtime state.
-
-## 0.6 Artifact Metadata And Metatags
-
-- Related Markdown uses canonical `artifact_metadata` and `metatags`.
-- Machine records use versioned adapter, request, and negotiation schemas.
-
-## 0.7 Specs Index
-
-- Read `_ai_sdlc/specs-index.toon` first and use `specs-index.md` for human review.
-- Negotiation does not refresh either index.
-
-## References
-
-- Read `references/adapter-contract.md` before adding a mapping or fallback.
-- Validate manifests and requests with the JSON schemas in `references/`.
-- Use `scripts/adapter.py` for validation and negotiation.
-- Use `references/fixtures/` only as contract conformance hosts, not claims about products.
-
-## Script Usage
-
-```bash
-python3 skills/ai-sdlc-host-adapter/scripts/adapter.py . --adapter adapter.json --validate
-python3 skills/ai-sdlc-host-adapter/scripts/adapter.py . --adapter adapter.json --negotiate --request request.json --write
-```
-
-## Purpose
-
-Keep workflow meaning portable while making host limitations and fallbacks explicit.
-
-## Steps
-
-1. Validate manifest identity, API range, unique capabilities, mappings, and limits.
-2. Validate the exact capability request.
-3. Prefer equivalent native mappings.
-4. Use only registered deterministic fallbacks whose prerequisites are supported.
-5. Reduce concurrency or isolation to sequential execution with exact reasons.
-6. Fail incompatible when a required operation or capability has no safe mapping.
-7. Emit a complete TOON-first negotiation without invoking host operations.
-
-## Output Spec
-
-The negotiation records native and fallback mappings, unsupported operations,
-missing capabilities, requested and effective limits, compatibility, reasons,
-and deterministic fingerprints.
-
-Quality gate:
-
-- Pass only when every required operation and capability has an equivalent
-  mapping or registered semantic-preserving fallback.
-- Fail closed when host behavior would change workflow semantics.
-
-## Scope Boundary
-
-- Do not execute host operations, commands, hooks, or approvals.
-- Do not claim capabilities not declared by the adapter.
-- Do not silently drop workflow steps or required gates.
+- Read the manifest's required entry selector (`prepare`, or `clarify`/`route` for guided flow) before any command, durable write, or lifecycle transition.
+- Read an `execute` selector only when performing the selected skill work.
+- Read a `validate`, `handoff`, or `complete` selector before reporting completion.
+- Do not broad-load unselected steps. If selectors return no match or a validation error, stop and report the blocker.
+- Resolve selectors with the canonical `ai-sdlc-shared-runtime/scripts/ai_sdlc_steps.py`; never invent a step path.
+- In a source checkout use `skills/<skill>/...`; in a consumer install use `.agents/skills/<skill>/...`.

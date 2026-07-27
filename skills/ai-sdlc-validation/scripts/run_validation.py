@@ -21,9 +21,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-_SHARED = Path(__file__).resolve().parents[2] / "_shared"
-if not _SHARED.is_dir():
-    _SHARED = _SHARED.parent / "ai-sdlc-shared-runtime" / "scripts"
+_SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
 sys.path.insert(0, str(_SHARED))
 from ai_sdlc_state_machine import add_state_arguments, run_state_action
 from ai_sdlc_validation_receipt import (

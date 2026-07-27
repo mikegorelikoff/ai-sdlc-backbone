@@ -79,13 +79,13 @@ class ValidationPlanTests(unittest.TestCase):
         self.assertIn("python3 skills/ai-sdlc-sdd/scripts/validate_spec.py specs/176-ai-setup-hardening --quick-flow", result.stdout)
         self.assertNotIn("check_clarify.py", result.stdout)
 
-    def test_shared_helper_uses_real_paths_and_sync_check(self) -> None:
+    def test_canonical_runtime_uses_real_paths_and_runtime_suite(self) -> None:
         result = subprocess.run(
             [
                 sys.executable,
                 str(VALIDATION_PLAN),
                 "--quick-flow",
-                "skills/_shared/ai_sdlc_install_record.py",
+                "skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py",
             ],
             check=False,
             text=True,
@@ -95,9 +95,9 @@ class ValidationPlanTests(unittest.TestCase):
         )
 
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertNotIn("skills/_shared/SKILL.md", result.stdout)
-        self.assertIn("skills/_shared/sync_installed_runtime.py --check", result.stdout)
-        self.assertIn("skills/_shared/ai_sdlc_install_record.py", result.stdout)
+        self.assertIn("skills/ai-sdlc-shared-runtime/SKILL.md", result.stdout)
+        self.assertIn("unittest discover -s skills/ai-sdlc-shared-runtime/tests", result.stdout)
+        self.assertIn("skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py", result.stdout)
 
     def test_deleted_skill_gets_absence_check(self) -> None:
         result = subprocess.run(
@@ -165,16 +165,15 @@ class ReviewReadinessTests(unittest.TestCase):
         warnings = module.skill_metadata_warnings(["skills/ai-sdlc-ba/SKILL.md"], full_repo=False)
         self.assertTrue(any("inspect skills/ai-sdlc-ba/SKILL.md" in warning for warning in warnings))
 
-    def test_shared_warning_has_no_impossible_skill_or_wildcard_path(self) -> None:
+    def test_runtime_warning_has_no_impossible_or_wildcard_path(self) -> None:
         module = load_module(REVIEW_READINESS, "review_readiness_shared")
         warnings = module.skill_metadata_warnings(
-            ["skills/_shared/ai_sdlc_install_record.py"], full_repo=False
+            ["skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py"], full_repo=False
         )
         joined = "\n".join(warnings)
-        self.assertNotIn("skills/_shared/SKILL.md", joined)
         self.assertNotIn("scripts/*.py", joined)
-        self.assertIn("skills/_shared/ai_sdlc_install_record.py", joined)
-        self.assertIn("sync_installed_runtime.py --check", joined)
+        self.assertIn("skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py", joined)
+        self.assertIn("unittest discover -s skills/ai-sdlc-shared-runtime/tests", joined)
 
     def test_review_readiness_recognizes_skill_deletion(self) -> None:
         module = load_module(REVIEW_READINESS, "review_readiness_deletion")

@@ -11,6 +11,7 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
+from ai_sdlc_steps import load_manifest
 from ai_sdlc_toon import encode_toon
 
 
@@ -18,7 +19,6 @@ SCHEMA = "ai-sdlc-compatibility-baseline/v1"
 CONTRACT_ALIASES = {
     "directly in the Codex response": "directly in the active agent response",
 }
-RUNTIME_EXCLUDED = {"ai_sdlc_install_smoke.py", "sync_installed_runtime.py"}
 STATE_FLAGS = {"--state-check", "--begin-state", "--complete-state"}
 
 
@@ -53,7 +53,7 @@ def validate_skills(root: Path, baseline: dict[str, Any]) -> list[str]:
     """Validate stable names, documentation, and CLI flags."""
     errors: list[str] = []
     expected = baseline.get("required_skill_names", [])
-    actual = sorted(path.name for path in (root / "skills").iterdir() if path.is_dir() and path.name != "_shared")
+    actual = sorted(path.name for path in (root / "skills").iterdir() if path.is_dir())
     missing = sorted(set(expected) - set(actual))
     if missing:
         errors.append("missing required skills: " + ", ".join(missing))
@@ -64,6 +64,14 @@ def validate_skills(root: Path, baseline: dict[str, Any]) -> list[str]:
         text = doc.read_text(encoding="utf-8")
         if frontmatter_name(text) != skill:
             errors.append(f"skill frontmatter name mismatch: {skill}")
+        try:
+            _skill_root, manifest = load_manifest(root, skill)
+            for selector in manifest["selectors"]:
+                text += "\n\n" + (
+                    doc.parent / str(selector["path"])
+                ).read_text(encoding="utf-8")
+        except (OSError, ValueError) as exc:
+            errors.append(f"skill {skill} has invalid progressive-disclosure steps: {exc}")
         for contract in baseline.get("skill_doc_contract", []):
             if contract not in text and CONTRACT_ALIASES.get(contract, "") not in text:
                 errors.append(f"skill {skill} missing compatibility contract: {contract}")
@@ -82,28 +90,17 @@ def validate_skills(root: Path, baseline: dict[str, Any]) -> list[str]:
 
 
 def validate_installed_runtime(root: Path) -> list[str]:
-    """Verify generated runtime bytes without executing target-root Python."""
+    """Verify the single canonical runtime without executing target-root Python."""
     errors: list[str] = []
-    source_root = root / "skills" / "_shared"
-    target_root = root / "skills" / "ai-sdlc-shared-runtime" / "scripts"
-    if not source_root.is_dir() or not target_root.is_dir():
-        return ["installed shared runtime source or mirror directory is missing"]
-    source = {
-        path.name: path
-        for path in source_root.glob("*.py")
-        if not path.name.startswith("test_") and path.name not in RUNTIME_EXCLUDED
-    }
-    target = {path.name: path for path in target_root.glob("*.py")}
-    for name, source_path in sorted(source.items()):
-        target_path = target.get(name)
-        if source_path.is_symlink() or (target_path is not None and target_path.is_symlink()):
-            errors.append(f"runtime mirror entry must not be a symlink: {name}")
-        elif target_path is None:
-            errors.append(f"missing runtime mirror: {name}")
-        elif source_path.read_bytes() != target_path.read_bytes():
-            errors.append(f"stale runtime mirror: {name}")
-    for name in sorted(set(target) - set(source)):
-        errors.append(f"unexpected runtime mirror: {name}")
+    runtime_root = root / "skills" / "ai-sdlc-shared-runtime" / "scripts"
+    if not runtime_root.is_dir():
+        return ["canonical shared runtime directory is missing"]
+    present = {path.name for path in runtime_root.glob("*.py")}
+    if not present:
+        errors.append("canonical runtime contains no Python helpers")
+    for path in sorted(runtime_root.glob("*.py")):
+        if path.is_symlink():
+            errors.append(f"canonical runtime entry must not be a symlink: {path.name}")
     return errors
 
 
@@ -269,7 +266,8 @@ def main() -> int:
     baseline, errors = load_baseline(baseline_path)
     if not errors:
         errors.extend(validate_skills(root, baseline))
-        errors.extend(validate_installed_runtime(root))
+        if "ai-sdlc-shared-runtime" in baseline.get("required_skill_names", []):
+            errors.extend(validate_installed_runtime(root))
         errors.extend(validate_config(root, baseline))
         errors.extend(validate_modules(root, baseline))
         errors.extend(validate_routes_and_docs(root, baseline))
@@ -283,7 +281,7 @@ def main() -> int:
         "schema": "ai-sdlc-compatibility-result/v1",
         "release": baseline["release"],
         "harness_api_version": baseline["harness_api_version"],
-        "skills": len([path for path in (root / "skills").iterdir() if path.is_dir() and path.name != "_shared"]),
+        "skills": len([path for path in (root / "skills").iterdir() if path.is_dir()]),
         "modules": len(baseline["modules"]["ids"]),
         "protected_skill_names": baseline["required_skill_names"],
         "protected_cli_flags": baseline["required_cli_flags"],

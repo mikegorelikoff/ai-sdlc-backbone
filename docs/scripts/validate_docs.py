@@ -15,7 +15,7 @@ from build_catalog import DOCS, ROOT, generate
 from learning_structure import validate_learning_structure
 from learning_tokens import validate_learn_tokens
 
-sys.path.insert(0, str(ROOT / "skills" / "_shared"))
+sys.path.insert(0, str(ROOT / "skills" / "ai-sdlc-shared-runtime" / "scripts"))
 from ai_sdlc_artifact_profiles import PROFILES  # noqa: E402
 
 
@@ -191,8 +191,8 @@ MATURITY_HEADINGS = (
 MAINTAINER_TOKENS = (
     "SKILL.md",
     "module.json",
-    "skills/_shared",
-    "sync_installed_runtime.py",
+    "skills/ai-sdlc-shared-runtime",
+    "test_all_skill_scripts.py",
     "build_catalog.py",
     "compatibility",
     "Deprecation",
@@ -354,9 +354,7 @@ def validate_onboarding(root: Path = ROOT) -> list[str]:
             errors.append(f"{display_path(path)}: uses non-canonical product name AI SDLC Skill Library")
         if "github.com/mikegorelikoff/ai-sdlc-harness/releases/tag/v1." in text:
             errors.append(f"{display_path(path)}: links to a nonexistent GitHub Release instead of the version tag")
-        if path != docs / "reference/scripts.md" and (
-            "skills/_shared/ai_sdlc_config.py" in text or "config/ai-sdlc.defaults.json" in text
-        ):
+        if path != docs / "reference/scripts.md" and "config/ai-sdlc.defaults.json" in text:
             errors.append(f"{display_path(path)}: uses source-only presentation configuration path")
 
     for relative in ("README.md", "docs/index.md", "docs/how-to/install.md"):
@@ -591,7 +589,7 @@ def validate_flows(root: Path = ROOT) -> list[str]:
             "git diff --check",
             "feature/001-health-endpoint",
             "test_deliberate_unknown_route_regression.py",
-            "ai-sdlc-flow/v1",
+            "ai-sdlc-flow/v2",
             TUTORIAL_NAVIGATOR_INTENT,
         )
         for token in required:
@@ -615,7 +613,7 @@ def validate_flows(root: Path = ROOT) -> list[str]:
             if len(values) != 4 or not all(values):
                 errors.append("docs/tutorials/first-feature.md: handoff next_required must contain four populated columns")
         for source in (
-            root / "skills/_shared/ai_sdlc_install_smoke.py",
+            root / "skills/ai-sdlc-shared-runtime/tests/install_smoke.py",
             root / "skills/ai-sdlc-flow/tests/test_flow.py",
         ):
             if not source.is_file() or TUTORIAL_NAVIGATOR_INTENT not in source.read_text(encoding="utf-8"):
@@ -984,7 +982,7 @@ def validate_adoption_operations(root: Path = ROOT) -> list[str]:
 
     update = read("how-to/update.md")
     versions = read("reference/versions.md")
-    for token in ("Consumer repository", "Source checkout", ".agents/skills", "skills/_shared"):
+    for token in ("Consumer repository", "Source checkout", ".agents/skills", "skills/ai-sdlc-shared-runtime"):
         if token not in update:
             errors.append(f"docs/how-to/update.md: missing execution-context contract {token}")
     if "source checkout" not in versions.lower() or "Consumer repositories" not in versions:
@@ -1079,7 +1077,7 @@ def validate_workflow(root: Path = ROOT) -> list[str]:
         "python3 -m pip install --require-hashes -r requirements-docs.lock",
         "mkdocs build --strict",
         "python3 docs/scripts/validate_rendered.py site",
-        "python3 skills/_shared/ai_sdlc_install_smoke.py --mode npx",
+        "python3 skills/ai-sdlc-shared-runtime/tests/install_smoke.py --mode npx",
         "--mode npx-remote",
         "README.md",
         "FAQ.md",

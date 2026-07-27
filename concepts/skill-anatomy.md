@@ -17,32 +17,33 @@ not vary between agent sessions.
 ```text
 skills/<skill-name>/
   SKILL.md
+  steps/
+    manifest.json
+    01-prepare.md
+    02-execute.md
+    03-validate-and-handoff.md
   references/
   scripts/
   tests/
 ```
 
-The repository also contains `skills/_shared/`. It is not an installable
-lifecycle skill. It holds cross-skill contracts such as artifact profiles,
-context building, paths, migration, state, indexes, and repository-wide tests.
+The repository also contains the installable
+`skills/ai-sdlc-shared-runtime/` dependency. It is not a lifecycle entry point.
+Its `scripts/` hold cross-skill contracts such as artifact profiles, context,
+paths, migration, state, and indexes.
 
 ## `SKILL.md`
 
-`SKILL.md` is the AI entry point. It describes:
+`SKILL.md` is the concise AI entry point. It contains:
 
 - when to use the skill;
-- required inputs;
-- clarification behavior;
-- `--quick-flow` and `--full-flow` behavior;
-- artifact routing;
-- decision-log requirements;
-- feature state-machine usage;
-- artifact metadata requirements;
-- specs-index usage;
-- script usage and references.
+- the Skill Card;
+- the step selector table;
+- the progressive-disclosure contract.
 
-`SKILL.md` stays operational. Long examples, checklists, and templates belong in
-`references/`.
+Detailed operational rules belong in selected `steps/`, while domain examples,
+checklists, and schemas belong in `references/`. A router stays below 120 lines
+and never duplicates its step bodies.
 
 ### Frontmatter And Triggering
 
@@ -55,13 +56,28 @@ Names use lowercase kebab-case and match the folder. Changing a skill name is a
 lifecycle migration because state, metadata, profiles, tests, and documentation
 may reference it.
 
-### Operational Body
+### Router Body
 
-The body should be imperative and decision-complete for fragile actions. It
-must state canonical routing, flow behavior, source requirements, script usage,
-finalization, and completion criteria. Repeating generic background across
-skills increases context cost; shared concepts and references hold explanations
-that do not need to be loaded for every task.
+The body tells the agent which procedure to read and when. It requires prepare
+before commands or writes, execute only for the selected action, and
+validation/handoff before completion. A selector failure blocks work rather
+than permitting a broad package read.
+
+## `steps/`
+
+`steps/manifest.json` uses `ai-sdlc-skill-steps/v1`. Every selector declares a
+contained Markdown path, phases, canonical roles, optional actions, load rule,
+token cap, and selection reason.
+
+Each Markdown step is self-contained and imperative:
+
+- `Entry` names prerequisites and evidence;
+- `Procedure` contains the complete phase-specific contract;
+- `Exit` defines the stop or handoff boundary.
+
+Most skills use prepare, execute, and validate/handoff. A skill may use more
+specific phases when they materially improve selection. The agent loads only a
+matching step; it does not preload all procedures.
 
 ## `references/`
 
@@ -103,14 +119,14 @@ from evolving incompatible lifecycle contracts.
 
 When a task triggers a skill, the AI:
 
-1. Reads the skill card and trigger conditions.
-2. Resolves the active flow mode.
+1. Reads the router and resolves the matching step manifest selector.
+2. Loads the required prepare step and resolves the active flow mode.
 3. Checks `specs-index.toon` and `state.toon` when feature context exists.
-4. Runs the skill script when deterministic scaffolding, compression, validation,
+4. Loads the selected execute step and runs the skill script when deterministic scaffolding, compression, validation,
    or indexing is useful.
-5. Reads only the references needed for the requested output.
+5. Reads only the references named by the selected procedure.
 6. Sends each content-only section body to the script on stdin with `--section`.
-7. Runs `--finalize`; the script writes the routed artifact, metadata, decision
+7. Loads the validation/handoff step and runs `--finalize`; the script writes the routed artifact, metadata, decision
    log, state changes requested by flags, and specs index.
 
 The AI does not create a temporary content Markdown file and does not directly
@@ -146,7 +162,8 @@ Tests verify that skill scripts:
 - preserve the shared script contract;
 - perform the skill-specific behavior they own.
 
-Repository-wide tests live under `skills/_shared/`.
+Repository-wide runtime tests live under
+`skills/ai-sdlc-shared-runtime/tests/`.
 
 ### Validation Layers
 
@@ -182,6 +199,7 @@ the runtime unchanged.
 The AI must not:
 
 - treat `SKILL.md` as a generic essay and ignore script/reference instructions;
+- broad-load every step instead of resolving the current selector;
 - load all references by default;
 - create artifacts outside the routing rules;
 - skip tests for new or changed scripts;

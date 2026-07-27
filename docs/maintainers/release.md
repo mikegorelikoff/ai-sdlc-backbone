@@ -25,7 +25,7 @@ rollback procedures were tested.
 1. Freeze scope and record the intended tag/version.
 2. Audit commits against completed tasks and affected public contracts.
 3. Update source authority, module versions, compatibility baseline, and migration docs.
-4. Synchronize installed runtime mirrors and regenerate catalogs.
+4. Validate the canonical runtime package and regenerate catalogs.
 5. Run focused tests, all shared/per-skill tests, compatibility, installation smoke, SDD gates, docs tests, strict build, and rendered validation.
 6. Review package trust, permissions, data behavior, release workflow, and rollback.
 7. Ask independent junior, lead, security/QA as appropriate, and adoption-owner readers to review the final surfaces.
@@ -36,8 +36,8 @@ rollback procedures were tested.
 Use the exact commands maintained in [Validate a release](../how-to/validate-release.md).
 At minimum, evidence covers:
 
-- `python3 skills/_shared/test_all_skill_scripts.py`;
-- `python3 skills/_shared/test_each_skill_tests.py`;
+- `python3 skills/ai-sdlc-shared-runtime/tests/test_all_skill_scripts.py`;
+- `python3 skills/ai-sdlc-shared-runtime/tests/test_each_skill_tests.py`;
 - compatibility against the intended baseline;
 - emulated and real pinned installation smoke when network is available;
 - generated catalog drift and documentation tests;

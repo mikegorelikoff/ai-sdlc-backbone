@@ -17,11 +17,11 @@ not the canonical source for harness changes.
     git clone https://github.com/mikegorelikoff/ai-sdlc-harness.git
     cd ai-sdlc-harness
     git status --short
-    python3 skills/_shared/ai_sdlc_compatibility.py --skip-git-audit --format toon
+    python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_compatibility.py --skip-git-audit --format toon
     ```
 
 Do not copy an installed `.agents/skills` mirror back into this repository.
-Edit canonical `skills/_shared` helpers and resynchronize installed runtime
+Edit canonical `skills/ai-sdlc-shared-runtime` helpers and resynchronize installed runtime
 copies through the packaging helper.
 
 ## Choose the maintainer path

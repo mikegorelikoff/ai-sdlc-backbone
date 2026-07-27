@@ -7,7 +7,7 @@ description: Deterministic repository gates for skills, specifications, modules,
 
 Run repository commands from a source checkout. In an installed consumer,
 resolve skill commands beneath `.agents/skills/`; source-only
-`skills/_shared/` commands have no consumer equivalent unless the installed
+`skills/ai-sdlc-shared-runtime/scripts/` commands have no consumer equivalent unless the installed
 shared-runtime skill documents one.
 
 Documentation validation requires the exact versions in
@@ -29,11 +29,11 @@ lockfile in an isolated environment. Never substitute a word-count estimate.
 
 ```bash
 # Repository shared and skill-local tests
-python3 -m unittest discover -s skills/_shared -p 'test*.py' -v
-python3 skills/_shared/test_each_skill_tests.py
+python3 -m unittest discover -s skills/ai-sdlc-shared-runtime -p 'test*.py' -v
+python3 skills/ai-sdlc-shared-runtime/tests/test_each_skill_tests.py
 
 # Release compatibility
-python3 skills/_shared/ai_sdlc_compatibility.py --skip-git-audit --format toon
+python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_compatibility.py --skip-git-audit --format toon
 
 # Active SDD structure and links
 python3 skills/ai-sdlc-sdd/scripts/validate_spec.py specs/NNN-feature --quick-flow

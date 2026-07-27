@@ -11,7 +11,7 @@ description: Human-facing operating guide for ai-sdlc-shared-runtime, including 
 
 ## Why it exists
 
-Make the deterministic shared Python runtime portable when Skills CLI installs individual skill directories without the source-only `skills/_shared/` directory.
+Provide the single deterministic Python runtime used by source checkouts and installed skill sets.
 
 ## Use it when
 
@@ -22,7 +22,7 @@ If the correct entry point is still unclear, use `ai-sdlc-flow` Explore first in
 ## Do not use it when
 
 - Do not use shared helpers as a lifecycle entry point. Use `ai-sdlc-flow` Explore or the owning skill instead.
-- Do not edit installed mirrors to repair packaging. Use the authorized install or update workflow and canonical `_shared` sources instead.
+- Do not patch installed copies ad hoc. Use the authorized install or update workflow and the canonical runtime package instead.
 
 
 ## Who is involved
@@ -86,42 +86,34 @@ Humans accept or reject material product, security, QA, policy, rollout, release
 - Verification is read-only. Reinstallation or repair requires the same human
   authority and trusted source used for installation.
 
+## Procedural step selectors
+
+The router loads these skill-owned procedures just in time. Read only the selector matching the current phase, active role, and action; a selected step is normative and an unselected step stays out of context.
+
+| Selector | Phases | Roles | Load rule | Step | Reason |
+| --- | --- | --- | --- | --- | --- |
+| `prepare` | `prepare`, `clarify`, `route` | `software-engineer` | `required` | [`steps/01-prepare.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/steps/01-prepare.md) | establish inputs, authority, lifecycle state, and safe artifact routing |
+| `execute` | `execute` | `software-engineer` | `on-demand` | [`steps/02-execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/steps/02-execute.md) | perform only the selected owning-skill procedure |
+| `validate-and-handoff` | `validate`, `handoff`, `complete` | `software-engineer` | `before-completion` | [`steps/03-validate-and-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/steps/03-validate-and-handoff.md) | verify outputs and return an explicit evidence-backed handoff |
+
+Resolve the current step with `ai-sdlc-shared-runtime/scripts/ai_sdlc_steps.py`. A missing, unsafe, oversized, or unmatched step is a blocker rather than permission to broad-load the package.
+
 ## Deterministic helpers
 
-Paths beginning with `skills/` below are canonical **source-checkout** forms for maintainers and CI. In a consumer repository, normally tell the installed skill to act; for human diagnosis, use the matching project-scoped `.agents/skills/<skill>/...` path reported by your host. Do not expect source-only `skills/_shared` to exist after installation.
+Paths beginning with `skills/` below are canonical **source-checkout** forms for maintainers and CI. In a consumer repository, normally tell the installed skill to act; for human diagnosis, use the matching project-scoped `.agents/skills/<skill>/...` path reported by your host. The canonical runtime is installed as the sibling `ai-sdlc-shared-runtime` skill.
 
 | Helper | Purpose | Direct starting point | Repository effect |
 | --- | --- | --- | --- |
-| [`ai_sdlc_artifact_helper.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_artifact_helper.py) | Shared artifact compression helpers for AI SDLC skill scripts. | `Imported helper; use the owning skill rather than invoking it directly.` | Generated copy; repository behavior is defined by its canonical shared source. |
-| [`ai_sdlc_artifact_profiles.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_artifact_profiles.py) | Canonical refinement artifact profiles and self-contained context schema. | `Imported helper; use the owning skill rather than invoking it directly.` | Generated copy; repository behavior is defined by its canonical shared source. |
-| [`ai_sdlc_compatibility.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_compatibility.py) | Validate an AI SDLC release against its compatibility baseline. | `python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_compatibility.py --help` | Generated copy; repository behavior is defined by its canonical shared source. |
-| [`ai_sdlc_config.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_config.py) | Resolve versioned base, team, and user AI SDLC configuration safely. | `python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_config.py --help` | Generated copy; repository behavior is defined by its canonical shared source. |
-| [`ai_sdlc_context.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_context.py) | Build compact, evidence-backed TOON context packs for AI SDLC skills. | `Imported helper; use the owning skill rather than invoking it directly.` | Generated copy; repository behavior is defined by its canonical shared source. |
-| [`ai_sdlc_context_benchmark.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_context_benchmark.py) | Measure raw, compact, and targeted-reread context payloads. | `python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_context_benchmark.py --help` | Generated copy; repository behavior is defined by its canonical shared source. |
-| [`ai_sdlc_flow.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_flow.py) | Pure contracts for the guided AI SDLC Explore -> Apply flow. | `Imported helper; use the owning skill rather than invoking it directly.` | Generated copy; repository behavior is defined by its canonical shared source. |
-| [`ai_sdlc_handoff.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_handoff.py) | Render a normalized AI SDLC post-workflow handoff report. | `python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_handoff.py --help` | Generated copy; repository behavior is defined by its canonical shared source. |
-| [`ai_sdlc_install_record.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py) | Validate a portable harness install record and its managed inventory. | `python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py --help` | Generated copy; repository behavior is defined by its canonical shared source. |
-| [`ai_sdlc_migrate.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_migrate.py) | Check or apply safe migrations from legacy AI SDLC paths to canonical paths. | `python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_migrate.py --help` | Generated copy; repository behavior is defined by its canonical shared source. |
-| [`ai_sdlc_modules.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_modules.py) | Discover and validate compatible AI SDLC module manifests. | `python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_modules.py --help` | Generated copy; repository behavior is defined by its canonical shared source. |
-| [`ai_sdlc_paths.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_paths.py) | Canonical and legacy paths for AI SDLC machine-readable artifacts. | `Imported helper; use the owning skill rather than invoking it directly.` | Generated copy; repository behavior is defined by its canonical shared source. |
-| [`ai_sdlc_rigor.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_rigor.py) | Select an explainable risk-adaptive AI SDLC rigor profile. | `python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_rigor.py --help` | Generated copy; repository behavior is defined by its canonical shared source. |
-| [`ai_sdlc_safe_io.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_safe_io.py) | Repository-bounded path and atomic-write helpers with symlink rejection. | `Imported helper; use the owning skill rather than invoking it directly.` | Generated copy; repository behavior is defined by its canonical shared source. |
-| [`ai_sdlc_specs_index.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_specs_index.py) | Build compact TOON and human Markdown indexes for spec workspaces. | `python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_specs_index.py --help` | Generated copy; repository behavior is defined by its canonical shared source. |
-| [`ai_sdlc_state_machine.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_state_machine.py) | Feature-level state machine for AI SDLC skill chains. | `Imported helper; use the owning skill rather than invoking it directly.` | Generated copy; repository behavior is defined by its canonical shared source. |
-| [`ai_sdlc_toon.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_toon.py) | Deterministic TOON 3.3 encoding for the JSON data model. | `Imported helper; use the owning skill rather than invoking it directly.` | Generated copy; repository behavior is defined by its canonical shared source. |
-| [`ai_sdlc_validation_receipt.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_validation_receipt.py) | Create and verify validation evidence tied to actual process outcomes. | `Imported helper; use the owning skill rather than invoking it directly.` | Generated copy; repository behavior is defined by its canonical shared source. |
-| [`refinement_status.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/scripts/refinement_status.py) | Report whether an end-to-end refinement package is complete. | `python3 skills/ai-sdlc-shared-runtime/scripts/refinement_status.py --help` | Generated copy; repository behavior is defined by its canonical shared source. |
-| [`skill_script_contract.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/scripts/skill_script_contract.py) | Reusable per-skill test contract for AI SDLC helper scripts. | `python3 skills/ai-sdlc-shared-runtime/scripts/skill_script_contract.py --help` | Generated copy; repository behavior is defined by its canonical shared source. |
-| [`state_machine.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/scripts/state_machine.py) | CLI for AI SDLC feature state.toon files. | `python3 skills/ai-sdlc-shared-runtime/scripts/state_machine.py --help` | Generated copy; repository behavior is defined by its canonical shared source. |
+| None | This capability is instruction-only. | Use the agent prompt below. | Follow artifact routing. |
 
 The owning agent normally runs these helpers. A human uses the direct starting point for diagnosis or reproduction after inspecting `--help` and repository policy.
 
 ### Contract-provided usage
 
-- Verify the generated mirror in a harness source checkout:
+- Verify the canonical runtime in a harness source checkout:
 
   ```bash
-  python3 skills/_shared/sync_installed_runtime.py --check
+  python3 -m unittest discover -s skills/ai-sdlc-shared-runtime/tests -p 'test*.py' -v
   ```
 
 - Verify an installed downstream helper from a consumer repository:
@@ -130,7 +122,17 @@ The owning agent normally runs these helpers. A human uses the direct starting p
   python3 .agents/skills/ai-sdlc-sdd/scripts/sdd_artifact_scaffold.py --help
   ```
 
-- A missing `ai-sdlc-shared-runtime/scripts/` directory, stale mirror, import
+- Validate all source or installed step manifests without loading their
+  procedures:
+
+  ```bash
+  python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_steps.py \
+    --validate-all --format toon
+  ```
+
+- Select one bounded procedure with `ai_sdlc_steps.py --skill <name>
+  --phase <phase> [--role <canonical-role>] [--action <action>]`.
+- A missing `ai-sdlc-shared-runtime/scripts/` directory, incomplete package, import
   traceback, or non-zero helper smoke result is a blocker.
 
 ## Success criteria
@@ -147,15 +149,16 @@ next: owning lifecycle skill
 
 Quality gate:
 
-- Pass when the generated runtime mirror matches its canonical source and an
-  installed downstream helper imports and executes successfully.
+- Pass when the canonical runtime inventory is complete and an installed
+  downstream helper imports and executes successfully.
 - Fail when inventory exists but imports fail, the runtime is installed under a
-  different root, generated bytes drift, or verification mutates real delivery
+  different root, package files are inconsistent, or verification mutates real delivery
   artifacts.
 
 ## Blockers and recovery
 
-- A source checkout legitimately uses `skills/_shared/`; this is not drift.
+- Source and installed layouts use the same runtime package contract; only the
+  skills-root prefix differs.
 - A project may expose host-specific symlinks, but all selected skill folders
   and the runtime must resolve to compatible bytes.
 - Installing only one downstream skill without this dependency is incomplete.
@@ -221,6 +224,6 @@ incompatible runtime bytes.
 
 ## Source contract
 
-This page is generated from [`skills/ai-sdlc-shared-runtime/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/SKILL.md). Edit the source contract, rerun the catalog generator, and review both changes together; never hand-edit this page.
+This page is generated from [`skills/ai-sdlc-shared-runtime/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/SKILL.md) plus its linked `steps/manifest.json` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
 
 [Back to the skill catalog](../skills.md) · [Script reference](../scripts.md) · [Choose a workflow](../../flows/index.md)

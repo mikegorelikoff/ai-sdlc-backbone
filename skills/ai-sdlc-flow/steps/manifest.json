@@ -1,0 +1,114 @@
+{
+  "schema": "ai-sdlc-skill-steps/v1",
+  "skill": "ai-sdlc-flow",
+  "selectors": [
+    {
+      "id": "clarify",
+      "path": "steps/clarify.md",
+      "phases": [
+        "clarify"
+      ],
+      "roles": [
+        "business-analyst",
+        "product-manager",
+        "software-architect",
+        "software-engineer",
+        "qa-engineer"
+      ],
+      "actions": [],
+      "load": "required",
+      "max_tokens": 503,
+      "reason": "guided flow clarify phase with explicit evidence and exit criteria"
+    },
+    {
+      "id": "route",
+      "path": "steps/route.md",
+      "phases": [
+        "route"
+      ],
+      "roles": [
+        "business-analyst",
+        "product-manager",
+        "software-architect",
+        "software-engineer",
+        "qa-engineer"
+      ],
+      "actions": [],
+      "load": "required",
+      "max_tokens": 836,
+      "reason": "guided flow route phase with explicit evidence and exit criteria"
+    },
+    {
+      "id": "execute",
+      "path": "steps/execute.md",
+      "phases": [
+        "execute"
+      ],
+      "roles": [
+        "business-analyst",
+        "product-manager",
+        "software-architect",
+        "software-engineer",
+        "qa-engineer"
+      ],
+      "actions": [],
+      "load": "on-demand",
+      "max_tokens": 415,
+      "reason": "guided flow execute phase with explicit evidence and exit criteria"
+    },
+    {
+      "id": "handoff",
+      "path": "steps/handoff.md",
+      "phases": [
+        "handoff"
+      ],
+      "roles": [
+        "business-analyst",
+        "product-manager",
+        "software-architect",
+        "software-engineer",
+        "qa-engineer"
+      ],
+      "actions": [],
+      "load": "on-demand",
+      "max_tokens": 355,
+      "reason": "guided flow handoff phase with explicit evidence and exit criteria"
+    },
+    {
+      "id": "validate",
+      "path": "steps/validate.md",
+      "phases": [
+        "validate"
+      ],
+      "roles": [
+        "business-analyst",
+        "product-manager",
+        "software-architect",
+        "software-engineer",
+        "qa-engineer"
+      ],
+      "actions": [],
+      "load": "before-completion",
+      "max_tokens": 477,
+      "reason": "guided flow validate phase with explicit evidence and exit criteria"
+    },
+    {
+      "id": "complete",
+      "path": "steps/complete.md",
+      "phases": [
+        "complete"
+      ],
+      "roles": [
+        "business-analyst",
+        "product-manager",
+        "software-architect",
+        "software-engineer",
+        "qa-engineer"
+      ],
+      "actions": [],
+      "load": "before-completion",
+      "max_tokens": 382,
+      "reason": "guided flow complete phase with explicit evidence and exit criteria"
+    }
+  ]
+}

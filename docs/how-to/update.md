@@ -133,10 +133,10 @@ even if a host defines its own resolution precedence.
 Maintainers validate the full repository only from a clone of this source:
 
 ```bash
-"$PYTHON_BIN" skills/_shared/ai_sdlc_compatibility.py --skip-git-audit --format toon
-"$PYTHON_BIN" skills/_shared/test_all_skill_scripts.py
-"$PYTHON_BIN" skills/_shared/test_each_skill_tests.py
-"$PYTHON_BIN" skills/_shared/sync_installed_runtime.py --check
+"$PYTHON_BIN" skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_compatibility.py --skip-git-audit --format toon
+"$PYTHON_BIN" skills/ai-sdlc-shared-runtime/tests/test_all_skill_scripts.py
+"$PYTHON_BIN" skills/ai-sdlc-shared-runtime/tests/test_each_skill_tests.py
+"$PYTHON_BIN" python3 -m unittest discover -s skills/ai-sdlc-shared-runtime/tests -p 'test*.py' -v
 ```
 
 Review renamed skills, flag changes, module API ranges, artifact routes,

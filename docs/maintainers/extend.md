@@ -35,15 +35,41 @@ A skill package uses:
 ```text
 skills/ai-sdlc-<name>/
 ├── SKILL.md
+├── steps/
+│   ├── manifest.json
+│   ├── 01-prepare.md
+│   ├── 02-execute.md
+│   └── 03-validate-and-handoff.md
 ├── scripts/        # optional deterministic helpers
 ├── references/     # optional detailed contracts and schemas
 └── tests/          # focused behavior and failure tests
 ```
 
-`SKILL.md` needs frontmatter identity, a complete Skill Card, required inputs,
-clarification rules, flow flags, output rules, artifact routing, state,
-metadata, index behavior, source/reference routing, helper usage, success gate,
-edge cases, and scope boundary. Its public guide is generated; never hand-edit
+`SKILL.md` is a concise router: frontmatter identity, a complete Skill Card, a
+selector table linked to every declared step, and the progressive-disclosure
+rules. Keep it below 120 lines. Put normative required inputs, clarification,
+flow flags, routing, state, and metadata rules in the required prepare step;
+put task execution and helper usage in the execute step; put success gates,
+edge cases, scope, validation, and handoff in the completion step.
+
+Every skill owns `steps/manifest.json` with schema
+`ai-sdlc-skill-steps/v1`. Each selector declares its contained Markdown path,
+phases, canonical roles, optional actions, load rule, token cap, and reason.
+Use additional domain-specific steps when three phases are insufficient; flow,
+for example, owns six distinct phases. Do not copy detailed step content back
+into `SKILL.md`.
+
+Validate a selector directly:
+
+```bash
+python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_steps.py \
+  --skill ai-sdlc-<name> --phase execute \
+  --role software-engineer --format toon
+```
+
+The selector rejects missing manifests, unlinked or duplicate paths, traversal,
+symlinks, unknown roles/phases, token overflow, and unmatched selectors. Its
+public guide is generated; never hand-edit
 `docs/reference/skills/<skill>.md`.
 
 Add an explicit selection boundary to `SKILL_SELECTION_BOUNDARIES`. Generation
@@ -69,23 +95,26 @@ Helpers should:
 - report exact outputs and recovery action;
 - include positive, negative, and mutation tests.
 
-If a helper imports `skills/_shared`, keep the portable installed fallback and
-run the skill-only install scaffold smoke test.
+If a helper imports shared code, resolve only the sibling
+`ai-sdlc-shared-runtime/scripts` package and run the install smoke matrix.
 
 ## 4. Change shared runtime
 
-Canonical shared source lives under `skills/_shared`. Portable mirrors live
-under `skills/ai-sdlc-shared-runtime/scripts` and are generated copies.
+Canonical shared source lives under
+`skills/ai-sdlc-shared-runtime/scripts`. There is no second source or mirror.
 
 !!! terminal "Run in terminal — source checkout"
 
     ```bash
-    python3 skills/_shared/sync_installed_runtime.py --write
-    python3 skills/_shared/sync_installed_runtime.py --check
-    python3 skills/_shared/ai_sdlc_install_smoke.py --mode emulated
+    python3 -m unittest discover -s skills/ai-sdlc-shared-runtime/tests -p 'test*.py' -v
+    python3 skills/ai-sdlc-shared-runtime/tests/install_smoke.py --mode emulated
+    python3 skills/ai-sdlc-shared-runtime/tests/install_smoke.py --mode emulated-selective
+    python3 skills/ai-sdlc-shared-runtime/tests/install_smoke.py --mode emulated-global
     ```
 
-Review source and mirror changes together. Never fix only a mirror.
+Review runtime, consumer imports, install tests, and generated docs together.
+The runtime suite also validates all step manifests, router budgets, and
+instruction preservation.
 
 ## 5. Register a module
 

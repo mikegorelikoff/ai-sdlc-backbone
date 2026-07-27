@@ -103,7 +103,7 @@ Each non-quick skill keeps its own snapshot. `feature-context.toon` is a
 skill-neutral source inventory, so one stage cannot replace another stage's
 evidence contract.
 
-Use `skills/_shared/ai_sdlc_context_benchmark.py` to compare raw source tokens,
+Use `skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_context_benchmark.py` to compare raw source tokens,
 the bounded pack, and the exact line ranges requested through `next_reads`.
 Savings are informational: source-detail preservation and evidence correctness
 take precedence over a fixed percentage target.

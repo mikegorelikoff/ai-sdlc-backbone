@@ -16,7 +16,7 @@ Schema `ai-sdlc-handoff/v1` contains:
 - `next_required`: exactly one skill, reason, command, and expected artifact;
 - `next_optional`: zero or more actions with the same fields.
 
-Use `skills/_shared/ai_sdlc_handoff.py` to validate and render Markdown or TOON.
+Use `skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_handoff.py` to validate and render Markdown or TOON.
 The emitter is read-only: the owning workflow completes artifacts and state
 before producing its handoff. When the next required action is unclear, use
 `ai-sdlc-flow` Explore and then emit the selected action.

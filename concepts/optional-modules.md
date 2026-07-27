@@ -14,7 +14,7 @@ manifest, skill path, dependency, API range, module ID, and skill owner before
 listing compatible capabilities:
 
 ```bash
-python3 skills/_shared/ai_sdlc_modules.py --format toon
+python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_modules.py --format toon
 ```
 
 Optional compatible skills are discoverable even when disabled. Enabling an

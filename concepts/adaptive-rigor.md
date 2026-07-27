@@ -18,7 +18,7 @@ Factors use scores from 0 to 3: blast radius, irreversibility, ambiguity,
 security/data sensitivity, compliance, external dependencies, architectural
 novelty, and rollout complexity.
 
-Run `skills/_shared/ai_sdlc_rigor.py` for Markdown or TOON output. Explicit
+Run `skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_rigor.py` for Markdown or TOON output. Explicit
 `--quick-flow` requests patch rigor and `--full-flow` requests at least assured
 rigor, but neither can reduce automatic risk or an organization
 `--minimum-profile`. Every decision exposes automatic, requested, minimum, and

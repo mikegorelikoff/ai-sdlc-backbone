@@ -192,7 +192,7 @@ existing reviewed remote and never creates this fixture-only exception.
 The deterministic routing record uses its own schema:
 
 ```toon
-schema: ai-sdlc-flow/v1
+schema: ai-sdlc-flow/v2
 mode: explore
 intent_class: implementation
 feature: 001-health-endpoint

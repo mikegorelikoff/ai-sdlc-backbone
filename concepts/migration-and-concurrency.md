@@ -47,14 +47,14 @@ policy.
 Check without changing files:
 
 ```bash
-python3 skills/_shared/ai_sdlc_migrate.py \
+python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_migrate.py \
   --workspace all --check
 ```
 
 Apply safe moves and identical deduplication:
 
 ```bash
-python3 skills/_shared/ai_sdlc_migrate.py \
+python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_migrate.py \
   --workspace all --apply
 ```
 

@@ -14,9 +14,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-_SHARED = Path(__file__).resolve().parents[2] / "_shared"
-if not _SHARED.is_dir():
-    _SHARED = _SHARED.parent / "ai-sdlc-shared-runtime" / "scripts"
+_SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
 sys.path.insert(0, str(_SHARED))
 from ai_sdlc_state_machine import add_state_arguments, run_state_action
 
@@ -121,15 +119,15 @@ def main() -> int:
         # changes should compile without relying on __pycache__ writes in-tree.
         changed_skills = sorted({Path(file).parts[1] for file in files if file.startswith("skills/") and len(Path(file).parts) > 1})
         for skill in changed_skills:
-            if skill == "_shared":
-                continue
             skill_root = Path("skills") / skill
             if (skill_root / "SKILL.md").exists():
                 commands.append(f"test -f skills/{skill}/SKILL.md")
             else:
                 commands.append(f"test ! -e skills/{skill}/SKILL.md")
-        if "_shared" in changed_skills:
-            commands.append("python3 skills/_shared/sync_installed_runtime.py --check")
+        if "ai-sdlc-shared-runtime" in changed_skills:
+            commands.append(
+                "python3 -m unittest discover -s skills/ai-sdlc-shared-runtime/tests -p 'test*.py' -v"
+            )
     compile_targets = python_compile_targets(files)
     if compile_targets:
         commands.append(

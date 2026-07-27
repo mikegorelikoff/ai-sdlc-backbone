@@ -19,16 +19,14 @@ PROFILE_ORDER = ("patch", "standard", "assured", "regulated")
 INTERACTION_FIELDS = {
     "enabled", "preferred_name", "language", "response_style", "technical_depth", "status_updates"
 }
+FLOW_FIELDS = {"role_aliases", "menu_mode", "context_selectors"}
+FLOW_SELECTOR_FIELDS = {"id", "roles", "actions", "include", "priority", "max_tokens", "reason"}
 
 
 def packaged_defaults() -> Path:
-    """Locate the single defaults file in source and installed layouts."""
+    """Locate the single packaged defaults file in source and installed layouts."""
     script = Path(__file__).resolve()
-    installed = script.parent.parent / "references" / "ai-sdlc.defaults.json"
-    if installed.is_file():
-        return installed
-    source = script.parents[1] / "ai-sdlc-shared-runtime" / "references" / "ai-sdlc.defaults.json"
-    return source
+    return script.parent.parent / "references" / "ai-sdlc.defaults.json"
 
 
 def toon(value: object) -> str:
@@ -160,6 +158,114 @@ def validate_interaction(values: dict[str, Any]) -> list[str]:
     return errors
 
 
+def validate_flow(values: dict[str, Any]) -> list[str]:
+    """Validate the deliberately bounded role and JIT selector configuration."""
+    flow = values.get("flow")
+    if flow is None:
+        return []
+    if not isinstance(flow, dict):
+        return ["flow must be an object"]
+    unknown = sorted(set(flow) - FLOW_FIELDS)
+    errors = [f"flow has unknown fields: {', '.join(unknown)}"] if unknown else []
+    aliases = flow.get("role_aliases", {})
+    canonical = {
+        "business-analyst",
+        "product-manager",
+        "software-architect",
+        "software-engineer",
+        "qa-engineer",
+    }
+    actions = {
+        "branching",
+        "commit",
+        "implementation",
+        "new_refinement",
+        "qa_planning",
+        "review",
+        "security_review",
+        "story_decomposition",
+        "validation",
+    }
+    if not isinstance(aliases, dict):
+        errors.append("flow.role_aliases must be an object")
+    else:
+        for alias, role in aliases.items():
+            if (
+                not isinstance(alias, str)
+                or not re.fullmatch(r"[a-z][a-z0-9-]{0,39}", alias)
+                or role not in canonical
+            ):
+                errors.append(f"flow.role_aliases has invalid mapping: {alias!r} -> {role!r}")
+    if flow.get("menu_mode", "ambiguous") not in {"ambiguous", "always"}:
+        errors.append("flow.menu_mode must be one of: always, ambiguous")
+    selectors = flow.get("context_selectors", [])
+    if not isinstance(selectors, list):
+        return errors + ["flow.context_selectors must be an array"]
+    seen: set[str] = set()
+    for index, selector in enumerate(selectors):
+        prefix = f"flow.context_selectors[{index}]"
+        if not isinstance(selector, dict):
+            errors.append(f"{prefix} must be an object")
+            continue
+        extra = sorted(set(selector) - FLOW_SELECTOR_FIELDS)
+        missing = sorted(FLOW_SELECTOR_FIELDS - set(selector))
+        if extra:
+            errors.append(f"{prefix} has unknown fields: {', '.join(extra)}")
+        if missing:
+            errors.append(f"{prefix} is missing fields: {', '.join(missing)}")
+            continue
+        selector_id = selector["id"]
+        if not isinstance(selector_id, str) or not re.fullmatch(r"[a-z][a-z0-9-]{0,63}", selector_id):
+            errors.append(f"{prefix}.id must be kebab-case")
+        elif selector_id in seen:
+            errors.append(f"{prefix}.id must be unique")
+        seen.add(str(selector_id))
+        for field in ("roles", "actions", "include"):
+            if (
+                not isinstance(selector[field], list)
+                or not all(isinstance(item, str) and item for item in selector[field])
+                or len(selector[field]) != len(set(selector[field]))
+            ):
+                errors.append(f"{prefix}.{field} must be a non-empty-string array")
+        if isinstance(selector["roles"], list):
+            unknown_roles = sorted(
+                item for item in selector["roles"] if item not in canonical
+            )
+            if unknown_roles:
+                errors.append(
+                    f"{prefix}.roles has unknown roles: {', '.join(unknown_roles)}"
+                )
+        if isinstance(selector["actions"], list):
+            unknown_actions = sorted(
+                item for item in selector["actions"] if item not in actions
+            )
+            if unknown_actions:
+                errors.append(
+                    f"{prefix}.actions has unknown actions: {', '.join(unknown_actions)}"
+                )
+        if isinstance(selector["include"], list):
+            for relative in selector["include"]:
+                if not isinstance(relative, str):
+                    continue
+                candidate = Path(relative)
+                if (
+                    candidate.is_absolute()
+                    or ".." in candidate.parts
+                    or not candidate.parts
+                    or candidate.parts[0] not in {"references", "steps"}
+                ):
+                    errors.append(
+                        f"{prefix}.include has unsafe flow-package path: {relative}"
+                    )
+        if not isinstance(selector["priority"], int) or isinstance(selector["priority"], bool) or not 0 <= selector["priority"] <= 100:
+            errors.append(f"{prefix}.priority must be an integer from 0 to 100")
+        if not isinstance(selector["max_tokens"], int) or isinstance(selector["max_tokens"], bool) or not 16 <= selector["max_tokens"] <= 4000:
+            errors.append(f"{prefix}.max_tokens must be an integer from 16 to 4000")
+        if not isinstance(selector["reason"], str) or not 8 <= len(selector["reason"]) <= 240:
+            errors.append(f"{prefix}.reason must contain 8 to 240 characters")
+    return errors
+
+
 def render_toon(values: dict[str, Any], provenance: dict[str, str], protected: list[str]) -> str:
     """Render bounded machine output with leaf provenance."""
     flat = flatten(values)
@@ -224,6 +330,7 @@ def main() -> int:
         return 1
     values, provenance, resolve_errors = resolve(*layers)
     resolve_errors.extend(validate_interaction(values))
+    resolve_errors.extend(validate_flow(values))
     if resolve_errors:
         for error in resolve_errors:
             print(f"ERROR: {error}")

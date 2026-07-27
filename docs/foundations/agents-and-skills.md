@@ -60,9 +60,9 @@ recommend a command; it cannot grant permission to run it.
 Each packaged skill has a `SKILL.md` with name, trigger description, audience,
 purpose, required inputs, outputs, flow rules, steps, failure behavior, examples,
 and scope boundary. Optional `scripts/`, `references/`, `tests/`, and `agents/`
-folders directly support that skill. Shared deterministic helpers live in
-`skills/_shared/` and are mirrored into the installable
-`ai-sdlc-shared-runtime` skill.
+folders directly support that skill. Shared deterministic helpers have one
+canonical home: the installable `skills/ai-sdlc-shared-runtime/scripts/`
+package used in source and consumer layouts.
 
 A skill must be usable without undocumented global context. When a repository
 policy file or prerequisite artifact is absent, the skill must define a safe

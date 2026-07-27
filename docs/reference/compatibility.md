@@ -26,7 +26,7 @@ New skills, optional modules, fields, and documentation may be added when old co
 
 ```bash
 command -v git
-python3 skills/_shared/ai_sdlc_compatibility.py \
+python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_compatibility.py \
   --git-executable /absolute/reviewed/path/to/git --format toon
 ```
 

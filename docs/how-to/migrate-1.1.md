@@ -26,7 +26,7 @@ flow behavior remain valid; no bulk rewrite is required.
 3. Run the compatibility gate:
 
    ```bash
-   python3 skills/_shared/ai_sdlc_compatibility.py --skip-git-audit --format toon
+   python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_compatibility.py --skip-git-audit --format toon
    ```
 
 4. Re-run the project-context drift check and the status gate for active features.

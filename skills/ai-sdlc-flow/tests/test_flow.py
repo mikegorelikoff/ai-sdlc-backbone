@@ -13,8 +13,9 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[3]
-CORE_PATH = ROOT / "skills" / "_shared" / "ai_sdlc_flow.py"
+CORE_PATH = ROOT / "skills" / "ai-sdlc-shared-runtime" / "scripts" / "ai_sdlc_flow.py"
 SCRIPT = ROOT / "skills" / "ai-sdlc-flow" / "scripts" / "flow.py"
+sys.path.insert(0, str(CORE_PATH.parent))
 SPEC = importlib.util.spec_from_file_location("ai_sdlc_flow", CORE_PATH)
 assert SPEC and SPEC.loader
 FLOW = importlib.util.module_from_spec(SPEC)
@@ -230,12 +231,12 @@ class FlowTests(unittest.TestCase):
                 critical_total=1, critical_retained=2,
             )
 
-    def test_roles_expand_only_from_evidence(self) -> None:
+    def test_exactly_one_role_is_selected_from_evidence(self) -> None:
         roles, evidence = FLOW.select_roles("Implement a local parser", stage="sdd")
-        self.assertEqual(roles, ("Contributor", "Repository Maintainer"))
+        self.assertEqual(roles, ("software-engineer",))
         security_roles, security_evidence = FLOW.select_roles("Implement authorization checks", stage="sdd")
-        self.assertIn("Security", security_roles)
-        self.assertTrue(any("authorization" in item for item in security_evidence))
+        self.assertEqual(security_roles, ("software-engineer",))
+        self.assertEqual(len(security_evidence), 1)
         self.assertFalse(any("customer" in item.lower() for item in evidence))
 
     def test_rigor_override_cannot_bypass_policy(self) -> None:
@@ -393,6 +394,153 @@ class FlowTests(unittest.TestCase):
             self.assertIn("requirements.md:abc", FLOW.render_markdown(card))
             self.assertIn("requirements.md:abc", FLOW.render_toon(card))
             self.assertIn("confidence 1.00", FLOW.render_markdown(card))
+
+    def test_v2_card_exposes_role_action_step_and_jit_references(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            card = FLOW.build_card(
+                root=Path(temp),
+                intent="Implement the API",
+                feature="013-role-guided-installable-flow",
+                requested_action="implementation",
+            )
+            self.assertEqual(card.schema, "ai-sdlc-flow/v2")
+            self.assertEqual(card.active_role, "software-engineer")
+            self.assertEqual(card.roles, ("software-engineer",))
+            self.assertEqual(card.action_code, "BUILD")
+            self.assertEqual(card.current_step, "execute")
+            self.assertTrue(any("roles/software-engineer.md" in item for item in card.selected_references))
+            self.assertTrue(any("steps/execute.md" in item for item in card.selected_references))
+            self.assertEqual(
+                card.skill_step_reference,
+                "ai-sdlc-sdd/steps/02-execute.md",
+            )
+            self.assertTrue(card.step_manifest_fingerprint)
+            self.assertEqual(card.context_economics.recall_percent, 100.0)
+            self.assertGreaterEqual(card.context_economics.savings_percent, 15.0)
+
+    def test_role_override_records_explicit_handoff(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            card = FLOW.build_card(
+                root=Path(temp),
+                intent="Implement the API",
+                feature="013-role-guided-installable-flow",
+                requested_role="business-analyst",
+                requested_action="implementation",
+            )
+            self.assertEqual(card.requested_role, "business-analyst")
+            self.assertEqual(card.active_role, "software-engineer")
+            self.assertIn("owns implementation", card.role_handoff_reason)
+
+    def test_every_flow_action_resolves_an_owning_skill_step(self) -> None:
+        registry = FLOW.load_registry(ROOT)
+        with tempfile.TemporaryDirectory() as temp:
+            for action in registry["actions"]:
+                with self.subTest(action=action["id"]):
+                    card = FLOW.build_card(
+                        root=Path(temp),
+                        intent="Run the selected lifecycle action",
+                        feature="013-role-guided-installable-flow",
+                        requested_action=action["id"],
+                    )
+                    self.assertTrue(card.skill_step_reference)
+                    self.assertFalse(
+                        any(blocker.startswith("STEP_") for blocker in card.blockers),
+                        card.blockers,
+                    )
+
+    def test_ambiguous_intent_emits_deterministic_menu(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            card = FLOW.build_card(
+                root=Path(temp),
+                intent="Help with this work",
+                feature="013-role-guided-installable-flow",
+            )
+            self.assertEqual(card.intent_class, "ambiguous")
+            self.assertEqual(card.menu_options, tuple(sorted(card.menu_options)))
+            self.assertGreater(len(card.menu_options), 5)
+
+    def test_v1_card_is_rejected_with_migration_guidance(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            payload = json.dumps({"schema": "ai-sdlc-flow/v1"})
+            result = subprocess.run(
+                ["python3", str(SCRIPT), "apply", "--root", temp, "--card", "-"],
+                input=payload, check=False, text=True,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            )
+            self.assertEqual(result.returncode, 2)
+            self.assertIn("migrate to ai-sdlc-flow/v2", result.stderr)
+
+    def test_apply_revalidates_the_same_bounded_configuration(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "specs").mkdir()
+            team = root / "team.json"
+            team.write_text(json.dumps({
+                "schema": "ai-sdlc-config/v1",
+                "values": {"flow": {
+                    "role_aliases": {"builder": "software-engineer"},
+                    "menu_mode": "ambiguous",
+                    "context_selectors": [],
+                }},
+            }), encoding="utf-8")
+            explored = subprocess.run(
+                [
+                    "python3", str(SCRIPT), "explore", "--root", str(root),
+                    "--intent", "Implement API", "--feature", "013-role-guided-installable-flow",
+                    "--role", "builder", "--team", str(team), "--format", "json",
+                ],
+                check=False, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            )
+            self.assertEqual(explored.returncode, 0, explored.stderr)
+            verified = subprocess.run(
+                [
+                    "python3", str(SCRIPT), "apply", "--root", str(root),
+                    "--team", str(team), "--card", "-",
+                ],
+                input=explored.stdout, check=False, text=True,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            )
+            self.assertEqual(verified.returncode, 0, verified.stderr)
+
+    def test_selector_rejects_registry_outside_flow_package(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            external = Path(temp) / "registry.json"
+            external.write_text("{}", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "FLOW_UNSAFE_SELECTOR"):
+                FLOW.load_registry(ROOT, external)
+
+    def test_direct_api_rejects_malformed_configured_selector(self) -> None:
+        malformed = {
+            "context_selectors": [
+                {
+                    "id": "unsafe",
+                    "roles": ["unknown-role"],
+                    "actions": ["implementation"],
+                    "include": ["../outside.md"],
+                    "priority": 50,
+                    "max_tokens": 200,
+                    "reason": "must remain contained",
+                }
+            ]
+        }
+        with tempfile.TemporaryDirectory() as temp:
+            with self.assertRaisesRegex(ValueError, "FLOW_INVALID_CONFIG"):
+                FLOW.build_card(
+                    root=Path(temp),
+                    intent="Implement API",
+                    feature="013-role-guided-installable-flow",
+                    flow_config=malformed,
+                )
+
+    def test_direct_api_rejects_unknown_flow_config_field(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            with self.assertRaisesRegex(ValueError, "unknown fields"):
+                FLOW.build_card(
+                    root=Path(temp),
+                    intent="Implement API",
+                    feature="013-role-guided-installable-flow",
+                    flow_config={"unbounded_context": True},
+                )
 
 
 if __name__ == "__main__":

@@ -30,7 +30,7 @@ The design optimizes for four outcomes:
 | Delivery artifacts | Preserve detailed product, BA, QA, and implementation meaning | Feature Markdown files |
 | Control plane | Preserve lifecycle, decisions, and execution status | `state.toon`, `decision-log.md`, `plan.toon` |
 | Discovery projections | Help agents find relevant records without broad reads | `specs-index.toon`, `specs-index.md`, context packs |
-| Runtime helpers | Apply routing, scaffolding, migration, locking, and gates consistently | Scripts under `skills/_shared/` and skill `scripts/` |
+| Runtime helpers | Apply routing, scaffolding, migration, locking, and gates consistently | Scripts under `skills/ai-sdlc-shared-runtime/scripts/` and skill `scripts/` |
 
 The layers complement one another. A specs index can point to a requirement but
 cannot replace its detailed acceptance criteria. State can say a stage is done

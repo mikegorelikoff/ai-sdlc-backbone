@@ -17,9 +17,7 @@ from typing import Any
 
 from project_context import credential_like_content, SECRET_PATTERN, revision, saved_identity, scan
 
-_SHARED = Path(__file__).resolve().parents[2] / "_shared"
-if not _SHARED.is_dir():
-    _SHARED = _SHARED.parent / "ai-sdlc-shared-runtime" / "scripts"
+_SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
 sys.path.insert(0, str(_SHARED))
 from ai_sdlc_context import resolve_interaction_profile
 from ai_sdlc_toon import encode_toon

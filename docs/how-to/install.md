@@ -27,6 +27,15 @@ then run one bounded flow Explore request. If this works, stop here and use the
 below are only for pinned revisions, privacy review, global installs, or
 troubleshooting.
 
+The install must contain `ai-sdlc-flow` and its sibling
+`ai-sdlc-shared-runtime`. Explore activates exactly one of five documented
+roles and loads its current flow step, the owning skill's selected procedural
+step, and selector-approved references. Every installed skill includes a
+`steps/manifest.json`; missing manifests or files are an invalid installation.
+Use `--role` or `--action` only when you need an explicit override; the v2
+DecisionCard shows any handoff, owning-skill step, and selected or skipped
+reference.
+
 ## Before you begin
 
 !!! note "Current release"
@@ -147,7 +156,7 @@ verified detached local checkout instead.
     ```
 
 Run this in the same terminal session as the inspection block so
-`HARNESS_SRC` still names the verified checkout. `--skill '*'` selects all 45
+`HARNESS_SRC` still names the verified checkout. `--skill '*'` selects all 44
 harness skills—including the shared runtime—while `--agent codex` selects the
 one manually validated host target. `--all` would override that scope: a clean
 baseline test of CLI
@@ -190,7 +199,7 @@ while IFS= read -r skill; do set -- "$@" --skill "$skill"; done < .ai-sdlc/harne
 DISABLE_TELEMETRY=1 npx -y skills@1.5.19 add "$HARNESS_SRC" "$@" --agent codex -y
 ```
 
-This starter subset includes shared runtime plus the commit-message dependency
+This starter subset includes the canonical shared runtime plus the commit-message dependency
 used by commit prep. Keep `selection` as `explicit-skills` in the record below.
 For all skills, retain the canonical wildcard command and full packaged
 inventory. The validator treats the managed inventory as ownership, requires

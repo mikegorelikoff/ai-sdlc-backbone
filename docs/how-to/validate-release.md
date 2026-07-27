@@ -6,7 +6,7 @@ description: Combine focused change checks with compatibility, documentation, an
 ## Start from changed risk
 
 This maintainer procedure requires a clone of the harness source repository;
-the `skills/_shared` and `docs/scripts` paths do not exist in an installed-only
+the `skills/ai-sdlc-shared-runtime` and `docs/scripts` paths do not exist in an installed-only
 consumer project.
 
 Use `ai-sdlc-validation` to select deterministic checks for the changed packages, contracts, schemas, workflows, and documentation. Run focused tests before broad suites so failures remain attributable.
@@ -21,7 +21,7 @@ candidate choose an executable through `PATH`.
 
 ```bash
 command -v git
-python3 skills/_shared/ai_sdlc_compatibility.py \
+python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_compatibility.py \
   --git-executable /absolute/reviewed/path/to/git \
   --git-base v1.2.0 --format toon
 python3 docs/scripts/build_catalog.py --check

@@ -115,11 +115,11 @@ When the AI finishes a lifecycle step, it updates:
 ## CLI Commands
 
 ```bash
-python3 skills/_shared/state_machine.py init --feature <feature> --workspace refinement --entrypoint discovery
-python3 skills/_shared/state_machine.py check --feature <feature> --workspace refinement --skill ai-sdlc-working-backwards-discovery --full-flow
-python3 skills/_shared/state_machine.py begin --feature <feature> --workspace refinement --skill ai-sdlc-working-backwards-discovery
-python3 skills/_shared/state_machine.py complete --feature <feature> --workspace refinement --skill ai-sdlc-working-backwards-discovery --artifacts specs-refiniment/<feature>/discovery.md --decision-ref DEC-001
-python3 skills/_shared/state_machine.py status --feature <feature> --workspace refinement --format toon
+python3 skills/ai-sdlc-shared-runtime/scripts/state_machine.py init --feature <feature> --workspace refinement --entrypoint discovery
+python3 skills/ai-sdlc-shared-runtime/scripts/state_machine.py check --feature <feature> --workspace refinement --skill ai-sdlc-working-backwards-discovery --full-flow
+python3 skills/ai-sdlc-shared-runtime/scripts/state_machine.py begin --feature <feature> --workspace refinement --skill ai-sdlc-working-backwards-discovery
+python3 skills/ai-sdlc-shared-runtime/scripts/state_machine.py complete --feature <feature> --workspace refinement --skill ai-sdlc-working-backwards-discovery --artifacts specs-refiniment/<feature>/discovery.md --decision-ref DEC-001
+python3 skills/ai-sdlc-shared-runtime/scripts/state_machine.py status --feature <feature> --workspace refinement --format toon
 ```
 
 ## Agent Execution Pattern

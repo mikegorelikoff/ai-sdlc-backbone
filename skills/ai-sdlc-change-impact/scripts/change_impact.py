@@ -17,9 +17,7 @@ from typing import Any
 
 
 SKILLS_DIR = Path(__file__).resolve().parents[2]
-_SHARED = SKILLS_DIR / "_shared"
-if not _SHARED.is_dir():
-    _SHARED = SKILLS_DIR / "ai-sdlc-shared-runtime" / "scripts"
+_SHARED = SKILLS_DIR / "ai-sdlc-shared-runtime" / "scripts"
 sys.path.insert(0, str(_SHARED))
 
 from ai_sdlc_state_machine import COMPLETE_STATUSES, STAGES, STAGE_BY_SKILL, from_toon  # noqa: E402

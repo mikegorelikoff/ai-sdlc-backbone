@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ai-sdlc-flow-selectors/v1",
+  "type": "object",
+  "required": ["schema", "roles", "actions", "selectors"],
+  "properties": {
+    "schema": {"const": "ai-sdlc-flow-selectors/v1"},
+    "roles": {"type": "array", "minItems": 5, "maxItems": 5},
+    "actions": {"type": "array", "minItems": 1},
+    "selectors": {"type": "array", "items": {"$ref": "#/$defs/selector"}}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "selector": {
+      "type": "object",
+      "required": ["id", "roles", "actions", "include", "priority", "max_tokens", "reason"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+        "roles": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "actions": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "include": {"type": "array", "items": {"type": "string", "pattern": "^(references|steps)/[^.][^/]*(/[^.][^/]*)*$"}, "uniqueItems": true},
+        "priority": {"type": "integer", "minimum": 0, "maximum": 100},
+        "max_tokens": {"type": "integer", "minimum": 16, "maximum": 4000},
+        "reason": {"type": "string", "minLength": 8, "maxLength": 240}
+      },
+      "additionalProperties": false
+    }
+  }
+}

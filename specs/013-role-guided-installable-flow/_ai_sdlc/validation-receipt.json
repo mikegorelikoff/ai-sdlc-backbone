@@ -1,0 +1,231 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "skills.ai-sdlc-flow.tests.test_flow",
+        "-v"
+      ],
+      "duration_ms": 988,
+      "exit_code": 0,
+      "id": "flow-v2",
+      "output_limited": false,
+      "stderr_bytes": 3135,
+      "stderr_sha256": "80fbed0f6f9ce557a126f3f1a07814e5bbfb489c921d2c59569136269129fd7f",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "trace_ids": [
+        "AC-003",
+        "AC-004",
+        "AC-005",
+        "AC-006",
+        "AC-007",
+        "AC-008",
+        "AC-010"
+      ]
+    },
+    {
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "skills/ai-sdlc-shared-runtime/tests",
+        "-p",
+        "test*.py",
+        "-v"
+      ],
+      "duration_ms": 59008,
+      "exit_code": 0,
+      "id": "runtime-suite",
+      "output_limited": false,
+      "stderr_bytes": 16329,
+      "stderr_sha256": "caf98d37433b92a556cab845e6b5378ad9f00a2feb9fc71598e01bf5a02f91ae",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "trace_ids": [
+        "AC-001",
+        "AC-002",
+        "AC-009",
+        "AC-012",
+        "AC-013",
+        "AC-014",
+        "AC-015",
+        "AC-016"
+      ]
+    },
+    {
+      "argv": [
+        "python3",
+        "skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_steps.py",
+        "--root",
+        ".",
+        "--validate-all",
+        "--format",
+        "toon"
+      ],
+      "duration_ms": 73,
+      "exit_code": 0,
+      "id": "skill-steps",
+      "output_limited": false,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 1304,
+      "stdout_sha256": "f4f54c77babf4384c5dced6f8b039e95f2f8f9e84fd96df5355128cc390728f0",
+      "trace_ids": [
+        "AC-013",
+        "AC-014",
+        "AC-015",
+        "AC-016"
+      ]
+    },
+    {
+      "argv": [
+        "python3",
+        "skills/ai-sdlc-shared-runtime/tests/install_smoke.py",
+        "--mode",
+        "emulated"
+      ],
+      "duration_ms": 5787,
+      "exit_code": 0,
+      "id": "install-full",
+      "output_limited": false,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 110,
+      "stdout_sha256": "85d8fab75e865b5e824db21ef17ed7dca3228951a59145ed361eab3ebb866d0c",
+      "trace_ids": [
+        "AC-002"
+      ]
+    },
+    {
+      "argv": [
+        "python3",
+        "skills/ai-sdlc-shared-runtime/tests/install_smoke.py",
+        "--mode",
+        "emulated-selective"
+      ],
+      "duration_ms": 338,
+      "exit_code": 0,
+      "id": "install-selective",
+      "output_limited": false,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 63,
+      "stdout_sha256": "b2369bb0edbf5d4ad6fb76acc1927a7769075dab18881fd39817cc81f910d6b1",
+      "trace_ids": [
+        "AC-002"
+      ]
+    },
+    {
+      "argv": [
+        "python3",
+        "skills/ai-sdlc-shared-runtime/tests/install_smoke.py",
+        "--mode",
+        "emulated-global"
+      ],
+      "duration_ms": 395,
+      "exit_code": 0,
+      "id": "install-global",
+      "output_limited": false,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 109,
+      "stdout_sha256": "9d0fc91415ef0effcabf648f88df9c495ed0a6f103a7ea237ed6d48d7d3b9a44",
+      "trace_ids": [
+        "AC-002"
+      ]
+    },
+    {
+      "argv": [
+        "python3",
+        "docs/scripts/validate_docs.py"
+      ],
+      "duration_ms": 1636,
+      "exit_code": 0,
+      "id": "docs",
+      "output_limited": false,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 109,
+      "stdout_sha256": "502049346d8e4a602c89de49f1a988f3446b64c16f9eee0ce5e248fc74389eac",
+      "trace_ids": [
+        "AC-011",
+        "AC-012"
+      ]
+    },
+    {
+      "argv": [
+        "python3",
+        "skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_compatibility.py",
+        "--skip-git-audit",
+        "--format",
+        "toon"
+      ],
+      "duration_ms": 131,
+      "exit_code": 0,
+      "id": "compatibility",
+      "output_limited": false,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 1592,
+      "stdout_sha256": "7d28aa82eb4a1948210339f280cb53bff0788d916974e83e6a80ab9f91d9d17e",
+      "trace_ids": [
+        "AC-001",
+        "AC-012"
+      ]
+    },
+    {
+      "argv": [
+        "python3",
+        "skills/ai-sdlc-sdd/scripts/validate_spec.py",
+        "specs/013-role-guided-installable-flow",
+        "--full-flow"
+      ],
+      "duration_ms": 73,
+      "exit_code": 0,
+      "id": "sdd",
+      "output_limited": false,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 58,
+      "stdout_sha256": "349122a8080371b47998f74f9b7a2e1b6ea64de7d36f53de0c784ebbaff33d1d",
+      "trace_ids": [
+        "AC-012"
+      ]
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "duration_ms": 20,
+      "exit_code": 0,
+      "id": "diff-hygiene",
+      "output_limited": false,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "trace_ids": [
+        "AC-012"
+      ]
+    }
+  ],
+  "environment": {
+    "platform": "macOS-26.3.1-arm64-arm-64bit",
+    "python": "3.9.6"
+  },
+  "evidence_trust": "local-structural-not-authenticated",
+  "executed_at": "2026-07-27T10:48:17.280285Z",
+  "plan_path": "specs/013-role-guided-installable-flow/_ai_sdlc/validation-plan.json",
+  "plan_sha256": "7c8d498998fafdc7ff0eea6dbd824c0d69993bb7241ee7e913cf629b68976b66",
+  "receipt_fingerprint": "33d362b4629d3ef366380de7be7d230ace2b39f402fe5a5eb79ae9358e220bf0",
+  "revision": "9629b6f07285eab3b448a3e40b83559a277aedb6",
+  "schema": "ai-sdlc-validation-receipt/v1",
+  "workspace_fingerprint": "deaef93fb2aa7b931d77b1c29c3ceb5bd2bfbb28abf6a7828299347964536d70"
+}

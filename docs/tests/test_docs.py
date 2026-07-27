@@ -376,7 +376,7 @@ class DocumentationValidationTests(unittest.TestCase):
         skills = skill_sources()
         records = [script_record(path) for path in script_sources()]
         self.assertEqual(len(skills), 44)
-        self.assertEqual(len(records), 119)
+        self.assertEqual(len(records), 98)
         self.assertEqual(len(SKILL_SELECTION_BOUNDARIES), 44)
         self.assertEqual(validate_selection_contract(skills), [])
         self.assertEqual(validate_role_skill_groups(skills), [])
@@ -393,7 +393,7 @@ class DocumentationValidationTests(unittest.TestCase):
         self.assertEqual(validate_coverage_manifest(coverage, len(skills), records), [])
         self.assertTrue(coverage.startswith("schema: ai-sdlc-documentation-coverage/v1\n"))
         self.assertEqual(
-            sum(record.classification == "installed runtime mirror" for record in records),
+            sum(record.classification == "canonical shared helper" for record in records),
             21,
         )
 

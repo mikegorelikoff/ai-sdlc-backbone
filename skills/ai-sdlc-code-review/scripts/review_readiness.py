@@ -14,9 +14,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-_SHARED = Path(__file__).resolve().parents[2] / "_shared"
-if not _SHARED.is_dir():
-    _SHARED = _SHARED.parent / "ai-sdlc-shared-runtime" / "scripts"
+_SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
 sys.path.insert(0, str(_SHARED))
 from ai_sdlc_paths import first_existing, legacy_plan_toon_path, plan_toon_path
 from ai_sdlc_state_machine import add_state_arguments, run_state_action
@@ -146,7 +144,7 @@ def skill_metadata_warnings(files: list[str], full_repo: bool) -> list[str]:
             file for file in files
             if file.startswith(f"{skill_dir}/") and file.endswith(".py") and Path(file).is_file()
         )
-        if skill == "_shared":
+        if skill == "ai-sdlc-shared-runtime":
             if changed_python:
                 warnings.append(
                     "shared helper change detected; run "
@@ -154,8 +152,8 @@ def skill_metadata_warnings(files: list[str], full_repo: bool) -> list[str]:
                     + " ".join(changed_python)
                 )
             warnings.append(
-                "shared helper change detected; run python3 "
-                "skills/_shared/sync_installed_runtime.py --check"
+                "canonical runtime change detected; run python3 -m unittest "
+                "discover -s skills/ai-sdlc-shared-runtime/tests -p 'test*.py' -v"
             )
             continue
         if not (skill_dir / "SKILL.md").is_file():

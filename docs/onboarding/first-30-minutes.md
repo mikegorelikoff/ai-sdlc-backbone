@@ -62,7 +62,7 @@ Write down:
     Explore inventories installed skills and inspects branch, feature, state,
     specs, and repository signals. It must not create or edit artifacts.
 
-Expected response: an `ai-sdlc-flow/v1` decision card and
+Expected response: an `ai-sdlc-flow/v2` decision card and
 `ai-sdlc-handoff/v1` result with evidence-backed routing.
 If it presents a generic menu without explaining repository evidence, ask it to
 show the anchors or stop.

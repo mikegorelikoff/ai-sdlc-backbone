@@ -2,13 +2,16 @@
 
 ## DecisionCard
 
-Schema: `ai-sdlc-flow/v1`.
+Schema: `ai-sdlc-flow/v2`. Version 1 cards are rejected with instructions to
+run Explore again; no compatibility shim is provided.
 
 Semantic fingerprint inputs are repository identity, normalized intent,
-classification and confidence, feature, workspace, stage, skill, rigor, activated roles and
-their evidence, project-context status, selected source hashes, context
-economics, blockers, and planned writes. Presentation order, timestamps, and
-diagnostic wording are excluded.
+classification and confidence, feature, workspace, stage, skill, rigor,
+requested and active role, handoff reason, action id/code, menu options,
+current flow step, owning-skill step, selected/skipped references, selector,
+step-manifest, and configuration fingerprints, project-context status, selected
+source hashes, blockers, and planned writes. Presentation order, timestamps,
+and diagnostic wording are excluded.
 
 The SHA-256 fingerprint detects route drift. It is not authentication,
 authorization, approval, or a sandbox bypass.
@@ -28,6 +31,17 @@ stages do not hijack the route. When no feature state exists, implementation
 on `dev`, `main`, or `master` routes to branching first.
 Explore discovers owning skills from source, project-scoped, and packaged
 sibling roots and blocks when the selected skill is unavailable.
+
+Exactly one role is active. Selection order is valid explicit action/role,
+state prerequisite, inferred action, actual action owner, then an explicit
+cross-role handoff. Ambiguous intent emits a stable action menu.
+
+The trusted flow selector registry may choose only regular, non-symlink files
+inside the installed flow package. The canonical skill-step selector separately
+validates the owning skill's `steps/manifest.json` and may load only a linked,
+contained, bounded procedure matching the current phase, role, and action.
+Together they cap every reference, record selected/skipped reasons, and load
+the active role, current flow step, and owning-skill step just in time.
 
 ## Apply
 

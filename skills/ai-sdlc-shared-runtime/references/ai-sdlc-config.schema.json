@@ -8,7 +8,10 @@
     "schema": {"const": "ai-sdlc-config/v1"},
     "values": {
       "type": "object",
-      "properties": {"interaction": {"$ref": "#/$defs/interaction"}},
+      "properties": {
+        "interaction": {"$ref": "#/$defs/interaction"},
+        "flow": {"$ref": "#/$defs/flow"}
+      },
       "additionalProperties": true
     },
     "protected": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true}
@@ -24,6 +27,48 @@
         "response_style": {"enum": ["concise", "balanced", "detailed"]},
         "technical_depth": {"enum": ["adaptive", "foundational", "practitioner", "expert"]},
         "status_updates": {"enum": ["minimal", "milestones", "frequent"]}
+      },
+      "additionalProperties": false
+    },
+    "flow": {
+      "type": "object",
+      "properties": {
+        "role_aliases": {
+          "type": "object",
+          "propertyNames": {"pattern": "^[a-z][a-z0-9-]{0,39}$"},
+          "additionalProperties": {"enum": ["business-analyst", "product-manager", "software-architect", "software-engineer", "qa-engineer"]}
+        },
+        "menu_mode": {"enum": ["ambiguous", "always"]},
+        "context_selectors": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/context_selector"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "context_selector": {
+      "type": "object",
+      "required": ["id", "roles", "actions", "include", "priority", "max_tokens", "reason"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{0,63}$"},
+        "roles": {
+          "type": "array",
+          "items": {"enum": ["business-analyst", "product-manager", "software-architect", "software-engineer", "qa-engineer"]},
+          "uniqueItems": true
+        },
+        "actions": {
+          "type": "array",
+          "items": {"enum": ["branching", "commit", "implementation", "new_refinement", "qa_planning", "review", "security_review", "story_decomposition", "validation"]},
+          "uniqueItems": true
+        },
+        "include": {
+          "type": "array",
+          "items": {"type": "string", "pattern": "^(references|steps)/[^.][^/]*(/[^.][^/]*)*$"},
+          "uniqueItems": true
+        },
+        "priority": {"type": "integer", "minimum": 0, "maximum": 100},
+        "max_tokens": {"type": "integer", "minimum": 16, "maximum": 4000},
+        "reason": {"type": "string", "minLength": 8, "maxLength": 240}
       },
       "additionalProperties": false
     }

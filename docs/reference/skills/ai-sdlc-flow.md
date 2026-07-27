@@ -7,7 +7,7 @@ description: Human-facing operating guide for ai-sdlc-flow, including inputs, au
 
 | Lifecycle position | Primary owner | Supporting roles | Module | Output |
 | --- | --- | --- | --- | --- |
-| Cross-lifecycle guided entry | Contributor, Dev | Product, BA, QA, Engineering, Security, Operations | `core` | `ai-sdlc-flow/v1` Markdown, TOON, or JSON decision card and one bounded Apply result |
+| Cross-lifecycle guided entry | Contributor, Dev | Product, BA, QA, Engineering, Security, Operations | `core` | `ai-sdlc-flow/v2` Markdown, TOON, or JSON decision card and one bounded Apply result |
 
 ## Why it exists
 
@@ -35,6 +35,8 @@ The summary table above names the primary and supporting human roles for this ca
 - Repository root and natural-language intent.
 - Canonical `NNN-kebab-case` feature when durable feature work is expected.
 - Optional explicit quick/full rigor.
+- Optional `--role` and `--action` overrides plus bounded `--team` and `--user`
+  configuration layers.
 
 ## Tell your agent
 
@@ -43,7 +45,7 @@ Use ai-sdlc-flow for <target>.
 Choose --quick-flow for bounded assumption-driven progress or --full-flow
 for strict verification only as described below.
 Read the required evidence,
-produce or report `ai-sdlc-flow/v1` Markdown, TOON, or JSON decision card and one bounded Apply result, preserve human approval boundaries,
+produce or report `ai-sdlc-flow/v2` Markdown, TOON, or JSON decision card and one bounded Apply result, preserve human approval boundaries,
 and return blockers plus a complete ai-sdlc-handoff/v1.
 ```
 
@@ -54,6 +56,8 @@ This is an agent instruction, not a shell command. Terminal commands belong in t
 - Repository root and natural-language intent.
 - Canonical `NNN-kebab-case` feature when durable feature work is expected.
 - Optional explicit quick/full rigor.
+- Optional `--role` and `--action` overrides plus bounded `--team` and `--user`
+  configuration layers.
 
 ## What it may write
 
@@ -75,9 +79,24 @@ Humans accept or reject material product, security, QA, policy, rollout, release
 - `--full-flow` requests full rigor and takes precedence.
 - Explore explains every automatic choice or override.
 
+## Procedural step selectors
+
+The router loads these skill-owned procedures just in time. Read only the selector matching the current phase, active role, and action; a selected step is normative and an unselected step stays out of context.
+
+| Selector | Phases | Roles | Load rule | Step | Reason |
+| --- | --- | --- | --- | --- | --- |
+| `clarify` | `clarify` | `business-analyst`, `product-manager`, `software-architect`, `software-engineer`, `qa-engineer` | `required` | [`steps/clarify.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-flow/steps/clarify.md) | guided flow clarify phase with explicit evidence and exit criteria |
+| `route` | `route` | `business-analyst`, `product-manager`, `software-architect`, `software-engineer`, `qa-engineer` | `required` | [`steps/route.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-flow/steps/route.md) | guided flow route phase with explicit evidence and exit criteria |
+| `execute` | `execute` | `business-analyst`, `product-manager`, `software-architect`, `software-engineer`, `qa-engineer` | `on-demand` | [`steps/execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-flow/steps/execute.md) | guided flow execute phase with explicit evidence and exit criteria |
+| `handoff` | `handoff` | `business-analyst`, `product-manager`, `software-architect`, `software-engineer`, `qa-engineer` | `on-demand` | [`steps/handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-flow/steps/handoff.md) | guided flow handoff phase with explicit evidence and exit criteria |
+| `validate` | `validate` | `business-analyst`, `product-manager`, `software-architect`, `software-engineer`, `qa-engineer` | `before-completion` | [`steps/validate.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-flow/steps/validate.md) | guided flow validate phase with explicit evidence and exit criteria |
+| `complete` | `complete` | `business-analyst`, `product-manager`, `software-architect`, `software-engineer`, `qa-engineer` | `before-completion` | [`steps/complete.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-flow/steps/complete.md) | guided flow complete phase with explicit evidence and exit criteria |
+
+Resolve the current step with `ai-sdlc-shared-runtime/scripts/ai_sdlc_steps.py`. A missing, unsafe, oversized, or unmatched step is a blocker rather than permission to broad-load the package.
+
 ## Deterministic helpers
 
-Paths beginning with `skills/` below are canonical **source-checkout** forms for maintainers and CI. In a consumer repository, normally tell the installed skill to act; for human diagnosis, use the matching project-scoped `.agents/skills/<skill>/...` path reported by your host. Do not expect source-only `skills/_shared` to exist after installation.
+Paths beginning with `skills/` below are canonical **source-checkout** forms for maintainers and CI. In a consumer repository, normally tell the installed skill to act; for human diagnosis, use the matching project-scoped `.agents/skills/<skill>/...` path reported by your host. The canonical runtime is installed as the sibling `ai-sdlc-shared-runtime` skill.
 
 | Helper | Purpose | Direct starting point | Repository effect |
 | --- | --- | --- | --- |
@@ -89,7 +108,8 @@ The owning agent normally runs these helpers. A human uses the direct starting p
 
 ```bash
 python3 skills/ai-sdlc-flow/scripts/flow.py explore \
-  --intent "<request>" --feature NNN-feature --format markdown
+  --intent "<request>" --feature NNN-feature \
+  [--role software-engineer] [--action implementation] --format markdown
 ```
 
 After the contributor explicitly accepts the displayed JSON card, pass that
@@ -106,7 +126,7 @@ it would start. `--execute` is an explicit mutation boundary.
 
 ## Success criteria
 
-A successful result produces `ai-sdlc-flow/v1` Markdown, TOON, or JSON decision card and one bounded Apply result and satisfies every output rule and blocker check below.
+A successful result produces `ai-sdlc-flow/v2` Markdown, TOON, or JSON decision card and one bounded Apply result and satisfies every output rule and blocker check below.
 
 ## Blockers and recovery
 
@@ -149,7 +169,8 @@ The downstream consumer rechecks artifacts and freshness; it does not trust a pr
 
 ```bash
 python3 skills/ai-sdlc-flow/scripts/flow.py explore \
-  --intent "<request>" --feature NNN-feature --format markdown
+  --intent "<request>" --feature NNN-feature \
+  [--role software-engineer] [--action implementation] --format markdown
 ```
 
 After the contributor explicitly accepts the displayed JSON card, pass that
@@ -166,6 +187,6 @@ it would start. `--execute` is an explicit mutation boundary.
 
 ## Source contract
 
-This page is generated from [`skills/ai-sdlc-flow/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-flow/SKILL.md). Edit the source contract, rerun the catalog generator, and review both changes together; never hand-edit this page.
+This page is generated from [`skills/ai-sdlc-flow/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-flow/SKILL.md) plus its linked `steps/manifest.json` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
 
 [Back to the skill catalog](../skills.md) · [Script reference](../scripts.md) · [Choose a workflow](../../flows/index.md)

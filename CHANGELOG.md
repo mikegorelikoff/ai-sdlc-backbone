@@ -158,7 +158,7 @@
   - traceability.
 - Added PM and Dev role guides to match the existing BA and QA guide model.
 - Added role/workflow diagrams showing skill relationships, handoffs, and feedback loops.
-- Added shared script infrastructure under `skills/_shared/` for:
+- Added the original repository-only shared script infrastructure for:
   - artifact metadata generation;
   - specs index generation;
   - state machine enforcement;

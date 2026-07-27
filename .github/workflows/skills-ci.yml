@@ -23,10 +23,10 @@ jobs:
       - name: Compile helpers
         run: python -m compileall -q skills
       - name: All shared runtime tests
-        run: python -m unittest discover -s skills/_shared -p 'test*.py' -v
+        run: python -m unittest discover -s skills/ai-sdlc-shared-runtime/tests -p 'test*.py' -v
       - name: Repository contract tests
-        run: python skills/_shared/test_all_skill_scripts.py
+        run: python skills/ai-sdlc-shared-runtime/tests/test_all_skill_scripts.py
       - name: Release compatibility
-        run: python skills/_shared/ai_sdlc_compatibility.py --skip-git-audit --format toon
+        run: python skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_compatibility.py --skip-git-audit --format toon
       - name: Per-skill tests
-        run: python skills/_shared/test_each_skill_tests.py
+        run: python skills/ai-sdlc-shared-runtime/tests/test_each_skill_tests.py

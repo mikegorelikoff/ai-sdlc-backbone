@@ -17,7 +17,7 @@ an unexplained generated tree.
 | `README.md`, `FAQ.md` | Root discovery and first use | Canonical public docs and stable install locator | Retained; corrected preview/version routing and terminology |
 | `docs/` | MkDocs learning, reference, operations, adoption | `mkdocs.yml`, lock file, generated catalog | Retained; expanded and validated |
 | `skills/<name>/` | Installable bounded capability | `SKILL.md`, scripts/references/tests, shared runtime | Retained; 44/44 inventoried |
-| `skills/_shared/` | Canonical deterministic runtime and tests | Python 3.10+, mirror sync | Retained; all tests now discovered by CI |
+| `skills/ai-sdlc-shared-runtime/scripts/` | Canonical deterministic runtime and tests | Python 3.10+, mirror sync | Retained; all tests now discovered by CI |
 | `skills/ai-sdlc-shared-runtime/` | Installable mirror of shared runtime | Generated from `_shared` | Retained; byte-sync gate required |
 | `modules/` | Five module manifests | Harness API compatibility | Retained; stale core test corrected |
 | `specs/`, `specs-refiniment/` | Implementation and refinement evidence | Markdown authority plus `_ai_sdlc` projections | Retained; spelling is a compatibility route, not renamed silently |
@@ -46,7 +46,7 @@ operating-system, editor, and local environment files while allowing safe
 `.env.example`/`.env.sample` fixtures.
 
 The similarly named shared runtime trees are intentional canonical/installable
-mirrors and are guarded by `sync_installed_runtime.py --check`; they are not
+mirrors and were guarded by the legacy runtime synchronization check; they are not
 independent duplicates. Historical `concepts/` and `guides/` remain a search
 ambiguity risk and are accepted only while root/public navigation never points
 to them.

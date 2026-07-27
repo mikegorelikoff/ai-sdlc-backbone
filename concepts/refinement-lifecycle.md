@@ -96,10 +96,10 @@ full, end-to-end refinement or every refinement artifact. The cascade status
 commands use the strict gate:
 
 ```bash
-python3 skills/_shared/refinement_status.py \
+python3 skills/ai-sdlc-shared-runtime/scripts/refinement_status.py \
   --feature <feature> --gate full --format toon
 
-python3 skills/_shared/refinement_status.py \
+python3 skills/ai-sdlc-shared-runtime/scripts/refinement_status.py \
   --feature <feature> --gate full --format markdown
 ```
 

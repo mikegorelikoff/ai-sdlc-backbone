@@ -11,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 SKILL_DIR = Path(__file__).resolve().parents[1]
-CONTRACT = ROOT / "skills/_shared/skill_script_contract.py"
+CONTRACT = ROOT / "skills/ai-sdlc-shared-runtime/scripts/skill_script_contract.py"
 
 
 class SkillScriptContractTests(unittest.TestCase):

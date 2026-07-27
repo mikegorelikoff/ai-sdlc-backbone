@@ -57,9 +57,9 @@ These commands define the final local gate and must all pass on the final diff:
 
 ```bash
 PYTHONPYCACHEPREFIX=/tmp/ai-sdlc-pyc python3 -m compileall -q skills docs/scripts
-PYTHONPYCACHEPREFIX=/tmp/ai-sdlc-pyc python3 -m unittest discover -s skills/_shared -p 'test*.py' -v
-PYTHONPYCACHEPREFIX=/tmp/ai-sdlc-pyc python3 skills/_shared/test_each_skill_tests.py
-PYTHONPYCACHEPREFIX=/tmp/ai-sdlc-pyc python3 skills/_shared/ai_sdlc_compatibility.py --git-executable /usr/bin/git --git-base v1.1.0 --format toon
+PYTHONPYCACHEPREFIX=/tmp/ai-sdlc-pyc python3 -m unittest discover -s skills/ai-sdlc-shared-runtime -p 'test*.py' -v
+PYTHONPYCACHEPREFIX=/tmp/ai-sdlc-pyc python3 skills/ai-sdlc-shared-runtime/tests/test_each_skill_tests.py
+PYTHONPYCACHEPREFIX=/tmp/ai-sdlc-pyc python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_compatibility.py --git-executable /usr/bin/git --git-base v1.1.0 --format toon
 PYTHONPYCACHEPREFIX=/tmp/ai-sdlc-pyc python3 docs/scripts/build_catalog.py --check
 PYTHONPYCACHEPREFIX=/tmp/ai-sdlc-pyc python3 docs/scripts/validate_docs.py
 PYTHONPYCACHEPREFIX=/tmp/ai-sdlc-pyc python3 -m unittest discover -s docs/tests -v
@@ -112,8 +112,8 @@ The 2026-07-21 live marketplace reconciliation reviewed all 44 skill records and
 132 provider results. Thirty-three skills had only passing results; eleven had
 at least one warning or failure. Focused corrections and evidence:
 
-- `python3 skills/_shared/test_marketplace_security.py` — 5 passed;
-- `python3 skills/_shared/test_compatibility.py` — 8 passed, including an
+- `python3 skills/ai-sdlc-shared-runtime/tests/test_marketplace_security.py` — 5 passed;
+- `python3 skills/ai-sdlc-shared-runtime/tests/test_compatibility.py` — 8 passed, including an
   attacker-controlled target script that was inspected but not executed;
 - BA and conventional-commit fixed-path script contracts — 2 passed;
 - all shared discovery — 105 passed;

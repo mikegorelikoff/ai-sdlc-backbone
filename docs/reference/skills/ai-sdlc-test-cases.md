@@ -99,13 +99,25 @@ Humans accept or reject material product, security, QA, policy, rollout, release
 - In `--full-flow`, run or recommend the skill-appropriate gates, reviews, scripts, and validation commands needed for end-to-end confidence; document any blocked verification explicitly.
 - When neither flag is supplied, follow the skill default rules and choose the least risky behavior for the request size and domain.
 
+## Procedural step selectors
+
+The router loads these skill-owned procedures just in time. Read only the selector matching the current phase, active role, and action; a selected step is normative and an unselected step stays out of context.
+
+| Selector | Phases | Roles | Load rule | Step | Reason |
+| --- | --- | --- | --- | --- | --- |
+| `prepare` | `prepare`, `clarify`, `route` | `qa-engineer` | `required` | [`steps/01-prepare.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-test-cases/steps/01-prepare.md) | establish inputs, authority, lifecycle state, and safe artifact routing |
+| `execute` | `execute` | `qa-engineer` | `on-demand` | [`steps/02-execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-test-cases/steps/02-execute.md) | perform only the selected owning-skill procedure |
+| `validate-and-handoff` | `validate`, `handoff`, `complete` | `qa-engineer` | `before-completion` | [`steps/03-validate-and-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-test-cases/steps/03-validate-and-handoff.md) | verify outputs and return an explicit evidence-backed handoff |
+
+Resolve the current step with `ai-sdlc-shared-runtime/scripts/ai_sdlc_steps.py`. A missing, unsafe, oversized, or unmatched step is a blocker rather than permission to broad-load the package.
+
 ## Deterministic helpers
 
-Paths beginning with `skills/` below are canonical **source-checkout** forms for maintainers and CI. In a consumer repository, normally tell the installed skill to act; for human diagnosis, use the matching project-scoped `.agents/skills/<skill>/...` path reported by your host. Do not expect source-only `skills/_shared` to exist after installation.
+Paths beginning with `skills/` below are canonical **source-checkout** forms for maintainers and CI. In a consumer repository, normally tell the installed skill to act; for human diagnosis, use the matching project-scoped `.agents/skills/<skill>/...` path reported by your host. The canonical runtime is installed as the sibling `ai-sdlc-shared-runtime` skill.
 
 | Helper | Purpose | Direct starting point | Repository effect |
 | --- | --- | --- | --- |
-| [`case_matrix.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-test-cases/scripts/case_matrix.py) | Compress requirements into executable test-case matrix signals. | `python3 skills/ai-sdlc-test-cases/scripts/case_matrix.py --feature <feature-name> --quick-flow <input.md>...` | Read-only/reporting by default; inspect `--help` and the owning skill before direct use. |
+| [`case_matrix.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-test-cases/scripts/case_matrix.py) | Compress requirements into executable test-case matrix signals. | `Imported helper; use the owning skill rather than invoking it directly.` | Read-only/reporting by default; inspect `--help` and the owning skill before direct use. |
 
 The owning agent normally runs these helpers. A human uses the direct starting point for diagnosis or reproduction after inspecting `--help` and repository policy.
 
@@ -258,6 +270,6 @@ Reject this because it has no spec ref, the outcome is prose-only, and `Manual r
 
 ## Source contract
 
-This page is generated from [`skills/ai-sdlc-test-cases/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-test-cases/SKILL.md). Edit the source contract, rerun the catalog generator, and review both changes together; never hand-edit this page.
+This page is generated from [`skills/ai-sdlc-test-cases/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-test-cases/SKILL.md) plus its linked `steps/manifest.json` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
 
 [Back to the skill catalog](../skills.md) · [Script reference](../scripts.md) · [Choose a workflow](../../flows/index.md)

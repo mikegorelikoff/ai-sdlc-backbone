@@ -28,6 +28,7 @@ SKILL_GUIDE_HEADINGS = (
     "## What it may write",
     "## Human checkpoints",
     "## Flow modes",
+    "## Procedural step selectors",
     "## Deterministic helpers",
     "## Success criteria",
     "## Blockers and recovery",
@@ -38,7 +39,7 @@ SKILL_GUIDE_HEADINGS = (
 )
 
 # This is the explicit cross-skill selection contract used by the public guides.
-# Each capability owns execution details in its SKILL.md; this table owns the
+# Each capability owns execution details in its step manifest; this table owns the
 # human question "when should I choose something else?" and must close exactly
 # over the installable skill inventory.
 SKILL_SELECTION_BOUNDARIES: dict[str, tuple[str, ...]] = {
@@ -162,7 +163,7 @@ SKILL_SELECTION_BOUNDARIES: dict[str, tuple[str, ...]] = {
     ),
     "ai-sdlc-shared-runtime": (
         "Do not use shared helpers as a lifecycle entry point. Use `ai-sdlc-flow` Explore or the owning skill instead.",
-        "Do not edit installed mirrors to repair packaging. Use the authorized install or update workflow and canonical `_shared` sources instead.",
+        "Do not patch installed copies ad hoc. Use the authorized install or update workflow and the canonical runtime package instead.",
     ),
     "ai-sdlc-test-case-and-suite-synthesis": (
         "Do not use it before individual test cases and QA strategy exist. Use `ai-sdlc-test-cases` and `ai-sdlc-test-scope-and-strategy-design` instead.",
@@ -608,11 +609,43 @@ def skill_sources() -> list[Path]:
     return sorted((ROOT / "skills").glob("*/SKILL.md"))
 
 
+def skill_step_manifest(path: Path) -> dict[str, object]:
+    """Load one skill's ordered progressive-disclosure manifest."""
+    manifest_path = path.parent / "steps" / "manifest.json"
+    return json.loads(manifest_path.read_text(encoding="utf-8"))
+
+
+def skill_contract_text(path: Path) -> str:
+    """Return a router plus only its declared normative step sources."""
+    text = path.read_text(encoding="utf-8")
+    for selector in skill_step_manifest(path)["selectors"]:
+        text += "\n\n" + (path.parent / selector["path"]).read_text(encoding="utf-8")
+    return text
+
+
+def render_step_selector_rows(path: Path) -> list[str]:
+    """Render public selector guidance from the authoritative manifest."""
+    rows = [
+        "| Selector | Phases | Roles | Load rule | Step | Reason |",
+        "| --- | --- | --- | --- | --- | --- |",
+    ]
+    for selector in skill_step_manifest(path)["selectors"]:
+        phases = ", ".join(f"`{value}`" for value in selector["phases"])
+        roles = ", ".join(f"`{value}`" for value in selector["roles"]) or "any"
+        relative = Path(selector["path"])
+        source = source_link(path.parent / relative, f"`{relative.as_posix()}`")
+        rows.append(
+            f"| `{selector['id']}` | {phases} | {roles} | `{selector['load']}` | "
+            f"{source} | {markdown_cell(selector['reason'])} |"
+        )
+    return rows
+
+
 def script_sources() -> list[Path]:
-    """Return every package and source-shared Python script in documentation scope."""
+    """Return every package helper and canonical runtime test in documentation scope."""
     package = sorted((ROOT / "skills").glob("*/scripts/*.py"))
-    shared = sorted((ROOT / "skills" / "_shared").glob("*.py"))
-    return package + shared
+    runtime_tests = sorted((ROOT / "skills" / "ai-sdlc-shared-runtime" / "tests").glob("*.py"))
+    return package + runtime_tests
 
 
 def compact(value: str) -> str:
@@ -674,21 +707,14 @@ def script_record(path: Path) -> ScriptRecord:
     if not purpose:
         raise ValueError(f"{relative}: missing module docstring")
 
-    if relative.parts[1] == "_shared":
+    if relative.parts[1] == "ai-sdlc-shared-runtime":
         owner = "shared runtime"
-        if path.name.startswith("test_") or path.name == "ai_sdlc_install_smoke.py":
+        if "tests" in relative.parts:
             classification = "repository validation runner"
             actor = "Maintainer or CI; it may create only disposable test fixtures."
-        elif path.name == "sync_installed_runtime.py":
-            classification = "runtime packaging helper"
-            actor = "Maintainer or release automation when refreshing installed mirrors."
         else:
             classification = "canonical shared helper"
             actor = "Owning skills import it; maintainers may run a documented CLI entry."
-    elif relative.parts[1] == "ai-sdlc-shared-runtime":
-        owner = "ai-sdlc-shared-runtime"
-        classification = "installed runtime mirror"
-        actor = "Installed downstream skills import it; never edit this generated copy directly."
     else:
         owner = relative.parts[1]
         classification = "skill package helper"
@@ -708,9 +734,7 @@ def script_record(path: Path) -> ScriptRecord:
         '"--begin-state"',
         '"--complete-state"',
     )
-    if classification == "installed runtime mirror":
-        effect = "Generated copy; repository behavior is defined by its canonical shared source."
-    elif classification == "repository validation runner":
+    if classification == "repository validation runner":
         effect = "Read-only for delivery files; may use temporary directories for deterministic checks."
     elif any(marker in source for marker in mutating_markers):
         effect = "May write only through an explicit mutation mode; start with `--help`, check, preview, or emit."
@@ -751,9 +775,10 @@ def render_skill_guide(
     scripts: list[ScriptRecord],
 ) -> str:
     """Render one complete, predictable, human-facing capability guide."""
-    text = path.read_text(encoding="utf-8")
+    router_text = path.read_text(encoding="utf-8")
+    text = skill_contract_text(path)
     metadata = skill_frontmatter(path)
-    card = skill_card(text, path)
+    card = skill_card(router_text, path)
     skill_id = metadata["name"]
     modules = " + ".join(sorted(owners.get(skill_id, []))) or "unregistered"
     required_inputs = section_body(text, "### 0.1 Required Inputs")
@@ -939,9 +964,17 @@ def render_skill_guide(
         "",
         mode_guidance,
         "",
+        "## Procedural step selectors",
+        "",
+        "The router loads these skill-owned procedures just in time. Read only the selector matching the current phase, active role, and action; a selected step is normative and an unselected step stays out of context.",
+        "",
+        *render_step_selector_rows(path),
+        "",
+        "Resolve the current step with `ai-sdlc-shared-runtime/scripts/ai_sdlc_steps.py`. A missing, unsafe, oversized, or unmatched step is a blocker rather than permission to broad-load the package.",
+        "",
         "## Deterministic helpers",
         "",
-        "Paths beginning with `skills/` below are canonical **source-checkout** forms for maintainers and CI. In a consumer repository, normally tell the installed skill to act; for human diagnosis, use the matching project-scoped `.agents/skills/<skill>/...` path reported by your host. Do not expect source-only `skills/_shared` to exist after installation.",
+        "Paths beginning with `skills/` below are canonical **source-checkout** forms for maintainers and CI. In a consumer repository, normally tell the installed skill to act; for human diagnosis, use the matching project-scoped `.agents/skills/<skill>/...` path reported by your host. The canonical runtime is installed as the sibling `ai-sdlc-shared-runtime` skill.",
         "",
         *helper_lines,
         "",
@@ -987,7 +1020,7 @@ def render_skill_guide(
         "",
         "## Source contract",
         "",
-        f"This page is generated from {source_link(path, f'`{source_relative}`')}. Edit the source contract, rerun the catalog generator, and review both changes together; never hand-edit this page.",
+        f"This page is generated from {source_link(path, f'`{source_relative}`')} plus its linked `steps/manifest.json` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.",
         "",
         "[Back to the skill catalog](../skills.md) · [Script reference](../scripts.md) · [Choose a workflow](../../flows/index.md)",
         "",
@@ -1143,7 +1176,7 @@ def validate_script_catalog(content: str, records: list[ScriptRecord]) -> list[s
         "Safe starting point",
         "Repository effect",
         "Direct-use safety rule",
-        "Installed runtime mirrors",
+        "Canonical shared helpers",
         "harness source checkout",
         ".agents/skills/<skill>/...",
     ):
@@ -1327,32 +1360,30 @@ def render_skills(
 
 
 def render_scripts(records: list[ScriptRecord]) -> str:
-    """Render all source, package, validation, packaging, and mirror script paths."""
+    """Render all package, canonical runtime, and validation script paths."""
     groups = (
         ("Skill package helpers", "skill package helper"),
         ("Canonical shared helpers", "canonical shared helper"),
         ("Repository validation runners", "repository validation runner"),
-        ("Runtime packaging helpers", "runtime packaging helper"),
-        ("Installed runtime mirrors", "installed runtime mirror"),
     )
     lines = [
         "---",
         "title: Script reference",
-        "description: Complete generated inventory of every Python helper, runner, packaging utility, and installed runtime mirror in documentation scope.",
+        "description: Complete generated inventory of every Python helper and validation runner in documentation scope.",
         "---",
         "",
         "# Script reference",
         "",
         f"This page documents all {len(records)} Python paths in scope. Scripts are agent internals unless a guide explicitly tells a human to run one. Start with the owning skill and `--help`; a helper never grants filesystem, network, approval, policy, or release authority.",
         "",
-        "Every inventory path is relative to a **harness source checkout**. Consumer repositories normally invoke an installed skill through the agent; direct diagnosis uses the corresponding project-scoped `.agents/skills/<skill>/...` path. Source-only `skills/_shared` validation and packaging runners are not consumer commands.",
+        "Every inventory path is relative to a **harness source checkout**. Consumer repositories normally invoke an installed skill through the agent; direct diagnosis uses the corresponding project-scoped `.agents/skills/<skill>/...` path.",
         "",
         "## How to read the inventory",
         "",
         "- **Skill package helper:** behavior owned by one installable capability.",
         "- **Canonical shared helper:** source-checkout runtime imported by many capabilities.",
         "- **Validation/packaging helper:** maintainer and CI surface, not a delivery-stage entry point.",
-        "- **Installed runtime mirror:** generated portable copy; edit its canonical `_shared` source and resync instead.",
+        "- **Canonical shared helper:** the one installable runtime source used in checkouts and consumer installations.",
         "- **Repository effect:** conservative classification; explicit write/apply/execute modes still require the owning workflow and human authority.",
         "",
     ]
@@ -1387,7 +1418,7 @@ def render_scripts(records: list[ScriptRecord]) -> str:
         [
             "## Direct-use safety rule",
             "",
-            "Run a helper directly only when the owning guide or maintainer workflow names it. Inspect `--help`, begin with read-only check/preview/emit behavior, keep the target repository explicit, and stop on unexpected writes or permission requests. Installed mirrors are never the edit target.",
+            "Run a helper directly only when the owning guide or maintainer workflow names it. Inspect `--help`, begin with read-only check/preview/emit behavior, keep the target repository explicit, and stop on unexpected writes or permission requests. Installed copies are never patched ad hoc.",
             "",
             "[Back to the skill catalog](skills.md)",
             "",
