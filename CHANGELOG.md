@@ -35,6 +35,8 @@
   replacement, prevented retry from bypassing exhausted budgets, and validated
   event payloads without coercion.
 - Bounded explicitly requested evaluation receipts to the owning repository.
+- Aligned the protected release-history sequence with the three pre-v4
+  installer and documentation commits so the exact post-commit audit passes.
 
 ### Removed
 

@@ -396,7 +396,11 @@ def validate_git_audit(
     if valid:
         return []
     if expected:
-        return ["roadmap commit subjects do not map one-to-one with T001-T015", f"expected: {expected}", f"actual: {actual}"]
+        return [
+            "roadmap commit subjects do not match the declared release sequence",
+            f"expected: {expected}",
+            f"actual: {actual}",
+        ]
     return []
 
 

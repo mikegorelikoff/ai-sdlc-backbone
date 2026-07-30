@@ -137,6 +137,8 @@ attempt, and idempotency scope to an append-only journal.
   with 201 HTML pages and 5,428 validated local targets.
 - Hash-locked documentation dependencies installed and verified with Python
   3.11.
+- Exact release-history compatibility passed after the v4 release subject with
+  all 18 protected pre-v4 and release commits declared in order.
 
 ## Residual Risk
 

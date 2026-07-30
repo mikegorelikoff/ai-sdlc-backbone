@@ -58,7 +58,7 @@ artifact_metadata:
   validation:
     - "commit readiness full-flow preflight passed before staging"
     - "Feature 015 validation receipt is current; 17 commands; 0 failures"
-    - "compatibility history passed with only the planned release subject pending"
+    - "exact compatibility history passed after the release subject"
     - "strict documentation build and rendered validation passed"
     - "secret-pattern review found only intentional synthetic test fixtures"
   metatags:
@@ -114,8 +114,8 @@ Feature 015 is ready for one breaking release commit on
 - Offline provider-neutral protocol: 6 of 6 scenarios passed.
 - Documentation: 200 public pages, 46 unit tests, strict build, 201 rendered
   HTML pages, and 5,428 local targets passed.
-- Compatibility: API `4.0.0`, 12 contracts, 44 skills, five modules, and the
-  roadmap history pass with the exact final release subject pending.
+- Compatibility: API `4.0.0`, 12 contracts, 44 skills, five modules, and all
+  18 protected history subjects pass in exact order.
 - Diff hygiene, path review, canonical TOON-only gate, and synthetic-secret
   fixture review passed.
 
