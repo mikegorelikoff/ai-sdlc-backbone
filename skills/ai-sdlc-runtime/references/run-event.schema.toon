@@ -1,0 +1,34 @@
+"$defs":
+  hash:
+    pattern: "^[a-f0-9]{64}$"
+    type: string
+"$id": ai-sdlc-run-event/v2
+"$schema": ai-sdlc-toon-contract/v1
+additionalProperties: false
+properties:
+  attempt:
+    minimum: 0
+    type: integer
+  fingerprint:
+    "$ref": #/$defs/hash
+  idempotency_key:
+    type: string
+  payload:
+    type: object
+  previous:
+    "$ref": #/$defs/hash
+  run_id:
+    minLength: 1
+    type: string
+  schema:
+    const: ai-sdlc-run-event/v2
+  seq:
+    minimum: 1
+    type: integer
+  task_id:
+    type: string
+  type:
+    enum[8]: run-started,task-planned,task-started,task-terminal,task-evidence,task-result,task-retry-requested,run-stopped
+required[10]: schema,seq,type,run_id,task_id,attempt,idempotency_key,payload,previous,fingerprint
+title: AI SDLC Append-Only Run Event
+type: object

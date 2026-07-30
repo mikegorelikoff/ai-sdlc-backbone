@@ -43,5 +43,5 @@ Parsing and validation are read-only. The parser may read canonical target
 text to prove ID presence or absence, but cannot rewrite it. A valid delta set
 does not imply approval, compatibility, or permission to apply.
 
-`_ai_sdlc/delta-set.json` is a generated projection with exact source hashes,
+`_ai_sdlc/delta-set.toon` is a generated projection with exact source hashes,
 normalized operations, validation identity, and no mutation authority.

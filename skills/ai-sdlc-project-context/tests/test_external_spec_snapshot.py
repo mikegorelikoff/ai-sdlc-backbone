@@ -3,11 +3,16 @@
 
 from __future__ import annotations
 
-import json
 import subprocess
 import tempfile
 import unittest
+import sys
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -37,15 +42,15 @@ class ExternalSpecSnapshotTests(unittest.TestCase):
             (source / "api.md").write_text("# API\n\nPOST /payments\n", encoding="utf-8")
             written = self.run_snapshot(repository, source, "--write", "--source", "requirements/payments.md", "--source", "api.md")
             self.assertEqual(written.returncode, 0, written.stdout + written.stderr)
-            manifest_path = repository / "specs-refiniment/payments/external-specs.json"
-            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest_path = repository / "specs-refiniment/payments/external-specs.toon"
+            manifest = toon_codec.loads(manifest_path.read_text(encoding="utf-8"))
             self.assertNotIn(source.as_posix(), manifest_path.read_text(encoding="utf-8"))
             self.assertEqual([row["source"] for row in manifest["files"]], ["api.md", "requirements/payments.md"])
             self.assertTrue((repository / "specs-refiniment/payments/external-api.md").is_file())
             self.assertTrue((repository / "specs-refiniment/payments/external-requirements-payments.md").is_file())
             checked = self.run_snapshot(repository, source, "--check")
             self.assertEqual(checked.returncode, 0, checked.stdout + checked.stderr)
-            self.assertEqual(json.loads(checked.stdout)["status"], "current")
+            self.assertEqual(toon_codec.loads(checked.stdout)["status"], "current")
 
     def test_check_reports_source_drift_without_writing(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

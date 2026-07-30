@@ -3,12 +3,17 @@
 
 from __future__ import annotations
 
-import json
 import subprocess
 import tempfile
 import textwrap
 import unittest
+import sys
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -70,8 +75,8 @@ class ChangeImpactTests(unittest.TestCase):
         skips[0]{stage,reason,decision_ref,flow_mode}:
         """)
         changes = {"schema": "ai-sdlc-change-set/v1", "changes": [{"id": "CHG-001", "changed_ref": "AC-007", "source": {"path": "requirements.md", "line": 6, "detail": "Backoff is now configurable."}}]}
-        path = root / "changes.json"
-        path.write_text(json.dumps(changes), encoding="utf-8")
+        path = root / "changes.toon"
+        path.write_text(toon_codec.dumps(changes), encoding="utf-8")
         return path
 
     def test_change_maps_stale_artifacts_and_ordered_reopen_actions(self) -> None:
@@ -92,9 +97,9 @@ class ChangeImpactTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             changes = self.fixture(root)
-            value = json.loads(changes.read_text(encoding="utf-8"))
+            value = toon_codec.loads(changes.read_text(encoding="utf-8"))
             value["changes"][0]["source"]["line"] = 1
-            changes.write_text(json.dumps(value), encoding="utf-8")
+            changes.write_text(toon_codec.dumps(value), encoding="utf-8")
             result = self.run_impact(root, changes, "--full-flow")
             self.assertEqual(result.returncode, 1)
             self.assertIn("does not contain changed_ref", result.stdout)

@@ -10,29 +10,33 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 ### 0.1 Required Inputs
 
-- Versioned workflow JSON, declared capabilities, typed steps, dependencies,
-  bounded conditions, approval gates, and deterministic hook declarations.
-- Optional JSON context and explicit host concurrency/isolation capabilities.
+- Versioned workflow TOON whose nodes name installed skills, canonical
+  entrypoints, dependencies, bounded conditions, and approval owners.
+- Optional TOON condition context, requested concurrency, and explicit approved
+  node IDs.
 
 ### 0.2 Clarification Rules
 
-- Ask when an action, approval owner, or required capability is missing.
-- Reject unknown fields, undeclared capabilities, cycles, unsafe identifiers,
-  invalid conditions, and hooks without exact targets.
-- Never infer approval, shell authority, network authority, or safe isolation.
+- Ask when a target skill, entrypoint, action, role, or approval owner is
+  materially ambiguous.
+- Reject unknown fields, cycles, unsafe identifiers, invalid conditions, and
+  missing canonical skill graphs.
+- Never infer approval, shell authority, network authority, or host execution.
 
 ### 0.2.1 Flow Mode Flags
 
 - Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Both modes use identical validation, cycle, capability, and fallback rules.
-- Full flow requires review of every skipped/deferred condition, gate, hook, and fallback.
+- Both modes use identical validation, cycle, condition, approval, and
+  compilation rules.
+- Full flow requires review of every skipped, deferred, or blocked node.
 
 ### 0.3 Output Rules
 
-- Default to complete TOON with workflow fingerprint, step decisions, waves,
-  gates, hooks, fallbacks, host capabilities, and plan fingerprint.
+- Default to complete TOON with workflow fingerprint, node decisions, waves,
+  approvals, derived capabilities and side effects, plus the run-plan
+  fingerprint.
 - Return validation and handoff summaries directly in the active agent response.
-- Emit `ai-sdlc-handoff/v1` with `result`, `blockers`, `next_required`, and
+- Emit `ai-sdlc-handoff/v2` with `result`, `blockers`, `next_required`, and
   `next_optional`; actions include `reason`, `command`, and `expected_artifact`.
 - Do not create `summary.txt`, `*-summary.txt`, or another standalone summary file.
 
@@ -53,7 +57,7 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 ## 0.6 Artifact Metadata And Metatags
 
-- Machine records use `ai-sdlc-workflow/v1` and `ai-sdlc-workflow-plan/v1`.
+- Machine records use `ai-sdlc-workflow/v2` and `ai-sdlc-workflow-plan/v2`.
 - Workflow-related Markdown uses canonical `artifact_metadata` and `metatags`
   when authored.
 

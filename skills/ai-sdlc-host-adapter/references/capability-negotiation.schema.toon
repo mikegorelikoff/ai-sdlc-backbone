@@ -1,0 +1,62 @@
+"$defs":
+  hash:
+    pattern: "^[a-f0-9]{64}$"
+    type: string
+"$id": ai-sdlc-capability-negotiation/v2
+"$schema": ai-sdlc-toon-contract/v1
+additionalProperties: false
+properties:
+  adapter:
+    type: object
+  compatible:
+    type: boolean
+  evidence_required:
+    const: true
+  fallbacks:
+    items:
+      type: object
+    type: array
+  fingerprint:
+    "$ref": #/$defs/hash
+  gates:
+    items:
+      type: string
+    type: array
+  idempotency_scope:
+    type: string
+  limits:
+    type: object
+  mapping:
+    type: object
+  missing_capabilities:
+    items:
+      type: string
+    type: array
+  outputs:
+    items:
+      type: string
+    type: array
+  reason_codes:
+    items:
+      type: string
+    minItems: 1
+    type: array
+  request_fingerprint:
+    "$ref": #/$defs/hash
+  required_capabilities:
+    items:
+      type: string
+    type: array
+  schema:
+    const: ai-sdlc-capability-negotiation/v2
+  side_effect:
+    enum[4]: none,workspace-write,external-write,destructive
+  step:
+    type: object
+  unsupported_operations:
+    items:
+      type: string
+    type: array
+required[18]: schema,adapter,request_fingerprint,step,compatible,mapping,required_capabilities,missing_capabilities,unsupported_operations,side_effect,idempotency_scope,gates,outputs,evidence_required,limits,fallbacks,reason_codes,fingerprint
+title: AI SDLC Host Capability Negotiation
+type: object

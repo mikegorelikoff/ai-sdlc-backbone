@@ -10,7 +10,7 @@ Enter only after the prepare step passes and this skill is the selected owner fo
 
 ## References
 
-- Read `references/quality-lenses.json` to select applicable lenses.
+- Read `references/quality-lenses.toon` to select applicable lenses.
 - Read `references/finding-contract.md` before creating or changing findings.
 - Use `scripts/quality_lens_report.py` to list lenses, validate findings, and
   emit or atomically write the canonical report pair.
@@ -19,8 +19,8 @@ Enter only after the prepare step passes and this skill is the selected owner fo
 
 ```bash
 python3 skills/ai-sdlc-quality-lenses/scripts/quality_lens_report.py --list-lenses --format markdown
-python3 skills/ai-sdlc-quality-lenses/scripts/quality_lens_report.py --artifact specs/example/requirements.md --artifact-kind requirements --feature example --findings /tmp/findings.json --lens edge-case-hunt --emit --quick-flow
-python3 skills/ai-sdlc-quality-lenses/scripts/quality_lens_report.py --artifact specs/example/design.md --artifact-kind design --feature example --findings /tmp/findings.json --write --full-flow
+python3 skills/ai-sdlc-quality-lenses/scripts/quality_lens_report.py --artifact specs/example/requirements.md --artifact-kind requirements --feature example --findings /tmp/findings.toon --lens edge-case-hunt --emit --quick-flow
+python3 skills/ai-sdlc-quality-lenses/scripts/quality_lens_report.py --artifact specs/example/design.md --artifact-kind design --feature example --findings /tmp/findings.toon --write --full-flow
 ```
 
 `--emit` prints one format without writes. `--write` creates both canonical
@@ -35,7 +35,7 @@ evidence instead of one-off prose that loses ownership and traceability.
 
 - Read the source artifact and its direct trace sources.
 - Select lenses by applicability and review risk.
-- Create a JSON array conforming to `references/finding-contract.md`.
+- Create a TOON array conforming to `references/finding-contract.md`.
 - Anchor evidence to an exact repository-relative path and positive line.
 
 ## Steps

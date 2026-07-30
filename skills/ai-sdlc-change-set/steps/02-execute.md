@@ -12,18 +12,18 @@ Enter only after the prepare step passes and this skill is the selected owner fo
 
 - Read `references/change-set-contract.md` before creating or reviewing a
   workspace.
-- Use `references/change-set.schema.json` for the versioned machine contract.
+- Use `references/change-set.schema.toon` for the versioned machine contract.
 - Use `scripts/change_set.py` for deterministic emit, create, and validation.
 - Read `references/spec-delta-contract.md` before authoring or reviewing delta
-  Markdown and use `references/spec-delta.schema.json` for its projection.
+  Markdown and use `references/spec-delta.schema.toon` for its projection.
 - Use `scripts/spec_delta.py` to validate and project semantic deltas.
 - Read `references/apply-preview-contract.md` before reviewing planned target
-  changes and use `references/change-preview.schema.json` for the projection.
+  changes and use `references/change-preview.schema.toon` for the projection.
 - Use `scripts/change_preview.py` to compile diffs, conflicts, stale evidence,
   reopen actions, and required gates without target writes.
 - Read `references/controlled-apply-contract.md` before applying or archiving.
-- Validate approval with `references/change-approval.schema.json` and recovery
-  evidence with `references/change-recovery.schema.json`.
+- Validate approval with `references/change-approval.schema.toon` and recovery
+  evidence with `references/change-recovery.schema.toon`.
 - Use `scripts/change_apply.py` only after a ready preview and explicit approval.
 
 ## Script Usage
@@ -34,7 +34,7 @@ python3 skills/ai-sdlc-change-set/scripts/change_set.py . --change-id add-sessio
 python3 skills/ai-sdlc-change-set/scripts/change_set.py . --change-id add-session-timeout --validate --format toon
 python3 skills/ai-sdlc-change-set/scripts/spec_delta.py . --change-id add-session-timeout --validate --write --format toon
 python3 skills/ai-sdlc-change-set/scripts/change_preview.py . --change-id add-session-timeout --preview --write --format toon
-python3 skills/ai-sdlc-change-set/scripts/change_apply.py . --change-id add-session-timeout --apply --approval changes/add-session-timeout/evidence/owner-approval.json --format toon
+python3 skills/ai-sdlc-change-set/scripts/change_apply.py . --change-id add-session-timeout --apply --approval changes/add-session-timeout/evidence/owner-approval.toon --format toon
 python3 skills/ai-sdlc-change-set/scripts/change_apply.py . --change-id add-session-timeout --archive --format toon
 ```
 

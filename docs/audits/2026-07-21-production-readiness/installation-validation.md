@@ -57,7 +57,7 @@ same workflow. The smoke runner now rejects real CLI modes without `--agent`.
 
 The portable sequence copies the sorted 44-name managed inventory and writes a
 schema-validated record under `.ai-sdlc/`. It removes the transient
-machine-specific `skills-lock.json` and deletes the temporary source checkout.
+machine-specific `skills-lock.toon` and deletes the temporary source checkout.
 
 ## Documentation dependency bootstrap
 

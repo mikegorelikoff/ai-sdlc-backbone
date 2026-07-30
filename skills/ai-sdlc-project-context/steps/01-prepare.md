@@ -36,7 +36,7 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 - Return generation, drift, blockers, evidence coverage, and output paths
   directly in the active agent response.
-- Before the final response, emit the `ai-sdlc-handoff/v1` contract with
+- Before the final response, emit the `ai-sdlc-handoff/v2` contract with
   `result`, `blockers`, `next_required`, and `next_optional`; every action
   includes `reason`, `command`, and `expected_artifact`.
 - Do not create `summary.txt`, `*-summary.txt`, or ad hoc context files.
@@ -64,8 +64,10 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 - Write both projections to `<root>/_ai_sdlc/context/project-context.{md,toon}`.
 - Do not place project-wide context inside one feature folder.
 - Do not overwrite either output when `--check` or `--emit` is used.
-- Route topology to `_ai_sdlc/context/topology.{toon,json,md}` and task packs to
-  `_ai_sdlc/context/task-packs/<task>.{toon,json,md}` only with `--write`.
+- Route topology to `_ai_sdlc/context/topology.toon` with optional human
+  `_ai_sdlc/context/topology.md`, and task packs to
+  `_ai_sdlc/context/task-packs/<task>.toon` with optional human Markdown only
+  with `--write`.
 
 ## 0.4.1 Runtime Path Resolution
 

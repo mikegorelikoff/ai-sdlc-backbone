@@ -44,7 +44,7 @@ The deterministic pipeline remains local:
 4. Label source authority and emit exact evidence.
 5. Evaluate requested-path coverage, truncation, freshness, and budget omissions.
 6. Resolve optional preferred-name metadata from the existing resolved configuration.
-7. Fingerprint and render JSON, TOON, or Markdown.
+7. Fingerprint and render TOON, TOON, or Markdown.
 
 No model inference or network retrieval enters the runtime.
 
@@ -52,7 +52,7 @@ No model inference or network retrieval enters the runtime.
 - `skills/ai-sdlc-project-context/scripts/context_engine.py`: relevance selection, authority labels, sufficiency, v3 rendering.
 - `skills/_shared/ai_sdlc_context.py`: safe preferred-name resolver and shared context-pack propagation.
 - `skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_context.py`: generated installed-runtime mirror.
-- `config/ai-sdlc.defaults.json`: empty optional preferred-name default.
+- `config/ai-sdlc.defaults.toon`: empty optional preferred-name default.
 - Context pack schema and contract references.
 - Project-context unit tests and shared runtime tests.
 - Public foundation/how-to/configuration pages and generated reference docs.

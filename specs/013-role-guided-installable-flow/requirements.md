@@ -91,7 +91,7 @@ Deliver an installable and understandable AI SDLC flow in which one canonical ru
 The current repository has duplicated shared runtime code, an install path that can miss shared dependencies, unclear role and skill sequencing, and broad project-context loading. Users cannot easily predict which skill acts next, why it acts, or which context was selected, and reviewers can be led by opaque AI reasoning.
 
 ## Scope
-Consolidate the runtime, introduce five role contracts and JIT selectors, cut the decision contract to `ai-sdlc-flow/v2`, add bounded configuration, migrate consumers/tests/docs/CI, verify project/selective/disposable-global installation, migrate all 44 installable skills from monolithic instructions to validated step manifests, and make durable Markdown generators emit conformant OKF v0.2 feature, change, and runtime bundles.
+Consolidate the runtime, introduce five role contracts and JIT selectors, cut the decision contract to `ai-sdlc-flow/v3`, add bounded configuration, migrate consumers/tests/docs/CI, verify project/selective/disposable-global installation, migrate all 44 installable skills from monolithic instructions to validated step manifests, and make durable Markdown generators emit conformant OKF v0.2 feature, change, and runtime bundles.
 
 ## Actors
 - Product/Business Analyst: discovery and requirement framing.
@@ -111,11 +111,11 @@ A deterministic v2 DecisionCard; one active role; an optional explicit role hand
 - REQ-001: `skills/ai-sdlc-shared-runtime` is the only shared runtime source; tracked `skills/_shared` and runtime synchronization fallbacks are removed.
 - REQ-002: five neutral role contracts define mission, ownership, entry signals, boundaries, workflow, handoffs, selectors, and examples; exactly one role is active per decision.
 - REQ-003: a trusted registry selects the current step and bounded references just in time, records selected/skipped items and reasons, and prevents untrusted paths or symlink escapes.
-- REQ-004: the flow contract uses `ai-sdlc-flow/v2`; v1 input is rejected with migration guidance; CLI supports `--role`, `--action`, `--team`, and `--user`.
+- REQ-004: the flow contract uses `ai-sdlc-flow/v3`; v1 input is rejected with migration guidance; CLI supports `--role`, `--action`, `--team`, and `--user`.
 - REQ-005: repository configuration supports only role aliases, menu mode, and bounded context selectors with schema validation and deterministic precedence.
 - REQ-006: reference generation and active-skill docs consume the canonical runtime and selector registry.
 - REQ-007: full, selective, and disposable-global installation include the shared runtime and leave no dependency on a source checkout.
-- REQ-008: every installable skill owns a schema-valid `steps/manifest.json` whose selectors declare phase, role, action, loading rule, token cap, path, and reason.
+- REQ-008: every installable skill owns a schema-valid `steps/manifest.toon` whose selectors declare phase, role, action, loading rule, token cap, path, and reason.
 - REQ-009: every applicable skill moves detailed prepare, execution, validation, and handoff instructions from `SKILL.md` into complete skill-owned step files; `SKILL.md` remains a concise router that names exactly when each step must be read.
 - REQ-010: the canonical runtime validates and selects skill steps just in time, and flow decisions include the selected owning-skill step without permitting cross-package path escape.
 - REQ-011: generated documentation, installation packaging, compatibility checks, and tests inventory step manifests and detect missing, unlinked, unsafe, oversized, or drifted step files.
@@ -146,7 +146,7 @@ Python standard library only for runtime changes; existing artifact/state contra
 - AC-003: each of the five roles has a validated contract and exactly one role is active in every v2 decision.
 - AC-004: clear intent selects a role/action directly; ambiguous intent produces a deterministic menu; explicit overrides win when valid.
 - AC-005: cross-role work emits a documented handoff reason and re-routes through state prerequisites.
-- AC-006: the DecisionCard validates as `ai-sdlc-flow/v2`; v1 is rejected with migration guidance.
+- AC-006: the DecisionCard validates as `ai-sdlc-flow/v3`; v1 is rejected with migration guidance.
 - AC-007: only the selected current step and allowlisted references are loaded, with selected/skipped reasons and stable fingerprints.
 - AC-008: malicious, escaping, oversized, or unknown selectors fail closed with actionable errors.
 - AC-009: bounded `values.flow` configuration validates role aliases, menu mode, selector priority, token caps, and unknown keys.

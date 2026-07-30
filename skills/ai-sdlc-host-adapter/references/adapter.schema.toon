@@ -1,0 +1,52 @@
+"$id": ai-sdlc-host-adapter/v2
+"$schema": ai-sdlc-toon-contract/v1
+additionalProperties: false
+properties:
+  capabilities:
+    items:
+      type: string
+    type: array
+    uniqueItems: true
+  harness_api:
+    additionalProperties: false
+    properties:
+      max_exclusive:
+        type: string
+      min:
+        type: string
+    required[2]: min,max_exclusive
+    type: object
+  host:
+    type: string
+  id:
+    type: string
+  limits:
+    additionalProperties: false
+    properties:
+      isolation:
+        type: boolean
+      max_concurrency:
+        maximum: 64
+        minimum: 1
+        type: integer
+    required[2]: max_concurrency,isolation
+    type: object
+  operations:
+    items:
+      additionalProperties: false
+      properties:
+        host_operation:
+          type: string
+        portable:
+          type: string
+        semantics:
+          const: equivalent
+      required[3]: portable,host_operation,semantics
+      type: object
+    type: array
+  schema:
+    const: ai-sdlc-host-adapter/v2
+  version:
+    type: string
+required[8]: schema,id,version,host,harness_api,capabilities,operations,limits
+type: object

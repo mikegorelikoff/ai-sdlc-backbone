@@ -2,7 +2,7 @@
 
 
 def route(path: str) -> tuple[int, dict[str, str]]:
-    """Return a status code and JSON-compatible body for one path."""
+    """Return a status code and TOON-compatible body for one path."""
     if path == "/version":
         return 200, {"version": "1.0"}
     return 404, {"error": "not found"}

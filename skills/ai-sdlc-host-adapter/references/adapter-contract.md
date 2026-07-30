@@ -1,12 +1,15 @@
 # Host Adapter Contract
 
 An adapter manifest is a capability claim, not authority. Native mappings must
-declare equivalent semantics. Negotiation may use only the registered fallbacks:
-parallel tasks become sequential `task.execute`, lifecycle hooks become explicit
-`task.execute` steps, and approval requests become manual `user.prompt` gates.
+declare equivalent semantics for portable `step.analysis`, `step.context`,
+`step.action`, `step.validation`, and `step.handoff` operations. A capability
+request embeds one complete, context-ready StepCard; required capabilities,
+side-effect controls, gates, evidence outputs, and idempotency scope are derived
+from that card rather than restated by the caller.
 
-Missing isolation or concurrency always reduces effective concurrency to one;
-it never guesses a host sandbox. Missing required operations or capabilities
-without a safe fallback makes the result incompatible.
+Concurrency is clamped to the adapter limit. A request for unavailable
+isolation produces an explicit sequential-isolation fallback and effective
+concurrency one; it never guesses a host sandbox. A missing step operation or
+required capability makes the result incompatible.
 
 Fixtures describe conformance classes only and make no product-version claims.

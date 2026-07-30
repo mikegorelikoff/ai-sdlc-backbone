@@ -7,65 +7,65 @@ description: Installed capability modules, compatibility ranges, dependencies, a
 
 <div class="grid cards" markdown>
 
--   **Architecture** · `optional` · `v3.0.0-rc.2`
+-   **Architecture** · `optional` · `v4.0.0`
 
     Traceable system architecture decisions, interfaces, risks, and validation.
 
-    **Harness API:** ≥ 3.0.0 and < 4.0.0
+    **Harness API:** ≥ 4.0.0 and < 5.0.0
 
     **Requires:** core
 
     **Skills:** ai-sdlc-architecture
 
-    [Open manifest →](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/modules/architecture/module.json)
+    [Open manifest →](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/modules/architecture/module.toon)
 
--   **Core** · `core` · `v3.0.0-rc.2`
+-   **Core** · `core` · `v4.0.0`
 
     Core AI SDLC lifecycle, control-plane, and delivery skills.
 
-    **Harness API:** ≥ 3.0.0 and < 4.0.0
+    **Harness API:** ≥ 4.0.0 and < 5.0.0
 
     **Requires:** none
 
     **Skills:** ai-sdlc-approvals-sandbox, ai-sdlc-ba, ai-sdlc-backlog-decomposition-and-task-planning, ai-sdlc-backlog-requirements-gap-review, ai-sdlc-branching, ai-sdlc-change-set, ai-sdlc-change-impact, ai-sdlc-code-review, ai-sdlc-commit-prep, ai-sdlc-conventional-commit, ai-sdlc-delivery-handoff-review, ai-sdlc-delivery-graph, ai-sdlc-delivery-package-gap-review, ai-sdlc-delivery-spec-synthesis, ai-sdlc-doctor, ai-sdlc-goal-capability-and-epic-mapping, ai-sdlc-flow, ai-sdlc-package-trust, ai-sdlc-policy, ai-sdlc-prfaq-package-synthesis, ai-sdlc-project-context, ai-sdlc-qa, ai-sdlc-qa-requirements-gap-review, ai-sdlc-qa-traceability-and-readiness-review, ai-sdlc-quality-lenses, ai-sdlc-release-slicing-and-backlog-readiness-review, ai-sdlc-requirements-readiness-review, ai-sdlc-retrospective, ai-sdlc-host-adapter, ai-sdlc-runtime, ai-sdlc-workflow, ai-sdlc-sdd, ai-sdlc-security-testing, ai-sdlc-shared-runtime, ai-sdlc-test-case-and-suite-synthesis, ai-sdlc-test-cases, ai-sdlc-test-scope-and-strategy-design, ai-sdlc-user-story-decomposition, ai-sdlc-validation, ai-sdlc-working-backwards-discovery
 
-    [Open manifest →](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/modules/core/module.json)
+    [Open manifest →](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/modules/core/module.toon)
 
--   **Evidence Council** · `optional` · `v3.0.0-rc.2`
+-   **Evidence Council** · `optional` · `v4.0.0`
 
     Authority-safe simulated and independent evidence review orchestration.
 
-    **Harness API:** ≥ 3.0.0 and < 4.0.0
+    **Harness API:** ≥ 4.0.0 and < 5.0.0
 
     **Requires:** core
 
     **Skills:** ai-sdlc-evidence-council
 
-    [Open manifest →](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/modules/evidence-council/module.json)
+    [Open manifest →](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/modules/evidence-council/module.toon)
 
--   **Research** · `optional` · `v3.0.0-rc.2`
+-   **Research** · `optional` · `v4.0.0`
 
     Sourced research questions, evidence inventory, confidence, limitations, and delivery traces.
 
-    **Harness API:** ≥ 3.0.0 and < 4.0.0
+    **Harness API:** ≥ 4.0.0 and < 5.0.0
 
     **Requires:** core
 
     **Skills:** ai-sdlc-research
 
-    [Open manifest →](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/modules/research/module.json)
+    [Open manifest →](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/modules/research/module.toon)
 
--   **Ux** · `optional` · `v3.0.0-rc.2`
+-   **Ux** · `optional` · `v4.0.0`
 
     Traceable actors, journeys, interaction states, accessibility, and UX acceptance.
 
-    **Harness API:** ≥ 3.0.0 and < 4.0.0
+    **Harness API:** ≥ 4.0.0 and < 5.0.0
 
     **Requires:** core
 
     **Skills:** ai-sdlc-ux
 
-    [Open manifest →](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/modules/ux/module.json)
+    [Open manifest →](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/modules/ux/module.toon)
 
 </div>
 

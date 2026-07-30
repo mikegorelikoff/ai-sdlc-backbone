@@ -3,16 +3,21 @@
 
 from __future__ import annotations
 
-import json
 import subprocess
 import tempfile
 import unittest
+import sys
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[3]
 SCRIPT = ROOT / "skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_config.py"
-DEFAULTS = ROOT / "skills/ai-sdlc-shared-runtime/references/ai-sdlc.defaults.json"
+DEFAULTS = ROOT / "skills/ai-sdlc-shared-runtime/references/ai-sdlc.defaults.toon"
 
 
 def write(path: Path, values: dict[str, object], protected: list[str] | None = None) -> None:
@@ -20,7 +25,7 @@ def write(path: Path, values: dict[str, object], protected: list[str] | None = N
     payload: dict[str, object] = {"schema": "ai-sdlc-config/v1", "values": values}
     if protected is not None:
         payload["protected"] = protected
-    path.write_text(json.dumps(payload), encoding="utf-8")
+    path.write_text(toon_codec.dumps(payload), encoding="utf-8")
 
 
 class ConfigTests(unittest.TestCase):
@@ -34,21 +39,21 @@ class ConfigTests(unittest.TestCase):
         """User values should win normal settings with exact provenance."""
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
-            team, user = root / "team.json", root / "user.json"
+            team, user = root / "team.toon", root / "user.toon"
             write(team, {"output": {"human": "html"}, "modules": {"enabled": ["architecture"]}})
             write(user, {"output": {"human": "markdown"}, "modules": {"enabled": ["research"]}})
-            args = ("--base", str(DEFAULTS), "--team", str(team), "--user", str(user), "--format", "json")
+            args = ("--base", str(DEFAULTS), "--team", str(team), "--user", str(user), "--format", "toon")
             first, second = self.run_config(*args), self.run_config(*args)
             self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
             self.assertEqual(first.stdout, second.stdout)
-            value = json.loads(first.stdout)
+            value = toon_codec.loads(first.stdout)
             self.assertEqual(value["values"]["modules"]["enabled"], ["research"])
             self.assertEqual(value["provenance"]["modules.enabled"], "user")
 
     def test_protected_boolean_cannot_be_weakened(self) -> None:
         """User configuration must not disable a required gate."""
         with tempfile.TemporaryDirectory() as temp:
-            base, user = Path(temp) / "base.json", Path(temp) / "user.json"
+            base, user = Path(temp) / "base.toon", Path(temp) / "user.toon"
             write(base, {"gates": {"require_traceability": True}}, ["gates.require_traceability"])
             write(user, {"gates": {"require_traceability": False}})
             result = self.run_config("--base", str(base), "--user", str(user))
@@ -58,7 +63,7 @@ class ConfigTests(unittest.TestCase):
     def test_protected_rigor_can_strengthen_but_not_downgrade(self) -> None:
         """Strictness order should allow strengthening across layers."""
         with tempfile.TemporaryDirectory() as temp:
-            base, team, user = Path(temp) / "base.json", Path(temp) / "team.json", Path(temp) / "user.json"
+            base, team, user = Path(temp) / "base.toon", Path(temp) / "team.toon", Path(temp) / "user.toon"
             write(base, {"rigor": {"minimum_profile": "patch"}}, ["rigor.minimum_profile"])
             write(team, {"rigor": {"minimum_profile": "assured"}})
             write(user, {"rigor": {"minimum_profile": "patch"}})
@@ -67,11 +72,14 @@ class ConfigTests(unittest.TestCase):
             self.assertIn("assured", blocked.stdout)
             allowed = self.run_config("--base", str(base), "--team", str(team), "--format", "toon")
             self.assertEqual(allowed.returncode, 0, allowed.stdout + allowed.stderr)
-            self.assertIn("rigor.minimum_profile,assured,team,yes", allowed.stdout)
+            value = toon_codec.loads(allowed.stdout)
+            self.assertEqual(value["values"]["rigor"]["minimum_profile"], "assured")
+            self.assertEqual(value["provenance"]["rigor.minimum_profile"], "team")
+            self.assertIn("rigor.minimum_profile", value["protected"])
 
     def test_user_can_set_typed_interaction_preferences(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
-            user = Path(temp) / "user.json"
+            user = Path(temp) / "user.toon"
             write(user, {"interaction": {
                 "enabled": True,
                 "preferred_name": "Mike",
@@ -82,18 +90,21 @@ class ConfigTests(unittest.TestCase):
             }})
             result = self.run_config("--base", str(DEFAULTS), "--user", str(user), "--format", "toon")
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            self.assertIn("interaction.preferred_name,Mike,user,no", result.stdout)
-            self.assertIn("interaction.response_style,concise,user,no", result.stdout)
+            value = toon_codec.loads(result.stdout)
+            self.assertEqual(value["values"]["interaction"]["preferred_name"], "Mike")
+            self.assertEqual(value["values"]["interaction"]["response_style"], "concise")
+            self.assertEqual(value["provenance"]["interaction.preferred_name"], "user")
+            self.assertNotIn("interaction.preferred_name", value["protected"])
 
     def test_packaged_defaults_are_implicit(self) -> None:
-        result = self.run_config("--format", "json")
+        result = self.run_config("--format", "toon")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        value = json.loads(result.stdout)
+        value = toon_codec.loads(result.stdout)
         self.assertEqual(value["values"]["interaction"]["response_style"], "balanced")
 
     def test_invalid_interaction_preference_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
-            user = Path(temp) / "user.json"
+            user = Path(temp) / "user.toon"
             invalid = [
                 ({"response_style": "telepathic"}, "interaction.response_style must be one of"),
                 ({"language": " en "}, "interaction.language must be auto or a simple BCP-47 language tag"),
@@ -109,7 +120,7 @@ class ConfigTests(unittest.TestCase):
     def test_non_base_layer_cannot_redefine_protection(self) -> None:
         """Protection ownership remains in the base contract."""
         with tempfile.TemporaryDirectory() as temp:
-            team = Path(temp) / "team.json"
+            team = Path(temp) / "team.toon"
             write(team, {}, protected=[])
             result = self.run_config("--base", str(DEFAULTS), "--team", str(team))
             self.assertEqual(result.returncode, 1)
@@ -117,7 +128,7 @@ class ConfigTests(unittest.TestCase):
 
     def test_flow_configuration_is_bounded(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
-            user = Path(temp) / "user.json"
+            user = Path(temp) / "user.toon"
             write(user, {"flow": {
                 "role_aliases": {"builder": "software-engineer"},
                 "menu_mode": "always",
@@ -131,14 +142,14 @@ class ConfigTests(unittest.TestCase):
                     "reason": "implementation routing contract",
                 }],
             }})
-            result = self.run_config("--base", str(DEFAULTS), "--user", str(user), "--format", "json")
+            result = self.run_config("--base", str(DEFAULTS), "--user", str(user), "--format", "toon")
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            values = json.loads(result.stdout)["values"]["flow"]
+            values = toon_codec.loads(result.stdout)["values"]["flow"]
             self.assertEqual(values["role_aliases"]["builder"], "software-engineer")
 
     def test_flow_configuration_rejects_unknown_and_out_of_range_fields(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
-            user = Path(temp) / "user.json"
+            user = Path(temp) / "user.toon"
             cases = (
                 ({"flow": {"role": "software-engineer"}}, "flow has unknown fields: role"),
                 ({"flow": {"menu_mode": "never"}}, "flow.menu_mode must be one of"),
@@ -170,7 +181,7 @@ class ConfigTests(unittest.TestCase):
     def test_explicit_missing_layer_is_not_silently_ignored(self) -> None:
         """A configured layer path must exist so provenance stays honest."""
         with tempfile.TemporaryDirectory() as temp:
-            missing = Path(temp) / "team.json"
+            missing = Path(temp) / "team.toon"
             result = self.run_config("--base", str(DEFAULTS), "--team", str(missing))
             self.assertEqual(result.returncode, 1)
             self.assertIn("team config does not exist", result.stdout)

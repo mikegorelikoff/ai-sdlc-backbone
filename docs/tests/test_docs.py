@@ -314,7 +314,7 @@ class DocumentationValidationTests(unittest.TestCase):
             ),
             [],
         )
-        broken_control = control.replace("delivery-graph.{toon,json,md}", "delivery-graph.broken", 1)
+        broken_control = control.replace("delivery-graph.toon", "delivery-graph.broken", 1)
         self.assertTrue(
             any(
                 "mis-associated branch contract delivery_graph" in error
@@ -408,7 +408,7 @@ class DocumentationValidationTests(unittest.TestCase):
             (DOCS_ROOT / "maintainers/extend.md").read_text(encoding="utf-8")
             + (DOCS_ROOT / "maintainers/release.md").read_text(encoding="utf-8")
         )
-        self.assertTrue(validate_maintainer_contract(maintainer.replace("module.json", "manifest", 1)))
+        self.assertTrue(validate_maintainer_contract(maintainer.replace("module.toon", "manifest", 1)))
 
         internal = (DOCS_ROOT.parent / "concepts/README.md").read_text(encoding="utf-8")
         self.assertTrue(
@@ -435,7 +435,7 @@ class DocumentationValidationTests(unittest.TestCase):
         skills = skill_sources()
         records = [script_record(path) for path in script_sources()]
         self.assertEqual(len(skills), 44)
-        self.assertEqual(len(records), 102)
+        self.assertEqual(len(records), 110)
         self.assertEqual(len(SKILL_SELECTION_BOUNDARIES), 44)
         self.assertEqual(validate_selection_contract(skills), [])
         self.assertEqual(validate_role_skill_groups(skills), [])
@@ -445,6 +445,14 @@ class DocumentationValidationTests(unittest.TestCase):
             skill_id = skill_frontmatter(source)["name"]
             page = outputs[SKILL_GUIDES / f"{skill_id}.md"]
             self.assertEqual(validate_skill_guide(page, skill_id), [])
+        sdd_page = outputs[SKILL_GUIDES / "ai-sdlc-sdd.md"]
+        self.assertIn(
+            "| Selector | Type | Phases | Roles | Dependencies | Operation | "
+            "Side effect | Load rule | Step | Reason |",
+            sdd_page,
+        )
+        self.assertIn("`compile-context`", sdd_page)
+        self.assertIn("`workspace-write`", sdd_page)
 
         scripts = outputs[CATALOG_DOCS / "reference/scripts.md"]
         coverage = outputs[CATALOG_DOCS / "reference/catalog-coverage.toon"]
@@ -453,7 +461,7 @@ class DocumentationValidationTests(unittest.TestCase):
         self.assertTrue(coverage.startswith("schema: ai-sdlc-documentation-coverage/v1\n"))
         self.assertEqual(
             sum(record.classification == "canonical shared helper" for record in records),
-            23,
+            27,
         )
 
     def test_generated_catalog_rejects_missing_sections_and_paths(self) -> None:
@@ -492,17 +500,17 @@ class DocumentationValidationTests(unittest.TestCase):
                 )
             )
         )
-        invalid_research_json = research.replace(
-            '"limitations": "Jurisdiction review is still required"',
-            '"limitations": ["Jurisdiction review is still required"]',
+        invalid_research_toon = research.replace(
+            "limitations: Jurisdiction review is still required",
+            "limitations[1]: Jurisdiction review is still required",
             1,
         )
         self.assertTrue(
             any(
-                "published JSON fails helper: findings 1: limitations is required"
+                "published TOON fails helper: findings 1: limitations is required"
                 in error
                 for error in validate_skill_guide(
-                    invalid_research_json, "ai-sdlc-research"
+                    invalid_research_toon, "ai-sdlc-research"
                 )
             )
         )

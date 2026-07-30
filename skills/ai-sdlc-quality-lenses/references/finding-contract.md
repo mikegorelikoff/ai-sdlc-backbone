@@ -1,6 +1,6 @@
 # Quality Finding Contract
 
-The findings input is a UTF-8 JSON array. Every object requires:
+The findings input is a UTF-8 TOON array. Every object requires:
 
 - `id`: unique stable identifier such as `QL-001`;
 - `lens`: registered lens ID selected for this review;

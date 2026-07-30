@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import json
 import os
 import re
 import shutil
@@ -17,6 +16,7 @@ from typing import Any
 
 _SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
 sys.path.insert(0, str(_SHARED))
+import ai_sdlc_toon as toon_codec
 from ai_sdlc_toon import encode_toon
 from ai_sdlc_safe_io import bounded_path, ensure_directory
 from ai_sdlc_okf import migrate_concept_text, validate_bundle, write_bundle_indexes
@@ -30,7 +30,7 @@ REQUIRED_ARTIFACTS = {
     "tasks": "tasks.md",
     "deltas": "deltas/index.md",
     "evidence": "evidence/index.md",
-    "record": "_ai_sdlc/change-set.json",
+    "record": "_ai_sdlc/change-set.toon",
 }
 REQUIRED_PROPOSAL_HEADINGS = (
     "Goal",
@@ -64,7 +64,7 @@ def safe_target(value: str) -> str | None:
 def fingerprint(record: dict[str, Any]) -> str:
     """Hash the semantic record without its self-referential fingerprint."""
     payload = {key: value for key, value in record.items() if key != "contract_fingerprint"}
-    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    encoded = toon_codec.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
 
 
@@ -130,7 +130,7 @@ def build_record(args: argparse.Namespace, targets: list[str]) -> dict[str, Any]
 
 def yaml_list(values: list[str], indent: str = "  ") -> list[str]:
     """Render a stable quoted YAML list."""
-    return [f'{indent}- {json.dumps(value, ensure_ascii=False)}' for value in values]
+    return [f'{indent}- {toon_codec.dumps(value, ensure_ascii=False)}' for value in values]
 
 
 def metadata(record: dict[str, Any], artifact: str, relative: str) -> str:
@@ -139,13 +139,13 @@ def metadata(record: dict[str, Any], artifact: str, relative: str) -> str:
         "---",
         "artifact_metadata:",
         '  schema: "ai-sdlc-change-set-metadata/v1"',
-        f'  change_id: {json.dumps(record["change_id"])}',
-        f'  artifact: {json.dumps(artifact)}',
-        f'  path: {json.dumps("changes/" + record["change_id"] + "/" + relative)}',
-        f'  status: {json.dumps(record["status"])}',
-        f'  owner: {json.dumps(record["owner"])}',
-        f'  created_at: {json.dumps(record["created_at"])}',
-        f'  updated_at: {json.dumps(record["updated_at"])}',
+        f'  change_id: {toon_codec.dumps(record["change_id"])}',
+        f'  artifact: {toon_codec.dumps(artifact)}',
+        f'  path: {toon_codec.dumps("changes/" + record["change_id"] + "/" + relative)}',
+        f'  status: {toon_codec.dumps(record["status"])}',
+        f'  owner: {toon_codec.dumps(record["owner"])}',
+        f'  created_at: {toon_codec.dumps(record["created_at"])}',
+        f'  updated_at: {toon_codec.dumps(record["updated_at"])}',
         "  canonical_targets:",
         *yaml_list(record["canonical_targets"], "    "),
         "  metatags:",
@@ -247,7 +247,6 @@ locator, freshness, credibility, and trace targets.
         "tasks.md": migrate_concept_text(tasks.rstrip() + "\n", profile_key="tasks.md", generated_by_override=generated_by),
         "deltas/index.md": deltas.rstrip() + "\n",
         "evidence/index.md": evidence.rstrip() + "\n",
-        "_ai_sdlc/change-set.json": json.dumps(record, indent=2, sort_keys=True, ensure_ascii=False) + "\n",
         "_ai_sdlc/change-set.toon": encode_toon(record),
     }
 
@@ -275,11 +274,11 @@ def load_record(workspace: Path) -> tuple[dict[str, Any], list[str]]:
     """Load a workspace record with actionable errors."""
     path = workspace / REQUIRED_ARTIFACTS["record"]
     try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+        value = toon_codec.loads(path.read_text(encoding="utf-8"))
+    except (OSError, toon_codec.ToonDecodeError) as exc:
         return {}, [f"cannot read change-set record: {exc}"]
     if not isinstance(value, dict):
-        return {}, ["change-set record must be a JSON object"]
+        return {}, ["change-set record must be a TOON object"]
     return value, []
 
 
@@ -365,14 +364,14 @@ def validate_workspace(workspace: Path, change_id: str) -> tuple[dict[str, Any],
         text = (workspace / relative).read_text(encoding="utf-8")
         if 'schema: "ai-sdlc-change-set-metadata/v1"' not in text:
             errors.append(f"{relative}: missing change-set metadata")
-        if f'change_id: "{change_id}"' not in text:
+        if f"change_id: {toon_codec.dumps(change_id)}" not in text:
             errors.append(f"{relative}: change_id metadata mismatch")
-        if f'owner: {json.dumps(record.get("owner", ""))}' not in text:
+        if f'owner: {toon_codec.dumps(record.get("owner", ""))}' not in text:
             errors.append(f"{relative}: owner metadata mismatch")
-        if f'status: {json.dumps(record.get("status", ""))}' not in text:
+        if f'status: {toon_codec.dumps(record.get("status", ""))}' not in text:
             errors.append(f"{relative}: status metadata mismatch")
         for target in record.get("canonical_targets", []):
-            if json.dumps(target) not in text:
+            if toon_codec.dumps(target) not in text:
                 errors.append(f"{relative}: canonical target metadata mismatch: {target}")
     proposal = (workspace / "proposal.md").read_text(encoding="utf-8")
     for heading in REQUIRED_PROPOSAL_HEADINGS:
@@ -388,9 +387,7 @@ def render_toon(record: dict[str, Any], workspace: Path, valid: bool) -> str:
 
 def emit_result(record: dict[str, Any], workspace: Path, valid: bool, output_format: str) -> None:
     """Print deterministic human or machine output."""
-    if output_format == "json":
-        print(json.dumps({"workspace": workspace.as_posix(), "valid": valid, **record}, indent=2, sort_keys=True, ensure_ascii=False))
-    elif output_format == "toon":
+    if output_format == "toon":
         print(render_toon(record, workspace, valid), end="")
     else:
         print(f"Change set: {record.get('change_id', '')}")
@@ -415,7 +412,7 @@ def main() -> int:
     actions.add_argument("--emit", action="store_true")
     actions.add_argument("--create", action="store_true")
     actions.add_argument("--validate", action="store_true")
-    parser.add_argument("--format", choices=("markdown", "json", "toon"), default="toon")
+    parser.add_argument("--format", choices=("markdown", "toon"), default="toon")
     parser.add_argument("--date", help="Override the creation date for deterministic fixtures")
     parser.add_argument("--quick-flow", action="store_true")
     parser.add_argument("--full-flow", action="store_true")

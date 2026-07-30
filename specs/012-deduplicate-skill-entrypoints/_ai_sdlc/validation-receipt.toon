@@ -1,0 +1,132 @@
+commands[12]:
+  - argv[2]: python3,skills/ai-sdlc-flow/tests/test_flow.py
+    duration_ms: 569
+    exit_code: 0
+    id: flow-contracts
+    output_limited: false
+    stderr_bytes: 119
+    stderr_sha256: 5959a29cd0f866fb322237f8a533daa91cdeebac6b0f87a2fe8c869e90eed1ba
+    stdout_bytes: 0
+    stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    trace_ids[6]: AC-001,AC-002,AC-004,TC-001,TC-002,TC-004
+  - argv[2]: python3,skills/ai-sdlc-validation/tests/test_validation_helpers.py
+    duration_ms: 613
+    exit_code: 0
+    id: validation-planner
+    output_limited: false
+    stderr_bytes: 106
+    stderr_sha256: 6159af58823ecff325df622ea2641f420d0185c59a1c915aa765c186f837097b
+    stdout_bytes: 0
+    stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    trace_ids[2]: AC-006,TC-006
+  - argv[2]: python3,skills/_shared/test_each_skill_tests.py
+    duration_ms: 57809
+    exit_code: 0
+    id: all-skill-tests
+    output_limited: false
+    stderr_bytes: 99
+    stderr_sha256: c81e448d2c7e5281811f1c1dc5ad7baba63b86e6d2b93e77958400487a3353bf
+    stdout_bytes: 0
+    stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    trace_ids[10]: AC-001,AC-002,AC-003,AC-004,AC-006,TC-001,TC-002,TC-003,TC-004,TC-006
+  - argv[2]: python3,skills/_shared/test_all_skill_scripts.py
+    duration_ms: 14871
+    exit_code: 0
+    id: skill-contracts
+    output_limited: false
+    stderr_bytes: 129
+    stderr_sha256: 0bece58ca1b50ae39a5f71b4360501f801b83d978ed7a49eb00d0ac7c11f20ba
+    stdout_bytes: 0
+    stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    trace_ids[6]: AC-001,AC-003,AC-006,TC-001,TC-003,TC-006
+  - argv[2]: python3,skills/_shared/test_modules.py
+    duration_ms: 507
+    exit_code: 0
+    id: module-registry
+    output_limited: false
+    stderr_bytes: 104
+    stderr_sha256: 69cdf162e1e4e34f4c9bdf47666cce30b05bce89381f242c035a1b1b31272aa9
+    stdout_bytes: 0
+    stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    trace_ids[4]: AC-002,AC-003,TC-002,TC-003
+  - argv[5]: python3,skills/_shared/ai_sdlc_compatibility.py,"--skip-git-audit","--format",toon
+    duration_ms: 128
+    exit_code: 0
+    id: compatibility
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 1592
+    stdout_sha256: 1e6540ca7bf793599e3612e218d92ba36b523f06bb743998d8d0d84d5928e8f7
+    trace_ids[4]: AC-002,AC-003,TC-002,TC-003
+  - argv[4]: python3,skills/_shared/sync_installed_runtime.py,"--check","--quick-flow"
+    duration_ms: 75
+    exit_code: 0
+    id: runtime-mirrors
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 46
+    stdout_sha256: a641e07323c1b3fee88ed68e0cdd49e31d1cf8df669e59ca4d344cd5245d4fd3
+    trace_ids[2]: AC-005,TC-005
+  - argv[2]: python3,docs/scripts/validate_docs.py
+    duration_ms: 2069
+    exit_code: 0
+    id: docs-catalog
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 109
+    stdout_sha256: 0487e5742c8915fa2d7723556a601bb494037e1f5364e8ae8dea113892c542b7
+    trace_ids[6]: AC-002,AC-003,AC-006,TC-002,TC-003,TC-006
+  - argv[2]: python3,docs/tests/test_docs.py
+    duration_ms: 7983
+    exit_code: 0
+    id: docs-tests
+    output_limited: false
+    stderr_bytes: 118
+    stderr_sha256: 70f9fed2375b9ce77c4553542c084c16dd24ad1566dba525fac66a35935c8f04
+    stdout_bytes: 0
+    stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    trace_ids[6]: AC-002,AC-003,AC-006,TC-002,TC-003,TC-006
+  - argv[7]: python3,skills/_shared/ai_sdlc_install_smoke.py,"--source",.,"--mode",emulated,"--quick-flow"
+    duration_ms: 7192
+    exit_code: 0
+    id: install-smoke
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 110
+    stdout_sha256: 85d8fab75e865b5e824db21ef17ed7dca3228951a59145ed361eab3ebb866d0c
+    trace_ids[6]: AC-001,AC-003,AC-006,TC-001,TC-003,TC-006
+  - argv[4]: python3,skills/ai-sdlc-sdd/scripts/validate_spec.py,specs/012-deduplicate-skill-entrypoints,"--quick-flow"
+    duration_ms: 129
+    exit_code: 0
+    id: sdd-gate
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 59
+    stdout_sha256: 94c16da15c3db3fb2729834273fb8435a2a7f93213584949b944bd8426e930b3
+    trace_ids[2]: AC-006,TC-006
+  - argv[3]: git,diff,"--check"
+    duration_ms: 20
+    exit_code: 0
+    id: diff-hygiene
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 0
+    stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    trace_ids[2]: AC-006,TC-006
+environment:
+  platform: macOS-26.3.1-arm64-arm-64bit
+  python: 3.9.6
+evidence_trust: local-structural-not-authenticated
+executed_at: "2026-07-27T07:25:14.078571Z"
+plan_path: specs/012-deduplicate-skill-entrypoints/_ai_sdlc/validation-plan.toon
+plan_sha256: 1930b73f280722f257a13b6dec223711be75e75af56d963f2336d700278b4c98
+receipt_fingerprint: beff3b442fb24472ce724fd340ac6e45c3a23c7c0a20a0a18833806b68f38ec0
+revision: d7877682fdb164cdb94326950a3cca114bc1fe90
+schema: ai-sdlc-validation-receipt/v1
+workspace_fingerprint: e5c9a3b653d766568546182889dbd369cb97a1d53811eeab21eeb4ee9f82264b

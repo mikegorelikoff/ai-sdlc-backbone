@@ -45,7 +45,7 @@ Choose --quick-flow for bounded assumption-driven progress or --full-flow
 for strict verification only as described below.
 Read the required evidence,
 produce or report `research.md` and `_ai_sdlc/research.toon`, preserve human approval boundaries,
-and return blockers plus a complete ai-sdlc-handoff/v1.
+and return blockers plus a complete ai-sdlc-handoff/v2.
 ```
 
 This is an agent instruction, not a shell command. Terminal commands belong in the helper section.
@@ -56,7 +56,7 @@ This is an agent instruction, not a shell command. Terminal commands belong in t
 
 - `<feature-root>/_ai_sdlc/state.toon` before any durable write.
 - The matching `specs/_ai_sdlc/specs-index.toon` or `specs-refiniment/_ai_sdlc/specs-index.toon` before broad repository reads.
-- `/tmp/research.json`, or another explicitly supplied input file, conforming to `ai-sdlc-research-input/v1`.
+- `/tmp/research.toon`, or another explicitly supplied input file, conforming to `ai-sdlc-research-input/v1`.
 - Every repository evidence path and direct source locator registered by that input.
 
 ### Optional reads
@@ -68,7 +68,7 @@ This is an agent instruction, not a shell command. Terminal commands belong in t
 
 For current claims, compare the source publication date with the date the event or data applies to, record ISO `accessed_at`, search for superseding primary or official material, and preserve material contradictions and freshness limitations.
 
-The [research input contract](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-research/references/research-contract.md) defines required fields; the [web research protocol](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-research/references/web-research-protocol.md) defines direct-source and freshness behavior. JSON is used only at this validated interoperability boundary; durable repository output remains Markdown plus TOON.
+The [research input contract](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-research/references/research-contract.md) defines required fields; the [web research protocol](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-research/references/web-research-protocol.md) defines direct-source and freshness behavior. Research uses canonical TOON for structured interchange and Markdown for the human deliverable.
 
 ## What it may write
 
@@ -99,11 +99,13 @@ Humans accept or reject material product, security, QA, policy, rollout, release
 
 The router loads these skill-owned procedures just in time. Read only the selector matching the current phase, active role, and action; a selected step is normative and an unselected step stays out of context.
 
-| Selector | Phases | Roles | Load rule | Step | Reason |
-| --- | --- | --- | --- | --- | --- |
-| `prepare` | `prepare`, `clarify`, `route` | `business-analyst`, `product-manager`, `software-architect` | `required` | [`steps/01-prepare.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-research/steps/01-prepare.md) | establish inputs, authority, lifecycle state, and safe artifact routing |
-| `execute` | `execute` | `business-analyst`, `product-manager`, `software-architect` | `on-demand` | [`steps/02-execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-research/steps/02-execute.md) | perform only the selected owning-skill procedure |
-| `validate-and-handoff` | `validate`, `handoff`, `complete` | `business-analyst`, `product-manager`, `software-architect` | `before-completion` | [`steps/03-validate-and-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-research/steps/03-validate-and-handoff.md) | verify outputs and return an explicit evidence-backed handoff |
+| Selector | Type | Phases | Roles | Dependencies | Operation | Side effect | Load rule | Step | Reason |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `preflight` | `analysis` | `prepare` | `business-analyst`, `product-manager`, `software-architect` | none | `inspect-and-route` | `none` | `required` | [`steps/01-prepare.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-research/steps/01-prepare.md) | establish inputs, authority, lifecycle state, and safe artifact routing |
+| `context` | `context` | `clarify`, `route` | `business-analyst`, `product-manager`, `software-architect` | `preflight` | `compile-context` | `none` | `required` | [`steps/02-context.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-research/steps/02-context.md) | compile the minimum sufficient context before the owning action |
+| `execute` | `action` | `execute` | `business-analyst`, `product-manager`, `software-architect` | `context` | `execute-procedure` | `workspace-write` | `on-demand` | [`steps/02-execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-research/steps/02-execute.md) | perform only the selected owning-skill procedure |
+| `validate` | `validation` | `validate` | `business-analyst`, `product-manager`, `software-architect` | `execute` | `validate-evidence` | `none` | `before-completion` | [`steps/03-validate-and-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-research/steps/03-validate-and-handoff.md) | validate outputs, evidence, acceptance, and residual risk |
+| `handoff` | `handoff` | `handoff`, `complete` | `business-analyst`, `product-manager`, `software-architect` | `validate` | `handoff-result` | `none` | `before-completion` | [`steps/04-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-research/steps/04-handoff.md) | return a journal-backed owner and next-action handoff |
 
 Resolve the current step with `ai-sdlc-shared-runtime/scripts/ai_sdlc_steps.py`. A missing, unsafe, oversized, or unmatched step is a blocker rather than permission to broad-load the package.
 
@@ -120,8 +122,8 @@ The owning agent normally runs these helpers. A human uses the direct starting p
 ### Contract-provided usage
 
 ```bash
-python3 skills/ai-sdlc-research/scripts/research.py specs-refiniment/payments --input /tmp/research.json --emit --quick-flow
-python3 skills/ai-sdlc-research/scripts/research.py specs/payments --input /tmp/research.json --write --full-flow --format toon
+python3 skills/ai-sdlc-research/scripts/research.py specs-refiniment/payments --input /tmp/research.toon --emit --quick-flow
+python3 skills/ai-sdlc-research/scripts/research.py specs/payments --input /tmp/research.toon --write --full-flow --format toon
 ```
 
 ## Success criteria
@@ -150,7 +152,7 @@ On a blocker, preserve failed/stale evidence, name the accountable owner and exa
 
 - Return question, source, finding, confidence, blocker, and output path counts
   directly in the active agent response.
-- Before the final response, emit `ai-sdlc-handoff/v1` with `result`,
+- Before the final response, emit `ai-sdlc-handoff/v2` with `result`,
   `blockers`, `next_required`, and `next_optional`; every action includes
   `reason`, `command`, and `expected_artifact`.
 - Do not create `summary.txt`, `*-summary.txt`, or uncited research prose.
@@ -183,26 +185,27 @@ The downstream consumer rechecks artifacts and freshness; it does not trust a pr
 
 ## Example
 
-Create `/tmp/research.json` with the validated input shape before running the helper:
+Create `/tmp/research.toon` with the validated input shape before running the helper:
 
-```json
-{
-  "schema": "ai-sdlc-research-input/v1",
-  "topic": "Current payment retry requirements",
-  "scope": "external",
-  "questions": [
-    {"id": "Q-001", "question": "What is currently required?", "trace_targets": ["REQ-014"]}
-  ],
-  "sources": [
-    {"id": "SRC-001", "title": "Primary guidance", "locator": "https://example.org/guidance", "type": "official-guidance", "accessed_at": "2026-07-19", "credibility": "primary", "notes": "Check for superseding guidance"}
-  ],
-  "findings": [
-    {"id": "F-001", "statement": "The current guidance requires a bounded retry policy.", "source_ids": ["SRC-001"], "confidence": "medium", "limitations": "Jurisdiction review is still required", "trace_targets": ["REQ-014"]}
-  ],
-  "open_questions": [
-    {"id": "OQ-001", "question": "Which jurisdictions apply?", "owner": "Legal", "next_action": "Confirm scope"}
-  ]
-}
+```toon
+findings[1]:
+  - confidence: medium
+    id: F-001
+    limitations: Jurisdiction review is still required
+    source_ids[1]: SRC-001
+    statement: The current guidance requires a bounded retry policy.
+    trace_targets[1]: REQ-014
+open_questions[1]{id,next_action,owner,question}:
+  OQ-001,Confirm scope,Legal,Which jurisdictions apply?
+questions[1]:
+  - id: Q-001
+    question: What is currently required?
+    trace_targets[1]: REQ-014
+schema: ai-sdlc-research-input/v1
+scope: external
+sources[1]{accessed_at,credibility,id,locator,notes,title,type}:
+  2026-07-19,primary,SRC-001,"https://example.org/guidance",Check for superseding guidance,Primary guidance,official-guidance
+topic: Current payment retry requirements
 ```
 
 Then run the source-contract command. External or current work must use internet research to open and verify direct pages; never replace it with model memory.
@@ -213,6 +216,6 @@ invalid without registered sources, boundary, or confidence.
 
 ## Source contract
 
-This page is generated from [`skills/ai-sdlc-research/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-research/SKILL.md) plus its linked `steps/manifest.json` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
+This page is generated from [`skills/ai-sdlc-research/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-research/SKILL.md) plus its linked `steps/manifest.toon` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
 
 [Back to the skill catalog](../skills.md) · [Script reference](../scripts.md) · [Choose a workflow](../../flows/index.md)

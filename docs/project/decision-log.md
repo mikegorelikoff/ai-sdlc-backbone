@@ -64,3 +64,35 @@ command. Verification remains separate so readers can distinguish the
 state-changing install from its read-only inventory check. The command follows
 `main`; immutable and review-first installation remains in the detailed guide
 for higher-trust environments.
+
+## Executable skills and canonical TOON
+
+On 2026-07-30, all 44 skills moved from coarse three-document progression to
+validated `ai-sdlc-skill-steps/v2` semantic DAGs. The manifest and linked step
+documents are canonical; concise `SKILL.md` selector tables and public
+catalogs are generated projections. A valid graph has at least five semantic
+nodes and explicit operations, context contracts, gates, outputs, side-effect
+classes, idempotency, retry, and recovery boundaries.
+
+Context is compiled per dependency-ready step into
+`ai-sdlc-context-pack/v4`. Packed context requires every critical anchor and a
+minimum token saving; otherwise the StepCard requires exact direct reads.
+Selected and skipped sources, instruction authority, recall, savings, and
+fingerprints are reviewable.
+
+Canonical TOON is now the only structured machine-data representation across
+contracts, fixtures, configuration, manifests, context, plans, per-event
+journals, state, compatibility baselines, and evaluation receipts. Runtime
+contains no alternate parser, silent coercion, or in-place legacy conversion
+mode. Repository and strict documentation-build gates enforce absence,
+decodability, and canonical byte stability. Markdown remains the human
+authority and review surface where prose is required.
+
+The public `docs/explanation/toon-first.md` path is preserved for URL
+compatibility, but its title and content now describe the TOON-only contract.
+
+The built-in Material search plugin is disabled because it emits an alternate
+machine artifact. Public paths remain unchanged; the generated lifecycle,
+role, script, module, and skill catalogs remain the supported discovery
+surface. Rendered validation fails if a build introduces an alternate machine
+artifact extension.

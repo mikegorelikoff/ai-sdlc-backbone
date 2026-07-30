@@ -51,7 +51,7 @@ evidence or escalate a genuine harness defect.
 
 ## The handoff boundary
 
-Every durable workflow returns `ai-sdlc-handoff/v1` with:
+Every durable workflow returns `ai-sdlc-handoff/v2` with:
 
 - `result`: what happened and the evidence identity;
 - `blockers`: what prevents a safe claim or transition;

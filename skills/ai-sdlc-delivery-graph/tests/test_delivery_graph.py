@@ -3,11 +3,16 @@
 
 from __future__ import annotations
 
-import json
 import subprocess
 import tempfile
 import unittest
+import sys
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -40,7 +45,7 @@ class DeliveryGraphTests(unittest.TestCase):
             encoding="utf-8",
         )
         (feature / "design.md").write_text(
-            "# Design\n\nComponent: `src/payments.py` -> T001\nEvidence: `evidence/payment.json` -> TC-001\n",
+            "# Design\n\nComponent: `src/payments.py` -> T001\nEvidence: `evidence/payment.toon` -> TC-001\n",
             encoding="utf-8",
         )
         (feature / "decision-log.md").write_text("# Decisions\n\n| DEC-001 | Retry provider later |\n", encoding="utf-8")
@@ -59,17 +64,17 @@ class DeliveryGraphTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             repository = Path(temp)
             self.fixture(repository)
-            first = self.cli(repository, "--index", "--write", "--format", "json")
+            first = self.cli(repository, "--index", "--write", "--format", "toon")
             self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
-            second = self.cli(repository, "--index", "--write", "--format", "json")
+            second = self.cli(repository, "--index", "--write", "--format", "toon")
             self.assertEqual(first.stdout, second.stdout)
-            graph = json.loads(first.stdout)
+            graph = toon_codec.loads(first.stdout)
             self.assertEqual(graph["schema"], "ai-sdlc-delivery-graph/v1")
             self.assertEqual(graph["coverage"]["requirement_declarations"], 2)
             self.assertEqual(graph["coverage"]["acceptance_criteria_with_tasks"], 1)
             self.assertEqual(graph["coverage"]["acceptance_criteria_with_tests"], 1)
             self.assertIn("trace:payments:DEC-001", graph["orphans"])
-            self.assertEqual((repository / "_ai_sdlc/delivery-graph.json").read_text(encoding="utf-8"), second.stdout)
+            self.assertEqual((repository / "_ai_sdlc/delivery-graph.toon").read_text(encoding="utf-8"), second.stdout)
             self.assertTrue((repository / "_ai_sdlc/delivery-graph.md").is_file())
             toon = (repository / "_ai_sdlc/delivery-graph.toon").read_text(encoding="utf-8")
             self.assertIn("nodes[", toon)
@@ -79,11 +84,11 @@ class DeliveryGraphTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             repository = Path(temp)
             self.fixture(repository)
-            commit_query = self.cli(repository, "--trace", "AC-001", "--to", "T001", "--format", "json")
+            commit_query = self.cli(repository, "--trace", "AC-001", "--to", "T001", "--format", "toon")
             self.assertEqual(commit_query.returncode, 0, commit_query.stdout + commit_query.stderr)
-            path = json.loads(commit_query.stdout)
+            path = toon_codec.loads(commit_query.stdout)
             self.assertEqual([node["key"] for node in path["nodes"]], ["AC-001", "T001"])
-            reachable = json.loads(self.cli(repository, "--trace", "AC-001", "--format", "json").stdout)
+            reachable = toon_codec.loads(self.cli(repository, "--trace", "AC-001", "--format", "toon").stdout)
             self.assertTrue(any(node.startswith("commit:") for node in reachable["reachable"]))
             self.assertTrue(any(node.startswith("release:") for node in reachable["reachable"]))
 
@@ -93,10 +98,10 @@ class DeliveryGraphTests(unittest.TestCase):
             self.fixture(repository)
             requirements = repository / "specs/payments/requirements.md"
             requirements.write_text(requirements.read_text(encoding="utf-8") + "- AC-002: Declined payments are explained.\n", encoding="utf-8")
-            gaps = json.loads(self.cli(repository, "--gaps", "--format", "json").stdout)
+            gaps = toon_codec.loads(self.cli(repository, "--gaps", "--format", "toon").stdout)
             self.assertIn({"code": "acceptance-criterion-without-task", "node": "trace:payments:AC-002"}, gaps["gaps"])
             self.assertNotIn({"code": "acceptance-criterion-without-task", "node": "trace:payments:FR-001"}, gaps["gaps"])
-            orphans = json.loads(self.cli(repository, "--orphans", "--format", "json").stdout)
+            orphans = toon_codec.loads(self.cli(repository, "--orphans", "--format", "toon").stdout)
             self.assertIn("trace:payments:FR-001", orphans["orphans"])
             self.assertIn("trace:payments:DEC-001", orphans["orphans"])
 
@@ -108,7 +113,7 @@ class DeliveryGraphTests(unittest.TestCase):
             (repository / "specs/index.md").write_text(
                 "# Generated index\n\nAC-777 TC-777 T777\n", encoding="utf-8"
             )
-            graph = json.loads(self.cli(repository, "--index", "--format", "json").stdout)
+            graph = toon_codec.loads(self.cli(repository, "--index", "--format", "toon").stdout)
             self.assertFalse(any(node["id"].startswith("trace:repository:") for node in graph["nodes"]))
             self.assertFalse(any(node["id"] == "artifact:specs/index.md" for node in graph["nodes"]))
 
@@ -116,17 +121,17 @@ class DeliveryGraphTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             repository = Path(temp)
             self.fixture(repository, second_feature=True)
-            result = self.cli(repository, "--trace", "AC-001", "--format", "json")
+            result = self.cli(repository, "--trace", "AC-001", "--format", "toon")
             self.assertEqual(result.returncode, 1)
             self.assertIn("ambiguous", result.stdout)
-            scoped = self.cli(repository, "--trace", "trace:payments:AC-001", "--to", "T001", "--format", "json")
+            scoped = self.cli(repository, "--trace", "trace:payments:AC-001", "--to", "T001", "--format", "toon")
             self.assertEqual(scoped.returncode, 0, scoped.stdout + scoped.stderr)
 
     def test_missing_trace_and_invalid_to_fail_without_writes(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             repository = Path(temp)
             self.fixture(repository)
-            missing = self.cli(repository, "--trace", "AC-999", "--format", "json")
+            missing = self.cli(repository, "--trace", "AC-999", "--format", "toon")
             self.assertEqual(missing.returncode, 1)
             self.assertIn("not found", missing.stdout)
             invalid = self.cli(repository, "--gaps", "--to", "T001")

@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import json
 import re
 import subprocess
 import sys
@@ -16,6 +15,7 @@ from project_context import credential_like_content
 
 _SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
 sys.path.insert(0, str(_SHARED))
+import ai_sdlc_toon as toon_codec
 from ai_sdlc_safe_io import atomic_write_text, bounded_path
 from ai_sdlc_okf import render_concept, split_frontmatter, write_bundle_indexes
 
@@ -29,8 +29,8 @@ SOURCE_MARKER = "<!-- ai-sdlc-external-source-body -->\n"
 
 
 def canonical(value: Any) -> str:
-    """Return stable JSON used for fingerprints and durable output."""
-    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    """Return stable TOON used for fingerprints and durable output."""
+    return toon_codec.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
 
 def digest_bytes(value: bytes) -> str:
@@ -111,8 +111,8 @@ def load_manifest(path: Path) -> dict[str, Any] | None:
     if not path.is_file():
         return None
     try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+        value = toon_codec.loads(path.read_text(encoding="utf-8"))
+    except (OSError, toon_codec.ToonDecodeError) as exc:
         raise ValueError(f"cannot read existing snapshot manifest: {exc}") from exc
     if not isinstance(value, dict) or set(value) != MANIFEST_FIELDS or value.get("schema") != SCHEMA or not isinstance(value.get("files"), list):
         raise ValueError("existing snapshot manifest has an unsupported schema")
@@ -157,7 +157,7 @@ def build_snapshot(
 ) -> tuple[dict[str, Any], dict[Path, str]]:
     """Validate a complete snapshot set and return manifest plus writes."""
     feature_root = bounded_path(repository, repository / "specs-refiniment" / feature)
-    manifest_path = bounded_path(repository, feature_root / "external-specs.json")
+    manifest_path = bounded_path(repository, feature_root / "external-specs.toon")
     previous = load_manifest(manifest_path)
     if previous and (previous.get("feature") != feature or previous.get("source_id") != source_id):
         raise ValueError("existing snapshot belongs to a different feature or source_id")
@@ -196,13 +196,13 @@ def build_snapshot(
         "files": rows,
     }
     value["fingerprint"] = hashlib.sha256(canonical(value).encode("utf-8")).hexdigest()
-    writes[manifest_path] = json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
+    writes[manifest_path] = toon_codec.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
     return value, writes
 
 
 def check_snapshot(repository: Path, source_root: Path, feature: str, source_id: str) -> tuple[dict[str, Any], list[str]]:
     """Compare a durable snapshot with the current explicit source checkout."""
-    manifest_path = bounded_path(repository, repository / "specs-refiniment" / feature / "external-specs.json")
+    manifest_path = bounded_path(repository, repository / "specs-refiniment" / feature / "external-specs.toon")
     manifest = load_manifest(manifest_path)
     if manifest is None:
         return {}, ["snapshot manifest is missing"]
@@ -285,7 +285,7 @@ def main() -> int:
             for path, content in writes.items():
                 atomic_write_text(repository, path, content)
             write_bundle_indexes(repository / "specs-refiniment" / args.feature)
-            result = {"status": "written", "manifest": f"specs-refiniment/{args.feature}/external-specs.json", **value}
+            result = {"status": "written", "manifest": f"specs-refiniment/{args.feature}/external-specs.toon", **value}
             exit_code = 0
         else:
             value, errors = check_snapshot(repository, source_root, args.feature, args.source_id)
@@ -294,7 +294,7 @@ def main() -> int:
     except ValueError as exc:
         print(f"ERROR: {exc}")
         return 1
-    print(json.dumps(result, indent=2, sort_keys=True, ensure_ascii=False))
+    print(toon_codec.dumps(result, indent=2, sort_keys=True, ensure_ascii=False))
     return exit_code
 
 

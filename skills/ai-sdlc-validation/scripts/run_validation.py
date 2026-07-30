@@ -6,7 +6,6 @@ from __future__ import annotations
 import argparse
 import errno
 import hashlib
-import json
 import os
 import platform
 import shutil
@@ -19,6 +18,11 @@ import signal
 import time
 from datetime import datetime, timezone
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 from typing import Any
 
 _SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
@@ -40,8 +44,8 @@ READ_ONLY_GIT = {"diff", "status", "rev-parse", "ls-files", "show", "log"}
 TRACE_ID = re.compile(r"^(?:REQ|AC|US|TC|TASK|RISK|DEC|EPIC|GOAL|CAP|WF|BR|SC|NFR|DEP)-\d{2,4}$|^T\d{3,4}$", re.IGNORECASE)
 
 
-def atomic_json(root: Path, path: Path, value: dict[str, Any]) -> None:
-    atomic_write_text(root, path, json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
+def atomic_toon(root: Path, path: Path, value: dict[str, Any]) -> None:
+    atomic_write_text(root, path, toon_codec.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
 
 
 def execute_bounded(argv: list[str], root: Path, timeout: int, limit: int) -> tuple[int, bytes, bytes, int, int, bool]:
@@ -157,8 +161,8 @@ def execution_argv(argv: list[str]) -> list[str]:
 
 def load_plan(path: Path, root: Path) -> tuple[list[dict[str, Any]], list[str]]:
     try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+        value = toon_codec.loads(path.read_text(encoding="utf-8"))
+    except (OSError, toon_codec.ToonDecodeError) as exc:
         return [], [f"cannot read validation plan: {exc}"]
     if not isinstance(value, dict) or set(value) != {"schema", "commands"} or value.get("schema") != PLAN_SCHEMA:
         return [], [f"plan must contain only schema={PLAN_SCHEMA} and commands"]
@@ -219,7 +223,7 @@ def main() -> int:
         print(f"ERROR: {exc}")
         return 1
     plan = args.plan.resolve()
-    expected_plan = output.parent / "validation-plan.json"
+    expected_plan = output.parent / "validation-plan.toon"
     if plan != expected_plan:
         print(f"ERROR: --plan must be the canonical plan beside the receipt: {expected_plan}")
         return 1
@@ -279,7 +283,7 @@ def main() -> int:
         "commands": results,
     }
     receipt["receipt_fingerprint"] = receipt_fingerprint(receipt)
-    atomic_json(root, output, receipt)
+    atomic_toon(root, output, receipt)
     failed = [item for item in results if item["exit_code"] != 0]
     print(f"Validation receipt written: {output}; commands={len(results)}; failed={len(failed)}")
     return 1 if failed else 0

@@ -13,7 +13,7 @@ consumers that parse only `ai-sdlc-context/v2` or
 ## Before updating
 
 1. Commit or back up the consumer repository and record
-   `.ai-sdlc/harness-install.json` plus the managed skill inventory.
+   `.ai-sdlc/harness-install.toon` plus the managed skill inventory.
 2. Find integrations that parse context TOON, context-pack fields, module
    manifests, or an exact Harness API range.
 3. Preserve active specifications, decision logs, state, and validation

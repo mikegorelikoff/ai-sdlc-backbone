@@ -89,7 +89,7 @@ artifact_metadata:
 - [x] T003. Add schemas, registries, five role contracts, and JIT flow-step references.
   Output: Validated declarative flow assets.
   Refs: REQ-002, REQ-003, AC-003, AC-007
-- [x] T004. Implement deterministic role/action selection, handoffs, JIT context, fingerprints, and `ai-sdlc-flow/v2`.
+- [x] T004. Implement deterministic role/action selection, handoffs, JIT context, fingerprints, and `ai-sdlc-flow/v3`.
   Output: v2 runtime router and thin flow entrypoint.
   Refs: REQ-002, REQ-003, REQ-004, AC-004, AC-005, AC-006, AC-007, AC-008
 - [x] T005. Extend bounded `values.flow` configuration and validation.

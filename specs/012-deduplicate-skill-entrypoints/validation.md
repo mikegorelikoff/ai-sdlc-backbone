@@ -28,8 +28,8 @@ artifact_metadata:
     - "TC-005"
     - "TC-006"
   related_artifacts:
-    - "specs/012-deduplicate-skill-entrypoints/_ai_sdlc/validation-plan.json"
-    - "specs/012-deduplicate-skill-entrypoints/_ai_sdlc/validation-receipt.json"
+    - "specs/012-deduplicate-skill-entrypoints/_ai_sdlc/validation-plan.toon"
+    - "specs/012-deduplicate-skill-entrypoints/_ai_sdlc/validation-receipt.toon"
     - "specs/012-deduplicate-skill-entrypoints/requirements.md"
     - "specs/012-deduplicate-skill-entrypoints/test-cases.md"
   validation:
@@ -72,7 +72,7 @@ Passed. All 12 reviewed argv-only commands completed with zero failures.
   declared skill ID remains.
 - Machine-verifiable command hashes, exit codes, durations, output limits,
   plan digest, and workspace fingerprint are recorded in
-  `_ai_sdlc/validation-receipt.json`.
+  `_ai_sdlc/validation-receipt.toon`.
 
 ## Residual Risk
 

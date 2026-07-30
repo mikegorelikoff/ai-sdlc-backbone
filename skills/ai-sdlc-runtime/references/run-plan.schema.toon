@@ -1,0 +1,135 @@
+"$defs":
+  budgets:
+    additionalProperties: false
+    properties:
+      max_failures:
+        minimum: 1
+        type: integer
+      max_steps:
+        minimum: 1
+        type: integer
+      max_tokens:
+        minimum: 1
+        type: integer
+    required[3]: max_steps,max_failures,max_tokens
+    type: object
+  hash:
+    pattern: "^[a-f0-9]{64}$"
+    type: string
+  task:
+    additionalProperties: false
+    properties:
+      capabilities:
+        items:
+          type: string
+        minItems: 1
+        type: array
+        uniqueItems: true
+      commit_boundary:
+        enum[2]: none,after-step
+      context:
+        "$ref": ai-sdlc-context-pack/v4
+      depends_on:
+        items:
+          type: string
+        type: array
+        uniqueItems: true
+      gates:
+        items:
+          type: string
+        minItems: 1
+        type: array
+        uniqueItems: true
+      graph_fingerprint:
+        "$ref": #/$defs/hash
+      id:
+        minLength: 1
+        type: string
+      idempotency_scope:
+        minLength: 1
+        type: string
+      load:
+        enum[3]: required,on-demand,before-completion
+      max_attempts:
+        minimum: 1
+        type: integer
+      max_tokens:
+        minimum: 1
+        type: integer
+      on_failure:
+        enum[3]: block,retry,handoff
+      operation:
+        minLength: 1
+        type: string
+      outputs:
+        items:
+          type: string
+        minItems: 1
+        type: array
+        uniqueItems: true
+      path:
+        pattern: "^steps/[a-z0-9][a-z0-9-]*\\.md$"
+        type: string
+      ready:
+        const: true
+      reason:
+        minLength: 1
+        type: string
+      schema:
+        const: ai-sdlc-step-card/v1
+      side_effect:
+        enum[4]: none,workspace-write,external-write,destructive
+      skill:
+        pattern: "^ai-sdlc-[a-z0-9]+(?:-[a-z0-9]+)*$"
+        type: string
+      status:
+        const: pending
+      step_fingerprint:
+        "$ref": #/$defs/hash
+      step_id:
+        minLength: 1
+        type: string
+      step_type:
+        enum[5]: analysis,context,action,validation,handoff
+    required[24]: id,schema,skill,step_id,path,step_type,status,depends_on,operation,capabilities,side_effect,context,gates,outputs,max_attempts,max_tokens,commit_boundary,on_failure,load,reason,ready,graph_fingerprint,step_fingerprint,idempotency_scope
+    type: object
+"$id": ai-sdlc-run-plan/v2
+"$schema": ai-sdlc-toon-contract/v1
+additionalProperties: false
+properties:
+  action:
+    type: string
+  budgets:
+    "$ref": #/$defs/budgets
+  entrypoint:
+    minLength: 1
+    type: string
+  fingerprint:
+    "$ref": #/$defs/hash
+  graph_fingerprint:
+    "$ref": #/$defs/hash
+  manifest_fingerprint:
+    "$ref": #/$defs/hash
+  role:
+    type: string
+  schema:
+    const: ai-sdlc-run-plan/v2
+  selection_fingerprint:
+    "$ref": #/$defs/hash
+  skill:
+    minLength: 1
+    type: string
+  targets:
+    items:
+      type: string
+    minItems: 1
+    type: array
+    uniqueItems: true
+  tasks:
+    items:
+      "$ref": #/$defs/task
+    minItems: 1
+    type: array
+required[12]: schema,skill,entrypoint,role,action,manifest_fingerprint,graph_fingerprint,selection_fingerprint,targets,budgets,tasks,fingerprint
+title: AI SDLC Immutable Run Plan
+type: object

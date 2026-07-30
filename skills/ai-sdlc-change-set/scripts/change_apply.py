@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import json
 import os
 import re
 import shutil
@@ -12,6 +11,11 @@ import sys
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 from typing import Any
 
 from change_preview import apply_virtual, build_preview, digest
@@ -38,20 +42,19 @@ def atomic_write(root: Path, path: Path, content: str) -> None:
     atomic_write_text(root, path, content)
 
 
-def atomic_json(root: Path, path: Path, value: dict[str, Any]) -> None:
-    """Write interoperable JSON and a complete agent-facing TOON mirror."""
-    atomic_write(root, path, json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
-    atomic_write(root, path.with_suffix(".toon"), encode_toon(value))
+def atomic_toon(root: Path, path: Path, value: dict[str, Any]) -> None:
+    """Write one canonical TOON artifact."""
+    atomic_write(root, path, encode_toon(value))
 
 
 def load_approval(path: Path, change_id: str, preview: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
     """Validate record structure, fingerprint, and gates; not approver identity."""
     try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+        value = toon_codec.loads(path.read_text(encoding="utf-8"))
+    except (OSError, toon_codec.ToonDecodeError) as exc:
         return {}, [f"cannot read approval: {exc}"]
     if not isinstance(value, dict):
-        return {}, ["approval must be a JSON object"]
+        return {}, ["approval must be a TOON object"]
     required = {"schema", "change_id", "preview_fingerprint", "decision", "owner", "decided_at", "decision_ref", "approved_gates"}
     errors: list[str] = []
     if set(value) != required:
@@ -90,8 +93,18 @@ def update_metadata(workspace: Path, status: str, updated_at: str) -> None:
             continue
         path = workspace / relative
         text = path.read_text(encoding="utf-8")
-        text, status_count = re.subn(r'(?m)^  status: "(?:draft|applied|archived)"$', f'  status: "{status}"', text, count=1)
-        text, date_count = re.subn(r'(?m)^  updated_at: "[^"]+"$', f'  updated_at: "{updated_at[:10]}"', text, count=1)
+        text, status_count = re.subn(
+            r"(?m)^  status: (?:draft|applied|archived)$",
+            f"  status: {status}",
+            text,
+            count=1,
+        )
+        text, date_count = re.subn(
+            r"(?m)^  updated_at: \S+$",
+            f"  updated_at: {updated_at[:10]}",
+            text,
+            count=1,
+        )
         if status_count != 1 or date_count != 1:
             raise ValueError(f"{relative}: cannot update lifecycle metadata")
         atomic_write(workspace, path, text)
@@ -106,7 +119,7 @@ def validate_recovery_manifest(
 ) -> list[str]:
     """Validate every recovery field and path before any rollback mutation."""
     if not isinstance(manifest, dict):
-        return ["recovery manifest must be a JSON object"]
+        return ["recovery manifest must be a TOON object"]
     required = {
         "schema", "change_id", "status", "preview_fingerprint", "created_at",
         "updated_at", "targets", "applied", "rollback_errors",
@@ -219,18 +232,18 @@ def rollback(repository: Path, workspace: Path, manifest: dict[str, Any], change
     manifest["status"] = "rollback_failed" if errors else "rolled_back"
     manifest["rollback_errors"] = errors
     manifest["updated_at"] = now()
-    atomic_json(workspace, workspace / "_ai_sdlc/recovery-manifest.json", manifest)
+    atomic_toon(workspace, workspace / "_ai_sdlc/recovery-manifest.toon", manifest)
     return errors
 
 
 def recover_incomplete(repository: Path, workspace: Path, change_id: str, canonical_targets: list[str]) -> list[str]:
     """Recover an interrupted prior transaction before any new apply."""
-    path = workspace / "_ai_sdlc/recovery-manifest.json"
+    path = workspace / "_ai_sdlc/recovery-manifest.toon"
     if not path.is_file():
         return []
     try:
-        manifest = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+        manifest = toon_codec.loads(path.read_text(encoding="utf-8"))
+    except (OSError, toon_codec.ToonDecodeError) as exc:
         return [f"cannot inspect recovery manifest: {exc}"]
     if manifest.get("status") not in {"in_progress", "rollback_failed"}:
         return []
@@ -291,9 +304,9 @@ def apply_change(repository: Path, change_id: str, approval_path: Path, simulate
         return {}, errors
 
     manifest: dict[str, Any] = {"schema": RECOVERY_SCHEMA, "change_id": change_id, "status": "in_progress", "preview_fingerprint": preview["preview_fingerprint"], "created_at": now(), "updated_at": now(), "targets": targets, "applied": [], "rollback_errors": []}
-    manifest_path = workspace / "_ai_sdlc/recovery-manifest.json"
-    atomic_json(workspace, manifest_path, manifest)
-    atomic_json(workspace, workspace / "evidence/approval.json", approval)
+    manifest_path = workspace / "_ai_sdlc/recovery-manifest.toon"
+    atomic_toon(workspace, manifest_path, manifest)
+    atomic_toon(workspace, workspace / "evidence/approval.toon", approval)
     try:
         for index, item in enumerate(targets, start=1):
             target_path = repository / item["target"]
@@ -303,14 +316,14 @@ def apply_change(repository: Path, change_id: str, approval_path: Path, simulate
             os.replace(staging_path, target_path)
             manifest["applied"].append(item["target"])
             manifest["updated_at"] = now()
-            atomic_json(workspace, manifest_path, manifest)
+            atomic_toon(workspace, manifest_path, manifest)
             if simulate_failure_after is not None and index >= simulate_failure_after:
                 raise OSError(f"simulated failure after {index} target replacements")
         applied_at = now()
         update_metadata(workspace, "applied", applied_at)
         record.update({"status": "applied", "updated_at": applied_at[:10], "applied_at": applied_at, "preview_fingerprint": preview["preview_fingerprint"], "approval": {"owner": approval["owner"], "decision_ref": approval["decision_ref"], "decided_at": approval["decided_at"], "approved_gates": sorted(approval["approved_gates"])}})
         record["contract_fingerprint"] = fingerprint(record)
-        atomic_json(workspace, workspace / "_ai_sdlc/change-set.json", record)
+        atomic_toon(workspace, workspace / "_ai_sdlc/change-set.toon", record)
     except (OSError, ValueError) as exc:
         rollback_errors = rollback(repository, workspace, manifest, change_id, record["canonical_targets"])
         try:
@@ -320,7 +333,7 @@ def apply_change(repository: Path, change_id: str, approval_path: Path, simulate
         return {}, [f"apply failed and rollback was attempted: {exc}", *rollback_errors]
     manifest["status"] = "complete"
     manifest["updated_at"] = now()
-    atomic_json(workspace, manifest_path, manifest)
+    atomic_toon(workspace, manifest_path, manifest)
     shutil.rmtree(staging_root, ignore_errors=True)
     return {
         "schema": "ai-sdlc-change-apply-result/v1",
@@ -348,10 +361,10 @@ def archive_change(repository: Path, change_id: str, archive_date: str | None) -
         return {}, errors
     if record["status"] != "applied":
         return {}, [f"change status must be applied before archive; got {record['status']}"]
-    manifest_path = workspace / "_ai_sdlc/recovery-manifest.json"
+    manifest_path = workspace / "_ai_sdlc/recovery-manifest.toon"
     try:
-        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+        manifest = toon_codec.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, toon_codec.ToonDecodeError) as exc:
         return {}, [f"cannot read recovery manifest: {exc}"]
     if manifest.get("status") != "complete":
         return {}, ["recovery manifest must be complete before archive"]
@@ -369,7 +382,7 @@ def archive_change(repository: Path, change_id: str, archive_date: str | None) -
         update_metadata(workspace, "archived", archived_at)
         record.update({"status": "archived", "updated_at": archived_at[:10], "archived_at": archived_at, "archive_path": destination.relative_to(repository).as_posix()})
         record["contract_fingerprint"] = fingerprint(record)
-        atomic_json(workspace, workspace / "_ai_sdlc/change-set.json", record)
+        atomic_toon(workspace, workspace / "_ai_sdlc/change-set.toon", record)
         destination = bounded_path(repository, destination)
         ensure_directory(repository, destination.parent)
         os.replace(workspace, destination)
@@ -377,7 +390,7 @@ def archive_change(repository: Path, change_id: str, archive_date: str | None) -
         if workspace.exists():
             try:
                 update_metadata(workspace, "applied", prior["updated_at"])
-                atomic_json(workspace, workspace / "_ai_sdlc/change-set.json", prior)
+                atomic_toon(workspace, workspace / "_ai_sdlc/change-set.toon", prior)
             except (OSError, ValueError):
                 pass
         return {}, [f"archive failed: {exc}"]
@@ -394,7 +407,7 @@ def main() -> int:
     actions.add_argument("--archive", action="store_true")
     parser.add_argument("--approval", type=Path)
     parser.add_argument("--archive-date")
-    parser.add_argument("--format", choices=("markdown", "json", "toon"), default="toon")
+    parser.add_argument("--format", choices=("markdown", "toon"), default="toon")
     parser.add_argument("--quick-flow", action="store_true")
     parser.add_argument("--full-flow", action="store_true")
     parser.add_argument("--feature", default="<feature-name>")
@@ -427,9 +440,7 @@ def main() -> int:
         for error in errors:
             print(f"ERROR: {error}")
         return 1
-    if args.format == "json":
-        print(json.dumps(result, indent=2, sort_keys=True, ensure_ascii=False))
-    elif args.format == "toon":
+    if args.format == "toon":
         print(encode_toon(result), end="")
     else:
         print(f"Change: {result['change_id']}")

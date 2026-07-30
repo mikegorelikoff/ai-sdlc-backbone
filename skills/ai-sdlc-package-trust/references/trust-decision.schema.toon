@@ -1,0 +1,18 @@
+"$id": ai-sdlc-package-trust-decision/v1
+"$schema": ai-sdlc-toon-contract/v1
+properties:
+  controls:
+    type: array
+  decision:
+    enum[2]: allow,deny
+  fingerprint:
+    pattern: "^[a-f0-9]{64}$"
+    type: string
+  package:
+    type: object
+  reason_codes:
+    type: array
+  schema:
+    const: ai-sdlc-package-trust-decision/v1
+required[6]: schema,package,decision,controls,reason_codes,fingerprint
+type: object

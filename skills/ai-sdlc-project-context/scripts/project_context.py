@@ -20,7 +20,7 @@ from ai_sdlc_safe_io import atomic_write_text
 from ai_sdlc_okf import migrate_concept_text, write_bundle_indexes
 
 
-SOURCE_NAMES = {"AGENTS.md", "README.md", "README", "Makefile", "go.mod", "package.json", "pyproject.toml", "Cargo.toml", "requirements.txt"}
+SOURCE_NAMES = {"AGENTS.md", "README.md", "README", "Makefile", "go.mod", "package.toon", "pyproject.toml", "Cargo.toml", "requirements.txt"}
 SECRET_PATTERN = re.compile(r"(^|[._/-])(env|secret|credential|token|private|id_rsa|id_ed25519|\.pem|\.key|\.p12)([._/-]|$)", re.I)
 SECRET_ASSIGNMENT_PATTERN = re.compile(
     r"(?im)^\s*(?:export\s+|set\s+|\$env:)?"
@@ -74,7 +74,7 @@ def scan(root: Path) -> tuple[list[Evidence], list[str], list[str], str]:
     stack: set[str] = set()
     commands: set[str] = set()
     digest = hashlib.sha256()
-    stack_by_name = {"go.mod": "Go", "package.json": "Node.js", "pyproject.toml": "Python", "requirements.txt": "Python", "Cargo.toml": "Rust", "Makefile": "Make"}
+    stack_by_name = {"go.mod": "Go", "package.toon": "Node.js", "pyproject.toml": "Python", "requirements.txt": "Python", "Cargo.toml": "Rust", "Makefile": "Make"}
     for path in sources(root):
         relative = path.relative_to(root).as_posix()
         content = path.read_text(encoding="utf-8", errors="replace")

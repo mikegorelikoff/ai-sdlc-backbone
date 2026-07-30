@@ -12,14 +12,14 @@ Enter only after the prepare step passes and this skill is the selected owner fo
 
 - Read `references/delivery-graph-contract.md` before interpreting nodes,
   edges, gaps, or query paths.
-- Use `references/delivery-node.schema.json`,
-  `references/delivery-edge.schema.json`, and
-  `references/delivery-graph.schema.json` for machine contracts.
+- Use `references/delivery-node.schema.toon`,
+  `references/delivery-edge.schema.toon`, and
+  `references/delivery-graph.schema.toon` for machine contracts.
 - Use `scripts/delivery_graph.py` for deterministic indexing and queries.
 - Read `references/evidence-ledger-contract.md` before registering or judging
   evidence freshness. Validate inputs and outputs with
-  `references/evidence-source.schema.json` and
-  `references/evidence-ledger.schema.json`.
+  `references/evidence-source.schema.toon` and
+  `references/evidence-ledger.schema.toon`.
 - Use `scripts/evidence_ledger.py` to recalculate current file identities,
   propagate stale state, and query fresh coverage.
 

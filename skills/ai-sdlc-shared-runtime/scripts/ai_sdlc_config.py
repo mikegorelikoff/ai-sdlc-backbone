@@ -4,12 +4,17 @@
 from __future__ import annotations
 
 import argparse
-import json
 import os
 import re
 import tempfile
 from copy import deepcopy
+import sys
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parent
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 from typing import Any
 
 
@@ -26,13 +31,13 @@ FLOW_SELECTOR_FIELDS = {"id", "roles", "actions", "include", "priority", "max_to
 def packaged_defaults() -> Path:
     """Locate the single packaged defaults file in source and installed layouts."""
     script = Path(__file__).resolve()
-    return script.parent.parent / "references" / "ai-sdlc.defaults.json"
+    return script.parent.parent / "references" / "ai-sdlc.defaults.toon"
 
 
 def toon(value: object) -> str:
     """Escape one value for the repository TOON subset."""
     if isinstance(value, (dict, list)):
-        value = json.dumps(value, sort_keys=True, separators=(",", ":"))
+        value = toon_codec.dumps(value, sort_keys=True, separators=(",", ":"))
     return re.sub(r"[\r\n,]+", "; ", str(value)).strip()
 
 
@@ -43,8 +48,8 @@ def load_layer(path: Path | None, name: str, required: bool = False) -> tuple[di
     if not path.is_file():
         return {}, [f"{name} config does not exist: {path}"] if required else []
     try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+        value = toon_codec.loads(path.read_text(encoding="utf-8"))
+    except (OSError, toon_codec.ToonDecodeError) as exc:
         return {}, [f"cannot read {name} config: {exc}"]
     if not isinstance(value, dict) or value.get("schema") != SCHEMA:
         return {}, [f"{name} config schema must be {SCHEMA}"]
@@ -278,7 +283,7 @@ def render_markdown(values: dict[str, Any], provenance: dict[str, str], protecte
     """Render human-readable resolved configuration."""
     flat = flatten(values)
     lines = ["# AI SDLC Resolved Configuration", "", f"- Schema: `{SCHEMA}`", "- Precedence: `base < team < user`", "", "| Path | Value | Source | Protected |", "| --- | --- | --- | --- |"]
-    lines.extend(f"| `{path}` | `{json.dumps(flat[path], sort_keys=True)}` | `{provenance[path]}` | `{'yes' if path in protected else 'no'}` |" for path in sorted(flat))
+    lines.extend(f"| `{path}` | `{toon_codec.dumps(flat[path], sort_keys=True)}` | `{provenance[path]}` | `{'yes' if path in protected else 'no'}` |" for path in sorted(flat))
     return "\n".join(lines).rstrip() + "\n"
 
 
@@ -303,7 +308,7 @@ def main() -> int:
     parser.add_argument("--base", type=Path, default=packaged_defaults())
     parser.add_argument("--team", type=Path)
     parser.add_argument("--user", type=Path)
-    parser.add_argument("--format", choices=("markdown", "toon", "json"), default="markdown")
+    parser.add_argument("--format", choices=("markdown", "toon"), default="markdown")
     parser.add_argument("--write-root", type=Path)
     parser.add_argument("--quick-flow", action="store_true")
     parser.add_argument("--full-flow", action="store_true")
@@ -338,11 +343,11 @@ def main() -> int:
     protected = list(layers[0].get("protected", []))
     machine = render_toon(values, provenance, protected)
     human = render_markdown(values, provenance, protected)
-    payload = json.dumps({"schema": "ai-sdlc-config-resolution/v1", "config_schema": SCHEMA, "values": values, "provenance": provenance, "protected": protected}, indent=2, sort_keys=True) + "\n"
+    payload = toon_codec.dumps({"schema": "ai-sdlc-config-resolution/v1", "config_schema": SCHEMA, "values": values, "provenance": provenance, "protected": protected}, indent=2, sort_keys=True) + "\n"
     if args.write_root:
-        atomic_write(args.write_root / "config.resolved.json", payload)
+        atomic_write(args.write_root / "config.resolved.toon", payload)
         atomic_write(args.write_root / "_ai_sdlc/config-provenance.toon", machine)
-    print(payload if args.format == "json" else machine if args.format == "toon" else human, end="")
+    print(payload if args.format == "toon" else human, end="")
     return 0
 
 

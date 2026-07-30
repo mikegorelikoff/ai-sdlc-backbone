@@ -76,7 +76,7 @@ python3 .agents/skills/ai-sdlc-change-set/scripts/spec_delta.py . \
 
 Validation proves target declaration, stable-ID presence or absence, scenario
 completeness, source hashes, and absence of overlapping operations. The
-generated `delta-set.json` is still non-authoritative and cannot apply itself.
+generated `delta-set.toon` is still non-authoritative and cannot apply itself.
 
 ## Apply preview
 
@@ -115,7 +115,7 @@ already-written targets before the command returns an error.
 python3 .agents/skills/ai-sdlc-change-set/scripts/change_apply.py . \
   --change-id add-session-timeout \
   --apply \
-  --approval changes/add-session-timeout/evidence/owner-approval.json \
+  --approval changes/add-session-timeout/evidence/owner-approval.toon \
   --format toon
 
 python3 .agents/skills/ai-sdlc-change-set/scripts/change_apply.py . \

@@ -3,11 +3,16 @@
 
 from __future__ import annotations
 
-import json
 import subprocess
 import tempfile
 import unittest
+import sys
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -29,8 +34,8 @@ class CouncilTests(unittest.TestCase):
     def fixture(self, root: Path, mode: str = "independent") -> Path:
         """Write authority evidence and input."""
         (root / "requirements.md").write_text("# Requirements\nAC-007 requires durable retry.\n", encoding="utf-8")
-        path = root / "council.json"
-        path.write_text(json.dumps(self.value(mode)), encoding="utf-8")
+        path = root / "council.toon"
+        path.write_text(toon_codec.dumps(self.value(mode)), encoding="utf-8")
         return path
 
     def test_independent_report_writes_routed_pair(self) -> None:
@@ -53,8 +58,8 @@ class CouncilTests(unittest.TestCase):
             for reviewer in value["panel"]:  # type: ignore[index]
                 reviewer["execution_id"] = "same-run"
             (root / "requirements.md").write_text("# R\nAC-007\n", encoding="utf-8")
-            path = root / "council.json"
-            path.write_text(json.dumps(value), encoding="utf-8")
+            path = root / "council.toon"
+            path.write_text(toon_codec.dumps(value), encoding="utf-8")
             result = self.run_council(root, path)
             self.assertEqual(result.returncode, 1)
             self.assertIn("execution IDs must be unique", result.stdout)
@@ -66,8 +71,8 @@ class CouncilTests(unittest.TestCase):
             value = self.value("simulated")
             value["proposals"][0]["status"] = "accepted"  # type: ignore[index]
             (root / "requirements.md").write_text("# R\nAC-007\n", encoding="utf-8")
-            path = root / "council.json"
-            path.write_text(json.dumps(value), encoding="utf-8")
+            path = root / "council.toon"
+            path.write_text(toon_codec.dumps(value), encoding="utf-8")
             result = self.run_council(root, path)
             self.assertEqual(result.returncode, 1)
             self.assertIn("cannot imply acceptance", result.stdout)

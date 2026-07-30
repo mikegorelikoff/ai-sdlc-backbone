@@ -1,0 +1,138 @@
+"$defs":
+  interaction:
+    additionalProperties: false
+    properties:
+      enabled:
+        type: boolean
+      language:
+        type: string
+      preferred_name:
+        maxLength: 80
+        type: string
+      response_style:
+        enum[3]: concise,balanced,detailed
+      source:
+        type: string
+      status:
+        enum[4]: configured,disabled,not_configured,invalid
+      status_updates:
+        enum[3]: minimal,milestones,frequent
+      technical_depth:
+        enum[4]: adaptive,foundational,practitioner,expert
+      usage:
+        const: presentation_only
+    required[9]: enabled,status,preferred_name,language,response_style,technical_depth,status_updates,usage,source
+    type: object
+"$id": "https://github.com/mikegorelikoff/ai-sdlc-harness/schemas/ai-sdlc-context-pack-v3"
+"$schema": ai-sdlc-toon-contract/v1
+additionalProperties: false
+properties:
+  budget:
+    type: object
+  content_handling:
+    additionalProperties: false
+    properties:
+      evidence_only:
+        type: string
+      repository_instruction:
+        type: string
+    required[2]: repository_instruction,evidence_only
+    type: object
+  exclusions:
+    items:
+      type: object
+    type: array
+  fingerprint:
+    pattern: "^[a-f0-9]{64}$"
+    type: string
+  freshness:
+    type: object
+  interaction:
+    "$ref": #/$defs/interaction
+  repository:
+    type: object
+  schema:
+    const: ai-sdlc-context-pack/v3
+  selected:
+    items:
+      additionalProperties: false
+      properties:
+        authority:
+          enum[2]: repository_instruction,evidence_only
+        content:
+          type: string
+        end_line:
+          minimum: 0
+          type: integer
+        estimated_tokens:
+          minimum: 0
+          type: integer
+        matched_terms:
+          items:
+            type: string
+          type: array
+        path:
+          type: string
+        priority:
+          type: integer
+        reason:
+          type: string
+        relevance_score:
+          minimum: 0
+          type: integer
+        selection_strategy:
+          enum[3]: full_source,goal_relevance,prefix_fallback
+        sha256:
+          pattern: "^[a-f0-9]{64}$"
+          type: string
+        start_line:
+          minimum: 1
+          type: integer
+        truncated:
+          type: boolean
+      required[13]: path,start_line,end_line,priority,reason,authority,selection_strategy,matched_terms,relevance_score,estimated_tokens,sha256,truncated,content
+      type: object
+    type: array
+  selectors:
+    items:
+      type: object
+    type: array
+  sufficiency:
+    additionalProperties: false
+    properties:
+      next_reads:
+        items:
+          type: object
+        type: array
+      reasons:
+        items:
+          type: object
+        type: array
+      status:
+        enum[3]: sufficient,review_required,insufficient
+    required[3]: status,reasons,next_reads
+    type: object
+  task:
+    additionalProperties: false
+    properties:
+      goal:
+        type: string
+      id:
+        type: string
+      paths:
+        items:
+          type: string
+        type: array
+      query_terms:
+        items:
+          type: string
+        type: array
+      tags:
+        items:
+          type: string
+        type: array
+    required[5]: id,goal,paths,tags,query_terms
+    type: object
+required[12]: schema,task,interaction,content_handling,repository,budget,selectors,selected,exclusions,freshness,sufficiency,fingerprint
+title: AI SDLC Context Pack
+type: object

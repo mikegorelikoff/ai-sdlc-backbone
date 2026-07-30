@@ -33,7 +33,7 @@ The summary table above names the primary and supporting human roles for this ca
 ## Before you start
 
 - Completed or paused feature root.
-- Retrospective JSON containing observations and proposals.
+- Retrospective TOON containing observations and proposals.
 - Exact artifact or validation evidence for every observation.
 
 ## Tell your agent
@@ -44,7 +44,7 @@ Choose --quick-flow for bounded assumption-driven progress or --full-flow
 for strict verification only as described below.
 Read the required evidence,
 produce or report `retrospective.md` and `_ai_sdlc/retrospective.toon`, preserve human approval boundaries,
-and return blockers plus a complete ai-sdlc-handoff/v1.
+and return blockers plus a complete ai-sdlc-handoff/v2.
 ```
 
 This is an agent instruction, not a shell command. Terminal commands belong in the helper section.
@@ -84,11 +84,13 @@ Humans accept or reject material product, security, QA, policy, rollout, release
 
 The router loads these skill-owned procedures just in time. Read only the selector matching the current phase, active role, and action; a selected step is normative and an unselected step stays out of context.
 
-| Selector | Phases | Roles | Load rule | Step | Reason |
-| --- | --- | --- | --- | --- | --- |
-| `prepare` | `prepare`, `clarify`, `route` | `business-analyst`, `product-manager`, `software-engineer`, `qa-engineer` | `required` | [`steps/01-prepare.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-retrospective/steps/01-prepare.md) | establish inputs, authority, lifecycle state, and safe artifact routing |
-| `execute` | `execute` | `business-analyst`, `product-manager`, `software-engineer`, `qa-engineer` | `on-demand` | [`steps/02-execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-retrospective/steps/02-execute.md) | perform only the selected owning-skill procedure |
-| `validate-and-handoff` | `validate`, `handoff`, `complete` | `business-analyst`, `product-manager`, `software-engineer`, `qa-engineer` | `before-completion` | [`steps/03-validate-and-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-retrospective/steps/03-validate-and-handoff.md) | verify outputs and return an explicit evidence-backed handoff |
+| Selector | Type | Phases | Roles | Dependencies | Operation | Side effect | Load rule | Step | Reason |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `preflight` | `analysis` | `prepare` | `business-analyst`, `product-manager`, `qa-engineer`, `software-engineer` | none | `inspect-and-route` | `none` | `required` | [`steps/01-prepare.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-retrospective/steps/01-prepare.md) | establish inputs, authority, lifecycle state, and safe artifact routing |
+| `context` | `context` | `clarify`, `route` | `business-analyst`, `product-manager`, `qa-engineer`, `software-engineer` | `preflight` | `compile-context` | `none` | `required` | [`steps/02-context.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-retrospective/steps/02-context.md) | compile the minimum sufficient context before the owning action |
+| `execute` | `action` | `execute` | `business-analyst`, `product-manager`, `qa-engineer`, `software-engineer` | `context` | `execute-procedure` | `workspace-write` | `on-demand` | [`steps/02-execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-retrospective/steps/02-execute.md) | perform only the selected owning-skill procedure |
+| `validate` | `validation` | `validate` | `business-analyst`, `product-manager`, `qa-engineer`, `software-engineer` | `execute` | `validate-evidence` | `none` | `before-completion` | [`steps/03-validate-and-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-retrospective/steps/03-validate-and-handoff.md) | validate outputs, evidence, acceptance, and residual risk |
+| `handoff` | `handoff` | `handoff`, `complete` | `business-analyst`, `product-manager`, `qa-engineer`, `software-engineer` | `validate` | `handoff-result` | `none` | `before-completion` | [`steps/04-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-retrospective/steps/04-handoff.md) | return a journal-backed owner and next-action handoff |
 
 Resolve the current step with `ai-sdlc-shared-runtime/scripts/ai_sdlc_steps.py`. A missing, unsafe, oversized, or unmatched step is a blocker rather than permission to broad-load the package.
 
@@ -105,8 +107,8 @@ The owning agent normally runs these helpers. A human uses the direct starting p
 ### Contract-provided usage
 
 ```bash
-python3 skills/ai-sdlc-retrospective/scripts/retrospective.py specs/payments --input /tmp/retro.json --emit --quick-flow
-python3 skills/ai-sdlc-retrospective/scripts/retrospective.py specs/payments --input /tmp/retro.json --write --full-flow --format toon
+python3 skills/ai-sdlc-retrospective/scripts/retrospective.py specs/payments --input /tmp/retro.toon --emit --quick-flow
+python3 skills/ai-sdlc-retrospective/scripts/retrospective.py specs/payments --input /tmp/retro.toon --write --full-flow --format toon
 ```
 
 The finalizer never writes any path named by a proposal `target`.
@@ -137,7 +139,7 @@ On a blocker, preserve failed/stale evidence, name the accountable owner and exa
 
 - Return observation and proposal counts, accepted-decision coverage,
   blockers, and output paths directly in the active agent response.
-- Before the final response, emit `ai-sdlc-handoff/v1` with `result`,
+- Before the final response, emit `ai-sdlc-handoff/v2` with `result`,
   `blockers`, `next_required`, and `next_optional`; every action includes
   `reason`, `command`, and `expected_artifact`.
 - Do not create `summary.txt`, `*-summary.txt`, or policy patches.
@@ -175,8 +177,15 @@ The downstream consumer rechecks artifacts and freshness; it does not trust a pr
 
 Valid accepted proposal:
 
-```json
-{"id":"PROP-001","based_on":["OBS-002"],"target":"skills/ai-sdlc-shared-runtime/scripts/validation-policy.json","change":"Add the deterministic retry fixture to standard validation.","owner":"Dev","status":"accepted","decision_ref":"DEC-014","next_action":"Implement through a traced SDD task."}
+```toon
+based_on[1]: OBS-002
+change: Add the deterministic retry fixture to standard validation.
+decision_ref: DEC-014
+id: PROP-001
+next_action: Implement through a traced SDD task.
+owner: Dev
+status: accepted
+target: skills/ai-sdlc-shared-runtime/scripts/validation-policy.toon
 ```
 
 Invalid counter-example: `We learned that the policy should now skip tests.` It
@@ -184,6 +193,6 @@ mixes observation and policy mutation and has no evidence or decision.
 
 ## Source contract
 
-This page is generated from [`skills/ai-sdlc-retrospective/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-retrospective/SKILL.md) plus its linked `steps/manifest.json` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
+This page is generated from [`skills/ai-sdlc-retrospective/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-retrospective/SKILL.md) plus its linked `steps/manifest.toon` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
 
 [Back to the skill catalog](../skills.md) · [Script reference](../scripts.md) · [Choose a workflow](../../flows/index.md)

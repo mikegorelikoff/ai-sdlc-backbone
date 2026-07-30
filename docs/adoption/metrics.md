@@ -29,7 +29,7 @@ installation.
 | Gate pass rate | Gates passed / gates attempted, reported with failure reasons. | Validation and policy results. | Fewer attempted gates can inflate the rate. |
 | Retry count | Attempts after the first attempt for bounded tasks. | Runtime state. | Retrying can mean learning or instability. |
 | Blocked duration | Time from explicit blocker to owned resolution. | State and handoff timestamps. | A blocker can reflect healthy fail-closed behavior. |
-| Handoff completeness | Required handoff fields populated and independently usable. | `ai-sdlc-handoff/v1` review. | Presence does not prove accuracy. |
+| Handoff completeness | Required handoff fields populated and independently usable. | `ai-sdlc-handoff/v2` review. | Presence does not prove accuracy. |
 | Resume success | Interrupted cases resumed without rediscovery or evidence loss. | Recovery exercise. | One scripted tutorial is not representative. |
 | Review rework | Material review changes after review-ready handoff. | Pull-request evidence. | Review style and change complexity differ. |
 | Escaped defect count | Confirmed defects attributable to pilot changes after acceptance. | Incident/defect system. | Small samples create large variance. |
@@ -50,7 +50,8 @@ facts from repository state.
 ## Content-free local metrics
 
 `ai-sdlc-package-trust` Branch B can aggregate local run state and evidence
-counts into `_ai_sdlc/metrics/local.{toon,json,md}`. It allows schemas,
+counts into canonical `_ai_sdlc/metrics/local.toon` plus optional human
+Markdown. It allows schemas,
 fingerprints, statuses, booleans, and numeric counts or budgets. It forbids
 content, prompts, commands, diffs, source text, artifact paths, messages,
 reasons, and file bodies, and it has no network operation.

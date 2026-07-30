@@ -37,8 +37,8 @@ artifact_metadata:
     - "TC-005"
     - "TC-006"
   related_artifacts:
-    - "specs/014-one-line-agent-installer/_ai_sdlc/validation-plan.json"
-    - "specs/014-one-line-agent-installer/_ai_sdlc/validation-receipt.json"
+    - "specs/014-one-line-agent-installer/_ai_sdlc/validation-plan.toon"
+    - "specs/014-one-line-agent-installer/_ai_sdlc/validation-receipt.toon"
   validation:
     - "ai-sdlc-validation-receipt/v1: current; 9 commands; 0 failures"
   metatags:
@@ -71,9 +71,9 @@ commands and zero failures.
 
 ## Evidence
 
-- Plan: `specs/014-one-line-agent-installer/_ai_sdlc/validation-plan.json`
+- Plan: `specs/014-one-line-agent-installer/_ai_sdlc/validation-plan.toon`
 - Receipt:
-  `specs/014-one-line-agent-installer/_ai_sdlc/validation-receipt.json`
+  `specs/014-one-line-agent-installer/_ai_sdlc/validation-receipt.toon`
 - Receipt commands: 9
 - Additional current checks outside the receipt: `sh -n install.sh`;
   `python3 -m pytest -q docs/tests` (44 passed).

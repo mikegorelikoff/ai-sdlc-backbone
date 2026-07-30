@@ -14,7 +14,7 @@ artifact_metadata:
   created_at: "2026-07-21"
   updated_at: "2026-07-21"
   trace_ids: ["T001", "T002", "T003", "T004", "T005", "T006", "T007", "AC-001", "AC-002", "AC-003", "AC-004", "AC-005", "AC-006", "AC-007"]
-  related_artifacts: ["specs/009-operational-feedback-hardening/commit-readiness.md", "specs/009-operational-feedback-hardening/_ai_sdlc/validation-receipt.json"]
+  related_artifacts: ["specs/009-operational-feedback-hardening/commit-readiness.md", "specs/009-operational-feedback-hardening/_ai_sdlc/validation-receipt.toon"]
   validation: ["Conventional Commit validator with traceability required"]
   metatags: ["ai-sdlc", "implementation", "ai-sdlc-conventional-commit", "commit-message", "validated", "operational-feedback"]
 ---

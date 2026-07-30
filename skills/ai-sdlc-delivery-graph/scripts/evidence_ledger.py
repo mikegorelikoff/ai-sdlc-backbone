@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import json
 import os
 import re
 import sys
@@ -18,6 +17,7 @@ from delivery_graph import build_graph, digest, resolve
 
 _SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
 sys.path.insert(0, str(_SHARED))
+import ai_sdlc_toon as toon_codec
 from ai_sdlc_toon import encode_toon
 from ai_sdlc_okf import migrate_concept_text, write_bundle_indexes
 
@@ -88,7 +88,7 @@ def validate_source(repository: Path, path: Path, value: Any) -> list[str]:
     required = {"schema", "id", "kind", "subjects", "producer", "captured_at", "artifact", "dependencies", "depends_on"}
     optional = {"expires_at"}
     if not isinstance(value, dict):
-        return [f"{prefix}: manifest must be a JSON object"]
+        return [f"{prefix}: manifest must be a TOON object"]
     if not required.issubset(value) or set(value) - required - optional:
         errors.append(f"{prefix}: fields must match {SOURCE_SCHEMA}")
     if value.get("schema") != SOURCE_SCHEMA:
@@ -131,7 +131,7 @@ def validate_source(repository: Path, path: Path, value: Any) -> list[str]:
 def manifests(repository: Path) -> list[Path]:
     """Discover evidence source manifests in bounded evidence directories."""
     found: set[Path] = set()
-    for pattern in ("evidence/**/*.evidence.json", "changes/**/evidence/*.evidence.json"):
+    for pattern in ("evidence/**/*.evidence.toon", "changes/**/evidence/*.evidence.toon"):
         found.update(path for path in repository.glob(pattern) if path.is_file() and not path.is_symlink())
     return sorted(found)
 
@@ -172,9 +172,9 @@ def build_ledger(repository: Path, as_of: date) -> tuple[dict[str, Any], list[st
         raw = path.read_text(encoding="utf-8", errors="replace")
         source_hashes.append((relative, digest(raw)))
         try:
-            value = json.loads(raw)
-        except json.JSONDecodeError as exc:
-            errors.append(f"{relative}: invalid JSON: {exc}")
+            value = toon_codec.loads(raw)
+        except toon_codec.ToonDecodeError as exc:
+            errors.append(f"{relative}: invalid TOON: {exc}")
             continue
         source_errors = validate_source(repository, path, value)
         if source_errors:
@@ -284,7 +284,7 @@ def main() -> int:
     actions.add_argument("--stale", action="store_true")
     parser.add_argument("--as-of", default=date.today().isoformat())
     parser.add_argument("--write", action="store_true")
-    parser.add_argument("--format", choices=("markdown", "json", "toon"), default="toon")
+    parser.add_argument("--format", choices=("markdown", "toon"), default="toon")
     parser.add_argument("--quick-flow", action="store_true")
     parser.add_argument("--full-flow", action="store_true")
     parser.add_argument("--feature", default="<feature-name>")
@@ -319,7 +319,6 @@ def main() -> int:
         generated_by_override=args.generated_by,
     )
     if args.write:
-        atomic_write(repository / "_ai_sdlc/evidence-ledger.json", json.dumps(ledger, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
         atomic_write(repository / "_ai_sdlc/evidence-ledger.toon", encode_toon(ledger))
         atomic_write(repository / "_ai_sdlc/evidence-ledger.md", ledger_markdown)
         write_bundle_indexes(repository / "_ai_sdlc")
@@ -329,15 +328,13 @@ def main() -> int:
         value = {"schema": "ai-sdlc-evidence-stale-paths/v1", "ledger_fingerprint": ledger["fingerprint"], "stale_paths": ledger["stale_paths"]}
     else:
         value = ledger
-    if args.format == "json":
-        print(json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False))
-    elif args.format == "toon":
+    if args.format == "toon":
         print(encode_toon(value), end="")
     elif value.get("schema") == LEDGER_SCHEMA:
         print(ledger_markdown, end="")
     else:
-        print("```json")
-        print(json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False))
+        print("```toon")
+        print(encode_toon(value), end="")
         print("```")
     return 0
 

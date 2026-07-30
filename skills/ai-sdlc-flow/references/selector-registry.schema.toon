@@ -1,0 +1,56 @@
+"$defs":
+  selector:
+    additionalProperties: false
+    properties:
+      actions:
+        items:
+          type: string
+        type: array
+        uniqueItems: true
+      id:
+        pattern: "^[a-z][a-z0-9-]*$"
+        type: string
+      include:
+        items:
+          pattern: "^(references|steps)/[^.][^/]*(/[^.][^/]*)*$"
+          type: string
+        type: array
+        uniqueItems: true
+      max_tokens:
+        maximum: 4000
+        minimum: 16
+        type: integer
+      priority:
+        maximum: 100
+        minimum: 0
+        type: integer
+      reason:
+        maxLength: 240
+        minLength: 8
+        type: string
+      roles:
+        items:
+          type: string
+        type: array
+        uniqueItems: true
+    required[7]: id,roles,actions,include,priority,max_tokens,reason
+    type: object
+"$id": ai-sdlc-flow-selectors/v1
+"$schema": ai-sdlc-toon-contract/v1
+additionalProperties: false
+properties:
+  actions:
+    minItems: 1
+    type: array
+  roles:
+    maxItems: 5
+    minItems: 5
+    type: array
+  schema:
+    const: ai-sdlc-flow-selectors/v1
+  selectors:
+    items:
+      "$ref": #/$defs/selector
+    type: array
+required[4]: schema,roles,actions,selectors
+type: object

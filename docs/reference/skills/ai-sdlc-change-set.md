@@ -44,7 +44,7 @@ Choose --quick-flow for bounded assumption-driven progress or --full-flow
 for strict verification only as described below.
 Read the required evidence,
 produce or report `changes/<change-id>/` with proposal, design, tasks, delta and evidence indexes, lifecycle records, preview, approval, and recovery evidence, preserve human approval boundaries,
-and return blockers plus a complete ai-sdlc-handoff/v1.
+and return blockers plus a complete ai-sdlc-handoff/v2.
 ```
 
 This is an agent instruction, not a shell command. Terminal commands belong in the helper section.
@@ -61,7 +61,7 @@ This is an agent instruction, not a shell command. Terminal commands belong in t
 - Route every change to `<repository>/changes/<change-id>/`.
 - Keep human intent in `proposal.md`, `design.md`, `tasks.md`,
   `deltas/index.md`, and `evidence/index.md`.
-- Keep complete agent-facing TOON beside interoperable JSON for the change set,
+- Keep complete agent-facing TOON beside interoperable TOON for the change set,
   delta set, apply preview, approval, and recovery records.
 - Never store a change workspace inside `specs/`, `specs-refiniment/`, or a
   canonical target directory.
@@ -88,11 +88,13 @@ Humans accept or reject material product, security, QA, policy, rollout, release
 
 The router loads these skill-owned procedures just in time. Read only the selector matching the current phase, active role, and action; a selected step is normative and an unselected step stays out of context.
 
-| Selector | Phases | Roles | Load rule | Step | Reason |
-| --- | --- | --- | --- | --- | --- |
-| `prepare` | `prepare`, `clarify`, `route` | `business-analyst`, `product-manager`, `software-engineer` | `required` | [`steps/01-prepare.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-change-set/steps/01-prepare.md) | establish inputs, authority, lifecycle state, and safe artifact routing |
-| `execute` | `execute` | `business-analyst`, `product-manager`, `software-engineer` | `on-demand` | [`steps/02-execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-change-set/steps/02-execute.md) | perform only the selected owning-skill procedure |
-| `validate-and-handoff` | `validate`, `handoff`, `complete` | `business-analyst`, `product-manager`, `software-engineer` | `before-completion` | [`steps/03-validate-and-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-change-set/steps/03-validate-and-handoff.md) | verify outputs and return an explicit evidence-backed handoff |
+| Selector | Type | Phases | Roles | Dependencies | Operation | Side effect | Load rule | Step | Reason |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `preflight` | `analysis` | `prepare` | `business-analyst`, `product-manager`, `software-engineer` | none | `inspect-and-route` | `none` | `required` | [`steps/01-prepare.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-change-set/steps/01-prepare.md) | establish inputs, authority, lifecycle state, and safe artifact routing |
+| `context` | `context` | `clarify`, `route` | `business-analyst`, `product-manager`, `software-engineer` | `preflight` | `compile-context` | `none` | `required` | [`steps/02-context.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-change-set/steps/02-context.md) | compile the minimum sufficient context before the owning action |
+| `execute` | `action` | `execute` | `business-analyst`, `product-manager`, `software-engineer` | `context` | `execute-procedure` | `workspace-write` | `on-demand` | [`steps/02-execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-change-set/steps/02-execute.md) | perform only the selected owning-skill procedure |
+| `validate` | `validation` | `validate` | `business-analyst`, `product-manager`, `software-engineer` | `execute` | `validate-evidence` | `none` | `before-completion` | [`steps/03-validate-and-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-change-set/steps/03-validate-and-handoff.md) | validate outputs, evidence, acceptance, and residual risk |
+| `handoff` | `handoff` | `handoff`, `complete` | `business-analyst`, `product-manager`, `software-engineer` | `validate` | `handoff-result` | `none` | `before-completion` | [`steps/04-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-change-set/steps/04-handoff.md) | return a journal-backed owner and next-action handoff |
 
 Resolve the current step with `ai-sdlc-shared-runtime/scripts/ai_sdlc_steps.py`. A missing, unsafe, oversized, or unmatched step is a blocker rather than permission to broad-load the package.
 
@@ -117,7 +119,7 @@ python3 skills/ai-sdlc-change-set/scripts/change_set.py . --change-id add-sessio
 python3 skills/ai-sdlc-change-set/scripts/change_set.py . --change-id add-session-timeout --validate --format toon
 python3 skills/ai-sdlc-change-set/scripts/spec_delta.py . --change-id add-session-timeout --validate --write --format toon
 python3 skills/ai-sdlc-change-set/scripts/change_preview.py . --change-id add-session-timeout --preview --write --format toon
-python3 skills/ai-sdlc-change-set/scripts/change_apply.py . --change-id add-session-timeout --apply --approval changes/add-session-timeout/evidence/owner-approval.json --format toon
+python3 skills/ai-sdlc-change-set/scripts/change_apply.py . --change-id add-session-timeout --apply --approval changes/add-session-timeout/evidence/owner-approval.toon --format toon
 python3 skills/ai-sdlc-change-set/scripts/change_apply.py . --change-id add-session-timeout --archive --format toon
 ```
 
@@ -127,18 +129,18 @@ existing workspace and fingerprint.
 
 ## Success criteria
 
-The `ai-sdlc-change-set/v1` record is written as complete TOON plus JSON and contains `change_id`, `title`,
+The `ai-sdlc-change-set/v1` record is written as canonical TOON and contains `change_id`, `title`,
 `summary`, `status`, `owner`, `flow_mode`, dates, canonical targets, workspace
 artifact paths, authority rules, and `contract_fingerprint`.
 
-The `ai-sdlc-spec-delta/v1` TOON/JSON pair contains normalized operations, target
+The `ai-sdlc-spec-delta/v1` TOON record contains normalized operations, target
 and source evidence, exact source hashes, and a deterministic fingerprint.
 
-The `ai-sdlc-change-preview/v1` TOON/JSON pair contains virtual target hashes and
+The `ai-sdlc-change-preview/v1` TOON record contains virtual target hashes and
 diffs, conservative conflicts, stale references, reopen actions, gates, and a
 fingerprint that becomes invalid when any input drifts.
 
-The JSON schemas `ai-sdlc-change-approval/v1` and
+The TOON schemas `ai-sdlc-change-approval/v1` and
 `ai-sdlc-change-recovery/v1` bind a structurally valid approval record to the
 current preview and preserve transaction, backup, apply, and rollback evidence.
 They do not authenticate the named owner or prove authorization. Branch
@@ -147,7 +149,7 @@ enforced control must establish that authority before apply.
 
 Quality gate:
 
-- Pass when the workspace has every required artifact, the JSON record matches
+- Pass when the workspace has every required artifact, the TOON record matches
   the schema, paths are safe and unique, headings and metadata are complete,
   and the fingerprint recomputes exactly.
 - Fail when creation would overwrite a workspace, a target crosses a safety
@@ -174,7 +176,7 @@ On a blocker, preserve failed/stale evidence, name the accountable owner and exa
 
 - Report the change ID, workspace path, status, owner, targets, fingerprint,
   validation result, and next required action.
-- Before the final response, emit an `ai-sdlc-handoff/v1` result that routes a
+- Before the final response, emit an `ai-sdlc-handoff/v2` result that routes a
   structurally valid workspace to delta authoring and validation. Include
   `next_required` and `next_optional` actions with reasons, commands, and
   expected artifacts.
@@ -201,7 +203,7 @@ The downstream consumer rechecks artifacts and freshness; it does not trust a pr
     - Include change ID, artifact, status, owner, created and updated dates,
       canonical targets, and `metatags` for `ai-sdlc`, `change-set`, `proposal`,
       and `draft`.
-    - The JSON record uses schema `ai-sdlc-change-set/v1` and a deterministic
+    - The TOON record uses schema `ai-sdlc-change-set/v1` and a deterministic
       contract fingerprint.
 
 ??? info "Specs index"
@@ -222,6 +224,6 @@ must remain repository-relative and cannot traverse outside the repository.
 
 ## Source contract
 
-This page is generated from [`skills/ai-sdlc-change-set/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-change-set/SKILL.md) plus its linked `steps/manifest.json` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
+This page is generated from [`skills/ai-sdlc-change-set/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-change-set/SKILL.md) plus its linked `steps/manifest.toon` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
 
 [Back to the skill catalog](../skills.md) · [Script reference](../scripts.md) · [Choose a workflow](../../flows/index.md)

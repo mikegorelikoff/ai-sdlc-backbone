@@ -5,18 +5,18 @@ description: Start bounded task execution, record outcomes, and recover safely f
 
 # Resume a delivery run
 
-Create an `ai-sdlc-run-plan/v1` file with unique tasks, dependencies, input
+Create an `ai-sdlc-run-plan/v2` file with unique tasks, dependencies, input
 fingerprints, maximum attempts, commit-boundary flags, and positive step,
 failure, and token budgets. Start a new run once:
 
-Run from an installed consumer repository. `run-plan.json` is an input you must
-create from the `ai-sdlc-run-plan/v1` schema and runtime contract under
+Run from an installed consumer repository. `run-plan.toon` is an input you must
+create from the `ai-sdlc-run-plan/v2` schema and runtime contract under
 `.agents/skills/ai-sdlc-runtime/references/`; validate every task ID,
 dependency, fingerprint, and budget before starting the irreversible journal.
 
 ```bash
 python3 .agents/skills/ai-sdlc-runtime/scripts/runtime.py . \
-  --start --run-id delivery-004 --plan run-plan.json --format toon
+  --start --run-id delivery-004 --plan run-plan.toon --format toon
 ```
 
 Claim the next dependency-ready task:
@@ -48,12 +48,13 @@ python3 .agents/skills/ai-sdlc-runtime/scripts/runtime.py . \
 ```
 
 Resume validates the complete event sequence and hash chain, replays every
-transition, and repairs missing or stale `state.json` and `state.toon`
-projections. Agents should read complete TOON state; integrations may use exact
-JSON recovery state. Resume fails closed if journal history was edited,
-reordered, truncated into an invalid transition, or given a conflicting
-repeated outcome.
-Successful start/record operations append the hash-chained event journal below
-`_ai_sdlc/runs/<run-id>/`; successful resume reports a current projection.
+transition, and repairs a missing or stale `state.toon` projection from the
+immutable `plan.toon` and `journal/<sequence>.toon` files. Resume fails closed
+if journal history was edited, reordered, truncated into an invalid transition,
+or given a conflicting repeated outcome.
+
+Successful start and record operations append canonical hash-chained TOON
+events below `_ai_sdlc/runs/<run-id>/journal/`; successful resume reports the
+current replay projection.
 Preserve a failed journal unchanged for investigation instead of deleting it or
 starting another run with the same ID.

@@ -3,13 +3,17 @@
 
 from __future__ import annotations
 
-import json
 import hashlib
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
@@ -252,9 +256,18 @@ class StateMachineTests(unittest.TestCase):
             ["git", "-c", "user.name=Test", "-c", "user.email=test@example.invalid", "-c", "commit.gpgsign=false", "commit", "-m", "fixture"],
             cwd=root, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
         )
-        receipt = spec / "_ai_sdlc/validation-receipt.json"
-        plan = spec / "_ai_sdlc/validation-plan.json"
-        plan.write_text('{"schema":"ai-sdlc-validation-command-plan/v1","commands":[]}\n', encoding="utf-8")
+        receipt = spec / "_ai_sdlc/validation-receipt.toon"
+        plan = spec / "_ai_sdlc/validation-plan.toon"
+        plan.write_text(
+            toon_codec.dumps(
+                {
+                    "schema": "ai-sdlc-validation-command-plan/v1",
+                    "commands": [],
+                }
+            )
+            + "\n",
+            encoding="utf-8",
+        )
         value = {
             "schema": vr.RECEIPT_SCHEMA,
             "revision": vr.revision(root),
@@ -267,7 +280,7 @@ class StateMachineTests(unittest.TestCase):
             "commands": [{"id": "V001", "argv": ["python3", "test.py"], "trace_ids": ["AC-001"], "exit_code": 0}],
         }
         value["receipt_fingerprint"] = vr.receipt_fingerprint(value)
-        receipt.write_text(json.dumps(value), encoding="utf-8")
+        receipt.write_text(toon_codec.dumps(value), encoding="utf-8")
         return sm.initial_state("receipt-demo", "implementation"), validation, receipt
 
     def test_current_validation_receipt_allows_completion_evidence(self) -> None:
@@ -282,13 +295,13 @@ class StateMachineTests(unittest.TestCase):
             )
             state_path = root / "specs/receipt-demo/_ai_sdlc/state.toon"
             sm.save_state(state_path, state)
-            self.assertEqual(vr.validate_receipt(root / "specs/receipt-demo/_ai_sdlc/validation-receipt.json", root), [])
+            self.assertEqual(vr.validate_receipt(root / "specs/receipt-demo/_ai_sdlc/validation-receipt.toon", root), [])
 
     def test_failed_forged_and_stale_validation_receipts_are_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             state, _, receipt = self.validation_fixture(root)
-            original = json.loads(receipt.read_text(encoding="utf-8"))
+            original = toon_codec.loads(receipt.read_text(encoding="utf-8"))
 
             failed = dict(original)
             failed["commands"] = [dict(original["commands"][0], exit_code=99)]
@@ -303,7 +316,7 @@ class StateMachineTests(unittest.TestCase):
 
             for label, value in (("failed", failed), ("forged", forged), ("stale", stale)):
                 with self.subTest(label=label):
-                    receipt.write_text(json.dumps(value), encoding="utf-8")
+                    receipt.write_text(toon_codec.dumps(value), encoding="utf-8")
                     errors = sm.completion_artifact_errors(
                         state, "ai-sdlc-validation", "specs/receipt-demo/validation.md", "quick", root
                     )

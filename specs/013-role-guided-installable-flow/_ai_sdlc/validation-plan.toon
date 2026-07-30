@@ -1,0 +1,35 @@
+commands[11]:
+  - argv[5]: python3,"-m",unittest,skills.ai-sdlc-flow.tests.test_flow,"-v"
+    id: flow-v2
+    trace_ids[7]: AC-003,AC-004,AC-005,AC-006,AC-007,AC-008,AC-010
+  - argv[9]: python3,"-m",unittest,discover,"-s",skills/ai-sdlc-shared-runtime/tests,"-p",test*.py,"-v"
+    id: runtime-suite
+    trace_ids[14]: AC-001,AC-002,AC-009,AC-012,AC-013,AC-014,AC-015,AC-016,AC-017,AC-018,AC-019,AC-020,AC-021,AC-022
+  - argv[5]: python3,skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_okf.py,"--check",specs/013-role-guided-installable-flow,specs-refiniment/013-role-guided-installable-flow
+    id: okf-bundles
+    trace_ids[3]: AC-017,AC-020,AC-022
+  - argv[7]: python3,skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_steps.py,"--root",.,"--validate-all","--format",toon
+    id: skill-steps
+    trace_ids[4]: AC-013,AC-014,AC-015,AC-016
+  - argv[4]: python3,skills/ai-sdlc-shared-runtime/tests/install_smoke.py,"--mode",emulated
+    id: install-full
+    trace_ids[1]: AC-002
+  - argv[4]: python3,skills/ai-sdlc-shared-runtime/tests/install_smoke.py,"--mode",emulated-selective
+    id: install-selective
+    trace_ids[1]: AC-002
+  - argv[4]: python3,skills/ai-sdlc-shared-runtime/tests/install_smoke.py,"--mode",emulated-global
+    id: install-global
+    trace_ids[1]: AC-002
+  - argv[2]: python3,docs/scripts/validate_docs.py
+    id: docs
+    trace_ids[2]: AC-011,AC-012
+  - argv[5]: python3,skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_compatibility.py,"--skip-git-audit","--format",toon
+    id: compatibility
+    trace_ids[2]: AC-001,AC-012
+  - argv[4]: python3,skills/ai-sdlc-sdd/scripts/validate_spec.py,specs/013-role-guided-installable-flow,"--full-flow"
+    id: sdd
+    trace_ids[1]: AC-012
+  - argv[3]: git,diff,"--check"
+    id: diff-hygiene
+    trace_ids[1]: AC-012
+schema: ai-sdlc-validation-command-plan/v1

@@ -4,7 +4,6 @@
 from __future__ import annotations
 import argparse
 import hashlib
-import json
 import os
 import re
 import sys
@@ -13,6 +12,7 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 _SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
 sys.path.insert(0, str(_SHARED))
+import ai_sdlc_toon as toon_codec
 from ai_sdlc_toon import encode_toon
 from ai_sdlc_safe_io import atomic_write_text
 from ai_sdlc_okf import migrate_concept_text, write_bundle_indexes
@@ -22,7 +22,7 @@ DECISION_SCHEMA = "ai-sdlc-package-trust-decision/v1"
 FIELDS = {"schema", "id", "version", "origin", "harness_api", "capabilities", "files", "digest", "provenance"}
 
 def canonical(value: Any) -> str:
-    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return toon_codec.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 def digest(value: Any) -> str:
     return hashlib.sha256((value if isinstance(value, str) else canonical(value)).encode()).hexdigest()
 def file_hash(path: Path) -> str:
@@ -100,15 +100,15 @@ def markdown(value: dict[str, Any]) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("repository", type=Path); parser.add_argument("--package-root", type=Path, required=True); parser.add_argument("--manifest", type=Path, required=True)
-    parser.add_argument("--allowed-origin", action="append", default=[]); parser.add_argument("--allowed-capability", action="append", default=[]); parser.add_argument("--harness-api", default="1.0.0"); parser.add_argument("--require-provenance", action="store_true"); parser.add_argument("--write", action="store_true"); parser.add_argument("--format", choices=("toon", "json", "markdown"), default="toon")
+    parser.add_argument("--allowed-origin", action="append", default=[]); parser.add_argument("--allowed-capability", action="append", default=[]); parser.add_argument("--harness-api", default="1.0.0"); parser.add_argument("--require-provenance", action="store_true"); parser.add_argument("--write", action="store_true"); parser.add_argument("--format", choices=("toon", "markdown"), default="toon")
     parser.add_argument("--quick-flow", action="store_true"); parser.add_argument("--full-flow", action="store_true"); parser.add_argument("--feature", default="<feature-name>"); parser.add_argument("--state-check", action="store_true"); parser.add_argument("--begin-state", action="store_true"); parser.add_argument("--complete-state", action="store_true"); parser.add_argument("--decision-ref"); parser.add_argument("--assumption"); parser.add_argument("--state-workspace", choices=("refinement", "implementation")); parser.add_argument("--generated-by")
     args = parser.parse_args()
     if args.begin_state or args.complete_state: print("ERROR: package trust cannot mutate feature lifecycle state"); return 1
     repository, package_root = args.repository.resolve(), args.package_root.resolve()
     active_api = semver(args.harness_api)
     if not repository.is_dir() or not package_root.is_dir() or active_api is None or not args.allowed_origin: print("ERROR: repository, package root, harness API, and allowed origin are required"); return 1
-    try: manifest = json.loads(args.manifest.resolve().read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc: print(f"ERROR: cannot read manifest: {exc}"); return 1
+    try: manifest = toon_codec.loads(args.manifest.resolve().read_text(encoding="utf-8"))
+    except (OSError, toon_codec.ToonDecodeError) as exc: print(f"ERROR: cannot read manifest: {exc}"); return 1
     errors = validate_manifest(manifest)
     if errors:
         for error in errors: print(f"ERROR: {error}")
@@ -116,11 +116,11 @@ def main() -> int:
     value = trust(package_root, manifest, set(args.allowed_origin), set(args.allowed_capability), active_api, args.require_provenance)
     decision_markdown = migrate_concept_text(markdown(value), profile_key="package-trust-decision.md", generated_by_override=args.generated_by)
     if args.write:
-        output = repository / f"_ai_sdlc/trust/{manifest['id']}/decision.json"
+        output = repository / f"_ai_sdlc/trust/{manifest['id']}/decision.toon"
         try:
-            atomic_write(repository, output, json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) + "\n"); atomic_write(repository, output.with_suffix(".toon"), encode_toon(value)); atomic_write(repository, output.with_suffix(".md"), decision_markdown); write_bundle_indexes(repository / "_ai_sdlc")
+            atomic_write(repository, output, encode_toon(value)); atomic_write(repository, output.with_suffix(".md"), decision_markdown); write_bundle_indexes(repository / "_ai_sdlc")
         except ValueError as exc:
             print(f"ERROR: {exc}"); return 1
-    print(json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) if args.format == "json" else decision_markdown if args.format == "markdown" else encode_toon(value), end="" if args.format != "json" else "\n")
+    print(encode_toon(value) if args.format == "toon" else decision_markdown, end="")
     return 0 if value["decision"] == "allow" else 2
 if __name__ == "__main__": raise SystemExit(main())

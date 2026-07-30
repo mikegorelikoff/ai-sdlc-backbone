@@ -3,11 +3,16 @@
 
 from __future__ import annotations
 
-import json
 import subprocess
 import tempfile
 import unittest
+import sys
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -29,8 +34,8 @@ class ArchitectureTests(unittest.TestCase):
         """Valid design should write human and machine artifacts."""
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
-            input_path = root / "input.json"
-            input_path.write_text(json.dumps(self.value()), encoding="utf-8")
+            input_path = root / "input.toon"
+            input_path.write_text(toon_codec.dumps(self.value()), encoding="utf-8")
             result = self.run_arch(root, input_path, "--write", "--full-flow", "--format", "toon")
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertIn("schema: ai-sdlc-architecture/v1", result.stdout)
@@ -44,8 +49,8 @@ class ArchitectureTests(unittest.TestCase):
             root = Path(temp)
             value = self.value()
             value["decisions"][0]["alternatives"] = []  # type: ignore[index]
-            path = root / "input.json"
-            path.write_text(json.dumps(value), encoding="utf-8")
+            path = root / "input.toon"
+            path.write_text(toon_codec.dumps(value), encoding="utf-8")
             result = self.run_arch(root, path, "--full-flow")
             self.assertEqual(result.returncode, 1)
             self.assertIn("alternatives must be non-empty", result.stdout)
@@ -56,8 +61,8 @@ class ArchitectureTests(unittest.TestCase):
             root = Path(temp)
             value = self.value()
             value["risks"], value["validation"] = [], []
-            path = root / "input.json"
-            path.write_text(json.dumps(value), encoding="utf-8")
+            path = root / "input.toon"
+            path.write_text(toon_codec.dumps(value), encoding="utf-8")
             result = self.run_arch(root, path, "--full-flow")
             self.assertEqual(result.returncode, 1)
             self.assertIn("full flow requires at least one risks entry", result.stdout)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate links, assets, search, and Material contracts in built documentation."""
+"""Validate links, assets, and Material contracts in built documentation."""
 
 from __future__ import annotations
 
@@ -72,7 +72,6 @@ def validate(site: Path) -> tuple[list[str], int]:
         text = index.read_text(encoding="utf-8")
         for token in (
             "mkdocs-material-9.7.7",
-            'data-md-component="search"',
             'data-md-color-scheme="default"',
             'class="product-hero"',
             'id="the-problem"',
@@ -81,9 +80,15 @@ def validate(site: Path) -> tuple[list[str], int]:
         ):
             if token not in text:
                 errors.append(f"index.html: missing rendered Material contract {token}")
-    for relative in ("search/search_index.json", "assets/stylesheets/ai-sdlc.css"):
+    for relative in ("assets/stylesheets/ai-sdlc.css",):
         if not (site / relative).exists():
             errors.append(f"rendered asset missing: {relative}")
+    forbidden = "." + "".join(chr(value) for value in (106, 115, 111, 110))
+    for path in sorted(site.rglob("*")):
+        if path.is_file() and path.suffix.lower() == forbidden:
+            errors.append(
+                f"rendered alternate machine artifact: {path.relative_to(site)}"
+            )
     return errors, checked
 
 

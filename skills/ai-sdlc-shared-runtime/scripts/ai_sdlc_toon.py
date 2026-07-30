@@ -1,14 +1,9 @@
 #!/usr/bin/env python3
-"""Deterministic TOON 3.3 encoding for the JSON data model.
-
-The harness keeps JSON where JSON Schema or append-only JSONL interoperability
-is required. Agent-facing projections use this encoder so they retain the full
-record instead of emitting capability-specific summaries.
-"""
+"""Deterministic TOON 3.3 encoding and decoding for harness contracts."""
 
 from __future__ import annotations
 
-import json
+import ast
 import math
 import re
 from typing import Any
@@ -25,7 +20,30 @@ def _primitive(value: Any) -> bool:
 
 def _key(value: Any) -> str:
     text = str(value)
-    return text if _BARE_KEY.fullmatch(text) else json.dumps(text, ensure_ascii=False)
+    return text if _BARE_KEY.fullmatch(text) else _quote(text)
+
+
+def _quote(value: str) -> str:
+    """Quote a TOON string without routing through another wire format."""
+    escaped: list[str] = ['"']
+    replacements = {
+        '"': '\\"',
+        "\\": "\\\\",
+        "\b": "\\b",
+        "\f": "\\f",
+        "\n": "\\n",
+        "\r": "\\r",
+        "\t": "\\t",
+    }
+    for character in value:
+        if character in replacements:
+            escaped.append(replacements[character])
+        elif ord(character) < 0x20:
+            escaped.append(f"\\u{ord(character):04x}")
+        else:
+            escaped.append(character)
+    escaped.append('"')
+    return "".join(escaped)
 
 
 def _string(value: str) -> str:
@@ -37,7 +55,7 @@ def _string(value: str) -> str:
         or value.startswith("-")
         or any(character in value for character in ':,"[]{}\n\r\t\\')
     )
-    return json.dumps(value, ensure_ascii=False) if needs_quotes else value
+    return _quote(value) if needs_quotes else value
 
 
 def _scalar(value: Any) -> str:
@@ -155,9 +173,10 @@ def _emit_list_items(value: list[Any], depth: int) -> list[str]:
 
 
 def encode_toon(value: Any) -> str:
-    """Encode a JSON-compatible value as canonical, newline-terminated TOON."""
+    """Encode a portable value as canonical, newline-terminated TOON."""
+    value = _normalize(value)
     if isinstance(value, dict):
-        lines = _emit_mapping(value, 0)
+        lines = _emit_mapping(value, 0) if value else ["{}"]
     elif isinstance(value, list):
         if all(_primitive(item) for item in value):
             lines = [f"[{len(value)}]: " + ",".join(_scalar(item) for item in value)]
@@ -168,3 +187,342 @@ def encode_toon(value: Any) -> str:
     else:
         raise TypeError(f"unsupported TOON root: {type(value).__name__}")
     return "\n".join(lines) + "\n"
+
+
+def _normalize(value: Any) -> Any:
+    """Convert tuples to lists recursively before encoding."""
+    if isinstance(value, tuple):
+        return [_normalize(item) for item in value]
+    if isinstance(value, list):
+        return [_normalize(item) for item in value]
+    if isinstance(value, dict):
+        return {key: _normalize(item) for key, item in value.items()}
+    return value
+
+
+class ToonDecodeError(ValueError):
+    """Raised when input is outside the canonical TOON subset."""
+
+
+_TABLE_HEADER = re.compile(r"^(.+?)\[(\d+)\]\{(.*)\}:$")
+_LIST_HEADER = re.compile(r"^(.+?)\[(\d+)\]:(?:\s*(.*))?$")
+_ANON_LIST_HEADER = re.compile(r"^\[(\d+)\]:(?:\s*(.*))?$")
+
+
+def _indent(raw: str) -> int:
+    spaces = len(raw) - len(raw.lstrip(" "))
+    if spaces % 2:
+        raise ToonDecodeError("TOON indentation must use two-space levels")
+    return spaces // 2
+
+
+def _split_quoted(value: str, delimiter: str = ",") -> list[str]:
+    """Split a row while preserving quoted delimiters and escapes."""
+    if value == "":
+        return []
+    result: list[str] = []
+    current: list[str] = []
+    quoted = False
+    escaped = False
+    for character in value:
+        if escaped:
+            current.append(character)
+            escaped = False
+            continue
+        if character == "\\" and quoted:
+            current.append(character)
+            escaped = True
+            continue
+        if character == '"':
+            current.append(character)
+            quoted = not quoted
+            continue
+        if character == delimiter and not quoted:
+            result.append("".join(current).strip())
+            current = []
+            continue
+        current.append(character)
+    if quoted:
+        raise ToonDecodeError("unterminated quoted TOON scalar")
+    result.append("".join(current).strip())
+    return result
+
+
+def _split_pair(value: str) -> tuple[str, str] | None:
+    quoted = False
+    escaped = False
+    for index, character in enumerate(value):
+        if escaped:
+            escaped = False
+            continue
+        if character == "\\" and quoted:
+            escaped = True
+            continue
+        if character == '"':
+            quoted = not quoted
+            continue
+        if character == ":" and not quoted:
+            return value[:index].strip(), value[index + 1 :].strip()
+    return None
+
+
+def _decode_key(value: str) -> str:
+    parsed = _decode_scalar(value)
+    if not isinstance(parsed, str):
+        raise ToonDecodeError(f"TOON mapping key must be text: {value}")
+    return parsed
+
+
+def _decode_scalar(value: str) -> Any:
+    value = value.strip()
+    if value == "{}":
+        return {}
+    if value.startswith('"'):
+        try:
+            parsed = ast.literal_eval(value)
+        except (SyntaxError, ValueError) as exc:
+            raise ToonDecodeError(f"invalid quoted TOON scalar: {value}") from exc
+        if not isinstance(parsed, str):
+            raise ToonDecodeError(f"quoted TOON scalar is not text: {value}")
+        return parsed
+    if value == "true":
+        return True
+    if value == "false":
+        return False
+    if value == "null":
+        return None
+    if re.fullmatch(r"-?(?:0|[1-9][0-9]*)", value):
+        return int(value)
+    if _NUMBER.fullmatch(value):
+        return float(value)
+    return value
+
+
+class _Parser:
+    """Inverse parser for the exact canonical subset emitted above."""
+
+    def __init__(self, text: str) -> None:
+        self.lines = [line for line in text.splitlines() if line.strip()]
+
+    def parse(self) -> Any:
+        if not self.lines:
+            raise ToonDecodeError("empty TOON input")
+        first = self.lines[0].strip()
+        anonymous = _ANON_LIST_HEADER.fullmatch(first)
+        if anonymous:
+            count = int(anonymous.group(1))
+            inline = anonymous.group(2) or ""
+            if inline:
+                values = [_decode_scalar(item) for item in _split_quoted(inline)]
+                self._count(values, count, "root list")
+                if len(self.lines) != 1:
+                    raise ToonDecodeError("unexpected data after inline root list")
+                return values
+            values, index = self.parse_list(1, 1, count)
+            if index != len(self.lines):
+                raise ToonDecodeError("unexpected data after root list")
+            return values
+        if _split_pair(first) is None and not _TABLE_HEADER.fullmatch(first) and not _LIST_HEADER.fullmatch(first):
+            if len(self.lines) != 1:
+                raise ToonDecodeError("scalar TOON root has trailing data")
+            return _decode_scalar(first)
+        value, index = self.parse_mapping(0, 0)
+        if index != len(self.lines):
+            raise ToonDecodeError(f"unexpected TOON content at line {index + 1}")
+        return value
+
+    @staticmethod
+    def _count(values: list[Any], expected: int, label: str) -> None:
+        if len(values) != expected:
+            raise ToonDecodeError(
+                f"{label} declares {expected} items but contains {len(values)}"
+            )
+
+    def parse_mapping(self, index: int, depth: int) -> tuple[dict[str, Any], int]:
+        result: dict[str, Any] = {}
+        while index < len(self.lines):
+            raw = self.lines[index]
+            current = _indent(raw)
+            if current < depth:
+                break
+            if current > depth:
+                raise ToonDecodeError(f"unexpected indentation at line {index + 1}")
+            text = raw.strip()
+            if text.startswith("- "):
+                break
+            key, value, index = self.parse_named(index, depth, text, depth + 1)
+            if key in result:
+                raise ToonDecodeError(f"duplicate TOON key: {key}")
+            result[key] = value
+        return result, index
+
+    def parse_named(
+        self,
+        index: int,
+        depth: int,
+        text: str,
+        child_depth: int,
+    ) -> tuple[str, Any, int]:
+        table = _TABLE_HEADER.fullmatch(text)
+        if table:
+            key = _decode_key(table.group(1))
+            count = int(table.group(2))
+            fields = [_decode_key(item) for item in _split_quoted(table.group(3))]
+            rows: list[dict[str, Any]] = []
+            index += 1
+            for _ in range(count):
+                if index >= len(self.lines) or _indent(self.lines[index]) != child_depth:
+                    raise ToonDecodeError(f"missing table row for {key}")
+                cells = [
+                    _decode_scalar(item)
+                    for item in _split_quoted(self.lines[index].strip())
+                ]
+                if len(cells) != len(fields):
+                    raise ToonDecodeError(
+                        f"table {key} row has {len(cells)} cells; expected {len(fields)}"
+                    )
+                rows.append(dict(zip(fields, cells)))
+                index += 1
+            return key, rows, index
+
+        named_list = _LIST_HEADER.fullmatch(text)
+        if named_list:
+            key = _decode_key(named_list.group(1))
+            count = int(named_list.group(2))
+            inline = named_list.group(3) or ""
+            index += 1
+            if inline:
+                values = [_decode_scalar(item) for item in _split_quoted(inline)]
+                self._count(values, count, key)
+                return key, values, index
+            if count == 0:
+                return key, [], index
+            values, index = self.parse_list(index, child_depth, count)
+            return key, values, index
+
+        pair = _split_pair(text)
+        if pair is None:
+            raise ToonDecodeError(f"invalid TOON mapping line: {text}")
+        raw_key, rest = pair
+        key = _decode_key(raw_key)
+        index += 1
+        if rest:
+            return key, _decode_scalar(rest), index
+        if index >= len(self.lines) or _indent(self.lines[index]) <= depth:
+            return key, {}, index
+        if _indent(self.lines[index]) != child_depth:
+            raise ToonDecodeError(f"invalid nested indentation for {key}")
+        if self.lines[index].strip().startswith("- "):
+            values, index = self.parse_list(index, child_depth, None)
+            return key, values, index
+        value, index = self.parse_mapping(index, child_depth)
+        return key, value, index
+
+    def parse_list(
+        self,
+        index: int,
+        depth: int,
+        expected: int | None,
+    ) -> tuple[list[Any], int]:
+        result: list[Any] = []
+        while index < len(self.lines):
+            raw = self.lines[index]
+            current = _indent(raw)
+            if current < depth:
+                break
+            if current != depth or not raw.strip().startswith("- "):
+                break
+            content = raw.strip()[2:].strip()
+            index += 1
+            if content == "{}":
+                item: Any = {}
+            else:
+                anonymous = _ANON_LIST_HEADER.fullmatch(content)
+                table = _TABLE_HEADER.fullmatch(content)
+                named_list = _LIST_HEADER.fullmatch(content)
+                pair = _split_pair(content)
+                if anonymous:
+                    count = int(anonymous.group(1))
+                    inline = anonymous.group(2) or ""
+                    if inline:
+                        item = [
+                            _decode_scalar(value)
+                            for value in _split_quoted(inline)
+                        ]
+                        self._count(item, count, "anonymous list")
+                    elif count == 0:
+                        item = []
+                    else:
+                        item, index = self.parse_list(index, depth + 1, count)
+                elif table or named_list:
+                    key, value, index = self.parse_named(
+                        index - 1,
+                        depth,
+                        content,
+                        depth + 2,
+                    )
+                    item = {key: value}
+                elif pair is not None:
+                    raw_key, rest = pair
+                    key = _decode_key(raw_key)
+                    item = {}
+                    if rest:
+                        item[key] = _decode_scalar(rest)
+                    elif (
+                        index < len(self.lines)
+                        and _indent(self.lines[index]) == depth + 2
+                    ):
+                        if self.lines[index].strip().startswith("- "):
+                            value, index = self.parse_list(index, depth + 2, None)
+                        else:
+                            value, index = self.parse_mapping(index, depth + 2)
+                        item[key] = value
+                    else:
+                        item[key] = {}
+                else:
+                    item = _decode_scalar(content)
+
+            if isinstance(item, dict) and index < len(self.lines):
+                if (
+                    _indent(self.lines[index]) == depth + 1
+                    and not self.lines[index].strip().startswith("- ")
+                ):
+                    rest, index = self.parse_mapping(index, depth + 1)
+                    duplicate = set(item) & set(rest)
+                    if duplicate:
+                        raise ToonDecodeError(
+                            "duplicate TOON list-item keys: "
+                            + ", ".join(sorted(duplicate))
+                        )
+                    item.update(rest)
+            result.append(item)
+            if expected is not None and len(result) == expected:
+                break
+        if expected is not None:
+            self._count(result, expected, "list")
+        return result, index
+
+
+def decode_toon(text: str) -> Any:
+    """Decode canonical TOON into portable Python values."""
+    return _Parser(text).parse()
+
+
+def loads(text: str) -> Any:
+    """Alias used by harness loaders."""
+    return decode_toon(text)
+
+
+def load(handle: Any) -> Any:
+    """Read and decode TOON from a text handle."""
+    return decode_toon(handle.read())
+
+
+def dumps(value: Any, **_options: Any) -> str:
+    """Return canonical TOON without the terminating newline."""
+    return encode_toon(value).rstrip("\n")
+
+
+def dump(value: Any, handle: Any, **_options: Any) -> None:
+    """Write canonical TOON to a text handle."""
+    handle.write(dumps(value))

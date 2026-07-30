@@ -5,7 +5,7 @@ the current canonical target bytes.
 
 ## Outputs
 
-- `_ai_sdlc/apply-preview.json` contains target before and after hashes,
+- `_ai_sdlc/apply-preview.toon` contains target before and after hashes,
   unified diffs, conflicts, stale references, reopen actions, required gates,
   authority limits, and the preview fingerprint.
 - `apply-preview.md` renders the same review surface for people.

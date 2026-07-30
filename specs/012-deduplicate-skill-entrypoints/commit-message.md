@@ -64,7 +64,7 @@ How to test:
 3. Scan active surfaces and confirm the retired navigator ID is absent outside explicit migration and historical evidence.
 
 Validation:
-- python3 skills/ai-sdlc-validation/scripts/run_validation.py --root . --plan specs/012-deduplicate-skill-entrypoints/_ai_sdlc/validation-plan.json --output specs/012-deduplicate-skill-entrypoints/_ai_sdlc/validation-receipt.json --verify -> current; 12/12 commands passed
+- python3 skills/ai-sdlc-validation/scripts/run_validation.py --root . --plan specs/012-deduplicate-skill-entrypoints/_ai_sdlc/validation-plan.toon --output specs/012-deduplicate-skill-entrypoints/_ai_sdlc/validation-receipt.toon --verify -> current; 12/12 commands passed
 - python3 skills/ai-sdlc-sdd/scripts/validate_spec.py specs/012-deduplicate-skill-entrypoints --quick-flow -> passed
 - git diff --check -> passed
 

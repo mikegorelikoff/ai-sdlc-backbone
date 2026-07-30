@@ -3,11 +3,16 @@
 
 from __future__ import annotations
 
-import json
 import subprocess
 import tempfile
 import unittest
+import sys
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -24,11 +29,14 @@ class RetrospectiveTests(unittest.TestCase):
     def fixture(self, root: Path, status: str = "proposed", decision_ref: str = "") -> Path:
         """Create evidence, protected policy target, and retrospective input."""
         (root / "validation.md").write_text("# Validation\nRetry fixture failed twice before passing.\n", encoding="utf-8")
-        policy = root / "policy.json"
-        policy.write_text('{"retry": false}\n', encoding="utf-8")
-        value = {"schema": "ai-sdlc-retrospective-input/v1", "observations": [{"id": "OBS-001", "category": "friction", "statement": "Retry behavior caused repeated manual validation.", "evidence": {"path": "validation.md", "line": 2, "detail": "Two failed attempts were recorded."}}], "proposals": [{"id": "PROP-001", "based_on": ["OBS-001"], "target": "policy.json", "change": "Add a retry fixture.", "owner": "QA", "status": status, "decision_ref": decision_ref, "next_action": "Review with the validation owner."}]}
-        path = root / "retro.json"
-        path.write_text(json.dumps(value), encoding="utf-8")
+        policy = root / "policy.toon"
+        policy.write_text(
+            toon_codec.dumps({"retry": False}) + "\n",
+            encoding="utf-8",
+        )
+        value = {"schema": "ai-sdlc-retrospective-input/v1", "observations": [{"id": "OBS-001", "category": "friction", "statement": "Retry behavior caused repeated manual validation.", "evidence": {"path": "validation.md", "line": 2, "detail": "Two failed attempts were recorded."}}], "proposals": [{"id": "PROP-001", "based_on": ["OBS-001"], "target": "policy.toon", "change": "Add a retry fixture.", "owner": "QA", "status": status, "decision_ref": decision_ref, "next_action": "Review with the validation owner."}]}
+        path = root / "retro.toon"
+        path.write_text(toon_codec.dumps(value), encoding="utf-8")
         return path
 
     def test_observations_and_proposals_are_separate_in_outputs(self) -> None:
@@ -40,7 +48,7 @@ class RetrospectiveTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertIn("observations[1]", result.stdout)
             self.assertIn("proposals[1]", result.stdout)
-            self.assertIn("PROP-001,OBS-001,policy.json", result.stdout)
+            self.assertIn("PROP-001,OBS-001,policy.toon", result.stdout)
 
     def test_accepted_proposal_requires_decision(self) -> None:
         """Acceptance must never be inferred without durable authority."""
@@ -56,7 +64,7 @@ class RetrospectiveTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             input_path = self.fixture(root, status="accepted", decision_ref="DEC-014")
-            policy = root / "policy.json"
+            policy = root / "policy.toon"
             before = policy.read_bytes()
             result = self.run_retro(root, input_path, "--write", "--full-flow")
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
@@ -69,9 +77,9 @@ class RetrospectiveTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             input_path = self.fixture(root)
-            value = json.loads(input_path.read_text(encoding="utf-8"))
+            value = toon_codec.loads(input_path.read_text(encoding="utf-8"))
             value["proposals"][0]["based_on"] = ["OBS-999"]
-            input_path.write_text(json.dumps(value), encoding="utf-8")
+            input_path.write_text(toon_codec.dumps(value), encoding="utf-8")
             result = self.run_retro(root, input_path)
             self.assertEqual(result.returncode, 1)
             self.assertIn("known observation IDs", result.stdout)

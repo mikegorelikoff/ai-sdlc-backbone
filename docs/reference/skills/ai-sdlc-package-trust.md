@@ -7,7 +7,7 @@ description: Human-facing operating guide for ai-sdlc-package-trust, including i
 
 | Lifecycle position | Primary owner | Supporting roles | Module | Output |
 | --- | --- | --- | --- | --- |
-| Package trust and local observability | Security, Delivery, Release | Dev, Architecture | `core` | `_ai_sdlc/trust/<package-id>/decision.{toon,json,md}` or `_ai_sdlc/metrics/local.{toon,json,md}` |
+| Package trust and local observability | Security, Delivery, Release | Dev, Architecture | `core` | `_ai_sdlc/trust/<package-id>/decision.toon` or `_ai_sdlc/metrics/local.toon`, with optional human Markdown |
 
 ## Why it exists
 
@@ -30,8 +30,8 @@ These are independent operations. Pick exactly one branch for the current reques
 
 | Branch | Choose it when | Do not choose it when | Helper | Durable output |
 | --- | --- | --- | --- | --- |
-| **A — Verify a package** | A package must be evaluated against origin, API, capability, integrity, and provenance policy. | You need to install, execute, publish, sign, approve, or delete it; use the separately authorized package lifecycle workflow instead. | `package_trust.py` | `_ai_sdlc/trust/<package-id>/decision.{toon,json,md}` |
-| **B — Generate local metrics** | You need reproducible content-free counts, budgets, statuses, coverage, freshness, and fingerprints from local run evidence. | You need content analytics, event telemetry, or upload; use an approved observability/privacy workflow instead. | `metrics.py` | `_ai_sdlc/metrics/local.{toon,json,md}` |
+| **A — Verify a package** | A package must be evaluated against origin, API, capability, integrity, and provenance policy. | You need to install, execute, publish, sign, approve, or delete it; use the separately authorized package lifecycle workflow instead. | `package_trust.py` | `_ai_sdlc/trust/<package-id>/decision.toon` with optional human Markdown |
+| **B — Generate local metrics** | You need reproducible content-free counts, budgets, statuses, coverage, freshness, and fingerprints from local run evidence. | You need content analytics, event telemetry, or upload; use an approved observability/privacy workflow instead. | `metrics.py` | `_ai_sdlc/metrics/local.toon` with optional human Markdown |
 
 ### Branch A — Verify a package
 
@@ -48,7 +48,7 @@ Start in report mode, explain every control, and do not install or execute anyth
 **Terminal starting point.**
 
 ```bash
-python3 skills/ai-sdlc-package-trust/scripts/package_trust.py . --package-root package --manifest package.json --allowed-origin repository --allowed-capability filesystem.read --require-provenance
+python3 skills/ai-sdlc-package-trust/scripts/package_trust.py . --package-root package --manifest package.toon --allowed-origin repository --allowed-capability filesystem.read --require-provenance
 ```
 
 **Human checkpoint.** A security or release owner supplies the policy and reviews allow/deny evidence. An `allow` result is evidence only, never installation or execution approval.
@@ -65,11 +65,11 @@ controls[2]{code,status,evidence}:
   provenance,fail,required evidence missing
 ```
 
-**Blockers and output.** Missing package root, manifest, allowed origin, valid harness API, or readable declared files blocks evaluation. Preserve the reason and write only `_ai_sdlc/trust/<package-id>/decision.{toon,json,md}` when explicit write mode is authorized.
+**Blockers and output.** Missing package root, manifest, allowed origin, valid harness API, or readable declared files blocks evaluation. Preserve the reason and write only `_ai_sdlc/trust/<package-id>/decision.toon` plus optional human Markdown when explicit write mode is authorized.
 
 ### Branch B — Generate local metrics
 
-**Inputs and reads.** Read only repository-local `_ai_sdlc/runs/*/state.json` records with schema `ai-sdlc-run-state/v1` and optional `_ai_sdlc/evidence-ledger.json` with schema `ai-sdlc-evidence-ledger/v1`. Aggregate schemas, fingerprints, statuses, booleans, and numeric counts or budgets only.
+**Inputs and reads.** Read only repository-local `_ai_sdlc/runs/*/state.toon` records with schema `ai-sdlc-run-state/v2` and optional `_ai_sdlc/evidence-ledger.toon` with schema `ai-sdlc-evidence-ledger/v1`. Aggregate schemas, fingerprints, statuses, booleans, and numeric counts or budgets only.
 
 **Tell your agent.**
 
@@ -100,7 +100,7 @@ tasks:
   total: 0
 ```
 
-**Blockers and output.** A missing repository or any forbidden content-bearing field blocks the operation. Otherwise write only `_ai_sdlc/metrics/local.{toon,json,md}` in explicit write mode; the helper has no network operation and never uploads metrics.
+**Blockers and output.** A missing repository or any forbidden content-bearing field blocks the operation. Otherwise write only `_ai_sdlc/metrics/local.toon` plus optional human Markdown in explicit write mode; the helper has no network operation and never uploads metrics.
 
 ## Who is involved
 
@@ -117,7 +117,7 @@ Choose exactly one branch above. Complete only that branch's inputs and reads; t
 Choose Branch A or Branch B above and copy its branch-specific prompt.
 Do not send a combined package-verification and metrics request.
 Apply --quick-flow or --full-flow only to the selected branch,
-preserve human approval boundaries, and return ai-sdlc-handoff/v1.
+preserve human approval boundaries, and return ai-sdlc-handoff/v2.
 ```
 
 This is an agent instruction, not a shell command. Terminal commands belong in the helper section.
@@ -145,11 +145,13 @@ Apply quick/full behavior only within the selected branch as defined above. Do n
 
 The router loads these skill-owned procedures just in time. Read only the selector matching the current phase, active role, and action; a selected step is normative and an unselected step stays out of context.
 
-| Selector | Phases | Roles | Load rule | Step | Reason |
-| --- | --- | --- | --- | --- | --- |
-| `prepare` | `prepare`, `clarify`, `route` | `product-manager`, `software-architect` | `required` | [`steps/01-prepare.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-package-trust/steps/01-prepare.md) | establish inputs, authority, lifecycle state, and safe artifact routing |
-| `execute` | `execute` | `product-manager`, `software-architect` | `on-demand` | [`steps/02-execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-package-trust/steps/02-execute.md) | perform only the selected owning-skill procedure |
-| `validate-and-handoff` | `validate`, `handoff`, `complete` | `product-manager`, `software-architect` | `before-completion` | [`steps/03-validate-and-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-package-trust/steps/03-validate-and-handoff.md) | verify outputs and return an explicit evidence-backed handoff |
+| Selector | Type | Phases | Roles | Dependencies | Operation | Side effect | Load rule | Step | Reason |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `preflight` | `analysis` | `prepare` | `product-manager`, `software-architect` | none | `inspect-and-route` | `none` | `required` | [`steps/01-prepare.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-package-trust/steps/01-prepare.md) | establish inputs, authority, lifecycle state, and safe artifact routing |
+| `context` | `context` | `clarify`, `route` | `product-manager`, `software-architect` | `preflight` | `compile-context` | `none` | `required` | [`steps/02-context.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-package-trust/steps/02-context.md) | compile the minimum sufficient context before the owning action |
+| `execute` | `action` | `execute` | `product-manager`, `software-architect` | `context` | `execute-procedure` | `workspace-write` | `on-demand` | [`steps/02-execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-package-trust/steps/02-execute.md) | perform only the selected owning-skill procedure |
+| `validate` | `validation` | `validate` | `product-manager`, `software-architect` | `execute` | `validate-evidence` | `none` | `before-completion` | [`steps/03-validate-and-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-package-trust/steps/03-validate-and-handoff.md) | validate outputs, evidence, acceptance, and residual risk |
+| `handoff` | `handoff` | `handoff`, `complete` | `product-manager`, `software-architect` | `validate` | `handoff-result` | `none` | `before-completion` | [`steps/04-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-package-trust/steps/04-handoff.md) | return a journal-backed owner and next-action handoff |
 
 Resolve the current step with `ai-sdlc-shared-runtime/scripts/ai_sdlc_steps.py`. A missing, unsafe, oversized, or unmatched step is a blocker rather than permission to broad-load the package.
 
@@ -182,7 +184,7 @@ On a blocker, preserve failed/stale evidence, name the accountable owner and exa
 
 - Default to complete TOON trust decisions or content-free aggregate metrics.
 - Return summaries directly in the active agent response.
-- Emit `ai-sdlc-handoff/v1` with `result`, `blockers`, `next_required`, and
+- Emit `ai-sdlc-handoff/v2` with `result`, `blockers`, `next_required`, and
   `next_optional`; actions include `reason`, `command`, and `expected_artifact`.
 - Do not create `summary.txt`, `*-summary.txt`, or another standalone summary file.
 
@@ -211,6 +213,6 @@ Choose one of the two success examples above. Do not run both helpers merely bec
 
 ## Source contract
 
-This page is generated from [`skills/ai-sdlc-package-trust/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-package-trust/SKILL.md) plus its linked `steps/manifest.json` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
+This page is generated from [`skills/ai-sdlc-package-trust/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-package-trust/SKILL.md) plus its linked `steps/manifest.toon` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
 
 [Back to the skill catalog](../skills.md) · [Script reference](../scripts.md) · [Choose a workflow](../../flows/index.md)

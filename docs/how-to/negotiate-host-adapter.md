@@ -6,7 +6,7 @@ description: Map portable operations to explicit native support or safe determin
 # Negotiate a host adapter
 
 Run these commands from a consumer repository after installing the full skill
-set. Create the adapter and request JSON files from the schemas and fixtures in
+set. Create the adapter and request TOON files from the schemas and fixtures in
 `.agents/skills/ai-sdlc-host-adapter/references/`; replace the example names
 below with the reviewed files you created. Start with `adapter.py --help` if
 the installed version exposes different options.
@@ -15,15 +15,15 @@ Validate an adapter manifest before trusting any capability claim:
 
 ```bash
 python3 .agents/skills/ai-sdlc-host-adapter/scripts/adapter.py . \
-  --adapter adapters/team-host.json --validate
+  --adapter adapters/team-host.toon --validate
 ```
 
 Then negotiate an exact request:
 
 ```bash
 python3 .agents/skills/ai-sdlc-host-adapter/scripts/adapter.py . \
-  --adapter adapters/team-host.json --negotiate \
-  --request workflow-capabilities.json --write
+  --adapter adapters/team-host.toon --negotiate \
+  --request workflow-capabilities.toon --write
 ```
 
 The complete TOON result distinguishes native mappings, registered fallbacks,

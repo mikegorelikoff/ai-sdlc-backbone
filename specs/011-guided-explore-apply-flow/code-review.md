@@ -35,7 +35,7 @@ artifact_metadata:
     - "specs/011-guided-explore-apply-flow/requirements.md"
     - "specs/011-guided-explore-apply-flow/test-cases.md"
     - "specs/011-guided-explore-apply-flow/validation.md"
-    - "specs/011-guided-explore-apply-flow/_ai_sdlc/validation-receipt.json"
+    - "specs/011-guided-explore-apply-flow/_ai_sdlc/validation-receipt.toon"
   validation:
     - "code-review readiness completed without errors"
     - "focused regression checks passed after fixes"
@@ -59,7 +59,7 @@ The first pass read requirements, acceptance criteria, tests, and the diff befor
 
 | Severity | Evidence | Independent finding | Resolution |
 | --- | --- | --- | --- |
-| High | `skills/_shared/ai_sdlc_flow.py` renderers; FR-002 | Markdown and TOON omitted selected source hashes, so the human-readable cards were incomplete even though JSON carried the evidence. | Both renderers now expose the source hash list; parity regression assertions cover it. |
+| High | `skills/_shared/ai_sdlc_flow.py` renderers; FR-002 | Markdown and TOON omitted selected source hashes, so the human-readable cards were incomplete even though TOON carried the evidence. | Both renderers now expose the source hash list; parity regression assertions cover it. |
 | High | `discover_sources`; FR-003 / AC-003 | Supplying `--source` replaced mandatory state/config/index evidence, allowing those inputs to drift without invalidating Apply. | Explicit sources now extend mandatory controls; Apply rediscovers the mandatory set and rejects additions, deletion, or hash drift. |
 | Medium | `skills/ai-sdlc-flow/SKILL.md`; AC-002 | The pipe example connected Explore directly to executing Apply, contradicting the explicit human checkpoint. | The documentation now shows a separate Apply command for an already accepted card. |
 | Medium | `choose_context`; AC-007 | Negative counts or retained anchors greater than total were not rejected deterministically. | Invalid measurements now return `FLOW_INVALID_CONTEXT`; boundary tests cover both cases. |

@@ -20,7 +20,7 @@ ai-sdlc-harness/
 
 The historical `specs-refiniment` spelling is a compatibility-preserved canonical route. Migration helpers, rather than ad hoc renames, own any future transition.
 
-Every installable skill contains `steps/manifest.json`. `SKILL.md` selects a
+Every installable skill contains `steps/manifest.toon`. `SKILL.md` selects a
 phase rather than embedding the full procedure; the agent then loads only the
 declared prepare, execute, validation, handoff, or domain-specific step. Step
 paths remain inside their owning skill package and therefore install in both

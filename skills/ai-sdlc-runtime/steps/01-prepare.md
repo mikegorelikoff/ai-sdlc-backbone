@@ -31,14 +31,14 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 - Report run status, sequence, current task, ready tasks, budgets, stop reason,
   recovery status, and next command.
 - Return validation and handoff summaries directly in the active agent response.
-- Emit `ai-sdlc-handoff/v1` with `result`, `blockers`, `next_required`, and
+- Emit `ai-sdlc-handoff/v2` with `result`, `blockers`, `next_required`, and
   `next_optional`; actions include `reason`, `command`, and `expected_artifact`.
 - Do not create `summary.txt`, `*-summary.txt`, or another standalone summary file.
 
 ### 0.4 Artifact Routing
 
 - Route each run only to `_ai_sdlc/runs/<run-id>/`.
-- Keep journal append-only, JSON recovery state atomically replaceable, and
+- Keep journal append-only, TOON recovery state atomically replaceable, and
   TOON state as the complete agent-facing projection.
 - Never store runtime records inside a feature spec folder.
 
@@ -55,8 +55,8 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 ## 0.6 Artifact Metadata And Metatags
 
 - Runtime-related Markdown uses canonical `artifact_metadata` and `metatags`.
-- Machine records use `ai-sdlc-run-plan/v1`, `ai-sdlc-run-event/v1`, and
-  `ai-sdlc-run-state/v1` with deterministic fingerprints.
+- Machine records use `ai-sdlc-run-plan/v2`, `ai-sdlc-run-event/v2`, and
+  `ai-sdlc-run-state/v2` with deterministic fingerprints.
 
 ## 0.7 Specs Index
 

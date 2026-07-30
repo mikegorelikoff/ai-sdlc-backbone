@@ -63,10 +63,10 @@ curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/main
 Then inspect the resulting inventory:
 
 ```bash
-DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --json
+DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --toon
 ```
 
-The second command must return JSON containing installed `ai-sdlc-*` skills.
+The second command must return TOON containing installed `ai-sdlc-*` skills.
 Then ask your agent to Explore a request without applying changes:
 
 ```text
@@ -97,8 +97,14 @@ evidence, rigor, blockers, planned writes, and next checkpoint. Continue with
 
 - **Exact skill contracts**
 
-  Catalogs organize skills by lifecycle and role while every detailed skill
-  page remains built, searchable, and directly addressable.
+  Each skill is a validated semantic DAG with explicit operations, context,
+  gates, side-effects, evidence, recovery, and handoff boundaries.
+
+- **Minimum sufficient context**
+
+  Every ready step gets authority-labeled exact ranges, mandatory-anchor
+  recall, selected/skipped reasons, a token budget, and an exact direct-read
+  fallback when packing would be unsafe.
 
 - **Human-owned gates**
 

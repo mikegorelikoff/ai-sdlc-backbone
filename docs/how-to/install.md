@@ -38,7 +38,7 @@ The install must contain `ai-sdlc-flow` and its sibling
 `ai-sdlc-shared-runtime`. Explore activates exactly one of five documented
 roles and loads its current flow step, the owning skill's selected procedural
 step, and selector-approved references. Every installed skill includes a
-`steps/manifest.json`; missing manifests or files are an invalid installation.
+`steps/manifest.toon`; missing manifests or files are an invalid installation.
 Use `--role` or `--action` only when you need an explicit override; the v2
 DecisionCard shows any handoff, owning-skill step, and selected or skipped
 reference.
@@ -47,7 +47,7 @@ reference.
 
 !!! note "Current release"
 
-    These consumer commands install `v3.0.0-rc.2`. Resolve the annotated tag to an
+    These consumer commands install `v4.0.0`. Resolve the annotated tag to an
     exact commit, review the release notes, and apply your organization's trust
     policy. The harness supports multiple agent hosts; use the host-specific
     install scope documented below.
@@ -78,7 +78,7 @@ and run the same pinned CLI:
 
 ```powershell
 $env:DISABLE_TELEMETRY = "1"
-$HarnessTag = "v3.0.0-rc.2"
+$HarnessTag = "v4.0.0"
 $HarnessSource = Join-Path ([System.IO.Path]::GetTempPath()) ("ai-sdlc-harness-" + [guid]::NewGuid())
 node --version  # expected: v22.20.0 or newer
 git init $HarnessSource
@@ -88,12 +88,19 @@ git -C $HarnessSource checkout --detach ($HarnessTag + "^{commit}")
 $HarnessRevision = git -C $HarnessSource rev-parse HEAD
 if ((git -C $HarnessSource rev-list -n 1 $HarnessTag) -ne $HarnessRevision) { throw "Harness revision mismatch" }
 npx -y skills@1.5.19 add $HarnessSource --skill '*' --agent codex -y
-npx -y skills@1.5.19 list --json
+npx -y skills@1.5.19 list --toon
 New-Item -ItemType Directory -Force .ai-sdlc | Out-Null
 Copy-Item (Join-Path $HarnessSource "config/ai-sdlc-managed-skills.txt") .ai-sdlc/harness-managed-skills.txt
-@{schema="ai-sdlc-install-record/v1"; revision=$HarnessRevision; skills_cli="1.5.19"; agent="codex"; selection="all-skills"; inventory=".ai-sdlc/harness-managed-skills.txt"} | ConvertTo-Json -Compress | Set-Content -Encoding utf8 .ai-sdlc/harness-install.json
+@"
+agent: codex
+inventory: .ai-sdlc/harness-managed-skills.txt
+revision: $HarnessRevision
+schema: ai-sdlc-install-record/v1
+selection: all-skills
+skills_cli: 1.5.19
+"@ | Set-Content -Encoding utf8 .ai-sdlc/harness-install.toon
 python .agents/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py
-Remove-Item -LiteralPath skills-lock.json
+Remove-Item -LiteralPath skills-lock.toon
 Remove-Item -LiteralPath $HarnessSource -Recurse -Force
 ```
 
@@ -119,13 +126,13 @@ use the form required by your organization consistently.
 Inspecting repository files in a browser or a separately cloned checkout is the
 only inspection that occurs before third-party installer code runs. The
 following `--list` command still downloads and executes the pinned Skills CLI;
-review `npm view skills@1.5.19 dist.integrity repository engines --json` and
+review `npm view skills@1.5.19 dist.integrity repository engines --toon` and
 your approved npm provenance before invoking it.
 
 !!! terminal "Run in terminal — from the consumer repository"
 
     ```bash
-    HARNESS_TAG=v3.0.0-rc.2
+    HARNESS_TAG=v4.0.0
     HARNESS_TMP="$(mktemp -d)"
     HARNESS_SRC="$HARNESS_TMP/ai-sdlc-harness"
     git --version
@@ -133,7 +140,7 @@ your approved npm provenance before invoking it.
     npm --version
     PYTHON_BIN="${PYTHON_BIN:-python3}"
     "$PYTHON_BIN" --version
-    npm view skills@1.5.19 dist.integrity repository engines --json
+    npm view skills@1.5.19 dist.integrity repository engines --toon
     git init "$HARNESS_SRC"
     git -C "$HARNESS_SRC" remote add origin https://github.com/mikegorelikoff/ai-sdlc-harness.git
     git -C "$HARNESS_SRC" fetch --depth 1 origin "refs/tags/$HARNESS_TAG:refs/tags/$HARNESS_TAG"
@@ -145,11 +152,11 @@ your approved npm provenance before invoking it.
 
 Stop unless Node reports `v22.20.0` or newer and Python reports 3.10 or newer.
 The installer does not enforce the Python floor. `npm view
-skills@1.5.19 engines --json` is the recovery check when a pinned CLI invocation
+skills@1.5.19 engines --toon` is the recovery check when a pinned CLI invocation
 reports an engine mismatch.
 
 This lists available skills without installing them. Review the repository
-origin and selected package names. The annotated `v3.0.0-rc.2` tag is resolved
+origin and selected package names. The annotated `v4.0.0` tag is resolved
 to the exact revision checked above. Skills CLI `1.5.19` treats the final
 segment of a GitHub `/tree/...` URL as a branch, so installation uses the
 verified detached local checkout instead.
@@ -178,7 +185,7 @@ skill store, not an accidental duplicate. A host or installer may also create
 a host-specific directory or symlink. Inspect before deciding:
 
 ```bash
-DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --json
+DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --toon
 git status --short
 find . -maxdepth 3 -type l -print
 ```
@@ -252,7 +259,7 @@ and the clean-home behavior is tracked in the upstream
 [global directory issue](https://github.com/vercel-labs/skills/issues/537).
 
 Global installation is workstation state: it is not committed with a consumer
-repository and the project-scoped `.ai-sdlc/harness-install.json` procedure
+repository and the project-scoped `.ai-sdlc/harness-install.toon` procedure
 below does not describe it. Record the CLI version, harness revision, selected
 agent, installation method, and verification output in your workstation or
 organizational inventory. Use project scope when repository-level provenance
@@ -278,7 +285,7 @@ conformance issue. Do not install every recognized agent as a workaround.
 !!! terminal "Run in terminal"
 
     ```bash
-    DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --json
+    DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --toon
     git status --short
     "$PYTHON_BIN" --version
     "$PYTHON_BIN" .agents/skills/ai-sdlc-flow/scripts/flow.py --help
@@ -296,7 +303,7 @@ Expected result:
 - no application source, secrets, or existing project artifacts were replaced.
 
 The Codex-scoped command creates `.agents/skills/` and a transient
-`skills-lock.json`. CLI `1.5.19` records the absolute temporary source path in
+`skills-lock.toon`. CLI `1.5.19` records the absolute temporary source path in
 that lock and cannot update this local-source installation, so the lock is not
 portable team provenance and must not be committed. Record portable identity,
 then remove only the transient lock:
@@ -305,9 +312,9 @@ then remove only the transient lock:
 mkdir -p .ai-sdlc
 test -f .ai-sdlc/harness-managed-skills.txt || cp "$HARNESS_SRC/config/ai-sdlc-managed-skills.txt" .ai-sdlc/harness-managed-skills.txt
 HARNESS_SELECTION=all-skills # use explicit-skills when you ran the subset block
-printf '{"schema":"ai-sdlc-install-record/v1","revision":"%s","skills_cli":"1.5.19","agent":"codex","selection":"%s","inventory":".ai-sdlc/harness-managed-skills.txt"}\n' "$(git -C "$HARNESS_SRC" rev-parse HEAD)" "$HARNESS_SELECTION" > .ai-sdlc/harness-install.json
+printf 'agent: codex\ninventory: .ai-sdlc/harness-managed-skills.txt\nrevision: %s\nschema: ai-sdlc-install-record/v1\nselection: %s\nskills_cli: 1.5.19\n' "$(git -C "$HARNESS_SRC" rev-parse HEAD)" "$HARNESS_SELECTION" > .ai-sdlc/harness-install.toon
 "$PYTHON_BIN" .agents/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py
-rm skills-lock.json
+rm skills-lock.toon
 rm -rf "$HARNESS_TMP"
 git status --short
 ```
@@ -315,7 +322,7 @@ git status --short
 The installed validator checks record fields, revision syntax, sorted managed
 inventory, full-versus-explicit selection integrity, and presence of every
 managed skill before temporary source cleanup. Unrelated installed skills are
-allowed and are never claimed as harness-owned. The published JSON Schema remains available for organization
+allowed and are never claimed as harness-owned. The published TOON Schema remains available for organization
 tooling. Commit `.agents/skills/` and both portable harness records. Skill documentation uses logical paths such as
 `skills/<name>`; in a consumer installation, resolve those paths beneath
 `.agents/skills/`.
@@ -331,7 +338,7 @@ exact paths rather than broad staging:
 
 ```bash
 git status --short
-git add .agents/skills .ai-sdlc/harness-install.json .ai-sdlc/harness-managed-skills.txt
+git add .agents/skills .ai-sdlc/harness-install.toon .ai-sdlc/harness-managed-skills.txt
 git diff --cached --check
 git diff --cached --stat
 git diff --cached
@@ -357,9 +364,9 @@ a shortcut.
     and blockers for this request: add a health endpoint.
     ```
 
-Expected result: a read-only `ai-sdlc-handoff/v1` recommendation grounded in
+Expected result: a read-only `ai-sdlc-handoff/v2` recommendation grounded in
 repository evidence. If the agent cannot find the skill, verify the target
-agent and installation scope with `DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --json`
+agent and installation scope with `DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --toon`
 before reinstalling.
 
 ## Update, remove, or roll back
@@ -394,9 +401,9 @@ HTTPS credential with read access. Never paste tokens into an agent prompt.
 | Symptom | Safe response |
 | --- | --- |
 | Command appears hung | Wait for the npm/Git timeout; use `Ctrl-C` once, then check approved proxy/DNS/TLS access. Do not repeatedly launch installers. |
-| Engine mismatch | Compare `node --version` with `npm view skills@1.5.19 engines --json`; upgrade Node through an approved source. |
+| Engine mismatch | Compare `node --version` with `npm view skills@1.5.19 engines --toon`; upgrade Node through an approved source. |
 | `python3` missing or below 3.10 | Install a supported Python, set `PYTHON_BIN` to its exact executable (for example `PYTHON_BIN=/opt/homebrew/bin/python3.11`), rerun `"$PYTHON_BIN" --version`, and substitute `"$PYTHON_BIN"` for displayed `python3` helper commands. Do not assume `python` and `python3` are the same. |
-| `list --json` requires network | This CLI behavior is expected; use an approved registry/cache or record the offline limitation. |
+| `list --toon` requires network | This CLI behavior is expected; use an approved registry/cache or record the offline limitation. |
 | Skill helper path missing | Confirm `.agents/skills/ai-sdlc-shared-runtime` and the selected skill both exist; reinstall the pair if either is absent. |
 | Unexpected agent directories | Do not commit or use the generic CLI remover. If the repository is disposable, delete that whole verified fixture from its parent. Otherwise follow the ownership-safe [uninstall procedure](update.md#remove-and-verify-cleanup), review every managed path, inspect status, and reinstall with an explicit `--agent`. |
 | Flow reports a missing runtime or owning skill | Start a fresh host session and run the packaged flow diagnostic above. Repair the explicit Codex-scoped install only when the required sibling `SKILL.md` is absent; otherwise record a host-conformance issue. |

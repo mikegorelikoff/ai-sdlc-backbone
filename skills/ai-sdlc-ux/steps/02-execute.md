@@ -16,8 +16,8 @@ Enter only after the prepare step passes and this skill is the selected owner fo
 ## Script Usage
 
 ```bash
-python3 skills/ai-sdlc-ux/scripts/ux.py specs-refiniment/onboarding --input /tmp/ux.json --emit --quick-flow
-python3 skills/ai-sdlc-ux/scripts/ux.py specs/onboarding --input /tmp/ux.json --write --full-flow --format toon
+python3 skills/ai-sdlc-ux/scripts/ux.py specs-refiniment/onboarding --input /tmp/ux.toon --emit --quick-flow
+python3 skills/ai-sdlc-ux/scripts/ux.py specs/onboarding --input /tmp/ux.toon --write --full-flow --format toon
 ```
 
 ## Purpose

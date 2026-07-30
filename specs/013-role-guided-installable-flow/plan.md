@@ -81,7 +81,7 @@ artifact_metadata:
 - [x] T001: Consolidate all shared helpers under `skills/ai-sdlc-shared-runtime` and remove `_shared` plus synchronization fallbacks.; refs: REQ-001, AC-001; output: One canonical installable runtime and migrated imports.
 - [x] T002: Move runtime tests/install smoke and migrate CI, validators, and documentation paths.; refs: REQ-001, REQ-007, AC-001, AC-002; output: Runtime-owned test harness and no repository-only fallback.
 - [x] T003: Add schemas, registries, five role contracts, and JIT flow-step references.; refs: REQ-002, REQ-003, AC-003, AC-007; output: Validated declarative flow assets.
-- [x] T004: Implement deterministic role/action selection, handoffs, JIT context, fingerprints, and `ai-sdlc-flow/v2`.; refs: REQ-002, REQ-003, REQ-004, AC-004, AC-005, AC-006, AC-007, AC-008; output: v2 runtime router and thin flow entrypoint.
+- [x] T004: Implement deterministic role/action selection, handoffs, JIT context, fingerprints, and `ai-sdlc-flow/v3`.; refs: REQ-002, REQ-003, REQ-004, AC-004, AC-005, AC-006, AC-007, AC-008; output: v2 runtime router and thin flow entrypoint.
 - [x] T005: Extend bounded `values.flow` configuration and validation.; refs: REQ-005, AC-009; output: Role aliases, menu mode, and safe context selectors.
 - [x] T006: Update reference generation and public installation/flow documentation.; refs: REQ-006, AC-011; output: Drift-checked, source-neutral role-guided documentation.
 - [x] T011: Define and implement the `ai-sdlc-skill-steps/v1` manifest schema and canonical selector runtime.; refs: REQ-008, REQ-010, AC-013, AC-015; output: Safe deterministic manifest validation and JIT selection CLI.

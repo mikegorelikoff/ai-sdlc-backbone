@@ -15,6 +15,7 @@ Choose the result you need now. Each guide is task-oriented and assumes basic Gi
 - [**Migrate to 1.1**](migrate-1.1.md) — adopt the additive control plane without rewriting existing work.
 - [**Migrate to 2.0**](migrate-2.0.md) — update context readers and module API ranges for the v3 contract.
 - [**Migrate to 3.0**](migrate-3.0.md) — adopt role-guided flow, the canonical runtime, progressive steps, and OKF artifact routes.
+- [**Migrate to 4.0**](migrate-4.0.md) — regenerate machine artifacts for executable skill DAGs, per-step context, durable replay, and canonical TOON-only contracts.
 - [**Choose a flow mode**](choose-flow.md) — select quick, full, or adaptive rigor.
 - [**Navigate a request**](navigate-request.md) — find the smallest safe next action.
 - [**Build project context**](project-context.md) — capture evidence without invention.
@@ -22,7 +23,7 @@ Choose the result you need now. Each guide is task-oriented and assumes basic Gi
 - [**Build a task context pack**](build-context-pack.md) — bound sources and token budget for one task.
 - [**Continue after a specification**](after-specification.md) — move through one ready task, validation, review, and commit.
 - [**Resume a delivery run**](resume-runtime.md) — continue safely from the durable journal and TOON state.
-- [**Plan a workflow**](plan-workflow.md) — validate gates, hooks, dependencies, and execution waves.
+- [**Plan a workflow**](plan-workflow.md) — compile skill entrypoints, approvals, conditions, and dependency waves.
 - [**Negotiate a host adapter**](negotiate-host-adapter.md) — select a supported host capability or safe fallback.
 - [**Diagnose and plan an upgrade**](diagnose-and-plan-upgrade.md) — inspect health and preview migration without applying.
 - [**Verify a package and local metrics**](verify-package-and-metrics.md) — choose one trust or content-free metrics branch.

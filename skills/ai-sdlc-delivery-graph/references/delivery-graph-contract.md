@@ -30,4 +30,4 @@ inventory and trace/orphan evidence. Orphans are non-artifact nodes with no
 semantic edge.
 
 Identical authoritative bytes and Git references must produce byte-identical
-graph JSON, gap ordering, orphan ordering, and query paths.
+graph TOON, gap ordering, orphan ordering, and query paths.

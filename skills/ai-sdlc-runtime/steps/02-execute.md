@@ -12,15 +12,15 @@ Enter only after the prepare step passes and this skill is the selected owner fo
 
 - Read `references/runtime-contract.md` before starting, resuming, retrying, or
   recording a run.
-- Validate plans with `references/run-plan.schema.json`, events with
-  `references/run-event.schema.json`, and state with
-  `references/run-state.schema.json`.
+- Validate plans with `references/run-plan.schema.toon`, events with
+  `references/run-event.schema.toon`, and state with
+  `references/run-state.schema.toon`.
 - Use `scripts/runtime.py` for every state mutation and recovery operation.
 
 ## Script Usage
 
 ```bash
-python3 skills/ai-sdlc-runtime/scripts/runtime.py . --start --run-id delivery-004 --plan run-plan.json --format toon
+python3 skills/ai-sdlc-runtime/scripts/runtime.py . --start --run-id delivery-004 --plan run-plan.toon --format toon
 python3 skills/ai-sdlc-runtime/scripts/runtime.py . --next --run-id delivery-004 --format toon
 python3 skills/ai-sdlc-runtime/scripts/runtime.py . --record --run-id delivery-004 --task T001 --outcome succeeded --result-fingerprint <sha256> --tokens 420 --commit <sha>
 python3 skills/ai-sdlc-runtime/scripts/runtime.py . --resume --run-id delivery-004 --format toon

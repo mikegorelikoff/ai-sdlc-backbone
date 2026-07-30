@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-import json
 import os
 import shutil
 import subprocess
@@ -12,11 +11,16 @@ import unittest
 import sys
 from pathlib import Path
 
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
+
 
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "skills" / "ai-sdlc-shared-runtime" / "scripts"))
 SCRIPT = ROOT / "skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_compatibility.py"
-BASELINE = ROOT / "compatibility/baseline-v1.json"
+BASELINE = ROOT / "compatibility/baseline-v1.toon"
 
 
 class CompatibilityTests(unittest.TestCase):
@@ -40,17 +44,50 @@ class CompatibilityTests(unittest.TestCase):
         self.assertIn("protected_skill_names", result.stdout)
         self.assertIn("protected_cli_flags", result.stdout)
         self.assertIn("protected_routes", result.stdout)
+        self.assertIn("machine_extension: .toon", result.stdout)
+        self.assertIn("skill_graph_schema: ai-sdlc-skill-steps/v2", result.stdout)
+        self.assertIn("contracts: 12", result.stdout)
         expected = len(list((ROOT / "skills").glob("*/SKILL.md")))
         self.assertIn(f"skills: {expected}", result.stdout)
+
+    def test_changed_protected_contract_identity_breaks_baseline(self) -> None:
+        """A protected machine contract cannot drift behind the baseline."""
+        with tempfile.TemporaryDirectory() as temp:
+            baseline = toon_codec.loads(BASELINE.read_text(encoding="utf-8"))
+            baseline["contracts"][0]["id"] = "ai-sdlc-skill-steps/v999"
+            path = Path(temp) / "baseline.toon"
+            path.write_text(toon_codec.dumps(baseline), encoding="utf-8")
+            result = self.run_check(
+                "--baseline",
+                str(path),
+                "--skip-git-audit",
+            )
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("protected contract identity changed", result.stdout)
+
+    def test_semantic_node_floor_is_enforced(self) -> None:
+        """Compatibility rejects shallow skill graphs even when names remain."""
+        with tempfile.TemporaryDirectory() as temp:
+            baseline = toon_codec.loads(BASELINE.read_text(encoding="utf-8"))
+            baseline["skill_graph"]["min_nodes"] = 7
+            path = Path(temp) / "baseline.toon"
+            path.write_text(toon_codec.dumps(baseline), encoding="utf-8")
+            result = self.run_check(
+                "--baseline",
+                str(path),
+                "--skip-git-audit",
+            )
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("has fewer than 7 semantic nodes", result.stdout)
 
     def test_missing_skill_breaks_baseline(self) -> None:
         """A required skill rename or removal must fail mechanically."""
         with tempfile.TemporaryDirectory() as temp:
-            baseline = json.loads(BASELINE.read_text(encoding="utf-8"))
+            baseline = toon_codec.loads(BASELINE.read_text(encoding="utf-8"))
             baseline["required_skill_names"].append("ai-sdlc-removed")
             baseline["required_skill_names"].sort()
-            path = Path(temp) / "baseline.json"
-            path.write_text(json.dumps(baseline), encoding="utf-8")
+            path = Path(temp) / "baseline.toon"
+            path.write_text(toon_codec.dumps(baseline), encoding="utf-8")
             result = self.run_check("--baseline", str(path), "--skip-git-audit")
             self.assertEqual(result.returncode, 1)
             self.assertIn("missing required skills: ai-sdlc-removed", result.stdout)
@@ -58,10 +95,10 @@ class CompatibilityTests(unittest.TestCase):
     def test_new_required_flag_breaks_baseline(self) -> None:
         """A declared CLI contract must exist on every skill CLI."""
         with tempfile.TemporaryDirectory() as temp:
-            baseline = json.loads(BASELINE.read_text(encoding="utf-8"))
+            baseline = toon_codec.loads(BASELINE.read_text(encoding="utf-8"))
             baseline["required_cli_flags"].append("--future-required-flag")
-            path = Path(temp) / "baseline.json"
-            path.write_text(json.dumps(baseline), encoding="utf-8")
+            path = Path(temp) / "baseline.toon"
+            path.write_text(toon_codec.dumps(baseline), encoding="utf-8")
             result = self.run_check("--baseline", str(path), "--skip-git-audit")
             self.assertEqual(result.returncode, 1)
             self.assertIn("missing stable flag --future-required-flag", result.stdout)
@@ -76,31 +113,169 @@ class CompatibilityTests(unittest.TestCase):
             for path in (skill / "scripts", shared, mirror, root / "modules"):
                 path.mkdir(parents=True, exist_ok=True)
             (skill / "steps").mkdir(parents=True)
+            node_specs = (
+                (
+                    "preflight",
+                    "analysis",
+                    [],
+                    ["prepare"],
+                    "inspect-and-route",
+                    ["filesystem.read"],
+                    "none",
+                    ["authority"],
+                    ["routing-evidence"],
+                    "none",
+                    "block",
+                ),
+                (
+                    "context",
+                    "context",
+                    ["preflight"],
+                    ["clarify", "route"],
+                    "compile-context",
+                    ["filesystem.read"],
+                    "none",
+                    ["context-sufficiency"],
+                    ["context-pack"],
+                    "none",
+                    "block",
+                ),
+                (
+                    "execute",
+                    "action",
+                    ["context"],
+                    ["execute"],
+                    "execute-procedure",
+                    ["filesystem.read", "filesystem.write"],
+                    "workspace-write",
+                    ["authorization"],
+                    ["procedure-result"],
+                    "after-step",
+                    "block",
+                ),
+                (
+                    "validate",
+                    "validation",
+                    ["execute"],
+                    ["validate"],
+                    "validate-evidence",
+                    ["filesystem.read"],
+                    "none",
+                    ["acceptance"],
+                    ["validation-result"],
+                    "none",
+                    "block",
+                ),
+                (
+                    "handoff",
+                    "handoff",
+                    ["validate"],
+                    ["handoff", "complete"],
+                    "handoff-result",
+                    ["filesystem.read"],
+                    "none",
+                    ["terminal-evidence"],
+                    ["handoff"],
+                    "none",
+                    "handoff",
+                ),
+            )
+            links: list[str] = []
+            nodes: list[dict[str, object]] = []
+            context_contract = {
+                "required": True,
+                "budget_tokens": 12000,
+                "mandatory": ["step_document"],
+                "selectors": [
+                    "step",
+                    "repository-instructions",
+                    "feature-traces",
+                    "changed-path-topology",
+                ],
+                "critical_anchors": ["## Entry", "## Procedure", "## Exit"],
+                "min_savings_percent": 15,
+                "fallback": "direct_read",
+            }
+            for (
+                node_id,
+                node_type,
+                dependencies,
+                phases,
+                operation,
+                capabilities,
+                side_effect,
+                gates,
+                outputs,
+                commit_boundary,
+                on_failure,
+            ) in node_specs:
+                relative = f"steps/{node_id}.md"
+                links.append(f"[`{relative}`]({relative})")
+                (skill / relative).write_text(
+                    f"# {node_id.title()}\n\n## Entry\n\nEnter.\n\n"
+                    "## Procedure\n\nProbe.\n\n## Exit\n\nStop.\n",
+                    encoding="utf-8",
+                )
+                nodes.append(
+                    {
+                        "id": node_id,
+                        "path": relative,
+                        "type": node_type,
+                        "depends_on": dependencies,
+                        "condition": {
+                            "phases": phases,
+                            "roles": [],
+                            "actions": [],
+                        },
+                        "load": (
+                            "required"
+                            if node_id in {"preflight", "context"}
+                            else "before-completion"
+                            if node_id in {"validate", "handoff"}
+                            else "on-demand"
+                        ),
+                        "max_tokens": 256,
+                        "reason": f"execute deterministic {node_id} compatibility probe",
+                        "operation": operation,
+                        "capabilities": capabilities,
+                        "side_effect": side_effect,
+                        "context": context_contract,
+                        "gates": gates,
+                        "outputs": outputs,
+                        "max_attempts": 1,
+                        "commit_boundary": commit_boundary,
+                        "on_failure": on_failure,
+                    }
+                )
             (skill / "SKILL.md").write_text(
                 "---\nname: ai-sdlc-probe\ndescription: Probe.\n---\n\n"
-                "[`steps/execute.md`](steps/execute.md)\n",
+                + "\n".join(links)
+                + "\n",
                 encoding="utf-8",
             )
-            (skill / "steps" / "execute.md").write_text(
-                "# Execute\n\n## Entry\n\nEnter.\n\n## Procedure\n\nProbe.\n\n"
-                "## Exit\n\nStop.\n",
-                encoding="utf-8",
-            )
-            (skill / "steps" / "manifest.json").write_text(
-                json.dumps({
-                    "schema": "ai-sdlc-skill-steps/v1",
-                    "skill": "ai-sdlc-probe",
-                    "selectors": [{
-                        "id": "execute",
-                        "path": "steps/execute.md",
-                        "phases": ["execute"],
-                        "roles": [],
-                        "actions": [],
-                        "load": "on-demand",
-                        "max_tokens": 256,
-                        "reason": "execute the compatibility probe",
-                    }],
-                }),
+            (skill / "steps" / "manifest.toon").write_text(
+                toon_codec.dumps(
+                    {
+                        "schema": "ai-sdlc-skill-steps/v2",
+                        "skill": "ai-sdlc-probe",
+                        "version": "4.0.0",
+                        "entrypoints": {
+                            "prepare": ["preflight"],
+                            "clarify": ["context"],
+                            "route": ["context"],
+                            "execute": ["execute"],
+                            "validate": ["validate"],
+                            "handoff": ["handoff"],
+                            "complete": ["handoff"],
+                        },
+                        "budgets": {
+                            "step_max_tokens": 5000,
+                            "context_max_tokens": 12000,
+                            "min_context_savings_percent": 15,
+                        },
+                        "steps": nodes,
+                    }
+                ),
                 encoding="utf-8",
             )
             marker = root / "EXECUTED"
@@ -116,8 +291,11 @@ class CompatibilityTests(unittest.TestCase):
                 "p.add_argument('--complete-state')\n",
                 encoding="utf-8",
             )
-            config = root / "config.json"
-            config.write_text('{"schema":"fixture/v1"}', encoding="utf-8")
+            config = root / "config.toon"
+            config.write_text(
+                toon_codec.dumps({"schema": "fixture/v1"}),
+                encoding="utf-8",
+            )
             for path in (
                 root / "README.md",
                 root / "docs/reference/artifact-routing.md",
@@ -135,12 +313,12 @@ class CompatibilityTests(unittest.TestCase):
                 "required_cli_flags": ["--quick-flow", "--full-flow", "--state-check", "--begin-state", "--complete-state"],
                 "skill_doc_contract": [],
                 "routes": {},
-                "config": {"schema": "fixture/v1", "defaults": "config.json"},
+                "config": {"schema": "fixture/v1", "defaults": "config.toon"},
                 "modules": {"schema": "ai-sdlc-module/v1", "ids": []},
                 "install_update_guide": "guide.md",
             }
-            baseline_path = root / "baseline.json"
-            baseline_path.write_text(json.dumps(baseline), encoding="utf-8")
+            baseline_path = root / "baseline.toon"
+            baseline_path.write_text(toon_codec.dumps(baseline), encoding="utf-8")
             result = subprocess.run(
                 ["python3", str(SCRIPT), "--root", str(root), "--baseline", str(baseline_path), "--skip-git-audit"],
                 cwd=ROOT,

@@ -16,7 +16,7 @@ published v3 package contract.
 
 ## Delivered scope
 
-- `ai-sdlc-flow/v2` selects exactly one active role and action, exposes
+- `ai-sdlc-flow/v3` selects exactly one active role and action, exposes
   prerequisites and handoffs, loads only the selected steps/references, and
   rejects stale Apply fingerprints.
 - All 44 skills use validated skill-owned step manifests while keeping concise

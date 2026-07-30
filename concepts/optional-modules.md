@@ -7,7 +7,7 @@
 The core harness and optional domain capabilities share a versioned manifest
 contract without sharing installation requirements. Every module declares its
 ID, version, kind, supported harness API range, dependencies, and owned skills
-in `modules/<id>/module.json` using `ai-sdlc-module/v1`.
+in `modules/<id>/module.toon` using `ai-sdlc-module/v1`.
 
 Core never requires an optional module. Discovery validates every installed
 manifest, skill path, dependency, API range, module ID, and skill owner before

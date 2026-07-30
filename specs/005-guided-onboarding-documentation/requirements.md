@@ -82,7 +82,7 @@ In scope:
 - All `skills/*/SKILL.md` packages, their scripts, references, tests, module manifests, compatibility baseline, and public data contracts.
 - Existing 18-stage refinement registry and implementation SDD contracts.
 - Persona findings from junior, lead, and VP reviewers.
-- Release 1.1 behavior, TOON-first representation rules, and current installation mechanisms.
+- Release 1.1 behavior, canonical TOON representation rules, and current installation mechanisms.
 
 ## Outputs
 - A canonical guided public documentation site and reordered README.
@@ -108,7 +108,7 @@ FR-012: Publish a glossary and link core terms at first meaningful use on beginn
 FR-013: Publish troubleshooting for install failure, invalid/corrupt state, stale indexes, state/artifact contradictions, interrupted writes, divergent paths, predecessor blocks, dirty Git, unsupported hosts, exhausted budgets, and non-zero helper exits.
 FR-014: Publish a maintainer path for skill/module creation, scripts, references, schemas, tests, catalogs, compatibility, release, deprecation, and rollback.
 FR-015: Make benefits and proof claims honest: distinguish validated mechanism behavior from expected organizational outcomes and state known constraints.
-FR-016: Preserve exact technical references and TOON-first/JSON-boundary contracts without forcing implementation detail into the beginner journey.
+FR-016: Preserve exact technical references and canonical TOON contracts without forcing implementation detail into the beginner journey.
 
 ## Non-Functional Requirements
 - Clarity: core beginner pages use plain English, define acronyms, and avoid requiring `SKILL.md` reads.
@@ -124,7 +124,7 @@ FR-016: Preserve exact technical references and TOON-first/JSON-boundary contrac
 ## Constraints
 - Product behavior and public harness API remain unchanged unless documentation validation exposes a real broken contract such as the nonexistent installer.
 - Generated skill pages derive from authoritative `SKILL.md` packages; they must not become a competing execution contract.
-- JSON remains limited to schema/interoperability/recovery boundaries and JSONL journals; public agent examples remain TOON-first.
+- TOON covers schema, interoperability, recovery, and per-event runtime journals; public machine examples remain canonical TOON.
 - No outcome or ROI claim may be presented as measured evidence without a reproducible source.
 - Existing release and compatibility history must remain valid.
 - The work follows one bounded task per commit and retains an auditable SDD task map.

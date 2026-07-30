@@ -33,7 +33,7 @@ The summary table above names the primary and supporting human roles for this ca
 ## Before you start
 
 - One readable source artifact.
-- One or more lens identifiers from `references/quality-lenses.json`.
+- One or more lens identifiers from `references/quality-lenses.toon`.
 - A feature or initiative identifier.
 - An owner for every finding.
 
@@ -45,7 +45,7 @@ Choose --quick-flow for bounded assumption-driven progress or --full-flow
 for strict verification only as described below.
 Read the required evidence,
 produce or report `quality-lens-report.md` and `_ai_sdlc/quality-lens-report.toon`, preserve human approval boundaries,
-and return blockers plus a complete ai-sdlc-handoff/v1.
+and return blockers plus a complete ai-sdlc-handoff/v2.
 ```
 
 This is an agent instruction, not a shell command. Terminal commands belong in the helper section.
@@ -54,7 +54,7 @@ This is an agent instruction, not a shell command. Terminal commands belong in t
 
 - Read the source artifact and its direct trace sources.
 - Select lenses by applicability and review risk.
-- Create a JSON array conforming to `references/finding-contract.md`.
+- Create a TOON array conforming to `references/finding-contract.md`.
 - Anchor evidence to an exact repository-relative path and positive line.
 
 ## What it may write
@@ -84,11 +84,13 @@ Humans accept or reject material product, security, QA, policy, rollout, release
 
 The router loads these skill-owned procedures just in time. Read only the selector matching the current phase, active role, and action; a selected step is normative and an unselected step stays out of context.
 
-| Selector | Phases | Roles | Load rule | Step | Reason |
-| --- | --- | --- | --- | --- | --- |
-| `prepare` | `prepare`, `clarify`, `route` | `business-analyst`, `product-manager`, `software-engineer`, `qa-engineer` | `required` | [`steps/01-prepare.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-quality-lenses/steps/01-prepare.md) | establish inputs, authority, lifecycle state, and safe artifact routing |
-| `execute` | `execute` | `business-analyst`, `product-manager`, `software-engineer`, `qa-engineer` | `on-demand` | [`steps/02-execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-quality-lenses/steps/02-execute.md) | perform only the selected owning-skill procedure |
-| `validate-and-handoff` | `validate`, `handoff`, `complete` | `business-analyst`, `product-manager`, `software-engineer`, `qa-engineer` | `before-completion` | [`steps/03-validate-and-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-quality-lenses/steps/03-validate-and-handoff.md) | verify outputs and return an explicit evidence-backed handoff |
+| Selector | Type | Phases | Roles | Dependencies | Operation | Side effect | Load rule | Step | Reason |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `preflight` | `analysis` | `prepare` | `business-analyst`, `product-manager`, `qa-engineer`, `software-engineer` | none | `inspect-and-route` | `none` | `required` | [`steps/01-prepare.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-quality-lenses/steps/01-prepare.md) | establish inputs, authority, lifecycle state, and safe artifact routing |
+| `context` | `context` | `clarify`, `route` | `business-analyst`, `product-manager`, `qa-engineer`, `software-engineer` | `preflight` | `compile-context` | `none` | `required` | [`steps/02-context.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-quality-lenses/steps/02-context.md) | compile the minimum sufficient context before the owning action |
+| `execute` | `action` | `execute` | `business-analyst`, `product-manager`, `qa-engineer`, `software-engineer` | `context` | `execute-procedure` | `workspace-write` | `on-demand` | [`steps/02-execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-quality-lenses/steps/02-execute.md) | perform only the selected owning-skill procedure |
+| `validate` | `validation` | `validate` | `business-analyst`, `product-manager`, `qa-engineer`, `software-engineer` | `execute` | `validate-evidence` | `none` | `before-completion` | [`steps/03-validate-and-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-quality-lenses/steps/03-validate-and-handoff.md) | validate outputs, evidence, acceptance, and residual risk |
+| `handoff` | `handoff` | `handoff`, `complete` | `business-analyst`, `product-manager`, `qa-engineer`, `software-engineer` | `validate` | `handoff-result` | `none` | `before-completion` | [`steps/04-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-quality-lenses/steps/04-handoff.md) | return a journal-backed owner and next-action handoff |
 
 Resolve the current step with `ai-sdlc-shared-runtime/scripts/ai_sdlc_steps.py`. A missing, unsafe, oversized, or unmatched step is a blocker rather than permission to broad-load the package.
 
@@ -106,8 +108,8 @@ The owning agent normally runs these helpers. A human uses the direct starting p
 
 ```bash
 python3 skills/ai-sdlc-quality-lenses/scripts/quality_lens_report.py --list-lenses --format markdown
-python3 skills/ai-sdlc-quality-lenses/scripts/quality_lens_report.py --artifact specs/example/requirements.md --artifact-kind requirements --feature example --findings /tmp/findings.json --lens edge-case-hunt --emit --quick-flow
-python3 skills/ai-sdlc-quality-lenses/scripts/quality_lens_report.py --artifact specs/example/design.md --artifact-kind design --feature example --findings /tmp/findings.json --write --full-flow
+python3 skills/ai-sdlc-quality-lenses/scripts/quality_lens_report.py --artifact specs/example/requirements.md --artifact-kind requirements --feature example --findings /tmp/findings.toon --lens edge-case-hunt --emit --quick-flow
+python3 skills/ai-sdlc-quality-lenses/scripts/quality_lens_report.py --artifact specs/example/design.md --artifact-kind design --feature example --findings /tmp/findings.toon --write --full-flow
 ```
 
 `--emit` prints one format without writes. `--write` creates both canonical
@@ -142,7 +144,7 @@ On a blocker, preserve failed/stale evidence, name the accountable owner and exa
 
 - Return selected lenses, finding counts by severity and status, blockers, and
   output paths directly in the active agent response.
-- Before the final response, emit `ai-sdlc-handoff/v1` with `result`,
+- Before the final response, emit `ai-sdlc-handoff/v2` with `result`,
   `blockers`, `next_required`, and `next_optional`; every action includes
   `reason`, `command`, and `expected_artifact`.
 - Do not create `summary.txt`, `*-summary.txt`, or unregistered review files.
@@ -183,8 +185,18 @@ The downstream consumer rechecks artifacts and freshness; it does not trust a pr
 
 Valid finding:
 
-```json
-{"id":"QL-001","lens":"edge-case-hunt","evidence":{"path":"specs/payments/requirements.md","line":88,"detail":"Timeout behavior is unspecified"},"severity":"high","trace_targets":["AC-004","TC-012"],"owner":"BA","resolution_status":"open","next_action":"Define timeout and retry acceptance behavior."}
+```toon
+evidence:
+  detail: Timeout behavior is unspecified
+  line: 88
+  path: specs/payments/requirements.md
+id: QL-001
+lens: edge-case-hunt
+next_action: Define timeout and retry acceptance behavior.
+owner: BA
+resolution_status: open
+severity: high
+trace_targets[2]: AC-004,TC-012
 ```
 
 Invalid counter-example: `The design feels risky.` It has no exact evidence,
@@ -192,6 +204,6 @@ trace target, owner, status, or executable next action.
 
 ## Source contract
 
-This page is generated from [`skills/ai-sdlc-quality-lenses/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-quality-lenses/SKILL.md) plus its linked `steps/manifest.json` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
+This page is generated from [`skills/ai-sdlc-quality-lenses/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-quality-lenses/SKILL.md) plus its linked `steps/manifest.toon` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
 
 [Back to the skill catalog](../skills.md) · [Script reference](../scripts.md) · [Choose a workflow](../../flows/index.md)

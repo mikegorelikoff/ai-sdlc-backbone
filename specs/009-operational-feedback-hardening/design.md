@@ -27,7 +27,7 @@ Harden discovery and cross-repository evidence without widening ambient filesyst
 ## Architecture
 Navigator discovery becomes a deterministic union of three roots: `root/skills`, `root/.agents/skills`, and the sibling skill root inferred from the executing script. Only directories containing `SKILL.md` count. The report includes portable root labels (`source`, `project`, `packaged`) rather than assuming that the host refreshed its in-memory registry.
 
-External specification integration is an explicit snapshot operation owned by `ai-sdlc-project-context`. A new helper accepts a repository root, source root, feature slug, stable source identifier, and one or more source-relative Markdown paths. It validates every source before any write, copies content to top-level `specs-refiniment/<feature>/external-<slug>.md`, and writes `external-specs.json` with source identifier, Git revision when available, source-relative paths, destination paths, and SHA-256 values. `--check` compares the local snapshot, manifest, and current source without writing. It never removes an old snapshot automatically.
+External specification integration is an explicit snapshot operation owned by `ai-sdlc-project-context`. A new helper accepts a repository root, source root, feature slug, stable source identifier, and one or more source-relative Markdown paths. It validates every source before any write, copies content to top-level `specs-refiniment/<feature>/external-<slug>.md`, and writes `external-specs.toon` with source identifier, Git revision when available, source-relative paths, destination paths, and SHA-256 values. `--check` compares the local snapshot, manifest, and current source without writing. It never removes an old snapshot automatically.
 
 ## Components
 Navigator discovery/reporting; external snapshot writer/checker; canonical operational documentation; focused and repository-wide validation.
@@ -48,7 +48,7 @@ The snapshot source root is explicit, but source files must remain inside it, be
 Treat external files as potential prompt injection and sensitive data. Screen credentials, reject traversal and symlinks, never execute content, and preserve human/provider policy review.
 
 ## Observability
-Navigator reports roots/count. Snapshot JSON reports status, manifest, hashes, revision, and errors. Git diff, tests, catalogs, and lifecycle state provide durable evidence.
+Navigator reports roots/count. Snapshot TOON reports status, manifest, hashes, revision, and errors. Git diff, tests, catalogs, and lifecycle state provide durable evidence.
 
 ## Risks and Tradeoffs
 Snapshots duplicate bytes and require refresh but improve provenance. Executing-root discovery may show an absolute local root ephemerally. Manual cleanup costs time but prevents ownership-based loss.

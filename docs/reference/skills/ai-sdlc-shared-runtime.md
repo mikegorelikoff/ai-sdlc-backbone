@@ -15,7 +15,7 @@ Provide the single deterministic Python runtime used by source checkouts and ins
 
 ## Use it when
 
-Portable AI SDLC shared-helper runtime. Use when an AI assistant installs, verifies, diagnoses, or repairs project-scoped AI SDLC skills whose deterministic scripts depend on shared state, artifact, context, path, TOON, migration, or index modules. This is an installation dependency, not a lifecycle entry point.
+Portable AI SDLC shared-helper runtime. Use when an AI assistant installs, verifies, diagnoses, or repairs project-scoped AI SDLC skills whose deterministic scripts depend on shared state, artifact, context, path, canonical TOON, semantic graph, StepCard, evaluation, or index modules. This is an installation dependency, not a lifecycle entry point.
 
 If the correct entry point is still unclear, use `ai-sdlc-flow` Explore first instead of guessing.
 
@@ -45,7 +45,7 @@ Use ai-sdlc-shared-runtime for <target>.
 Do not select a flow flag independently; preserve the mode of the owning downstream skill as described below.
 Read the required evidence,
 produce or report Read-only runtime verification or an explicit installation blocker, preserve human approval boundaries,
-and return blockers plus a complete ai-sdlc-handoff/v1.
+and return blockers plus a complete ai-sdlc-handoff/v2.
 ```
 
 This is an agent instruction, not a shell command. Terminal commands belong in the helper section.
@@ -90,11 +90,13 @@ Humans accept or reject material product, security, QA, policy, rollout, release
 
 The router loads these skill-owned procedures just in time. Read only the selector matching the current phase, active role, and action; a selected step is normative and an unselected step stays out of context.
 
-| Selector | Phases | Roles | Load rule | Step | Reason |
-| --- | --- | --- | --- | --- | --- |
-| `prepare` | `prepare`, `clarify`, `route` | `software-engineer` | `required` | [`steps/01-prepare.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/steps/01-prepare.md) | establish inputs, authority, lifecycle state, and safe artifact routing |
-| `execute` | `execute` | `software-engineer` | `on-demand` | [`steps/02-execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/steps/02-execute.md) | perform only the selected owning-skill procedure |
-| `validate-and-handoff` | `validate`, `handoff`, `complete` | `software-engineer` | `before-completion` | [`steps/03-validate-and-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/steps/03-validate-and-handoff.md) | verify outputs and return an explicit evidence-backed handoff |
+| Selector | Type | Phases | Roles | Dependencies | Operation | Side effect | Load rule | Step | Reason |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `preflight` | `analysis` | `prepare` | `software-engineer` | none | `inspect-and-route` | `none` | `required` | [`steps/01-prepare.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/steps/01-prepare.md) | establish inputs, authority, lifecycle state, and safe artifact routing |
+| `context` | `context` | `clarify`, `route` | `software-engineer` | `preflight` | `compile-context` | `none` | `required` | [`steps/02-context.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/steps/02-context.md) | compile the minimum sufficient context before the owning action |
+| `execute` | `action` | `execute` | `software-engineer` | `context` | `execute-procedure` | `workspace-write` | `on-demand` | [`steps/02-execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/steps/02-execute.md) | perform only the selected owning-skill procedure |
+| `validate` | `validation` | `validate` | `software-engineer` | `execute` | `validate-evidence` | `none` | `before-completion` | [`steps/03-validate-and-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/steps/03-validate-and-handoff.md) | validate outputs, evidence, acceptance, and residual risk |
+| `handoff` | `handoff` | `handoff`, `complete` | `software-engineer` | `validate` | `handoff-result` | `none` | `before-completion` | [`steps/04-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/steps/04-handoff.md) | return a journal-backed owner and next-action handoff |
 
 Resolve the current step with `ai-sdlc-shared-runtime/scripts/ai_sdlc_steps.py`. A missing, unsafe, oversized, or unmatched step is a blocker rather than permission to broad-load the package.
 
@@ -114,6 +116,13 @@ The owning agent normally runs these helpers. A human uses the direct starting p
 
   ```bash
   python3 -m unittest discover -s skills/ai-sdlc-shared-runtime/tests -p 'test*.py' -v
+  ```
+
+- Verify every skill-owned test file, including hyphenated package paths:
+
+  ```bash
+  python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_test_suite.py \
+    --format toon
   ```
 
 - Verify an installed downstream helper from a consumer repository:
@@ -172,7 +181,7 @@ On a blocker, preserve failed/stale evidence, name the accountable owner and exa
 - Report the installed skills root, runtime path, checked downstream script,
   exact command, exit status, and any missing module.
 - Return progress, blockers, and recommendations directly in the active agent response.
-- Before the final response, emit the `ai-sdlc-handoff/v1` contract with
+- Before the final response, emit the `ai-sdlc-handoff/v2` contract with
   `result`, `blockers`, `next_required`, and `next_optional`; every action
   includes `reason`, `command`, and `expected_artifact`.
 - Do not create `summary.txt`, `*-summary.txt`, or a runtime status artifact.
@@ -224,6 +233,6 @@ incompatible runtime bytes.
 
 ## Source contract
 
-This page is generated from [`skills/ai-sdlc-shared-runtime/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/SKILL.md) plus its linked `steps/manifest.json` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
+This page is generated from [`skills/ai-sdlc-shared-runtime/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-shared-runtime/SKILL.md) plus its linked `steps/manifest.toon` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
 
 [Back to the skill catalog](../skills.md) · [Script reference](../scripts.md) · [Choose a workflow](../../flows/index.md)

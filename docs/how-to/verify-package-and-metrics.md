@@ -14,7 +14,7 @@ Verify a package against explicit local policy:
 
 ```bash
 python3 .agents/skills/ai-sdlc-package-trust/scripts/package_trust.py . \
-  --package-root packages/example --manifest packages/example.package.json \
+  --package-root packages/example --manifest packages/example.package.toon \
   --allowed-origin repository \
   --allowed-capability filesystem.read \
   --require-provenance --write

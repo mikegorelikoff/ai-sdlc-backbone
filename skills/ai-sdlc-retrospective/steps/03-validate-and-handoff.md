@@ -25,8 +25,15 @@ Quality gate:
 
 Valid accepted proposal:
 
-```json
-{"id":"PROP-001","based_on":["OBS-002"],"target":"skills/ai-sdlc-shared-runtime/scripts/validation-policy.json","change":"Add the deterministic retry fixture to standard validation.","owner":"Dev","status":"accepted","decision_ref":"DEC-014","next_action":"Implement through a traced SDD task."}
+```toon
+based_on[1]: OBS-002
+change: Add the deterministic retry fixture to standard validation.
+decision_ref: DEC-014
+id: PROP-001
+next_action: Implement through a traced SDD task.
+owner: Dev
+status: accepted
+target: skills/ai-sdlc-shared-runtime/scripts/validation-policy.toon
 ```
 
 Invalid counter-example: `We learned that the policy should now skip tests.` It

@@ -1,15 +1,16 @@
 # Declarative Workflow Contract
 
-Workflow definitions are immutable planner inputs. Steps use exact typed actions
-and dependencies. Conditions are data comparisons, not expressions or code.
-Capabilities must be declared at workflow level and repeated by the steps or
-hooks that need them.
+Workflow definitions are immutable planner inputs. Every node names one
+installed skill, canonical phase entrypoint, optional role/action routing
+evidence, dependencies, bounded condition, and optional approval owner.
+Conditions are data comparisons, not expressions or code.
 
-Approval steps are exclusive waves and remain pending external evidence. Hooks
-are ordered declarations around one exact step; planning records them but never
-executes them. Parallel waves require host concurrency, host isolation support,
-isolated steps, and parallel-safe step types. Any missing property produces
-deterministic sequential waves with explicit fallback reasons.
+An unapproved node with an approval owner is blocked. Eligible nodes compile
+their canonical skill subplans; node IDs prefix task IDs, and dependency-node
+terminal tasks become downstream dependencies. Waves are deterministic views
+bounded by requested concurrency. The emitted run plan remains sequentially
+safe and executable only when every node is eligible or explicitly skipped.
 
-Generated TOON is the default agent representation. JSON is retained for schema
-interoperability and Markdown for human review.
+`workflow-plan.toon` records decisions, waves, approvals, derived capabilities,
+side effects, fingerprints, and the embedded run plan. `run-plan.toon` is the
+runtime input. Markdown is a human projection only.

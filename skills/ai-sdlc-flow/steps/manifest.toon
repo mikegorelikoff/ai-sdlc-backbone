@@ -1,0 +1,178 @@
+budgets:
+  context_max_tokens: 12000
+  min_context_savings_percent: 15
+  step_max_tokens: 5000
+entrypoints:
+  clarify[1]: clarify
+  complete[1]: complete
+  execute[1]: execute
+  handoff[1]: handoff
+  prepare[1]: clarify
+  route[1]: route
+  validate[1]: validate
+schema: ai-sdlc-skill-steps/v2
+skill: ai-sdlc-flow
+steps[6]:
+  - capabilities[1]: filesystem.read
+    commit_boundary: none
+    condition:
+      actions[0]:
+      phases[2]: clarify,prepare
+      roles[5]: business-analyst,product-manager,qa-engineer,software-architect,software-engineer
+    context:
+      budget_tokens: 12000
+      critical_anchors[3]: ## Entry,## Procedure,## Exit
+      fallback: direct_read
+      mandatory[1]: step_document
+      min_savings_percent: 15
+      required: true
+      selectors[4]: step,repository-instructions,feature-traces,changed-path-topology
+    depends_on[0]:
+    gates[3]: authority,inputs,path-containment
+    id: clarify
+    load: required
+    max_attempts: 1
+    max_tokens: 503
+    on_failure: block
+    operation: inspect-and-route
+    outputs[2]: routing-evidence,blockers
+    path: steps/clarify.md
+    reason: guided flow clarify phase with explicit evidence and exit criteria
+    side_effect: none
+    type: analysis
+  - capabilities[1]: filesystem.read
+    commit_boundary: none
+    condition:
+      actions[0]:
+      phases[1]: route
+      roles[5]: business-analyst,product-manager,qa-engineer,software-architect,software-engineer
+    context:
+      budget_tokens: 12000
+      critical_anchors[3]: ## Entry,## Procedure,## Exit
+      fallback: direct_read
+      mandatory[1]: step_document
+      min_savings_percent: 15
+      required: true
+      selectors[4]: step,repository-instructions,feature-traces,changed-path-topology
+    depends_on[1]: clarify
+    gates[3]: authority,inputs,path-containment
+    id: route
+    load: required
+    max_attempts: 1
+    max_tokens: 836
+    on_failure: block
+    operation: inspect-and-route
+    outputs[2]: routing-evidence,blockers
+    path: steps/route.md
+    reason: guided flow route phase with explicit evidence and exit criteria
+    side_effect: none
+    type: analysis
+  - capabilities[2]: filesystem.read,filesystem.write
+    commit_boundary: after-step
+    condition:
+      actions[0]:
+      phases[1]: execute
+      roles[5]: business-analyst,product-manager,qa-engineer,software-architect,software-engineer
+    context:
+      budget_tokens: 12000
+      critical_anchors[3]: ## Entry,## Procedure,## Exit
+      fallback: direct_read
+      mandatory[1]: step_document
+      min_savings_percent: 15
+      required: true
+      selectors[4]: step,repository-instructions,feature-traces,changed-path-topology
+    depends_on[1]: route
+    gates[3]: dependencies,context-sufficiency,authorization
+    id: execute
+    load: on-demand
+    max_attempts: 1
+    max_tokens: 415
+    on_failure: block
+    operation: execute-procedure
+    outputs[2]: procedure-result,execution-evidence
+    path: steps/execute.md
+    reason: guided flow execute phase with explicit evidence and exit criteria
+    side_effect: workspace-write
+    type: action
+  - capabilities[1]: filesystem.read
+    commit_boundary: none
+    condition:
+      actions[0]:
+      phases[1]: validate
+      roles[5]: business-analyst,product-manager,qa-engineer,software-architect,software-engineer
+    context:
+      budget_tokens: 12000
+      critical_anchors[3]: ## Entry,## Procedure,## Exit
+      fallback: direct_read
+      mandatory[1]: step_document
+      min_savings_percent: 15
+      required: true
+      selectors[4]: step,repository-instructions,feature-traces,changed-path-topology
+    depends_on[1]: execute
+    gates[3]: output-evidence,acceptance,regression-risk
+    id: validate
+    load: before-completion
+    max_attempts: 1
+    max_tokens: 477
+    on_failure: block
+    operation: validate-evidence
+    outputs[2]: validation-result,residual-risk
+    path: steps/validate.md
+    reason: guided flow validate phase with explicit evidence and exit criteria
+    side_effect: none
+    type: validation
+  - capabilities[1]: filesystem.read
+    commit_boundary: none
+    condition:
+      actions[0]:
+      phases[1]: handoff
+      roles[5]: business-analyst,product-manager,qa-engineer,software-architect,software-engineer
+    context:
+      budget_tokens: 12000
+      critical_anchors[3]: ## Entry,## Procedure,## Exit
+      fallback: direct_read
+      mandatory[1]: step_document
+      min_savings_percent: 15
+      required: true
+      selectors[4]: step,repository-instructions,feature-traces,changed-path-topology
+    depends_on[1]: validate
+    gates[2]: terminal-evidence,next-owner
+    id: handoff
+    load: on-demand
+    max_attempts: 1
+    max_tokens: 355
+    on_failure: handoff
+    operation: handoff-result
+    outputs[2]: handoff,next-action
+    path: steps/handoff.md
+    reason: guided flow handoff phase with explicit evidence and exit criteria
+    side_effect: none
+    type: handoff
+  - capabilities[1]: filesystem.read
+    commit_boundary: none
+    condition:
+      actions[0]:
+      phases[1]: complete
+      roles[5]: business-analyst,product-manager,qa-engineer,software-architect,software-engineer
+    context:
+      budget_tokens: 12000
+      critical_anchors[3]: ## Entry,## Procedure,## Exit
+      fallback: direct_read
+      mandatory[1]: step_document
+      min_savings_percent: 15
+      required: true
+      selectors[4]: step,repository-instructions,feature-traces,changed-path-topology
+    depends_on[1]: handoff
+    gates[2]: terminal-evidence,next-owner
+    id: complete
+    load: before-completion
+    max_attempts: 1
+    max_tokens: 382
+    on_failure: handoff
+    operation: handoff-result
+    outputs[2]: handoff,next-action
+    path: steps/complete.md
+    reason: guided flow complete phase with explicit evidence and exit criteria
+    side_effect: none
+    type: handoff
+version: 4.0.0

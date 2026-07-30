@@ -60,7 +60,7 @@ artifact_metadata:
 - [x] T002: - [x] T002. Upgrade task context selection and contract to v3.; refs: AC-001, AC-002, AC-003, AC-004, AC-005, AC-006, AC-007; output: Goal-aware ranges, authority fields, content-handling rule, sufficiency decision, next reads, and typed interaction metadata.
 - [x] T003: - [x] T003. Update v3 schema, source contracts, defaults, and project-context skill instructions.; refs: AC-006, AC-007, AC-008; output: Aligned machine and human contracts with typed interaction fields, controls, and migration notes.
 - [x] T004: - [x] T004. Add deterministic unit and integration coverage.; refs: AC-001, AC-002, AC-003, AC-004, AC-005, AC-006, AC-007; output: Tests cover relevance, fallback, authority, sufficient/review/insufficient states, configured/disabled/invalid profiles, budgets, and unchanged technical selection.
-- [x] T005: - [x] T005. Run focused runtime and contract validation.; refs: AC-008, AC-010; output: Project-context, shared runtime, configuration, mirror, JSON schema, and contract checks pass.
+- [x] T005: - [x] T005. Run focused runtime and contract validation.; refs: AC-008, AC-010; output: Project-context, shared runtime, configuration, mirror, TOON schema, and contract checks pass.
 - [x] T006: - [x] T006. Publish modern context, prompt, and personalization guidance.; refs: AC-008, AC-009; output: One foundation page plus focused context-pack, configuration, data-contract, concept, navigation, and changelog updates cover typed preferences and user controls.
 - [x] T007: - [x] T007. Regenerate catalogs and validate the rendered documentation.; refs: AC-010; output: Generated references are drift-free; source, unit, strict MkDocs, and rendered-site validation pass.
 

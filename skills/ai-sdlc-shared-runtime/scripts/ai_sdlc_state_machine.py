@@ -371,7 +371,7 @@ def completion_artifact_errors(
         return errors
     text = normalized.read_text(encoding="utf-8", errors="replace")
     if stage.stage_id == "validation":
-        receipt = normalized.parent / "_ai_sdlc" / "validation-receipt.json"
+        receipt = normalized.parent / "_ai_sdlc" / "validation-receipt.toon"
         receipt_errors = validate_receipt(receipt, root)
         if receipt_errors:
             return [

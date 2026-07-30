@@ -80,7 +80,7 @@ How to test:
 3. Run the Feature 013 validation plan and confirm all SDD, docs, compatibility, and installation gates pass.
 
 Validation:
-- PYTHONPYCACHEPREFIX=/tmp/ai-sdlc-pyc PYTHONPATH=skills/ai-sdlc-shared-runtime/scripts python3 skills/ai-sdlc-validation/scripts/run_validation.py --root . --plan specs/013-role-guided-installable-flow/_ai_sdlc/validation-plan.json --output specs/013-role-guided-installable-flow/_ai_sdlc/validation-receipt.json --verify --full-flow --feature 013-role-guided-installable-flow -> current; 11/11 commands passed
+- PYTHONPYCACHEPREFIX=/tmp/ai-sdlc-pyc PYTHONPATH=skills/ai-sdlc-shared-runtime/scripts python3 skills/ai-sdlc-validation/scripts/run_validation.py --root . --plan specs/013-role-guided-installable-flow/_ai_sdlc/validation-plan.toon --output specs/013-role-guided-installable-flow/_ai_sdlc/validation-receipt.toon --verify --full-flow --feature 013-role-guided-installable-flow -> current; 11/11 commands passed
 - python3 skills/ai-sdlc-commit-prep/scripts/check_commit_ready.py --full-flow --spec specs/013-role-guided-installable-flow -> passed
 - git diff --check -> passed
 

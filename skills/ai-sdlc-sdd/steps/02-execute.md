@@ -22,7 +22,7 @@ Enter only after the prepare step passes and this skill is the selected owner fo
 - Use `scripts/sdd_artifact_scaffold.py` to write `requirements.md`, `design.md`, `test-cases.md`, `qa.md`, and `tasks.md` one stdin section at a time.
 - Use `scripts/check_refinement_context.py` in `--full-flow` before SDD handoff to ensure upstream refinement delivery and QA readiness are complete.
 - Treat commands under `qa.md` as `PLANNED` until executed. Bare `PASS` claims
-  require a current `_ai_sdlc/validation-receipt.json` produced by
+  require a current `_ai_sdlc/validation-receipt.toon` produced by
   `ai-sdlc-validation/scripts/run_validation.py`; a non-zero command or changed
   revision/diff makes readiness fail.
 

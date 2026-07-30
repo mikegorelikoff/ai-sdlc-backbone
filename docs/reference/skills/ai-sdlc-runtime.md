@@ -7,7 +7,7 @@ description: Human-facing operating guide for ai-sdlc-runtime, including inputs,
 
 | Lifecycle position | Primary owner | Supporting roles | Module | Output |
 | --- | --- | --- | --- | --- |
-| Controlled execution | Dev, Delivery | QA, Release, Architecture | `core` | `_ai_sdlc/runs/<run-id>/journal.jsonl`, exact `state.json`, and complete token-efficient `state.toon` |
+| Controlled execution | Dev, Delivery | QA, Release, Architecture | `core` | immutable `plan.toon`, append-only `journal/*.toon`, and the replay-derived `state.toon` projection below `_ai_sdlc/runs/<run-id>/` |
 
 ## Why it exists
 
@@ -43,8 +43,8 @@ Use ai-sdlc-runtime for <target>.
 Choose --quick-flow for bounded assumption-driven progress or --full-flow
 for strict verification only as described below.
 Read the required evidence,
-produce or report `_ai_sdlc/runs/<run-id>/journal.jsonl`, exact `state.json`, and complete token-efficient `state.toon`, preserve human approval boundaries,
-and return blockers plus a complete ai-sdlc-handoff/v1.
+produce or report immutable `plan.toon`, append-only `journal/*.toon`, and the replay-derived `state.toon` projection below `_ai_sdlc/runs/<run-id>/`, preserve human approval boundaries,
+and return blockers plus a complete ai-sdlc-handoff/v2.
 ```
 
 This is an agent instruction, not a shell command. Terminal commands belong in the helper section.
@@ -59,7 +59,7 @@ This is an agent instruction, not a shell command. Terminal commands belong in t
 ## What it may write
 
 - Route each run only to `_ai_sdlc/runs/<run-id>/`.
-- Keep journal append-only, JSON recovery state atomically replaceable, and
+- Keep journal append-only, TOON recovery state atomically replaceable, and
   TOON state as the complete agent-facing projection.
 - Never store runtime records inside a feature spec folder.
 
@@ -81,11 +81,13 @@ Humans accept or reject material product, security, QA, policy, rollout, release
 
 The router loads these skill-owned procedures just in time. Read only the selector matching the current phase, active role, and action; a selected step is normative and an unselected step stays out of context.
 
-| Selector | Phases | Roles | Load rule | Step | Reason |
-| --- | --- | --- | --- | --- | --- |
-| `prepare` | `prepare`, `clarify`, `route` | `product-manager`, `software-engineer` | `required` | [`steps/01-prepare.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-runtime/steps/01-prepare.md) | establish inputs, authority, lifecycle state, and safe artifact routing |
-| `execute` | `execute` | `product-manager`, `software-engineer` | `on-demand` | [`steps/02-execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-runtime/steps/02-execute.md) | perform only the selected owning-skill procedure |
-| `validate-and-handoff` | `validate`, `handoff`, `complete` | `product-manager`, `software-engineer` | `before-completion` | [`steps/03-validate-and-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-runtime/steps/03-validate-and-handoff.md) | verify outputs and return an explicit evidence-backed handoff |
+| Selector | Type | Phases | Roles | Dependencies | Operation | Side effect | Load rule | Step | Reason |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `preflight` | `analysis` | `prepare` | `product-manager`, `software-engineer` | none | `inspect-and-route` | `none` | `required` | [`steps/01-prepare.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-runtime/steps/01-prepare.md) | establish inputs, authority, lifecycle state, and safe artifact routing |
+| `context` | `context` | `clarify`, `route` | `product-manager`, `software-engineer` | `preflight` | `compile-context` | `none` | `required` | [`steps/02-context.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-runtime/steps/02-context.md) | compile the minimum sufficient context before the owning action |
+| `execute` | `action` | `execute` | `product-manager`, `software-engineer` | `context` | `execute-procedure` | `workspace-write` | `on-demand` | [`steps/02-execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-runtime/steps/02-execute.md) | perform only the selected owning-skill procedure |
+| `validate` | `validation` | `validate` | `product-manager`, `software-engineer` | `execute` | `validate-evidence` | `none` | `before-completion` | [`steps/03-validate-and-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-runtime/steps/03-validate-and-handoff.md) | validate outputs, evidence, acceptance, and residual risk |
+| `handoff` | `handoff` | `handoff`, `complete` | `product-manager`, `software-engineer` | `validate` | `handoff-result` | `none` | `before-completion` | [`steps/04-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-runtime/steps/04-handoff.md) | return a journal-backed owner and next-action handoff |
 
 Resolve the current step with `ai-sdlc-shared-runtime/scripts/ai_sdlc_steps.py`. A missing, unsafe, oversized, or unmatched step is a blocker rather than permission to broad-load the package.
 
@@ -95,14 +97,14 @@ Paths beginning with `skills/` below are canonical **source-checkout** forms for
 
 | Helper | Purpose | Direct starting point | Repository effect |
 | --- | --- | --- | --- |
-| [`runtime.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-runtime/scripts/runtime.py) | Run a bounded, journaled, resumable task state machine. | `python3 skills/ai-sdlc-runtime/scripts/runtime.py --help` | May write only through an explicit mutation mode; start with `--help`, check, preview, or emit. |
+| [`runtime.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-runtime/scripts/runtime.py) | Run a bounded, journaled, resumable v2 skill-step state machine. | `python3 skills/ai-sdlc-runtime/scripts/runtime.py --help` | May write only through an explicit mutation mode; start with `--help`, check, preview, or emit. |
 
 The owning agent normally runs these helpers. A human uses the direct starting point for diagnosis or reproduction after inspecting `--help` and repository policy.
 
 ### Contract-provided usage
 
 ```bash
-python3 skills/ai-sdlc-runtime/scripts/runtime.py . --start --run-id delivery-004 --plan run-plan.json --format toon
+python3 skills/ai-sdlc-runtime/scripts/runtime.py . --start --run-id delivery-004 --plan run-plan.toon --format toon
 python3 skills/ai-sdlc-runtime/scripts/runtime.py . --next --run-id delivery-004 --format toon
 python3 skills/ai-sdlc-runtime/scripts/runtime.py . --record --run-id delivery-004 --task T001 --outcome succeeded --result-fingerprint <sha256> --tokens 420 --commit <sha>
 python3 skills/ai-sdlc-runtime/scripts/runtime.py . --resume --run-id delivery-004 --format toon
@@ -110,11 +112,11 @@ python3 skills/ai-sdlc-runtime/scripts/runtime.py . --resume --run-id delivery-0
 
 ## Success criteria
 
-The hash-chained JSONL journal stores contiguous sequence numbers and transition
-payloads. Exact JSON state supports deterministic replay comparison. Complete
-TOON state exposes the plan identity, task states and attempts, running and ready
-tasks, budgets, stop reason, sequence, and fingerprint to agents. Replay must
-reproduce both projections.
+The hash-chained `journal/*.toon` event files store contiguous sequence numbers
+and transition payloads. `state.toon` exposes plan identity, task protocol
+phases and attempts, running and ready tasks, budgets, stop reason, sequence,
+and fingerprint. Replay must reproduce that projection from immutable
+`plan.toon` plus the journal.
 
 Quality gate:
 
@@ -138,7 +140,7 @@ On a blocker, preserve failed/stale evidence, name the accountable owner and exa
 - Report run status, sequence, current task, ready tasks, budgets, stop reason,
   recovery status, and next command.
 - Return validation and handoff summaries directly in the active agent response.
-- Emit `ai-sdlc-handoff/v1` with `result`, `blockers`, `next_required`, and
+- Emit `ai-sdlc-handoff/v2` with `result`, `blockers`, `next_required`, and
   `next_optional`; actions include `reason`, `command`, and `expected_artifact`.
 - Do not create `summary.txt`, `*-summary.txt`, or another standalone summary file.
 
@@ -155,8 +157,8 @@ The downstream consumer rechecks artifacts and freshness; it does not trust a pr
 ??? info "Artifact metadata"
 
     - Runtime-related Markdown uses canonical `artifact_metadata` and `metatags`.
-    - Machine records use `ai-sdlc-run-plan/v1`, `ai-sdlc-run-event/v1`, and
-      `ai-sdlc-run-state/v1` with deterministic fingerprints.
+    - Machine records use `ai-sdlc-run-plan/v2`, `ai-sdlc-run-event/v2`, and
+      `ai-sdlc-run-state/v2` with deterministic fingerprints.
 
 ??? info "Specs index"
 
@@ -172,6 +174,6 @@ record also returns the existing outcome without another event.
 
 ## Source contract
 
-This page is generated from [`skills/ai-sdlc-runtime/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-runtime/SKILL.md) plus its linked `steps/manifest.json` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
+This page is generated from [`skills/ai-sdlc-runtime/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-runtime/SKILL.md) plus its linked `steps/manifest.toon` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
 
 [Back to the skill catalog](../skills.md) · [Script reference](../scripts.md) · [Choose a workflow](../../flows/index.md)

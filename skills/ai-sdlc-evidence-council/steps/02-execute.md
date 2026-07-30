@@ -18,8 +18,8 @@ Enter only after the prepare step passes and this skill is the selected owner fo
 ## Script Usage
 
 ```bash
-python3 skills/ai-sdlc-evidence-council/scripts/evidence_council.py specs/payments --input /tmp/council.json --emit --quick-flow
-python3 skills/ai-sdlc-evidence-council/scripts/evidence_council.py specs/payments --input /tmp/council.json --write --full-flow --format toon
+python3 skills/ai-sdlc-evidence-council/scripts/evidence_council.py specs/payments --input /tmp/council.toon --emit --quick-flow
+python3 skills/ai-sdlc-evidence-council/scripts/evidence_council.py specs/payments --input /tmp/council.toon --write --full-flow --format toon
 ```
 
 ## Purpose

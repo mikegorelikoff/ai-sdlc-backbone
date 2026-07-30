@@ -31,7 +31,7 @@ missing, truncated, stale, or budget-omitted high-priority evidence.
 
 ## Interaction profile
 
-An optional typed interaction profile is read from `config.resolved.json` and
+An optional typed interaction profile is read from `config.resolved.toon` and
 used only for presentation. Supported fields are preferred name, language,
 response style, technical depth, and status-update cadence. The profile is
 disabled by default, never changes selection or authority, and reports

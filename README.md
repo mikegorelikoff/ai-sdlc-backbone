@@ -15,6 +15,10 @@ decisions.
 ## Why use it?
 
 - Keep requirements, decisions, tasks, tests, and evidence connected.
+- Execute each skill as a validated semantic DAG with explicit gates,
+  side-effects, recovery, and handoff boundaries.
+- Compile minimum sufficient context per step, with mandatory-anchor recall and
+  exact direct reads when packing is unsafe.
 - Choose lightweight or complete rigor based on change risk.
 - Resume work across sessions and agent hosts from repository artifacts.
 - Preserve human authority over scope, trade-offs, exceptions, and release.
@@ -31,7 +35,7 @@ curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/main
 Then verify the project-scoped installation:
 
 ```bash
-DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --json
+DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --toon
 ```
 
 Prerequisites are Git, Node.js `>=22.20.0`, npm, Python `3.10+`, and a
@@ -41,7 +45,7 @@ Review remote scripts before running them.
 ## Expected first result
 
 The installer adds project-scoped Harness skills for the named agent. The
-verification command returns a JSON inventory that includes the installed
+verification command returns a TOON inventory that includes the installed
 `ai-sdlc-*` skills. Start with a read-only Explore request:
 
 ```text
@@ -65,8 +69,8 @@ understand its contract.
 
 ## What it does and does not do
 
-The Harness structures delivery with skills, Markdown artifacts, compact
-machine state, deterministic helpers, validation evidence, and explicit
+The Harness structures delivery with executable skills, Markdown artifacts,
+canonical TOON machine state, deterministic helpers, validation evidence, and explicit
 handoffs. It does not replace product ownership, engineering judgment, code
 review, security review, CI, deployment authority, or proof of business
 impact. Repository tests verify mechanisms; they do not prove ROI, faster
@@ -110,10 +114,11 @@ Report vulnerabilities privately through [SECURITY.md](SECURITY.md).
 
 ## Project status
 
-The documentation currently targets release candidate `v3.0.0-rc.2`; the
-previous stable release is `v2.1.0`. Review
+The current stable release is `v4.0.0` with Harness API `4.0.0`. It is a hard
+cut to canonical TOON contracts, executable semantic skill graphs, per-step
+context engineering, and durable journaled execution. Review
 [compatibility](docs/reference/compatibility.md), [limitations](docs/explanation/maturity-limitations.md),
-and the [3.0 migration guide](docs/how-to/migrate-3.0.md) before adoption.
+and the [4.0 migration guide](docs/how-to/migrate-4.0.md) before adoption.
 
 ## Contributing
 

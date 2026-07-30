@@ -48,7 +48,7 @@ artifact_metadata:
     - "specs/013-role-guided-installable-flow/design.md"
     - "specs/013-role-guided-installable-flow/test-cases.md"
     - "specs/013-role-guided-installable-flow/validation.md"
-    - "specs/013-role-guided-installable-flow/_ai_sdlc/validation-receipt.json"
+    - "specs/013-role-guided-installable-flow/_ai_sdlc/validation-receipt.toon"
   validation:
     - "code-review readiness completed without errors"
     - "ai-sdlc-validation-receipt/v1: 10 commands; 0 failures"

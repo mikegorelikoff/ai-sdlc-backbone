@@ -80,7 +80,7 @@ def validate(spec_dir: Path) -> list[str]:
         errors.append("qa.md missing Validation Commands section")
     execution_claim = re.search(r"(?im)^\s*(?:-\s*)?PASS\s*(?::|-|\.)", qa_md)
     if execution_claim:
-        receipt = spec_dir / "_ai_sdlc/validation-receipt.json"
+        receipt = spec_dir / "_ai_sdlc/validation-receipt.toon"
         receipt_errors = validate_receipt(receipt, ROOT)
         if receipt_errors:
             errors.append("qa.md contains PASS claims without a current executed validation receipt")

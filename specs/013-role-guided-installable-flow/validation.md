@@ -41,8 +41,8 @@ artifact_metadata:
     - "AC-015"
     - "AC-016"
   related_artifacts:
-    - "specs/013-role-guided-installable-flow/_ai_sdlc/validation-plan.json"
-    - "specs/013-role-guided-installable-flow/_ai_sdlc/validation-receipt.json"
+    - "specs/013-role-guided-installable-flow/_ai_sdlc/validation-plan.toon"
+    - "specs/013-role-guided-installable-flow/_ai_sdlc/validation-receipt.toon"
   validation:
     - "ai-sdlc-validation-receipt/v1: current; 10 commands; 0 failures"
   metatags:
@@ -84,9 +84,9 @@ outcomes.
 
 ## Evidence
 
-- Plan: `specs/013-role-guided-installable-flow/_ai_sdlc/validation-plan.json`
+- Plan: `specs/013-role-guided-installable-flow/_ai_sdlc/validation-plan.toon`
 - Receipt:
-  `specs/013-role-guided-installable-flow/_ai_sdlc/validation-receipt.json`
+  `specs/013-role-guided-installable-flow/_ai_sdlc/validation-receipt.toon`
 - Commands: 10
 - Failed commands: 0
 

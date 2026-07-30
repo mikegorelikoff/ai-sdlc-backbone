@@ -14,7 +14,7 @@ before changing harness-managed files.
 - `ai-sdlc-navigator` is removed. Start with `ai-sdlc-flow` Explore or invoke a
   known owning skill directly.
 - Flow v1 decision cards are rejected. Run Explore again and apply only the
-  resulting `ai-sdlc-flow/v2` fingerprint.
+  resulting `ai-sdlc-flow/v3` fingerprint.
 - The installable runtime exists only at
   `.agents/skills/ai-sdlc-shared-runtime`; `_shared` is no longer a runtime
   authority.

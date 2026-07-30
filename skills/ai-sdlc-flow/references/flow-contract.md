@@ -2,7 +2,7 @@
 
 ## DecisionCard
 
-Schema: `ai-sdlc-flow/v2`. Version 1 cards are rejected with instructions to
+Schema: `ai-sdlc-flow/v3`. Version 1 cards are rejected with instructions to
 run Explore again; no compatibility shim is provided.
 
 Semantic fingerprint inputs are repository identity, normalized intent,
@@ -38,14 +38,14 @@ cross-role handoff. Ambiguous intent emits a stable action menu.
 
 The trusted flow selector registry may choose only regular, non-symlink files
 inside the installed flow package. The canonical skill-step selector separately
-validates the owning skill's `steps/manifest.json` and may load only a linked,
+validates the owning skill's `steps/manifest.toon` and may load only a linked,
 contained, bounded procedure matching the current phase, role, and action.
 Together they cap every reference, record selected/skipped reasons, and load
 the active role, current flow step, and owning-skill step just in time.
 
 ## Apply
 
-Apply accepts a complete JSON DecisionCard, rebuilds the card from current
+Apply accepts a complete TOON DecisionCard, rebuilds the card from current
 repository evidence, and requires an exact fingerprint match. Verification-only
 mode reports the single allow-listed state transition. `--execute` starts that
 one transition through the canonical state-machine helper.

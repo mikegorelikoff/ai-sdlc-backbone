@@ -33,7 +33,7 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
   coverage, gaps, and orphans.
 - Return query paths as ordered node and edge evidence, not prose-only claims.
 - Return the validation and handoff summary directly in the active agent response.
-- Emit `ai-sdlc-handoff/v1` with `result`, `blockers`, `next_required`, and
+- Emit `ai-sdlc-handoff/v2` with `result`, `blockers`, `next_required`, and
   `next_optional`; actions include `reason`, `command`, and `expected_artifact`.
 - Do not create `summary.txt`, `*-summary.txt`, or another standalone summary file.
 - Do not create ad hoc summaries outside the canonical graph outputs.

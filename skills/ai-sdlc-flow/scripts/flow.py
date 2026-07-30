@@ -4,11 +4,16 @@
 from __future__ import annotations
 
 import argparse
-import json
 import subprocess
 import sys
+import tempfile
 from dataclasses import fields
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 
 
 def load_runtime() -> object:
@@ -26,13 +31,13 @@ def load_runtime() -> object:
 FLOW = load_runtime()
 
 
-def card_from_json(payload: str) -> object:
-    """Parse one complete JSON DecisionCard."""
-    values = json.loads(payload)
+def card_from_toon(payload: str) -> object:
+    """Parse one complete TOON DecisionCard."""
+    values = toon_codec.loads(payload)
     if values.get("schema") != FLOW.SCHEMA:
         found = values.get("schema", "<missing>")
         raise ValueError(
-            f"unsupported DecisionCard schema {found}; run Explore again to migrate to {FLOW.SCHEMA}"
+            f"unsupported DecisionCard schema {found}; run Explore again to regenerate {FLOW.SCHEMA}"
         )
     economics = FLOW.ContextEconomics(**values.pop("context_economics"))
     allowed = {field.name for field in fields(FLOW.DecisionCard)}
@@ -91,42 +96,33 @@ def current_card(
     )
 
 
-def state_command(card: object, root: Path) -> list[str]:
-    """Return one exact allow-listed lifecycle transition command."""
-    allowed = {
-        "ai-sdlc-branching",
-        "ai-sdlc-commit-prep",
-        "ai-sdlc-working-backwards-discovery",
-        "ai-sdlc-qa-requirements-gap-review",
-        "ai-sdlc-user-story-decomposition",
-        "ai-sdlc-sdd",
-        "ai-sdlc-code-review",
-        "ai-sdlc-security-testing",
-        "ai-sdlc-validation",
-    }
-    if card.skill not in allowed:
-        raise ValueError(f"FLOW_UNSUPPORTED_ACTION: {card.skill}")
-    helper = root / "skills" / "ai-sdlc-shared-runtime" / "scripts" / "state_machine.py"
-    if not helper.is_file():
+def runtime_command(
+    root: Path,
+    run_id: str,
+    plan_path: Path,
+) -> list[str]:
+    """Return the one exact runtime start command authorized by Apply."""
+    helper = root / "skills" / "ai-sdlc-runtime" / "scripts" / "runtime.py"
+    if not helper.is_file() or helper.is_symlink():
         helper = (
             Path(__file__).resolve().parents[2]
-            / "ai-sdlc-shared-runtime"
+            / "ai-sdlc-runtime"
             / "scripts"
-            / "state_machine.py"
+            / "runtime.py"
         )
+    if not helper.is_file() or helper.is_symlink():
+        raise ValueError("FLOW_MISSING_RUNTIME: ai-sdlc-runtime is unavailable")
     return [
         sys.executable,
         str(helper),
-        "begin",
-        "--feature",
-        card.feature,
-        "--workspace",
-        card.workspace,
-        "--skill",
-        card.skill,
-        "--" + card.rigor + "-flow",
-        "--decision-ref",
-        "DEC-008",
+        str(root),
+        "--start",
+        "--run-id",
+        run_id,
+        "--plan",
+        str(plan_path),
+        "--format",
+        "toon",
     ]
 
 
@@ -147,7 +143,7 @@ def parser() -> argparse.ArgumentParser:
     explore.add_argument("--action", help="Explicit stable action id from the deterministic menu")
     explore.add_argument("--team", type=Path, help="Optional team configuration layer")
     explore.add_argument("--user", type=Path, help="Optional user configuration layer")
-    explore.add_argument("--format", choices=("markdown", "toon", "json"), default="markdown")
+    explore.add_argument("--format", choices=("markdown", "toon"), default="markdown")
     modes = explore.add_mutually_exclusive_group()
     modes.add_argument("--quick-flow", action="store_true")
     modes.add_argument("--full-flow", action="store_true")
@@ -168,10 +164,11 @@ def parser() -> argparse.ArgumentParser:
     )
     apply = sub.add_parser("apply", help="Revalidate and start one checkpoint")
     apply.add_argument("--root", type=Path, default=Path.cwd())
-    apply.add_argument("--card", required=True, help="JSON card path or - for stdin")
+    apply.add_argument("--card", required=True, help="TOON card path or - for stdin")
     apply.add_argument("--team", type=Path, help="Team configuration used during Explore")
     apply.add_argument("--user", type=Path, help="User configuration used during Explore")
     apply.add_argument("--execute", action="store_true", help="Explicitly start the state transition")
+    apply.add_argument("--run-id", default="preview", help="Safe runtime identity used by Apply")
     apply.add_argument("--state-check", action="store_true", help="Verify without executing")
     apply.add_argument("--begin-state", action="store_true", help="Alias for explicit --execute")
     apply.add_argument("--complete-state", action="store_true", help="Unsupported: Apply cannot complete stages")
@@ -239,12 +236,12 @@ def main() -> int:
         elif args.format == "toon":
             sys.stdout.write(FLOW.render_toon(card))
         else:
-            print(json.dumps(FLOW.semantic_dict(card), ensure_ascii=False, sort_keys=True))
+            print(toon_codec.dumps(FLOW.semantic_dict(card), ensure_ascii=False, sort_keys=True))
         return 1 if card.blockers else 0
 
     payload = sys.stdin.read() if args.card == "-" else Path(args.card).read_text(encoding="utf-8")
     try:
-        accepted = card_from_json(payload)
+        accepted = card_from_toon(payload)
         rebuilt = current_card(accepted, root, args.team, args.user)
         if accepted.fingerprint != rebuilt.fingerprint:
             print("FLOW_ROUTE_DRIFT: fingerprint inputs changed; no mutation performed", file=sys.stderr)
@@ -252,17 +249,61 @@ def main() -> int:
         if rebuilt.blockers:
             print("; ".join(rebuilt.blockers), file=sys.stderr)
             return 2
-        command = state_command(rebuilt, root)
         if args.complete_state:
             print("FLOW_UNSUPPORTED_ACTION: Apply cannot complete lifecycle state", file=sys.stderr)
             return 2
         execute = args.execute or args.begin_state
         if not execute:
-            print(json.dumps({"status": "verified", "fingerprint": rebuilt.fingerprint, "action": command}))
+            print(
+                toon_codec.encode_toon(
+                    {
+                        "schema": "ai-sdlc-flow-apply/v3",
+                        "status": "verified",
+                        "decision_fingerprint": rebuilt.fingerprint,
+                        "run_plan_fingerprint": rebuilt.run_plan_fingerprint,
+                        "run_id": args.run_id,
+                        "planned_tasks": len(rebuilt.run_plan.get("tasks", [])),
+                    }
+                ),
+                end="",
+            )
             return 0
-        completed = subprocess.run(command, cwd=root, check=False, text=True)
-        return completed.returncode
-    except (OSError, ValueError, TypeError, json.JSONDecodeError) as exc:
+        if not rebuilt.run_plan:
+            raise ValueError("FLOW_MISSING_RUN_PLAN: Explore did not compile a run")
+        with tempfile.TemporaryDirectory(prefix="ai-sdlc-flow-apply-") as temporary:
+            plan_path = Path(temporary) / "run-plan.toon"
+            plan_path.write_text(
+                toon_codec.encode_toon(rebuilt.run_plan),
+                encoding="utf-8",
+            )
+            completed = subprocess.run(
+                runtime_command(root, args.run_id, plan_path),
+                cwd=root,
+                check=False,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+        if completed.returncode:
+            message = completed.stdout.strip() or completed.stderr.strip()
+            print(f"FLOW_RUNTIME_START_FAILED: {message}", file=sys.stderr)
+            return 2
+        runtime_result = toon_codec.loads(completed.stdout)
+        print(
+            toon_codec.encode_toon(
+                {
+                    "schema": "ai-sdlc-flow-apply/v3",
+                    "status": "started",
+                    "decision_fingerprint": rebuilt.fingerprint,
+                    "run_plan_fingerprint": rebuilt.run_plan_fingerprint,
+                    "run_id": args.run_id,
+                    "runtime_result": runtime_result,
+                }
+            ),
+            end="",
+        )
+        return 0
+    except (OSError, ValueError, TypeError, toon_codec.ToonDecodeError) as exc:
         print(f"FLOW_INVALID_CARD: {exc}", file=sys.stderr)
         return 2
 

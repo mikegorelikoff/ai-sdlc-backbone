@@ -7,7 +7,7 @@ description: Human-facing operating guide for ai-sdlc-policy, including inputs, 
 
 | Lifecycle position | Primary owner | Supporting roles | Module | Output |
 | --- | --- | --- | --- | --- |
-| Governance and control evaluation | Delivery, Security, Architecture, Release | Dev, QA, PM, BA | `core` | `_ai_sdlc/policy-resolution.{toon,json}` or fingerprint-addressed TOON/JSON records below `_ai_sdlc/policy-decisions/` when `--write` is requested |
+| Governance and control evaluation | Delivery, Security, Architecture, Release | Dev, QA, PM, BA | `core` | `_ai_sdlc/policy-resolution.toon` or fingerprint-addressed TOON records below `_ai_sdlc/policy-decisions/` when `--write` is requested |
 
 ## Why it exists
 
@@ -31,7 +31,7 @@ The summary table above names the primary and supporting human roles for this ca
 
 ## Before you start
 
-- Action name and JSON context for evaluation.
+- Action name and TOON context for evaluation.
 - Base policy plus optional organization profile, project, and user layers.
 - Explicit owner-approved waiver record when an allowed exception is requested.
 
@@ -42,8 +42,8 @@ Use ai-sdlc-policy for <target>.
 Choose --quick-flow for bounded assumption-driven progress or --full-flow
 for strict verification only as described below.
 Read the required evidence,
-produce or report `_ai_sdlc/policy-resolution.{toon,json}` or fingerprint-addressed TOON/JSON records below `_ai_sdlc/policy-decisions/` when `--write` is requested, preserve human approval boundaries,
-and return blockers plus a complete ai-sdlc-handoff/v1.
+produce or report `_ai_sdlc/policy-resolution.toon` or fingerprint-addressed TOON records below `_ai_sdlc/policy-decisions/` when `--write` is requested, preserve human approval boundaries,
+and return blockers plus a complete ai-sdlc-handoff/v2.
 ```
 
 This is an agent instruction, not a shell command. Terminal commands belong in the helper section.
@@ -52,7 +52,7 @@ This is an agent instruction, not a shell command. Terminal commands belong in t
 
 - Versioned base, organization, project, and user policy layers.
 - A stable action such as `change.apply`, `release.publish`, or
-  `command.destructive` and a JSON context object.
+  `command.destructive` and a TOON context object.
 - Optional waiver files tied to exact rule IDs, actions, subjects, constraints,
   owners, approvers, decisions, issue times, and expiry times.
 
@@ -82,11 +82,13 @@ Humans accept or reject material product, security, QA, policy, rollout, release
 
 The router loads these skill-owned procedures just in time. Read only the selector matching the current phase, active role, and action; a selected step is normative and an unselected step stays out of context.
 
-| Selector | Phases | Roles | Load rule | Step | Reason |
-| --- | --- | --- | --- | --- | --- |
-| `prepare` | `prepare`, `clarify`, `route` | `product-manager`, `software-architect` | `required` | [`steps/01-prepare.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-policy/steps/01-prepare.md) | establish inputs, authority, lifecycle state, and safe artifact routing |
-| `execute` | `execute` | `product-manager`, `software-architect` | `on-demand` | [`steps/02-execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-policy/steps/02-execute.md) | perform only the selected owning-skill procedure |
-| `validate-and-handoff` | `validate`, `handoff`, `complete` | `product-manager`, `software-architect` | `before-completion` | [`steps/03-validate-and-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-policy/steps/03-validate-and-handoff.md) | verify outputs and return an explicit evidence-backed handoff |
+| Selector | Type | Phases | Roles | Dependencies | Operation | Side effect | Load rule | Step | Reason |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `preflight` | `analysis` | `prepare` | `product-manager`, `software-architect` | none | `inspect-and-route` | `none` | `required` | [`steps/01-prepare.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-policy/steps/01-prepare.md) | establish inputs, authority, lifecycle state, and safe artifact routing |
+| `context` | `context` | `clarify`, `route` | `product-manager`, `software-architect` | `preflight` | `compile-context` | `none` | `required` | [`steps/02-context.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-policy/steps/02-context.md) | compile the minimum sufficient context before the owning action |
+| `execute` | `action` | `execute` | `product-manager`, `software-architect` | `context` | `execute-procedure` | `workspace-write` | `on-demand` | [`steps/02-execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-policy/steps/02-execute.md) | perform only the selected owning-skill procedure |
+| `validate` | `validation` | `validate` | `product-manager`, `software-architect` | `execute` | `validate-evidence` | `none` | `before-completion` | [`steps/03-validate-and-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-policy/steps/03-validate-and-handoff.md) | validate outputs, evidence, acceptance, and residual risk |
+| `handoff` | `handoff` | `handoff`, `complete` | `product-manager`, `software-architect` | `validate` | `handoff-result` | `none` | `before-completion` | [`steps/04-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-policy/steps/04-handoff.md) | return a journal-backed owner and next-action handoff |
 
 Resolve the current step with `ai-sdlc-shared-runtime/scripts/ai_sdlc_steps.py`. A missing, unsafe, oversized, or unmatched step is a blocker rather than permission to broad-load the package.
 
@@ -104,13 +106,13 @@ The owning agent normally runs these helpers. A human uses the direct starting p
 
 ```bash
 python3 skills/ai-sdlc-policy/scripts/policy.py . --resolve --profile high-assurance --format toon
-python3 skills/ai-sdlc-policy/scripts/policy.py . --evaluate change.apply --context policy-context.json --profile regulated --format toon
-python3 skills/ai-sdlc-policy/scripts/policy.py . --explain release.publish --context release-context.json --waiver waiver.json --format markdown
+python3 skills/ai-sdlc-policy/scripts/policy.py . --evaluate change.apply --context policy-context.toon --profile regulated --format toon
+python3 skills/ai-sdlc-policy/scripts/policy.py . --explain release.publish --context release-context.toon --waiver waiver.toon --format markdown
 ```
 
 ## Success criteria
 
-Complete TOON/JSON resolution records contain normalized rules, provenance, source hashes,
+Complete canonical TOON resolution records contain normalized rules, provenance, source hashes,
 protected rule IDs, and a deterministic fingerprint. Decision records contain
 the exact action and context fingerprint, matched and waived rules, gates,
 reasons, result, evaluation time, and policy fingerprint.
@@ -137,7 +139,7 @@ On a blocker, preserve failed/stale evidence, name the accountable owner and exa
 - Report resolved policy fingerprint, layer provenance, action decision, matched
   rules, required gates, reason codes, and applied or rejected waivers.
 - Return validation and handoff summaries directly in the active agent response.
-- Emit `ai-sdlc-handoff/v1` with `result`, `blockers`, `next_required`, and
+- Emit `ai-sdlc-handoff/v2` with `result`, `blockers`, `next_required`, and
   `next_optional`; actions include `reason`, `command`, and `expected_artifact`.
 - Do not create `summary.txt`, `*-summary.txt`, or another standalone summary file.
 
@@ -171,6 +173,6 @@ those gates or turn a protected `require` into `allow`.
 
 ## Source contract
 
-This page is generated from [`skills/ai-sdlc-policy/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-policy/SKILL.md) plus its linked `steps/manifest.json` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
+This page is generated from [`skills/ai-sdlc-policy/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-policy/SKILL.md) plus its linked `steps/manifest.toon` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
 
 [Back to the skill catalog](../skills.md) · [Script reference](../scripts.md) · [Choose a workflow](../../flows/index.md)

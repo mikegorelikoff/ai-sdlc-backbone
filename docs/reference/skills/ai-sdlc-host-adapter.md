@@ -7,7 +7,7 @@ description: Human-facing operating guide for ai-sdlc-host-adapter, including in
 
 | Lifecycle position | Primary owner | Supporting roles | Module | Output |
 | --- | --- | --- | --- | --- |
-| Portable execution handoff | Dev, Delivery, Architecture | Security, QA | `core` | `_ai_sdlc/adapters/<adapter-id>/negotiation.{toon,json,md}` |
+| Portable execution handoff | Dev, Delivery, Architecture | Security, QA | `core` | `_ai_sdlc/adapters/<adapter-id>/negotiation.toon` and its `negotiation.md` human projection |
 
 ## Why it exists
 
@@ -32,7 +32,7 @@ The summary table above names the primary and supporting human roles for this ca
 ## Before you start
 
 - Versioned adapter manifest and capability request.
-- Exact portable operations, required capabilities, isolation need, and desired concurrency.
+- One complete context-ready StepCard, desired concurrency, and isolation need.
 
 ## Tell your agent
 
@@ -41,8 +41,8 @@ Use ai-sdlc-host-adapter for <target>.
 Choose --quick-flow for bounded assumption-driven progress or --full-flow
 for strict verification only as described below.
 Read the required evidence,
-produce or report `_ai_sdlc/adapters/<adapter-id>/negotiation.{toon,json,md}`, preserve human approval boundaries,
-and return blockers plus a complete ai-sdlc-handoff/v1.
+produce or report `_ai_sdlc/adapters/<adapter-id>/negotiation.toon` and its `negotiation.md` human projection, preserve human approval boundaries,
+and return blockers plus a complete ai-sdlc-handoff/v2.
 ```
 
 This is an agent instruction, not a shell command. Terminal commands belong in the helper section.
@@ -50,7 +50,7 @@ This is an agent instruction, not a shell command. Terminal commands belong in t
 ## What the agent reads
 
 - Versioned adapter manifest and capability request.
-- Exact portable operations, required capabilities, isolation need, and desired concurrency.
+- One complete context-ready StepCard, desired concurrency, and isolation need.
 
 ## What it may write
 
@@ -71,17 +71,20 @@ Humans accept or reject material product, security, QA, policy, rollout, release
 
 - Support `--quick-flow` and `--full-flow`; full flow takes precedence.
 - Both modes use identical compatibility and fallback rules.
-- Full flow reviews every mapping, limit, fallback, and unsupported requirement.
+- Full flow reviews the StepCard, mapping, derived capability, side-effect,
+  evidence, idempotency, limit, fallback, and unsupported-requirement fields.
 
 ## Procedural step selectors
 
 The router loads these skill-owned procedures just in time. Read only the selector matching the current phase, active role, and action; a selected step is normative and an unselected step stays out of context.
 
-| Selector | Phases | Roles | Load rule | Step | Reason |
-| --- | --- | --- | --- | --- | --- |
-| `prepare` | `prepare`, `clarify`, `route` | `product-manager`, `software-architect`, `software-engineer` | `required` | [`steps/01-prepare.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-host-adapter/steps/01-prepare.md) | establish inputs, authority, lifecycle state, and safe artifact routing |
-| `execute` | `execute` | `product-manager`, `software-architect`, `software-engineer` | `on-demand` | [`steps/02-execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-host-adapter/steps/02-execute.md) | perform only the selected owning-skill procedure |
-| `validate-and-handoff` | `validate`, `handoff`, `complete` | `product-manager`, `software-architect`, `software-engineer` | `before-completion` | [`steps/03-validate-and-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-host-adapter/steps/03-validate-and-handoff.md) | verify outputs and return an explicit evidence-backed handoff |
+| Selector | Type | Phases | Roles | Dependencies | Operation | Side effect | Load rule | Step | Reason |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `preflight` | `analysis` | `prepare` | `product-manager`, `software-architect`, `software-engineer` | none | `inspect-and-route` | `none` | `required` | [`steps/01-prepare.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-host-adapter/steps/01-prepare.md) | establish inputs, authority, lifecycle state, and safe artifact routing |
+| `context` | `context` | `clarify`, `route` | `product-manager`, `software-architect`, `software-engineer` | `preflight` | `compile-context` | `none` | `required` | [`steps/02-context.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-host-adapter/steps/02-context.md) | compile the minimum sufficient context before the owning action |
+| `execute` | `action` | `execute` | `product-manager`, `software-architect`, `software-engineer` | `context` | `execute-procedure` | `workspace-write` | `on-demand` | [`steps/02-execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-host-adapter/steps/02-execute.md) | perform only the selected owning-skill procedure |
+| `validate` | `validation` | `validate` | `product-manager`, `software-architect`, `software-engineer` | `execute` | `validate-evidence` | `none` | `before-completion` | [`steps/03-validate-and-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-host-adapter/steps/03-validate-and-handoff.md) | validate outputs, evidence, acceptance, and residual risk |
+| `handoff` | `handoff` | `handoff`, `complete` | `product-manager`, `software-architect`, `software-engineer` | `validate` | `handoff-result` | `none` | `before-completion` | [`steps/04-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-host-adapter/steps/04-handoff.md) | return a journal-backed owner and next-action handoff |
 
 Resolve the current step with `ai-sdlc-shared-runtime/scripts/ai_sdlc_steps.py`. A missing, unsafe, oversized, or unmatched step is a blocker rather than permission to broad-load the package.
 
@@ -91,27 +94,28 @@ Paths beginning with `skills/` below are canonical **source-checkout** forms for
 
 | Helper | Purpose | Direct starting point | Repository effect |
 | --- | --- | --- | --- |
-| [`adapter.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-host-adapter/scripts/adapter.py) | Validate host adapters and negotiate portable operations safely. | `python3 skills/ai-sdlc-host-adapter/scripts/adapter.py --help` | May write only through an explicit mutation mode; start with `--help`, check, preview, or emit. |
+| [`adapter.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-host-adapter/scripts/adapter.py) | Validate v2 host adapters and negotiate one canonical StepCard. | `python3 skills/ai-sdlc-host-adapter/scripts/adapter.py --help` | May write only through an explicit mutation mode; start with `--help`, check, preview, or emit. |
 
 The owning agent normally runs these helpers. A human uses the direct starting point for diagnosis or reproduction after inspecting `--help` and repository policy.
 
 ### Contract-provided usage
 
 ```bash
-python3 skills/ai-sdlc-host-adapter/scripts/adapter.py . --adapter adapter.json --validate
-python3 skills/ai-sdlc-host-adapter/scripts/adapter.py . --adapter adapter.json --negotiate --request request.json --write
+python3 skills/ai-sdlc-host-adapter/scripts/adapter.py . --adapter adapter.toon --validate
+python3 skills/ai-sdlc-host-adapter/scripts/adapter.py . --adapter adapter.toon --negotiate --request request.toon --write
 ```
 
 ## Success criteria
 
-The negotiation records native and fallback mappings, unsupported operations,
-missing capabilities, requested and effective limits, compatibility, reasons,
-and deterministic fingerprints.
+The negotiation records StepCard identity, native mapping, unsupported
+operation, derived and missing capabilities, side effect, gates, outputs,
+idempotency scope, requested and effective limits, fallbacks, compatibility,
+reasons, and deterministic fingerprints.
 
 Quality gate:
 
-- Pass only when every required operation and capability has an equivalent
-  mapping or registered semantic-preserving fallback.
+- Pass only when the StepCard operation has an equivalent mapping and every
+  derived capability is declared by the adapter.
 - Fail closed when host behavior would change workflow semantics.
 
 ## Blockers and recovery
@@ -128,7 +132,7 @@ On a blocker, preserve failed/stale evidence, name the accountable owner and exa
 - Default to complete TOON with mappings, missing requirements, fallbacks,
   effective limits, compatibility, source fingerprint, and result fingerprint.
 - Return summaries directly in the active agent response.
-- Emit `ai-sdlc-handoff/v1` with `result`, `blockers`, `next_required`, and
+- Emit `ai-sdlc-handoff/v2` with `result`, `blockers`, `next_required`, and
   `next_optional`; actions include `reason`, `command`, and `expected_artifact`.
 - Do not create `summary.txt`, `*-summary.txt`, or another standalone summary file.
 
@@ -154,12 +158,12 @@ The downstream consumer rechecks artifacts and freshness; it does not trust a pr
 ## Example
 
 ```bash
-python3 skills/ai-sdlc-host-adapter/scripts/adapter.py . --adapter adapter.json --validate
-python3 skills/ai-sdlc-host-adapter/scripts/adapter.py . --adapter adapter.json --negotiate --request request.json --write
+python3 skills/ai-sdlc-host-adapter/scripts/adapter.py . --adapter adapter.toon --validate
+python3 skills/ai-sdlc-host-adapter/scripts/adapter.py . --adapter adapter.toon --negotiate --request request.toon --write
 ```
 
 ## Source contract
 
-This page is generated from [`skills/ai-sdlc-host-adapter/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-host-adapter/SKILL.md) plus its linked `steps/manifest.json` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
+This page is generated from [`skills/ai-sdlc-host-adapter/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-host-adapter/SKILL.md) plus its linked `steps/manifest.toon` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
 
 [Back to the skill catalog](../skills.md) · [Script reference](../scripts.md) · [Choose a workflow](../../flows/index.md)

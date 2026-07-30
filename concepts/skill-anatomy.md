@@ -18,10 +18,12 @@ not vary between agent sessions.
 skills/<skill-name>/
   SKILL.md
   steps/
-    manifest.json
+    manifest.toon
     01-prepare.md
+    02-context.md
     02-execute.md
     03-validate-and-handoff.md
+    04-handoff.md
   references/
   scripts/
   tests/
@@ -30,7 +32,7 @@ skills/<skill-name>/
 The repository also contains the installable
 `skills/ai-sdlc-shared-runtime/` dependency. It is not a lifecycle entry point.
 Its `scripts/` hold cross-skill contracts such as artifact profiles, context,
-paths, migration, state, and indexes.
+paths, canonical TOON, semantic graph selection, StepCards, state, and indexes.
 
 ## `SKILL.md`
 
@@ -65,19 +67,39 @@ than permitting a broad package read.
 
 ## `steps/`
 
-`steps/manifest.json` uses `ai-sdlc-skill-steps/v1`. Every selector declares a
-contained Markdown path, phases, canonical roles, optional actions, load rule,
-token cap, and selection reason.
+`steps/manifest.toon` uses `ai-sdlc-skill-steps/v2`. It is an executable
+semantic DAG rather than a list of coarse documents. Every node declares:
 
-Each Markdown step is self-contained and imperative:
+- a stable step ID, type, dependencies, and canonical entrypoints;
+- a contained Markdown path, load rule, and selection reason;
+- one portable operation and its required host capabilities;
+- side-effect class and idempotency scope;
+- context selectors, mandatory anchors, budget, and sufficiency threshold;
+- gates, outputs, maximum attempts, commit boundary, and failure policy.
 
-- `Entry` names prerequisites and evidence;
-- `Procedure` contains the complete phase-specific contract;
-- `Exit` defines the stop or handoff boundary.
+Each Markdown step is self-contained and imperative. It names entry evidence,
+the bounded procedure, deterministic helpers, validation gates, evidence,
+exit/handoff state, and recovery action. A valid skill has at least five
+semantic nodes so context, execution, validation, and handoff boundaries do not
+collapse into one prose block.
 
-Most skills use prepare, execute, and validate/handoff. A skill may use more
-specific phases when they materially improve selection. The agent loads only a
-matching step; it does not preload all procedures.
+The manifest and linked step documents are canonical. The selector table in
+`SKILL.md` is generated and drift-checked. The agent loads only dependency-ready
+StepCards; it does not preload the whole package.
+
+## Per-step context contract
+
+The selector compiles `ai-sdlc-context-pack/v4` for each ready node. The pack
+starts with the canonical step document, then uses topology, trace IDs,
+mandatory anchors, and deterministic lexical ranges to select the smallest
+sufficient evidence set. Every range records instruction authority, source
+identity, line boundaries, reasons, matched terms, and token estimate.
+
+Packed context is sufficient only when all critical anchors are retained and
+the result saves at least the declared threshold. Otherwise the StepCard uses
+`direct_read` and lists exact paths. Selected and skipped sources, recall,
+savings, and the final decision are part of the fingerprint; hidden retrieval
+state is not.
 
 ## `references/`
 
@@ -119,15 +141,18 @@ from evolving incompatible lifecycle contracts.
 
 When a task triggers a skill, the AI:
 
-1. Reads the router and resolves the matching step manifest selector.
-2. Loads the required prepare step and resolves the active flow mode.
-3. Checks `specs-index.toon` and `state.toon` when feature context exists.
-4. Loads the selected execute step and runs the skill script when deterministic scaffolding, compression, validation,
-   or indexing is useful.
-5. Reads only the references named by the selected procedure.
-6. Sends each content-only section body to the script on stdin with `--section`.
-7. Loads the validation/handoff step and runs `--finalize`; the script writes the routed artifact, metadata, decision
-   log, state changes requested by flags, and specs index.
+1. Reads the concise router and resolves the requested phase entrypoint.
+2. Validates the v2 DAG and selects the dependency-ready semantic nodes.
+3. Compiles one StepCard and context pack per ready node.
+4. Reads packed ranges or the exact `direct_read` paths; evidence-only content
+   never becomes an instruction.
+5. In Explore, produces only a decision card. After fingerprinted Apply,
+   compiles immutable runtime tasks and journals every selected owning-skill
+   node, including analysis and validation.
+6. Executes only the declared operation through compatible host capabilities,
+   preserving gates, side-effect class, idempotency, outputs, and evidence.
+7. Passes completed step IDs back to the selector, then repeats until the
+   handoff node completes or a typed blocker stops the graph.
 
 The AI does not create a temporary content Markdown file and does not directly
 edit an artifact owned by a scaffold script.
@@ -171,8 +196,8 @@ Repository-wide runtime tests live under
 | --- | --- |
 | Skill quick validation | Invalid frontmatter, name, or required skill shape |
 | Per-skill tests | Local script behavior and flags |
-| Shared contract tests | Cross-skill CLI, routing, context, budget, and docs drift |
-| Migration/E2E tests | Legacy conflicts and strict 18-stage package behavior |
+| Shared contract tests | Canonical TOON, DAG, StepCard, context, runtime protocol, cross-skill CLI, budget, and docs drift |
+| All-skill evals | Happy, blocked, invalid, resume, and context-sufficiency behavior for every installed skill |
 | CI matrix | Runtime differences across supported Python versions |
 
 A change to a shared helper requires repository-wide tests even if one local
@@ -185,11 +210,13 @@ When changing an established skill:
 
 1. Identify whether the change is local guidance or a shared lifecycle contract.
 2. Update the shared source of truth before wrappers or prose.
-3. Preserve read compatibility when existing feature packages would otherwise
-   break.
-4. Add migration behavior for renamed durable files.
-5. Update concept/skill documentation and contract tests together.
-6. Validate every affected skill folder and run the full shared suite.
+3. Version a breaking contract and reject older schemas explicitly; do not add
+   a silent reader or coercion path.
+4. Provide external source-regeneration guidance for older durable artifacts.
+5. Update semantic manifests, step docs, generated routers, public concepts,
+   contract fixtures, and eval scenarios together.
+6. Validate all 44 graphs, run the deterministic receipt twice for byte
+   equality, and run the full shared and per-skill suites.
 
 Do not fix contract drift by copying a new rule into every skill while leaving
 the runtime unchanged.

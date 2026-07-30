@@ -21,7 +21,7 @@ repository, and entering an agent prompt.
     git status --short
     PYTHON_BIN="${PYTHON_BIN:-python3}"
     "$PYTHON_BIN" --version
-    DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --json
+    DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --toon
     ```
 
 Expected: a clean or understood Git tree, Python 3.10+, and installed AI SDLC
@@ -62,8 +62,8 @@ Write down:
     Explore inventories installed skills and inspects branch, feature, state,
     specs, and repository signals. It must not create or edit artifacts.
 
-Expected response: an `ai-sdlc-flow/v2` decision card and
-`ai-sdlc-handoff/v1` result with evidence-backed routing.
+Expected response: an `ai-sdlc-flow/v3` decision card and
+`ai-sdlc-handoff/v2` result with evidence-backed routing.
 If it presents a generic menu without explaining repository evidence, ask it to
 show the anchors or stop.
 
@@ -106,7 +106,7 @@ stop before asking the agent to write.
     ```
 
 The exact skill depends on the request. It must either return a versioned
-`ai-sdlc-handoff/v1` with `result: complete` and the stated artifact at the
+`ai-sdlc-handoff/v2` with `result: complete` and the stated artifact at the
 declared path, or return `result: blocked` with the missing decision, evidence,
 or permission. A generic success sentence is not completion.
 

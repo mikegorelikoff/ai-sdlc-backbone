@@ -20,7 +20,7 @@ If AI SDLC, SDD, artifacts, gates, or handoffs are new terms, begin with
 - [**Context and quality**](context-quality.md) — how grounded context improves decisions.
 - [**Decision continuity**](decisions.md) — why decisions survive assistant and session changes.
 - [**Workflow handoffs**](handoffs.md) — how every stage leaves an actionable next step.
-- [**TOON-first artifacts**](toon-first.md) — why agents read complete token-efficient projections.
+- [**TOON-only artifacts**](toon-first.md) — why one canonical machine representation keeps context, replay, and evaluation deterministic.
 - [**Layered configuration**](configuration.md) — how defaults stay customizable but safe.
 - [**Optional modules**](modules.md) — how capabilities compose without bloating the core.
 - [**Change and learning**](change-learning.md) — how delivery evidence supports recovery and improvement.

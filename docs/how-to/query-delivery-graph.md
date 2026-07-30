@@ -17,7 +17,7 @@ python3 .agents/skills/ai-sdlc-delivery-graph/scripts/delivery_graph.py . \
 ```
 
 The command writes complete deterministic TOON for agents, Markdown for human
-review, and JSON only for schema/interoperability consumers below `_ai_sdlc/`.
+review, and TOON only for schema/interoperability consumers below `_ai_sdlc/`.
 These files are generated views; source Markdown, commit messages, and tags
 remain authoritative.
 
@@ -59,5 +59,5 @@ an explicit line in lifecycle Markdown:
 
 ```text
 Component: src/payments.py -> T006
-Evidence: evidence/payments-validation.json -> TC-004
+Evidence: evidence/payments-validation.toon -> TC-004
 ```

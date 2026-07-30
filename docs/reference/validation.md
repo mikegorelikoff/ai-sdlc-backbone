@@ -29,8 +29,7 @@ lockfile in an isolated environment. Never substitute a word-count estimate.
 
 ```bash
 # Repository shared and skill-local tests
-python3 -m unittest discover -s skills/ai-sdlc-shared-runtime -p 'test*.py' -v
-python3 skills/ai-sdlc-shared-runtime/tests/test_each_skill_tests.py
+python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_test_suite.py --format toon
 
 # Release compatibility
 python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_compatibility.py --skip-git-audit --format toon
@@ -51,30 +50,25 @@ Use `ai-sdlc-validation` to choose the smallest relevant set. Commands above are
 `qa.md` commands are planned checks until a process actually runs them. For
 full-flow readiness, create and human-review an argv-only plan such as:
 
-```json
-{
-  "schema": "ai-sdlc-validation-command-plan/v1",
-  "commands": [
-    {
-      "id": "V001",
-      "argv": ["python3", "-m", "unittest", "-v"],
-      "trace_ids": ["AC-001", "TC-001"]
-    }
-  ]
-}
+```toon
+commands[1]:
+  - argv[4]: python3,skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_test_suite.py,"--format",toon
+    id: V001
+    trace_ids[2]: AC-001,TC-001
+schema: ai-sdlc-validation-command-plan/v1
 ```
 
 Then execute it through the validation skill's runner:
 
 ```bash
 python3 skills/ai-sdlc-validation/scripts/run_validation.py \
-  --root . --plan specs/NNN-feature/_ai_sdlc/validation-plan.json \
-  --output specs/NNN-feature/_ai_sdlc/validation-receipt.json \
+  --root . --plan specs/NNN-feature/_ai_sdlc/validation-plan.toon \
+  --output specs/NNN-feature/_ai_sdlc/validation-receipt.toon \
   --full-flow
 
 python3 skills/ai-sdlc-validation/scripts/run_validation.py \
-  --root . --plan specs/NNN-feature/_ai_sdlc/validation-plan.json \
-  --output specs/NNN-feature/_ai_sdlc/validation-receipt.json \
+  --root . --plan specs/NNN-feature/_ai_sdlc/validation-plan.toon \
+  --output specs/NNN-feature/_ai_sdlc/validation-receipt.toon \
   --verify --full-flow
 ```
 
@@ -85,7 +79,7 @@ and test plugins can still execute repository-controlled code, so this runner
 is **not a sandbox or permission boundary**. Review the complete argv and run it
 under normal least-privilege host policy.
 
-The canonical plan must be named `validation-plan.json` beside the receipt. The
+The canonical plan must be named `validation-plan.toon` beside the receipt. The
 receipt binds its repository-relative path and SHA-256 digest. The runner
 streams process output into bounded digests (10 MB total by default), records
 byte counts, and terminates the process group if the limit is exceeded.

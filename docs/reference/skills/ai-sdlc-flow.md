@@ -7,7 +7,7 @@ description: Human-facing operating guide for ai-sdlc-flow, including inputs, au
 
 | Lifecycle position | Primary owner | Supporting roles | Module | Output |
 | --- | --- | --- | --- | --- |
-| Cross-lifecycle guided entry | Contributor, Dev | Product, BA, QA, Engineering, Security, Operations | `core` | `ai-sdlc-flow/v2` Markdown, TOON, or JSON decision card and one bounded Apply result |
+| Cross-lifecycle guided entry | Contributor, Dev | Product, BA, QA, Engineering, Security, Operations | `core` | `ai-sdlc-flow/v3` canonical TOON or human Markdown decision card and one bounded Apply result |
 
 ## Why it exists
 
@@ -45,8 +45,8 @@ Use ai-sdlc-flow for <target>.
 Choose --quick-flow for bounded assumption-driven progress or --full-flow
 for strict verification only as described below.
 Read the required evidence,
-produce or report `ai-sdlc-flow/v2` Markdown, TOON, or JSON decision card and one bounded Apply result, preserve human approval boundaries,
-and return blockers plus a complete ai-sdlc-handoff/v1.
+produce or report `ai-sdlc-flow/v3` canonical TOON or human Markdown decision card and one bounded Apply result, preserve human approval boundaries,
+and return blockers plus a complete ai-sdlc-handoff/v2.
 ```
 
 This is an agent instruction, not a shell command. Terminal commands belong in the helper section.
@@ -83,14 +83,14 @@ Humans accept or reject material product, security, QA, policy, rollout, release
 
 The router loads these skill-owned procedures just in time. Read only the selector matching the current phase, active role, and action; a selected step is normative and an unselected step stays out of context.
 
-| Selector | Phases | Roles | Load rule | Step | Reason |
-| --- | --- | --- | --- | --- | --- |
-| `clarify` | `clarify` | `business-analyst`, `product-manager`, `software-architect`, `software-engineer`, `qa-engineer` | `required` | [`steps/clarify.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-flow/steps/clarify.md) | guided flow clarify phase with explicit evidence and exit criteria |
-| `route` | `route` | `business-analyst`, `product-manager`, `software-architect`, `software-engineer`, `qa-engineer` | `required` | [`steps/route.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-flow/steps/route.md) | guided flow route phase with explicit evidence and exit criteria |
-| `execute` | `execute` | `business-analyst`, `product-manager`, `software-architect`, `software-engineer`, `qa-engineer` | `on-demand` | [`steps/execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-flow/steps/execute.md) | guided flow execute phase with explicit evidence and exit criteria |
-| `handoff` | `handoff` | `business-analyst`, `product-manager`, `software-architect`, `software-engineer`, `qa-engineer` | `on-demand` | [`steps/handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-flow/steps/handoff.md) | guided flow handoff phase with explicit evidence and exit criteria |
-| `validate` | `validate` | `business-analyst`, `product-manager`, `software-architect`, `software-engineer`, `qa-engineer` | `before-completion` | [`steps/validate.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-flow/steps/validate.md) | guided flow validate phase with explicit evidence and exit criteria |
-| `complete` | `complete` | `business-analyst`, `product-manager`, `software-architect`, `software-engineer`, `qa-engineer` | `before-completion` | [`steps/complete.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-flow/steps/complete.md) | guided flow complete phase with explicit evidence and exit criteria |
+| Selector | Type | Phases | Roles | Dependencies | Operation | Side effect | Load rule | Step | Reason |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `clarify` | `analysis` | `clarify`, `prepare` | `business-analyst`, `product-manager`, `qa-engineer`, `software-architect`, `software-engineer` | none | `inspect-and-route` | `none` | `required` | [`steps/clarify.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-flow/steps/clarify.md) | guided flow clarify phase with explicit evidence and exit criteria |
+| `route` | `analysis` | `route` | `business-analyst`, `product-manager`, `qa-engineer`, `software-architect`, `software-engineer` | `clarify` | `inspect-and-route` | `none` | `required` | [`steps/route.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-flow/steps/route.md) | guided flow route phase with explicit evidence and exit criteria |
+| `execute` | `action` | `execute` | `business-analyst`, `product-manager`, `qa-engineer`, `software-architect`, `software-engineer` | `route` | `execute-procedure` | `workspace-write` | `on-demand` | [`steps/execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-flow/steps/execute.md) | guided flow execute phase with explicit evidence and exit criteria |
+| `validate` | `validation` | `validate` | `business-analyst`, `product-manager`, `qa-engineer`, `software-architect`, `software-engineer` | `execute` | `validate-evidence` | `none` | `before-completion` | [`steps/validate.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-flow/steps/validate.md) | guided flow validate phase with explicit evidence and exit criteria |
+| `handoff` | `handoff` | `handoff` | `business-analyst`, `product-manager`, `qa-engineer`, `software-architect`, `software-engineer` | `validate` | `handoff-result` | `none` | `on-demand` | [`steps/handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-flow/steps/handoff.md) | guided flow handoff phase with explicit evidence and exit criteria |
+| `complete` | `handoff` | `complete` | `business-analyst`, `product-manager`, `qa-engineer`, `software-architect`, `software-engineer` | `handoff` | `handoff-result` | `none` | `before-completion` | [`steps/complete.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-flow/steps/complete.md) | guided flow complete phase with explicit evidence and exit criteria |
 
 Resolve the current step with `ai-sdlc-shared-runtime/scripts/ai_sdlc_steps.py`. A missing, unsafe, oversized, or unmatched step is a blocker rather than permission to broad-load the package.
 
@@ -112,12 +112,12 @@ python3 skills/ai-sdlc-flow/scripts/flow.py explore \
   [--role software-engineer] [--action implementation] --format markdown
 ```
 
-After the contributor explicitly accepts the displayed JSON card, pass that
+After the contributor explicitly accepts the displayed TOON card, pass that
 same saved card to the separate mutation command:
 
 ```bash
 python3 skills/ai-sdlc-flow/scripts/flow.py apply \
-  --card <accepted-card.json> --execute
+  --card <accepted-card.toon> --execute
 ```
 
 Use `.agents/skills/` instead of `skills/` in a project-scoped installation.
@@ -126,7 +126,7 @@ it would start. `--execute` is an explicit mutation boundary.
 
 ## Success criteria
 
-A successful result produces `ai-sdlc-flow/v2` Markdown, TOON, or JSON decision card and one bounded Apply result and satisfies every output rule and blocker check below.
+A successful result produces `ai-sdlc-flow/v3` canonical TOON or human Markdown decision card and one bounded Apply result and satisfies every output rule and blocker check below.
 
 ## Blockers and recovery
 
@@ -139,7 +139,7 @@ On a blocker, preserve failed/stale evidence, name the accountable owner and exa
 - Return the decision card, blockers, action result, and evidence directly in
   the Codex response.
 - Return progress, blockers, and completion directly in the active agent response.
-- Emit `ai-sdlc-handoff/v1` with `result`, `blockers`, `next_required`, and
+- Emit `ai-sdlc-handoff/v2` with `result`, `blockers`, `next_required`, and
   `next_optional`; each action includes reason, command, and expected artifact.
 - Do not create `summary.txt`, `*-summary.txt`, or another standalone summary.
 
@@ -173,12 +173,12 @@ python3 skills/ai-sdlc-flow/scripts/flow.py explore \
   [--role software-engineer] [--action implementation] --format markdown
 ```
 
-After the contributor explicitly accepts the displayed JSON card, pass that
+After the contributor explicitly accepts the displayed TOON card, pass that
 same saved card to the separate mutation command:
 
 ```bash
 python3 skills/ai-sdlc-flow/scripts/flow.py apply \
-  --card <accepted-card.json> --execute
+  --card <accepted-card.toon> --execute
 ```
 
 Use `.agents/skills/` instead of `skills/` in a project-scoped installation.
@@ -187,6 +187,6 @@ it would start. `--execute` is an explicit mutation boundary.
 
 ## Source contract
 
-This page is generated from [`skills/ai-sdlc-flow/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-flow/SKILL.md) plus its linked `steps/manifest.json` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
+This page is generated from [`skills/ai-sdlc-flow/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-flow/SKILL.md) plus its linked `steps/manifest.toon` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
 
 [Back to the skill catalog](../skills.md) · [Script reference](../scripts.md) · [Choose a workflow](../../flows/index.md)

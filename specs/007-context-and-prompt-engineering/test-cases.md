@@ -71,7 +71,7 @@ Validate task-aware range selection, authority separation, sufficient-context de
 
 ## Layer Mapping
 - Unit: query normalization, range selection, authority, sufficiency, personalization parsing.
-- Integration: CLI JSON/TOON/Markdown output, fingerprints, config resolution, catalog generation.
+- Integration: CLI TOON/Markdown output, fingerprints, config resolution, catalog generation.
 - Documentation: source validator, strict MkDocs, rendered link validation.
 - Governance: SDD clarify, checklist, plan, analyze, and validate gates.
 

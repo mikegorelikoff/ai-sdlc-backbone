@@ -10,7 +10,7 @@ Enter after execution has produced the expected artifact, code, plan, decision, 
 
 ## Output Spec
 
-Complete TOON/JSON resolution records contain normalized rules, provenance, source hashes,
+Complete canonical TOON resolution records contain normalized rules, provenance, source hashes,
 protected rule IDs, and a deterministic fingerprint. Decision records contain
 the exact action and context fingerprint, matched and waived rules, gates,
 reasons, result, evaluation time, and policy fingerprint.

@@ -14,7 +14,7 @@ The TOON schema `ai-sdlc-project-context/v1` includes repository, revision,
 fingerprint, drift status, stack, commands, architecture paths, and evidence
 rows with exact `path`, `line`, `kind`, and `detail` fields.
 
-The complete TOON/JSON `ai-sdlc-context-pack/v3` record includes task identity,
+The canonical TOON `ai-sdlc-context-pack/v3` record includes task identity,
 typed presentation preferences, content authority, topology and revision
 identity, deterministic budget use, selector outcomes, relevance-ranked source
 ranges, exclusions, freshness warnings, sufficient-context status, targeted

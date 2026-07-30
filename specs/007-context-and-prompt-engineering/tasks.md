@@ -62,7 +62,7 @@ artifact_metadata:
   Refs: AC-001, AC-002, AC-003, AC-004, AC-005, AC-006, AC-007
   Depends on: T003
 - [x] T005. Run focused runtime and contract validation.
-  Output: Project-context, shared runtime, configuration, mirror, JSON schema, and contract checks pass.
+  Output: Project-context, shared runtime, configuration, mirror, TOON schema, and contract checks pass.
   Refs: AC-008, AC-010
   Depends on: T004
 

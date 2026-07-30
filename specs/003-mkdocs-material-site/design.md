@@ -49,7 +49,7 @@ The root mkdocs.yml declares site identity, Material theme features, Markdown ex
 - CI runs catalog drift, source validation, unit tests, then mkdocs build --strict.
 
 ## Data Model
-Each page has YAML frontmatter with title and description, followed by Markdown or Material-compatible HTML. Catalog entries are loaded from SKILL.md frontmatter and module.json manifests, sorted deterministically, and emitted as Markdown cards/tables.
+Each page has YAML frontmatter with title and description, followed by Markdown or Material-compatible HTML. Catalog entries are loaded from SKILL.md frontmatter and module.toon manifests, sorted deterministically, and emitted as Markdown cards/tables.
 
 ## Error Handling
 Strict MkDocs warnings fail CI. The validator reports file-scoped navigation, link, catalog, legacy-template, and workflow errors. Catalog check mode reports drift without mutation.

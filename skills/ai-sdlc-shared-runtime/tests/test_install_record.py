@@ -3,11 +3,15 @@
 
 from __future__ import annotations
 
-import json
 import tempfile
 import unittest
-from pathlib import Path
 import sys
+from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
@@ -20,10 +24,10 @@ class InstallRecordTests(unittest.TestCase):
         names = ["ai-sdlc-flow", "ai-sdlc-shared-runtime"]
         for name in names:
             (skills / name).mkdir(parents=True)
-        record = root / ".ai-sdlc/harness-install.json"
+        record = root / ".ai-sdlc/harness-install.toon"
         record.parent.mkdir(parents=True)
         (record.parent / "harness-managed-skills.txt").write_text("\n".join(names) + "\n", encoding="utf-8")
-        record.write_text(json.dumps({
+        record.write_text(toon_codec.dumps({
             "schema": "ai-sdlc-install-record/v1", "revision": "a" * 40,
             "skills_cli": "1.5.19", "agent": "codex", "selection": selection,
             "inventory": ".ai-sdlc/harness-managed-skills.txt",

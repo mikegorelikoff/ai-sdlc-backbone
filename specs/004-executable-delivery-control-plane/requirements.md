@@ -81,7 +81,7 @@ The harness has strong lifecycle skills, state, decisions, adaptive rigor, evide
 ## Outputs
 - Versioned change-set, delta, policy, graph, runtime, context-pack, adapter, diagnostic, provenance, and metrics schemas.
 - Deterministic CLIs and reusable skills for creating, validating, previewing, applying, archiving, querying, executing, diagnosing, and explaining those records.
-- Human-readable Markdown remains authoritative while compact JSON or TOON projections support machines.
+- Human-readable Markdown remains authoritative while compact TOON or TOON projections support machines.
 - Focused tests, documentation, migration guidance, and one validated commit per implementation task.
 
 ## Functional Requirements

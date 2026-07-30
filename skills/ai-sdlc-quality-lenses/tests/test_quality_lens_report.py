@@ -3,11 +3,16 @@
 
 from __future__ import annotations
 
-import json
 import subprocess
 import tempfile
 import unittest
+import sys
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -25,8 +30,8 @@ class QualityLensReportTests(unittest.TestCase):
         """Write a source artifact and findings fixture."""
         artifact = root / "requirements.md"
         artifact.write_text("# Requirements\nTimeout behavior is not specified.\n", encoding="utf-8")
-        finding_file = root / "findings.json"
-        finding_file.write_text(json.dumps(findings), encoding="utf-8")
+        finding_file = root / "findings.toon"
+        finding_file.write_text(toon_codec.dumps(findings), encoding="utf-8")
         return artifact, finding_file
 
     def valid_finding(self) -> dict[str, object]:

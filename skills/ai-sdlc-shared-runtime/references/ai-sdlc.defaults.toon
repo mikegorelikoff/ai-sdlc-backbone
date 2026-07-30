@@ -1,0 +1,14 @@
+protected[0]:
+schema: ai-sdlc-config/v1
+values:
+  flow:
+    context_selectors[0]:
+    menu_mode: ambiguous
+    role_aliases: {}
+  interaction:
+    enabled: false
+    language: auto
+    preferred_name: ""
+    response_style: balanced
+    status_updates: milestones
+    technical_depth: adaptive

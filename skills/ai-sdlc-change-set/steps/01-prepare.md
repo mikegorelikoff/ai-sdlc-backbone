@@ -35,7 +35,7 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 - Report the change ID, workspace path, status, owner, targets, fingerprint,
   validation result, and next required action.
-- Before the final response, emit an `ai-sdlc-handoff/v1` result that routes a
+- Before the final response, emit an `ai-sdlc-handoff/v2` result that routes a
   structurally valid workspace to delta authoring and validation. Include
   `next_required` and `next_optional` actions with reasons, commands, and
   expected artifacts.
@@ -48,7 +48,7 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 - Route every change to `<repository>/changes/<change-id>/`.
 - Keep human intent in `proposal.md`, `design.md`, `tasks.md`,
   `deltas/index.md`, and `evidence/index.md`.
-- Keep complete agent-facing TOON beside interoperable JSON for the change set,
+- Keep complete agent-facing TOON beside interoperable TOON for the change set,
   delta set, apply preview, approval, and recovery records.
 - Never store a change workspace inside `specs/`, `specs-refiniment/`, or a
   canonical target directory.
@@ -72,7 +72,7 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 - Include change ID, artifact, status, owner, created and updated dates,
   canonical targets, and `metatags` for `ai-sdlc`, `change-set`, `proposal`,
   and `draft`.
-- The JSON record uses schema `ai-sdlc-change-set/v1` and a deterministic
+- The TOON record uses schema `ai-sdlc-change-set/v1` and a deterministic
   contract fingerprint.
 
 ## 0.7 Specs Index

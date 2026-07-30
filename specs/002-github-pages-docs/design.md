@@ -33,7 +33,7 @@ artifact_metadata:
 # Design
 
 ## Overview
-Create a Jekyll site rooted at `docs/` with an intent-based information architecture. Liquid layouts and includes provide the shared shell, grouped sidebar, local outline, and learning-path navigation; SCSS/CSS and a small progressive-enhancement script provide the visual system and mobile behavior. Python generation converts skill frontmatter and module JSON into Jekyll data files.
+Create a Jekyll site rooted at `docs/` with an intent-based information architecture. Liquid layouts and includes provide the shared shell, grouped sidebar, local outline, and learning-path navigation; SCSS/CSS and a small progressive-enhancement script provide the visual system and mobile behavior. Python generation converts skill frontmatter and module TOON into Jekyll data files.
 
 ## Architecture
 Source content lives in `docs/` across four modes: `tutorials/` for learning journeys, `how-to/` for bounded tasks, `explanation/` for rationale and mental models, and `reference/` for exact contracts. `_layouts/default.html` owns the document shell, `_includes/` owns navigation and reusable sections, `_data/navigation.yml` owns the complete public information architecture, `_data/` owns generated catalogs, and `assets/` owns local presentation resources. A standard-library Python tool refreshes catalogs and validates source contracts. GitHub Actions builds with the official Pages Jekyll action and deploys the resulting artifact.
@@ -43,7 +43,7 @@ Source content lives in `docs/` across four modes: `tutorials/` for learning jou
 - Information architecture: welcome, roadmap, four section indexes, and approximately 36 detailed content pages.
 - Learning paths: section-purpose framing plus previous/next actions on detailed pages.
 - Design system: color, typography, spacing, cards, callouts, code, tables, responsive navigation.
-- Catalog generator: parses skill YAML-lite frontmatter and module JSON into deterministic YAML.
+- Catalog generator: parses skill YAML-lite frontmatter and module TOON into deterministic YAML.
 - Documentation validator: checks frontmatter, local links, anchors, required assets, page count, navigation membership, and catalog parity.
 - Pages workflow: build artifact and environment-bound deploy job.
 
@@ -67,7 +67,7 @@ Source content lives in `docs/` across four modes: `tutorials/` for learning jou
 
 ## Error Handling
 - Missing or malformed skill frontmatter fails catalog generation with its path.
-- Invalid module JSON or undeclared skill references fail generation.
+- Invalid module TOON or undeclared skill references fail generation.
 - Broken relative links or fragments fail validation with source and target.
 - Missing required frontmatter or critical assets fail validation.
 - Mobile navigation script failure leaves semantic links visible through CSS/no-JS behavior.

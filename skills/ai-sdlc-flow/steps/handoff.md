@@ -13,7 +13,7 @@ Use when requested and owning roles differ or one bounded checkpoint has finishe
 - Return the decision card, blockers, action result, and evidence directly in
   the Codex response.
 - Return progress, blockers, and completion directly in the active agent response.
-- Emit `ai-sdlc-handoff/v1` with `result`, `blockers`, `next_required`, and
+- Emit `ai-sdlc-handoff/v2` with `result`, `blockers`, `next_required`, and
   `next_optional`; each action includes reason, command, and expected artifact.
 - Do not create `summary.txt`, `*-summary.txt`, or another standalone summary.
 

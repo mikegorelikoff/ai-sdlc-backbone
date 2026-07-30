@@ -2,8 +2,50 @@
 
 ## Unreleased
 
+## v4.0.0 - 2026-07-30
+
+### Added
+
+- Added executable `ai-sdlc-skill-steps/v2` semantic DAGs, generated concise
+  routers, StepCards, and at least five context/operation/validation/handoff
+  nodes for all 44 skills.
+- Added deterministic per-step `ai-sdlc-context-pack/v4` compilation with
+  mandatory anchors, exact authority-labeled ranges, selected/skipped reasons,
+  critical recall, savings thresholds, and direct-read fallback.
+- Added all-skill offline evaluations for happy, blocked, invalid, resume, and
+  context scenarios plus a provider-neutral live evaluation protocol.
+- Added a complete skill test-file runner with a canonical receipt so
+  hyphenated package paths cannot silently produce a zero-test pass.
+
+### Changed
+
+- Hard-cut every structured machine contract, fixture, CLI, state record,
+  journal event, and generated artifact to one canonical TOON codec.
+- Compiled workflows from installed skill entrypoints into immutable runtime
+  plans and negotiated complete StepCards with host adapters.
+- Strengthened runtime replay around strict planned, started, terminal,
+  evidence, result ordering and one hash-chained TOON file per event.
+- Bound each terminal result, evidence set, and effect receipt to one completion
+  fingerprint so interrupted completion resumes only missing journal events
+  and conflicting replays fail closed.
+
+### Fixed
+
+- Acquired the per-run mutation lock before replay, rejected journal sequence
+  replacement, prevented retry from bypassing exhausted budgets, and validated
+  event payloads without coercion.
+- Bounded explicitly requested evaluation receipts to the owning repository.
+
+### Removed
+
+- Removed alternate serializers, parsers, CLI output modes, compatibility
+  readers, source artifacts, and in-runtime legacy conversion paths.
+
 ### Documentation
 
+- Documented the executable skill graph, deterministic context-engineering
+  contract, StepCard handoff, per-event journal, all-skill harness, and
+  repository-wide TOON-only gates.
 - Redesigned the README around a short verified start and expected result.
 - Reorganized GitHub Pages into the shared six-section product-family
   architecture.
@@ -161,8 +203,8 @@
 ### Changed
 
 - Made complete deterministic TOON the default agent-facing representation for
-  the new control plane. JSON is limited to schema, external interoperability,
-  recovery, and JSONL journal boundaries.
+  the new control plane. TOON is limited to schema, external interoperability,
+  recovery, and per-event TOON journal boundaries.
 - Expanded the compatibility gate to protect all 43 skills, public flags,
   routes, module contracts, handoff fields, and the release commit sequence.
 - Migrated the public documentation to Material for MkDocs and expanded its

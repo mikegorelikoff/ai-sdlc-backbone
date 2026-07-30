@@ -4,11 +4,16 @@
 from __future__ import annotations
 
 import argparse
-import json
 import os
 import re
 import subprocess
+import sys
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parent
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 from typing import Any
 
 from ai_sdlc_steps import load_manifest
@@ -22,11 +27,37 @@ CONTRACT_ALIASES = {
 STATE_FLAGS = {"--state-check", "--begin-state", "--complete-state"}
 
 
+def semantic_version(value: object) -> tuple[int, int, int] | None:
+    """Parse one strict major.minor.patch version."""
+    if not isinstance(value, str):
+        return None
+    match = re.fullmatch(r"(\d+)\.(\d+)\.(\d+)", value)
+    return tuple(int(part) for part in match.groups()) if match else None
+
+
+def safe_repository_file(root: Path, value: object) -> Path | None:
+    """Resolve one regular repository file without traversal or symlinks."""
+    if not isinstance(value, str):
+        return None
+    relative = Path(value)
+    if relative.is_absolute() or ".." in relative.parts:
+        return None
+    candidate = root / relative
+    try:
+        resolved = candidate.resolve(strict=True)
+        resolved.relative_to(root)
+    except (OSError, ValueError):
+        return None
+    if candidate.is_symlink() or not resolved.is_file():
+        return None
+    return resolved
+
+
 def load_baseline(path: Path) -> tuple[dict[str, Any], list[str]]:
     """Load the compatibility baseline safely."""
     try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+        value = toon_codec.loads(path.read_text(encoding="utf-8"))
+    except (OSError, toon_codec.ToonDecodeError) as exc:
         return {}, [f"cannot read compatibility baseline: {exc}"]
     if not isinstance(value, dict) or value.get("schema") != SCHEMA:
         return {}, [f"baseline schema must be {SCHEMA}"]
@@ -66,7 +97,7 @@ def validate_skills(root: Path, baseline: dict[str, Any]) -> list[str]:
             errors.append(f"skill frontmatter name mismatch: {skill}")
         try:
             _skill_root, manifest = load_manifest(root, skill)
-            for selector in manifest["selectors"]:
+            for selector in manifest["steps"]:
                 text += "\n\n" + (
                     doc.parent / str(selector["path"])
                 ).read_text(encoding="utf-8")
@@ -109,8 +140,8 @@ def validate_config(root: Path, baseline: dict[str, Any]) -> list[str]:
     config = baseline.get("config", {})
     path = root / str(config.get("defaults", ""))
     try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+        value = toon_codec.loads(path.read_text(encoding="utf-8"))
+    except (OSError, toon_codec.ToonDecodeError) as exc:
         return [f"cannot read default config: {exc}"]
     return [] if value.get("schema") == config.get("schema") else ["default config schema changed"]
 
@@ -119,13 +150,16 @@ def validate_modules(root: Path, baseline: dict[str, Any]) -> list[str]:
     """Validate module IDs, schema, dependencies, and skill paths statically."""
     errors: list[str] = []
     expected = baseline.get("modules", {}).get("ids", [])
-    manifests = sorted((root / "modules").glob("*/module.json"))
+    harness_version = semantic_version(baseline.get("harness_api_version"))
+    if harness_version is None:
+        errors.append("baseline harness API must use major.minor.patch")
+    manifests = sorted((root / "modules").glob("*/module.toon"))
     actual: list[str] = []
     modules: dict[str, dict[str, Any]] = {}
     for path in manifests:
         try:
-            value = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as exc:
+            value = toon_codec.loads(path.read_text(encoding="utf-8"))
+        except (OSError, toon_codec.ToonDecodeError) as exc:
             errors.append(f"cannot read module {path.relative_to(root)}: {exc}")
             continue
         module_id = str(value.get("id", ""))
@@ -135,6 +169,26 @@ def validate_modules(root: Path, baseline: dict[str, Any]) -> list[str]:
         modules[module_id] = value
         if value.get("schema") != baseline.get("modules", {}).get("schema"):
             errors.append(f"module schema changed: {path.relative_to(root)}")
+        api = value.get("harness_api")
+        api_min = semantic_version(api.get("min")) if isinstance(api, dict) else None
+        api_max = (
+            semantic_version(api.get("max_exclusive"))
+            if isinstance(api, dict)
+            else None
+        )
+        if (
+            api_min is None
+            or api_max is None
+            or api_min >= api_max
+            or (
+                harness_version is not None
+                and not (api_min <= harness_version < api_max)
+            )
+        ):
+            errors.append(
+                f"module {module_id or path.parent.name} does not support "
+                f"Harness API {baseline.get('harness_api_version')}"
+            )
     if sorted(actual) != expected:
         errors.append(f"module IDs changed: expected {expected}; got {sorted(actual)}")
     for module_id, value in sorted(modules.items()):
@@ -152,6 +206,114 @@ def validate_modules(root: Path, baseline: dict[str, Any]) -> list[str]:
                 errors.append(f"module {module_id} has unsafe skill path for {name}: {relative}")
             elif not (root / relative / "SKILL.md").is_file():
                 errors.append(f"module {module_id} references missing skill: {name}")
+    return errors
+
+
+def validate_machine_contracts(root: Path, baseline: dict[str, Any]) -> list[str]:
+    """Validate the v4 canonical codec, contract registry, and skill graphs."""
+    if "machine" not in baseline and "contracts" not in baseline:
+        return []
+    errors: list[str] = []
+    machine = baseline.get("machine")
+    if not isinstance(machine, dict) or set(machine) != {
+        "codec",
+        "extension",
+        "schema",
+    }:
+        return ["baseline machine contract is incomplete"]
+    if machine.get("extension") != ".toon":
+        errors.append("canonical machine extension must be .toon")
+    if machine.get("schema") != "ai-sdlc-toon-contract/v1":
+        errors.append("canonical contract schema changed")
+    if safe_repository_file(root, machine.get("codec")) is None:
+        errors.append("canonical TOON codec is missing or unsafe")
+
+    contracts = baseline.get("contracts")
+    if not isinstance(contracts, list) or not contracts:
+        errors.append("protected contract registry is missing")
+    else:
+        seen_ids: set[str] = set()
+        seen_paths: set[str] = set()
+        for index, record in enumerate(contracts, start=1):
+            if not isinstance(record, dict) or set(record) != {"id", "path"}:
+                errors.append(f"protected contract {index} is invalid")
+                continue
+            contract_id = record["id"]
+            relative = record["path"]
+            if (
+                not isinstance(contract_id, str)
+                or contract_id in seen_ids
+                or not isinstance(relative, str)
+                or relative in seen_paths
+            ):
+                errors.append(f"protected contract {index} identity is invalid")
+                continue
+            seen_ids.add(contract_id)
+            seen_paths.add(relative)
+            path = safe_repository_file(root, relative)
+            if path is None or path.suffix != ".toon":
+                errors.append(f"protected contract path is missing or unsafe: {relative}")
+                continue
+            try:
+                text = path.read_text(encoding="utf-8")
+                value = toon_codec.loads(text)
+            except (OSError, toon_codec.ToonDecodeError) as exc:
+                errors.append(f"cannot decode protected contract {relative}: {exc}")
+                continue
+            if (
+                not isinstance(value, dict)
+                or value.get("$id") != contract_id
+                or value.get("$schema") != machine["schema"]
+            ):
+                errors.append(f"protected contract identity changed: {relative}")
+            if encode_toon(value) != text:
+                errors.append(f"protected contract is not canonical: {relative}")
+
+    graph = baseline.get("skill_graph")
+    if not isinstance(graph, dict) or set(graph) != {
+        "generator",
+        "min_nodes",
+        "schema",
+        "skills",
+    }:
+        errors.append("baseline skill graph contract is incomplete")
+        return errors
+    if safe_repository_file(root, graph.get("generator")) is None:
+        errors.append("skill graph generator is missing or unsafe")
+    expected_skills = graph.get("skills")
+    min_nodes = graph.get("min_nodes")
+    if (
+        graph.get("schema") != "ai-sdlc-skill-steps/v2"
+        or not isinstance(expected_skills, int)
+        or isinstance(expected_skills, bool)
+        or not isinstance(min_nodes, int)
+        or isinstance(min_nodes, bool)
+        or min_nodes < 1
+    ):
+        errors.append("baseline skill graph values are invalid")
+        return errors
+    skills = sorted(
+        path.name
+        for path in (root / "skills").iterdir()
+        if (path / "SKILL.md").is_file()
+    )
+    if len(skills) != expected_skills:
+        errors.append(
+            f"skill graph inventory changed: expected {expected_skills}; "
+            f"got {len(skills)}"
+        )
+    for skill in skills:
+        try:
+            _skill_root, manifest = load_manifest(root, skill)
+        except (OSError, ValueError) as exc:
+            errors.append(f"skill graph {skill} is invalid: {exc}")
+            continue
+        if manifest.get("schema") != graph["schema"]:
+            errors.append(f"skill graph schema changed: {skill}")
+        if len(manifest.get("steps", [])) < min_nodes:
+            errors.append(
+                f"skill graph {skill} has fewer than {min_nodes} semantic nodes"
+            )
     return errors
 
 
@@ -242,7 +404,7 @@ def main() -> int:
     """Run release compatibility and optional Git audit gates."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path.cwd())
-    parser.add_argument("--baseline", type=Path, default=Path("compatibility/baseline-v1.json"))
+    parser.add_argument("--baseline", type=Path, default=Path("compatibility/baseline-v1.toon"))
     parser.add_argument("--git-base")
     parser.add_argument("--git-executable", help="absolute trusted Git executable used only for the optional history audit")
     parser.add_argument("--skip-git-audit", action="store_true")
@@ -270,6 +432,7 @@ def main() -> int:
             errors.extend(validate_installed_runtime(root))
         errors.extend(validate_config(root, baseline))
         errors.extend(validate_modules(root, baseline))
+        errors.extend(validate_machine_contracts(root, baseline))
         errors.extend(validate_routes_and_docs(root, baseline))
         if not args.skip_git_audit:
             errors.extend(validate_git_audit(root, baseline, args.git_base or str(baseline.get("roadmap_git_base", "main")), args.allow_pending_last, args.git_executable))
@@ -283,6 +446,9 @@ def main() -> int:
         "harness_api_version": baseline["harness_api_version"],
         "skills": len([path for path in (root / "skills").iterdir() if path.is_dir()]),
         "modules": len(baseline["modules"]["ids"]),
+        "contracts": len(baseline.get("contracts", [])),
+        "machine_extension": baseline.get("machine", {}).get("extension", ""),
+        "skill_graph_schema": baseline.get("skill_graph", {}).get("schema", ""),
         "protected_skill_names": baseline["required_skill_names"],
         "protected_cli_flags": baseline["required_cli_flags"],
         "protected_routes": baseline["routes"],

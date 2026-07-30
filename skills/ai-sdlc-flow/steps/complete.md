@@ -19,7 +19,7 @@ selected downstream skill.
 Read `references/flow-contract.md` when changing DecisionCard fields,
 fingerprint inputs, path rules, context thresholds, or Apply semantics. Role
 contracts live in `references/roles/`; the trusted registry is
-`references/selector-registry.json`; current-step instructions live in
+`references/selector-registry.toon`; current-step instructions live in
 `steps/`.
 
 ## Existing Phase Guidance

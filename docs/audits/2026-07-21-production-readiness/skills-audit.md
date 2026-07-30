@@ -12,7 +12,7 @@ Every inventory row inherits these verified dependencies: its `SKILL.md`, local
 `ai-sdlc-shared-runtime` for shared imports; repository/user instructions;
 feature state and decision/index artifacts where applicable. Commands use a
 logical `skills/` root that resolves to source `skills/` or consumer
-`.agents/skills/`. Outputs include an `ai-sdlc-handoff/v1` response unless the
+`.agents/skills/`. Outputs include an `ai-sdlc-handoff/v2` response unless the
 skill's bounded contract defines another explicit result.
 
 Validation status **pass** means metadata, referenced-file,

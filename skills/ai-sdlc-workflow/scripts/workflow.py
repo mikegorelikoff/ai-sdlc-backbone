@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Validate and plan declarative, gated, host-safe delivery workflows."""
+"""Validate and compile v2 workflows from canonical skill-step graphs."""
 
 from __future__ import annotations
 
 import argparse
+import copy
 import hashlib
-import json
 import os
 import re
 import sys
@@ -13,31 +13,43 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+
 _SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
 sys.path.insert(0, str(_SHARED))
-from ai_sdlc_toon import encode_toon
-from ai_sdlc_okf import migrate_concept_text, write_bundle_indexes
+import ai_sdlc_steps as step_runtime  # noqa: E402
+import ai_sdlc_toon as toon_codec  # noqa: E402
+from ai_sdlc_okf import migrate_concept_text, write_bundle_indexes  # noqa: E402
 
-WORKFLOW_SCHEMA = "ai-sdlc-workflow/v1"
-PLAN_SCHEMA = "ai-sdlc-workflow-plan/v1"
-WORKFLOW_FIELDS = {"schema", "id", "version", "capabilities", "steps", "hooks"}
-STEP_FIELDS = {"id", "type", "depends_on", "action", "capabilities", "condition", "isolation", "approval_owner"}
-HOOK_FIELDS = {"id", "phase", "target", "action", "capabilities"}
+
+WORKFLOW_SCHEMA = "ai-sdlc-workflow/v2"
+PLAN_SCHEMA = "ai-sdlc-workflow-plan/v2"
+WORKFLOW_FIELDS = {"schema", "id", "version", "nodes"}
+NODE_FIELDS = {
+    "id",
+    "depends_on",
+    "skill",
+    "entrypoint",
+    "role",
+    "action",
+    "condition",
+    "approval_owner",
+}
+CONDITION_FIELDS = {"field", "operator", "value"}
 ID = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
-OPERATION = re.compile(r"^[a-z][a-z0-9_-]*(?:\.[a-z][a-z0-9_-]*)+$")
 
 
 def canonical(value: Any) -> str:
-    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return toon_codec.encode_toon(value)
 
 
 def digest(value: Any) -> str:
-    return hashlib.sha256((value if isinstance(value, str) else canonical(value)).encode()).hexdigest()
+    text = value if isinstance(value, str) else canonical(value)
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
 def atomic_write(path: Path, content: str) -> None:
-    if any(component.is_symlink() for component in (path, *list(path.parents)[:4])):
-        raise SystemExit(f"ERROR: output path contains symlink component: {path}")
+    if path.is_symlink() or any(parent.is_symlink() for parent in path.parents):
+        raise ValueError(f"output path contains a symlink component: {path}")
     path.parent.mkdir(parents=True, exist_ok=True)
     descriptor, temporary = tempfile.mkstemp(prefix=path.name + ".", dir=path.parent)
     try:
@@ -49,127 +61,125 @@ def atomic_write(path: Path, content: str) -> None:
             os.unlink(temporary)
 
 
-def identifier_list(value: Any, field: str, pattern: re.Pattern[str] = OPERATION) -> list[str]:
-    if not isinstance(value, list) or not all(isinstance(item, str) and pattern.fullmatch(item) for item in value):
-        return [f"{field} must be an array of valid identifiers"]
-    return [f"{field} must be unique"] if len(value) != len(set(value)) else []
+def unique_strings(value: Any, *, nonempty: bool = False) -> bool:
+    return (
+        isinstance(value, list)
+        and (bool(value) or not nonempty)
+        and all(isinstance(item, str) and item for item in value)
+        and len(value) == len(set(value))
+    )
 
 
 def validate_condition(value: Any, prefix: str) -> list[str]:
     if value is None:
         return []
-    if not isinstance(value, dict) or set(value) != {"field", "operator", "value"}:
-        return [f"{prefix} condition fields are invalid"]
+    if not isinstance(value, dict) or set(value) != CONDITION_FIELDS:
+        return [f"{prefix}.condition fields are invalid"]
     errors: list[str] = []
-    if not isinstance(value["field"], str) or not re.fullmatch(r"[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*", value["field"]):
-        errors.append(f"{prefix} condition field is invalid")
+    if not isinstance(value["field"], str) or not re.fullmatch(
+        r"[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*",
+        value["field"],
+    ):
+        errors.append(f"{prefix}.condition.field is invalid")
     if value["operator"] not in {"eq", "in", "exists"}:
-        errors.append(f"{prefix} condition operator is invalid")
+        errors.append(f"{prefix}.condition.operator is invalid")
     if value["operator"] == "in" and not isinstance(value["value"], list):
-        errors.append(f"{prefix} in condition value must be an array")
+        errors.append(f"{prefix}.condition.value must be an array for in")
     if value["operator"] == "exists" and not isinstance(value["value"], bool):
-        errors.append(f"{prefix} exists condition value must be boolean")
+        errors.append(f"{prefix}.condition.value must be boolean for exists")
     return errors
 
 
-def find_cycles(steps: list[dict[str, Any]]) -> list[str]:
-    graph = {step["id"]: step["depends_on"] for step in steps}
-    active: list[str] = []
-    done: set[str] = set()
-    found: set[str] = set()
-
-    def visit(node: str) -> None:
-        if node in done:
-            return
-        if node in active:
-            found.add(" -> ".join(active[active.index(node):] + [node]))
-            return
-        active.append(node)
-        for dependency in graph[node]:
-            visit(dependency)
-        active.pop()
-        done.add(node)
-
-    for node in graph:
-        visit(node)
-    return sorted(found)
+def topological_order(nodes: list[dict[str, Any]]) -> tuple[list[str], list[str]]:
+    by_id = {node["id"]: node for node in nodes}
+    order = {node["id"]: index for index, node in enumerate(nodes)}
+    pending = {node["id"]: set(node["depends_on"]) for node in nodes}
+    completed: set[str] = set()
+    result: list[str] = []
+    while pending:
+        ready = sorted(
+            (
+                node_id
+                for node_id, dependencies in pending.items()
+                if dependencies <= completed
+            ),
+            key=lambda node_id: (order[node_id], node_id),
+        )
+        if not ready:
+            return [], sorted(pending)
+        for node_id in ready:
+            result.append(node_id)
+            completed.add(node_id)
+            pending.pop(node_id)
+    return result, []
 
 
 def validate_workflow(value: Any) -> list[str]:
-    if not isinstance(value, dict) or set(value) != WORKFLOW_FIELDS:
-        return [f"workflow fields must match {WORKFLOW_SCHEMA}"]
+    if not isinstance(value, dict):
+        return ["workflow must be a TOON mapping"]
+    received = value.get("schema")
+    if received != WORKFLOW_SCHEMA:
+        return [
+            f"WORKFLOW_SCHEMA_MISMATCH: received {received!r}; "
+            f"expected {WORKFLOW_SCHEMA}; rewrite the workflow as skill graph nodes"
+        ]
+    if set(value) != WORKFLOW_FIELDS:
+        return ["workflow fields do not match the v2 contract"]
     errors: list[str] = []
-    if value["schema"] != WORKFLOW_SCHEMA:
-        errors.append(f"schema must be {WORKFLOW_SCHEMA}")
     if not isinstance(value["id"], str) or not ID.fullmatch(value["id"]):
         errors.append("workflow id is invalid")
-    if not isinstance(value["version"], str) or not re.fullmatch(r"\d+\.\d+\.\d+", value["version"]):
+    if not isinstance(value["version"], str) or not re.fullmatch(
+        r"\d+\.\d+\.\d+",
+        value["version"],
+    ):
         errors.append("workflow version must use x.y.z")
-    errors.extend(identifier_list(value["capabilities"], "workflow capabilities"))
-    declared = set(value["capabilities"]) if isinstance(value["capabilities"], list) else set()
-    if not isinstance(value["steps"], list) or not value["steps"]:
-        return errors + ["steps must be a non-empty array"]
+    nodes = value["nodes"]
+    if not isinstance(nodes, list) or not nodes:
+        return errors + ["workflow nodes must be a non-empty array"]
     ids: list[str] = []
-    valid_steps: list[dict[str, Any]] = []
-    for index, step in enumerate(value["steps"]):
-        prefix = f"step {index}"
-        if not isinstance(step, dict) or set(step) != STEP_FIELDS:
+    valid: list[dict[str, Any]] = []
+    for index, node in enumerate(nodes):
+        prefix = f"nodes[{index}]"
+        if not isinstance(node, dict) or set(node) != NODE_FIELDS:
             errors.append(f"{prefix} fields are invalid")
             continue
-        valid_steps.append(step)
-        ids.append(step["id"] if isinstance(step["id"], str) else "")
-        if not isinstance(step["id"], str) or not ID.fullmatch(step["id"]):
-            errors.append(f"{prefix} id is invalid")
-        if step["type"] not in {"task", "validation", "approval", "decision"}:
-            errors.append(f"{prefix} type is invalid")
-        if not isinstance(step["action"], str) or not OPERATION.fullmatch(step["action"]):
-            errors.append(f"{prefix} action is invalid")
-        errors.extend(identifier_list(step["depends_on"], f"{prefix} dependencies", ID))
-        errors.extend(identifier_list(step["capabilities"], f"{prefix} capabilities"))
-        undeclared = sorted(set(step["capabilities"]) - declared) if isinstance(step["capabilities"], list) else []
-        if undeclared:
-            errors.append(f"{prefix} uses undeclared capabilities: {', '.join(undeclared)}")
-        errors.extend(validate_condition(step["condition"], prefix))
-        if step["isolation"] not in {"none", "workspace"}:
-            errors.append(f"{prefix} isolation is invalid")
-        if step["type"] == "approval" and (not isinstance(step["approval_owner"], str) or not step["approval_owner"].strip()):
-            errors.append(f"{prefix} approval owner is required")
-        if step["type"] != "approval" and step["approval_owner"] != "":
-            errors.append(f"{prefix} approval owner is only valid for approval steps")
+        valid.append(node)
+        node_id = node["id"]
+        ids.append(node_id if isinstance(node_id, str) else "")
+        if not isinstance(node_id, str) or not ID.fullmatch(node_id):
+            errors.append(f"{prefix}.id is invalid")
+        if not unique_strings(node["depends_on"]):
+            errors.append(f"{prefix}.depends_on must be unique strings")
+        if not isinstance(node["skill"], str) or not re.fullmatch(
+            r"ai-sdlc-[a-z0-9]+(?:-[a-z0-9]+)*",
+            node["skill"],
+        ):
+            errors.append(f"{prefix}.skill is invalid")
+        if node["entrypoint"] not in step_runtime.PHASE_IDS:
+            errors.append(f"{prefix}.entrypoint is invalid")
+        if node["role"] and node["role"] not in step_runtime.ROLE_IDS:
+            errors.append(f"{prefix}.role is invalid")
+        if not isinstance(node["action"], str):
+            errors.append(f"{prefix}.action must be text")
+        errors.extend(validate_condition(node["condition"], prefix))
+        if not isinstance(node["approval_owner"], str):
+            errors.append(f"{prefix}.approval_owner must be text")
     if len(ids) != len(set(ids)):
-        errors.append("step ids must be unique")
+        errors.append("workflow node ids must be unique")
     known = set(ids)
-    for step in valid_steps:
-        missing = sorted(set(step["depends_on"]) - known)
-        if missing:
-            errors.append(f"step {step['id']} has unknown dependencies: {', '.join(missing)}")
-        if step["id"] in step["depends_on"]:
-            errors.append(f"step {step['id']} depends on itself")
+    for node in valid:
+        unknown = sorted(set(node["depends_on"]) - known)
+        if unknown:
+            errors.append(
+                f"node {node['id']} has unknown dependencies: "
+                + ", ".join(unknown)
+            )
+        if node["id"] in node["depends_on"]:
+            errors.append(f"node {node['id']} depends on itself")
     if not errors:
-        errors.extend(f"dependency cycle: {cycle}" for cycle in find_cycles(valid_steps))
-    if not isinstance(value["hooks"], list):
-        return errors + ["hooks must be an array"]
-    hook_ids: list[str] = []
-    for index, hook in enumerate(value["hooks"]):
-        prefix = f"hook {index}"
-        if not isinstance(hook, dict) or set(hook) != HOOK_FIELDS:
-            errors.append(f"{prefix} fields are invalid")
-            continue
-        hook_ids.append(hook["id"] if isinstance(hook["id"], str) else "")
-        if not isinstance(hook["id"], str) or not ID.fullmatch(hook["id"]):
-            errors.append(f"{prefix} id is invalid")
-        if hook["phase"] not in {"before", "after", "on_failure"}:
-            errors.append(f"{prefix} phase is invalid")
-        if hook["target"] not in known:
-            errors.append(f"{prefix} target is unknown")
-        if not isinstance(hook["action"], str) or not OPERATION.fullmatch(hook["action"]):
-            errors.append(f"{prefix} action is invalid")
-        errors.extend(identifier_list(hook["capabilities"], f"{prefix} capabilities"))
-        undeclared = sorted(set(hook["capabilities"]) - declared) if isinstance(hook["capabilities"], list) else []
-        if undeclared:
-            errors.append(f"{prefix} uses undeclared capabilities: {', '.join(undeclared)}")
-    if len(hook_ids) != len(set(hook_ids)):
-        errors.append("hook ids must be unique")
+        _order, cyclic = topological_order(valid)
+        if cyclic:
+            errors.append("workflow dependency cycle contains " + ", ".join(cyclic))
     return errors
 
 
@@ -182,75 +192,244 @@ def get_field(context: dict[str, Any], field: str) -> tuple[Any, bool]:
     return current, True
 
 
-def condition_status(condition: dict[str, Any] | None, context: dict[str, Any] | None) -> tuple[str, str]:
+def condition_status(
+    condition: dict[str, Any] | None,
+    context: dict[str, Any] | None,
+) -> tuple[str, str]:
     if condition is None:
         return "eligible", "unconditional"
     if context is None:
         return "deferred", "condition-context-missing"
     actual, exists = get_field(context, condition["field"])
-    operator, expected = condition["operator"], condition["value"]
-    matched = exists is expected if operator == "exists" else exists and (actual == expected if operator == "eq" else actual in expected)
-    return ("eligible", "condition-matched") if matched else ("skipped", "condition-not-matched")
+    operator = condition["operator"]
+    expected = condition["value"]
+    if operator == "exists":
+        matched = exists is expected
+    elif operator == "eq":
+        matched = exists and actual == expected
+    else:
+        matched = exists and actual in expected
+    return (
+        ("eligible", "condition-matched")
+        if matched
+        else ("skipped", "condition-not-matched")
+    )
 
 
-def dependency_waves(steps: list[dict[str, Any]], statuses: dict[str, str]) -> list[list[str]]:
-    pending = {step["id"] for step in steps if statuses[step["id"]] == "eligible"}
-    completed = {step["id"] for step in steps if statuses[step["id"]] == "skipped"}
-    order = {step["id"]: index for index, step in enumerate(steps)}
-    by_id = {step["id"]: step for step in steps}
-    waves: list[list[str]] = []
+def workflow_waves(
+    nodes: list[dict[str, Any]],
+    statuses: dict[str, str],
+    concurrency: int,
+) -> list[dict[str, Any]]:
+    by_id = {node["id"]: node for node in nodes}
+    index = {node["id"]: position for position, node in enumerate(nodes)}
+    pending = {
+        node["id"] for node in nodes if statuses[node["id"]] == "eligible"
+    }
+    completed = {
+        node["id"] for node in nodes if statuses[node["id"]] == "skipped"
+    }
+    waves: list[dict[str, Any]] = []
     while pending:
-        ready = sorted((item for item in pending if set(by_id[item]["depends_on"]) <= completed), key=lambda item: (order[item], item))
+        ready = sorted(
+            (
+                node_id
+                for node_id in pending
+                if set(by_id[node_id]["depends_on"]) <= completed
+            ),
+            key=lambda node_id: (index[node_id], node_id),
+        )
         if not ready:
             break
-        waves.append(ready)
+        for offset in range(0, len(ready), concurrency):
+            batch = ready[offset : offset + concurrency]
+            waves.append(
+                {
+                    "index": len(waves) + 1,
+                    "mode": "parallel" if len(batch) > 1 else "sequential",
+                    "nodes": batch,
+                }
+            )
         pending -= set(ready)
         completed |= set(ready)
     return waves
 
 
-def plan_workflow(workflow: dict[str, Any], context: dict[str, Any] | None, concurrency: int, isolation_supported: bool) -> dict[str, Any]:
+def terminal_tasks(tasks: list[dict[str, Any]]) -> list[str]:
+    dependencies = {
+        dependency for task in tasks for dependency in task["depends_on"]
+    }
+    return sorted(task["id"] for task in tasks if task["id"] not in dependencies)
+
+
+def compile_workflow(
+    repository: Path,
+    workflow: dict[str, Any],
+    context: dict[str, Any] | None,
+    concurrency: int,
+    approved_nodes: set[str],
+) -> dict[str, Any]:
+    """Compile eligible workflow nodes into one runtime-compatible v2 plan."""
     decisions: list[dict[str, str]] = []
     statuses: dict[str, str] = {}
-    for step in workflow["steps"]:
-        status, reason = condition_status(step["condition"], context)
-        statuses[step["id"]] = status
-        decisions.append({"id": step["id"], "type": step["type"], "status": status, "reason": reason})
-    by_id = {step["id"]: step for step in workflow["steps"]}
-    waves: list[dict[str, Any]] = []
-    fallbacks: list[dict[str, str]] = []
-    for candidate in dependency_waves(workflow["steps"], statuses):
-        safe = all(by_id[item]["type"] in {"task", "validation"} and by_id[item]["isolation"] == "workspace" for item in candidate)
-        parallel = len(candidate) > 1 and concurrency > 1 and isolation_supported and safe
-        if len(candidate) > 1 and not parallel:
-            reason = "host-concurrency-unavailable" if concurrency <= 1 else "host-isolation-unavailable" if not isolation_supported else "wave-contains-exclusive-or-unisolated-step"
-            fallbacks.append({"candidate": "/".join(candidate), "reason": reason})
-            for item in candidate:
-                waves.append({"index": len(waves) + 1, "mode": "sequential", "steps": [item]})
-        else:
-            waves.append({"index": len(waves) + 1, "mode": "parallel" if parallel else "sequential", "steps": candidate})
-    plan: dict[str, Any] = {
-        "schema": PLAN_SCHEMA,
-        "workflow": {"id": workflow["id"], "version": workflow["version"], "fingerprint": digest(workflow)},
-        "host": {"concurrency": concurrency, "isolation_supported": isolation_supported},
-        "step_decisions": decisions,
-        "waves": waves,
-        "gates": [{"step": step["id"], "owner": step["approval_owner"], "action": step["action"], "status": "required"} for step in workflow["steps"] if step["type"] == "approval" and statuses[step["id"]] == "eligible"],
-        "hooks": sorted(workflow["hooks"], key=lambda item: (item["target"], item["phase"], item["id"])),
-        "fallbacks": fallbacks,
-        "executable": not any(item["status"] == "deferred" for item in decisions),
+    for node in workflow["nodes"]:
+        status, reason = condition_status(node["condition"], context)
+        if (
+            status == "eligible"
+            and node["approval_owner"]
+            and node["id"] not in approved_nodes
+        ):
+            status, reason = "blocked", "approval-required"
+        statuses[node["id"]] = status
+        decisions.append(
+            {
+                "id": node["id"],
+                "skill": node["skill"],
+                "entrypoint": node["entrypoint"],
+                "status": status,
+                "reason": reason,
+            }
+        )
+
+    by_id = {node["id"]: node for node in workflow["nodes"]}
+    order, _cyclic = topological_order(workflow["nodes"])
+    compiled: dict[str, dict[str, Any]] = {}
+    all_tasks: list[dict[str, Any]] = []
+    graph_parts: list[str] = []
+    selection_parts: list[str] = []
+    manifest_parts: list[str] = []
+    for node_id in order:
+        if statuses[node_id] != "eligible":
+            continue
+        node = by_id[node_id]
+        subplan = step_runtime.compile_run_plan(
+            repository,
+            node["skill"],
+            node["entrypoint"],
+            role=node["role"],
+            action=node["action"],
+            goal=(
+                node["action"]
+                or f"workflow {workflow['id']} node {node['id']}"
+            ),
+            trace_ids=(workflow["id"], node["id"]),
+        )
+        internal_ids = {task["id"] for task in subplan["tasks"]}
+        prefix = f"{node_id}/"
+        tasks: list[dict[str, Any]] = []
+        dependency_terminals = [
+            terminal
+            for dependency in node["depends_on"]
+            if dependency in compiled
+            for terminal in terminal_tasks(compiled[dependency]["tasks"])
+        ]
+        for task in subplan["tasks"]:
+            updated = copy.deepcopy(task)
+            updated["id"] = prefix + task["id"]
+            updated["depends_on"] = [
+                prefix + dependency
+                for dependency in task["depends_on"]
+                if dependency in internal_ids
+            ]
+            if not updated["depends_on"]:
+                updated["depends_on"] = sorted(dependency_terminals)
+            tasks.append(updated)
+        compiled[node_id] = {"plan": subplan, "tasks": tasks}
+        all_tasks.extend(tasks)
+        graph_parts.append(subplan["graph_fingerprint"])
+        selection_parts.append(subplan["selection_fingerprint"])
+        manifest_parts.append(subplan["manifest_fingerprint"])
+
+    run_semantic = {
+        "schema": step_runtime.RUN_PLAN_SCHEMA,
+        "skill": f"workflow:{workflow['id']}",
+        "entrypoint": "workflow",
+        "role": "",
+        "action": workflow["id"],
+        "manifest_fingerprint": digest(sorted(manifest_parts)),
+        "graph_fingerprint": digest(sorted(graph_parts)),
+        "selection_fingerprint": digest(sorted(selection_parts)),
+        "targets": terminal_tasks(all_tasks) if all_tasks else ["blocked"],
+        "budgets": {
+            "max_steps": max(
+                1,
+                sum(int(task["max_attempts"]) for task in all_tasks),
+            ),
+            "max_failures": max(
+                1,
+                sum(int(task["max_attempts"]) - 1 for task in all_tasks),
+            ),
+            "max_tokens": max(
+                1,
+                sum(int(task["max_tokens"]) for task in all_tasks),
+            ),
+        },
+        "tasks": all_tasks,
     }
-    plan["fingerprint"] = digest(plan)
-    return plan
+    run_plan = {
+        **run_semantic,
+        "fingerprint": digest(run_semantic),
+    }
+    executable = bool(all_tasks) and all(
+        status in {"eligible", "skipped"} for status in statuses.values()
+    )
+    semantic = {
+        "schema": PLAN_SCHEMA,
+        "workflow": {
+            "id": workflow["id"],
+            "version": workflow["version"],
+            "fingerprint": digest(workflow),
+        },
+        "node_decisions": decisions,
+        "waves": workflow_waves(workflow["nodes"], statuses, concurrency),
+        "approvals": [
+            {
+                "node": node["id"],
+                "owner": node["approval_owner"],
+                "status": (
+                    "approved"
+                    if node["id"] in approved_nodes
+                    else "required"
+                ),
+            }
+            for node in workflow["nodes"]
+            if node["approval_owner"]
+        ],
+        "capabilities": sorted(
+            {
+                capability
+                for task in all_tasks
+                for capability in task["capabilities"]
+            }
+        ),
+        "side_effects": sorted({task["side_effect"] for task in all_tasks}),
+        "run_plan": run_plan,
+        "executable": executable,
+    }
+    return {**semantic, "fingerprint": digest(semantic)}
 
 
 def markdown(plan: dict[str, Any]) -> str:
-    lines = ["# Workflow Plan", "", f"Workflow: `{plan['workflow']['id']}@{plan['workflow']['version']}`", f"Fingerprint: `{plan['fingerprint']}`", f"Executable: `{str(plan['executable']).lower()}`", "", "## Waves", ""]
-    lines.extend(f"- {wave['index']}. **{wave['mode']}**: {', '.join(f'`{item}`' for item in wave['steps'])}" for wave in plan["waves"])
-    lines.extend(["", "## Fallbacks", ""])
-    lines.extend(f"- `{item['reason']}`: {item['candidate']}" for item in plan["fallbacks"])
-    if not plan["fallbacks"]:
-        lines.append("- None")
+    lines = [
+        "# Workflow Plan",
+        "",
+        f"Workflow: `{plan['workflow']['id']}@{plan['workflow']['version']}`",
+        f"Fingerprint: `{plan['fingerprint']}`",
+        f"Executable: `{str(plan['executable']).lower()}`",
+        "",
+        "## Waves",
+        "",
+    ]
+    lines.extend(
+        f"- {wave['index']}. **{wave['mode']}**: "
+        + ", ".join(f"`{node}`" for node in wave["nodes"])
+        for wave in plan["waves"]
+    )
+    lines.extend(["", "## Decisions", ""])
+    lines.extend(
+        f"- `{item['id']}`: {item['status']} — {item['reason']}"
+        for item in plan["node_decisions"]
+    )
     return "\n".join(lines) + "\n"
 
 
@@ -263,9 +442,9 @@ def main() -> int:
     actions.add_argument("--plan", action="store_true")
     parser.add_argument("--context", type=Path)
     parser.add_argument("--concurrency", type=int, default=1)
-    parser.add_argument("--isolation-supported", action="store_true")
+    parser.add_argument("--approved-node", action="append", default=[])
     parser.add_argument("--write", action="store_true")
-    parser.add_argument("--format", choices=("toon", "json", "markdown"), default="toon")
+    parser.add_argument("--format", choices=("toon", "markdown"), default="toon")
     parser.add_argument("--quick-flow", action="store_true")
     parser.add_argument("--full-flow", action="store_true")
     parser.add_argument("--feature", default="<feature-name>")
@@ -277,6 +456,7 @@ def main() -> int:
     parser.add_argument("--state-workspace", choices=("refinement", "implementation"))
     parser.add_argument("--generated-by")
     args = parser.parse_args()
+
     if args.begin_state or args.complete_state:
         print("ERROR: workflow planning cannot mutate feature lifecycle state")
         return 1
@@ -285,8 +465,10 @@ def main() -> int:
         print("ERROR: repository must exist and concurrency must be 1..64")
         return 1
     try:
-        workflow = json.loads(args.workflow.resolve().read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+        workflow = toon_codec.loads(
+            args.workflow.resolve().read_text(encoding="utf-8")
+        )
+    except (OSError, toon_codec.ToonDecodeError) as exc:
         print(f"ERROR: cannot read workflow: {exc}")
         return 1
     errors = validate_workflow(workflow)
@@ -297,31 +479,54 @@ def main() -> int:
     context: dict[str, Any] | None = None
     if args.context:
         try:
-            context = json.loads(args.context.resolve().read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as exc:
+            context = toon_codec.loads(
+                args.context.resolve().read_text(encoding="utf-8")
+            )
+        except (OSError, toon_codec.ToonDecodeError) as exc:
             print(f"ERROR: cannot read context: {exc}")
             return 1
         if not isinstance(context, dict):
-            print("ERROR: context must be a JSON object")
+            print("ERROR: context must be a TOON mapping")
             return 1
-    plan = plan_workflow(workflow, context, args.concurrency, args.isolation_supported)
+    try:
+        plan = compile_workflow(
+            repository,
+            workflow,
+            context,
+            args.concurrency,
+            set(args.approved_node),
+        )
+    except (OSError, ValueError) as exc:
+        print(f"ERROR: {exc}")
+        return 1
     plan_markdown = migrate_concept_text(
         markdown(plan),
         profile_key="workflow-plan.md",
         generated_by_override=args.generated_by,
     )
     if args.write:
-        output = repository / f"_ai_sdlc/workflows/{workflow['id']}/plan.json"
-        atomic_write(output, json.dumps(plan, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
-        atomic_write(output.with_suffix(".toon"), encode_toon(plan))
-        atomic_write(output.with_suffix(".md"), plan_markdown)
-        write_bundle_indexes(repository / "_ai_sdlc")
-    if args.format == "json":
-        print(json.dumps(plan, indent=2, sort_keys=True, ensure_ascii=False))
-    elif args.format == "markdown":
-        print(plan_markdown, end="")
+        if not plan["executable"]:
+            print("ERROR: non-executable workflow plan cannot be persisted")
+            return 1
+        output_root = repository / f"_ai_sdlc/workflows/{workflow['id']}"
+        try:
+            atomic_write(
+                output_root / "workflow-plan.toon",
+                toon_codec.encode_toon(plan),
+            )
+            atomic_write(
+                output_root / "run-plan.toon",
+                toon_codec.encode_toon(plan["run_plan"]),
+            )
+            atomic_write(output_root / "plan.md", plan_markdown)
+            write_bundle_indexes(repository / "_ai_sdlc")
+        except (OSError, ValueError) as exc:
+            print(f"ERROR: {exc}")
+            return 1
+    if args.format == "toon":
+        print(toon_codec.encode_toon(plan), end="")
     else:
-        print(encode_toon(plan), end="")
+        print(plan_markdown, end="")
     return 0 if args.validate or plan["executable"] else 2
 
 

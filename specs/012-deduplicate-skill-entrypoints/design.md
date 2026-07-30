@@ -40,7 +40,7 @@ The flow shared core becomes the only intent classifier. Its route table covers 
 `skills/_shared/ai_sdlc_flow.py` owns classification and DecisionCard logic; `skills/ai-sdlc-flow/` owns CLI/tests; manifests, managed lists, compatibility, install smoke, catalog generator, generated docs, README, and tutorials expose the retained skill.
 
 ## Interfaces and Contracts
-Keep schema `ai-sdlc-flow/v1`, protected flow flags, Markdown/TOON/JSON Explore formats, and direct `$ai-sdlc-*` invocation. Delete the `ai-sdlc-navigator/v1` public entrypoint and document the migration.
+Keep schema `ai-sdlc-flow/v1`, protected flow flags, Markdown/TOON Explore formats, and direct `$ai-sdlc-*` invocation. Delete the `ai-sdlc-navigator/v1` public entrypoint and document the transition.
 
 ## Data Model
 Extend intent rules without changing DecisionCard fields. Skill inventory count changes from 45 to 44.

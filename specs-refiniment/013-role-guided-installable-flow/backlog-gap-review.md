@@ -65,7 +65,7 @@ artifact_metadata:
 - REQ-001: Replace the dual `_shared`/runtime authority with one installable canonical runtime.
 - REQ-002: Route through exactly one active canonical role and preserve cross-role work as explicit handoffs.
 - REQ-003: Load only the selected role reference and current workflow step while explaining context economics.
-- REQ-004: Publish a breaking `ai-sdlc-flow/v2` card during the release-candidate line.
+- REQ-004: Publish a breaking `ai-sdlc-flow/v3` card during the release-candidate line.
 
 ## Actors and Stakeholders
 - Product Manager: owns customer problem, outcomes, and product trade-offs.
@@ -94,7 +94,7 @@ artifact_metadata:
 - BR-005: Direct reading wins unless packed context retains every critical anchor and saves at least 15% net tokens.
 
 ## Data, Integrations, and Non-Functional Requirements
-- Machine contracts use versioned JSON schemas; agent-facing status remains Markdown/TOON.
+- Machine contracts use versioned TOON schemas; agent-facing status remains Markdown/TOON.
 - Selector and referenced-step paths must stay within the installed flow skill and reject symlink escape.
 - Context selector globs are repository-relative, bounded to 16..4000 tokens, and treated as untrusted evidence.
 - Deterministic output and fingerprints must be stable for identical repository, selector, config, and intent inputs.

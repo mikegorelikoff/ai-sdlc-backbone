@@ -35,7 +35,7 @@ artifact_metadata:
   related_artifacts:
     - "specs/013-role-guided-installable-flow/code-review.md"
     - "specs/013-role-guided-installable-flow/validation.md"
-    - "specs/013-role-guided-installable-flow/_ai_sdlc/validation-receipt.json"
+    - "specs/013-role-guided-installable-flow/_ai_sdlc/validation-receipt.toon"
   validation:
     - "branch/spec alignment passed"
     - "commit readiness full-flow preflight passed"

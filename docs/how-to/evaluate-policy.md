@@ -6,7 +6,7 @@ description: Resolve protected policy layers, inspect action gates, and apply bo
 # Evaluate delivery policy
 
 Run from an installed consumer repository. Built-in profiles ship with the
-skill. Project/user layers, `policy-context.json`, and waiver JSON are explicit
+skill. Project/user layers, `policy-context.toon`, and waiver TOON are explicit
 inputs you create and review from the schemas/examples under
 `.agents/skills/ai-sdlc-policy/references/`; the commands do not invent them.
 
@@ -23,13 +23,13 @@ remove protected effects or gates fail with the exact rule and source.
 
 ## Evaluate an action
 
-Create a JSON context with the fields referenced by rule predicates, including
+Create a TOON context with the fields referenced by rule predicates, including
 a stable `subject` when waivers may apply. Then run:
 
 ```bash
 python3 .agents/skills/ai-sdlc-policy/scripts/policy.py . \
   --explain change.apply \
-  --context policy-context.json \
+  --context policy-context.toon \
   --profile regulated \
   --as-of 2026-07-19T12:00:00Z \
   --format markdown
@@ -47,9 +47,9 @@ constraints, owner, approver, accepted decision, reason, issue time, and expiry.
 ```bash
 python3 .agents/skills/ai-sdlc-policy/scripts/policy.py . \
   --explain change.apply \
-  --context policy-context.json \
+  --context policy-context.toon \
   --profile high-assurance \
-  --waiver waivers/change-review.json \
+  --waiver waivers/change-review.toon \
   --as-of 2026-07-19T12:00:00Z
 ```
 

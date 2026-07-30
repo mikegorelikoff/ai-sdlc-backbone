@@ -4,11 +4,16 @@
 from __future__ import annotations
 
 import hashlib
-import json
 import subprocess
 import tempfile
 import unittest
+import sys
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -54,8 +59,8 @@ class EvidenceLedgerTests(unittest.TestCase):
         }
         if expires_at:
             value["expires_at"] = expires_at
-        path = repository / f"evidence/{record_id}.evidence.json"
-        path.write_text(json.dumps(value), encoding="utf-8")
+        path = repository / f"evidence/{record_id}.evidence.toon"
+        path.write_text(toon_codec.dumps(value), encoding="utf-8")
         return path
 
     def test_fresh_evidence_coverage_is_deterministic(self) -> None:
@@ -63,14 +68,14 @@ class EvidenceLedgerTests(unittest.TestCase):
             repository = Path(temp)
             self.setup_repository(repository)
             self.add_manifest(repository, "payment-validation")
-            first = self.cli(repository, "--index", "--as-of", "2026-07-19", "--write", "--format", "json")
-            second = self.cli(repository, "--index", "--as-of", "2026-07-19", "--write", "--format", "json")
+            first = self.cli(repository, "--index", "--as-of", "2026-07-19", "--write", "--format", "toon")
+            second = self.cli(repository, "--index", "--as-of", "2026-07-19", "--write", "--format", "toon")
             self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
             self.assertEqual(first.stdout, second.stdout)
-            ledger = json.loads(first.stdout)
+            ledger = toon_codec.loads(first.stdout)
             self.assertEqual(ledger["records"][0]["status"], "fresh")
             self.assertEqual(ledger["coverage"]["requirements_with_fresh_evidence"], 1)
-            self.assertEqual((repository / "_ai_sdlc/evidence-ledger.json").read_text(encoding="utf-8"), second.stdout)
+            self.assertEqual((repository / "_ai_sdlc/evidence-ledger.toon").read_text(encoding="utf-8"), second.stdout)
             toon = (repository / "_ai_sdlc/evidence-ledger.toon").read_text(encoding="utf-8")
             self.assertIn("records[1]:", toon)
             self.assertIn("depends_on[0]:", toon)
@@ -80,13 +85,13 @@ class EvidenceLedgerTests(unittest.TestCase):
             repository = Path(temp)
             self.setup_repository(repository)
             manifest = self.add_manifest(repository, "payment-validation")
-            value = json.loads(manifest.read_text(encoding="utf-8"))
+            value = toon_codec.loads(manifest.read_text(encoding="utf-8"))
             dependency = repository / "specs/payments/requirements.md"
             value["dependencies"] = [{"path": "specs/payments/requirements.md", "sha256": self.sha(dependency)}]
-            manifest.write_text(json.dumps(value), encoding="utf-8")
+            manifest.write_text(toon_codec.dumps(value), encoding="utf-8")
             dependency.write_text("# Requirements\n\n- AC-001: Payments persist durably.\n", encoding="utf-8")
-            result = self.cli(repository, "--index", "--as-of", "2026-07-19", "--format", "json")
-            ledger = json.loads(result.stdout)
+            result = self.cli(repository, "--index", "--as-of", "2026-07-19", "--format", "toon")
+            ledger = toon_codec.loads(result.stdout)
             self.assertEqual(ledger["records"][0]["status"], "stale")
             self.assertTrue(any(reason.startswith("dependency-changed:") for reason in ledger["records"][0]["reason_codes"]))
             self.assertEqual(ledger["coverage"]["requirements_with_fresh_evidence"], 0)
@@ -97,8 +102,8 @@ class EvidenceLedgerTests(unittest.TestCase):
             self.setup_repository(repository)
             self.add_manifest(repository, "missing-proof", missing=True)
             self.add_manifest(repository, "old-proof", expires_at="2026-07-18T23:59:59Z")
-            result = self.cli(repository, "--stale", "--as-of", "2026-07-19", "--format", "json")
-            stale = json.loads(result.stdout)["stale_paths"]
+            result = self.cli(repository, "--stale", "--as-of", "2026-07-19", "--format", "toon")
+            stale = toon_codec.loads(result.stdout)["stale_paths"]
             self.assertEqual({item["status"] for item in stale}, {"expired", "missing"})
 
     def test_upstream_staleness_propagates_to_fixed_point(self) -> None:
@@ -109,7 +114,7 @@ class EvidenceLedgerTests(unittest.TestCase):
             self.add_manifest(repository, "middle-proof", depends_on=["root-proof"])
             self.add_manifest(repository, "final-proof", depends_on=["middle-proof"])
             (repository / "evidence/artifacts/root-proof.txt").write_text("changed evidence\n", encoding="utf-8")
-            ledger = json.loads(self.cli(repository, "--index", "--as-of", "2026-07-19", "--format", "json").stdout)
+            ledger = toon_codec.loads(self.cli(repository, "--index", "--as-of", "2026-07-19", "--format", "toon").stdout)
             records = {record["id"]: record for record in ledger["records"]}
             self.assertEqual(records["root-proof"]["status"], "stale")
             self.assertIn("upstream-not-fresh:root-proof", records["middle-proof"]["reason_codes"])

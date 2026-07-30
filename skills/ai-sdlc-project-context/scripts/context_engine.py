@@ -6,7 +6,6 @@ from __future__ import annotations
 import argparse
 import fnmatch
 import hashlib
-import json
 import os
 import re
 import subprocess
@@ -19,6 +18,7 @@ from project_context import credential_like_content, SECRET_PATTERN, revision, s
 
 _SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
 sys.path.insert(0, str(_SHARED))
+import ai_sdlc_toon as toon_codec
 from ai_sdlc_context import resolve_interaction_profile
 from ai_sdlc_toon import encode_toon
 from ai_sdlc_safe_io import atomic_write_text
@@ -29,7 +29,7 @@ PACK_SCHEMA = "ai-sdlc-context-pack/v3"
 SELECTOR_SCHEMA = "ai-sdlc-context-selectors/v2"
 TOPOLOGY_SCHEMA = "ai-sdlc-repository-topology/v2"
 SOURCE_EXTENSIONS = {".c", ".cc", ".cpp", ".cs", ".go", ".java", ".js", ".jsx", ".kt", ".php", ".py", ".rb", ".rs", ".swift", ".ts", ".tsx"}
-MANIFESTS = {"Cargo.toml", "Makefile", "go.mod", "package.json", "pyproject.toml", "requirements.txt"}
+MANIFESTS = {"Cargo.toml", "Makefile", "go.mod", "package.toon", "pyproject.toml", "requirements.txt"}
 IGNORED_PARTS = {".git", ".venv", "__pycache__", "build", "dist", "node_modules", "site", "vendor"}
 SELECTOR_FIELDS = {"id", "when", "include", "priority", "max_tokens", "reason"}
 WHEN_FIELDS = {"task", "paths_any", "tags_any"}
@@ -48,7 +48,7 @@ CONTENT_HANDLING = {
 
 def canonical(value: Any) -> str:
     """Serialize normalized data for deterministic identity."""
-    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return toon_codec.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
 
 def digest(value: Any) -> str:
@@ -209,8 +209,8 @@ def load_selectors(path: Path | None) -> tuple[list[dict[str, Any]], list[str], 
     if path is None:
         return [], [], []
     try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+        value = toon_codec.loads(path.read_text(encoding="utf-8"))
+    except (OSError, toon_codec.ToonDecodeError) as exc:
         return [], [], [f"cannot read selector config: {exc}"]
     errors: list[str] = []
     if not isinstance(value, dict) or set(value) != {"schema", "selectors", "exclusions"} or value.get("schema") != SELECTOR_SCHEMA:
@@ -492,12 +492,12 @@ def freshness(root: Path, selected_paths: set[str], current_context_fingerprint:
         warnings.append({"code": "project-context-stale", "detail": "Saved project context identity differs from current repository evidence."})
     else:
         context_status = "current"
-    ledger_path = root / "_ai_sdlc/evidence-ledger.json"
+    ledger_path = root / "_ai_sdlc/evidence-ledger.toon"
     ledger_status = "missing"
     ledger_fingerprint = ""
     if ledger_path.is_file() and not ledger_path.is_symlink():
         try:
-            ledger = json.loads(ledger_path.read_text(encoding="utf-8"))
+            ledger = toon_codec.loads(ledger_path.read_text(encoding="utf-8"))
             ledger_fingerprint = str(ledger.get("fingerprint", ""))
             ledger_status = "available" if ledger.get("schema") == "ai-sdlc-evidence-ledger/v1" else "invalid"
             for record in ledger.get("records", []):
@@ -506,7 +506,7 @@ def freshness(root: Path, selected_paths: set[str], current_context_fingerprint:
                 affected = sorted(selected_paths & {item.get("path") for item in record.get("files", []) if isinstance(item, dict)})
                 for path in affected:
                     warnings.append({"code": "selected-evidence-not-fresh", "detail": f"{path} is referenced by {record.get('id')} with status {record.get('status')}."})
-        except (OSError, json.JSONDecodeError):
+        except (OSError, toon_codec.ToonDecodeError):
             ledger_status = "invalid"
     if ledger_status == "missing":
         warnings.append({"code": "evidence-ledger-missing", "detail": "Freshness coverage is unavailable."})
@@ -627,7 +627,7 @@ def main() -> int:
     parser.add_argument("--budget", type=int, default=2000)
     parser.add_argument("--selector-config", type=Path)
     parser.add_argument("--write", action="store_true")
-    parser.add_argument("--format", choices=("markdown", "json", "toon"), default="toon")
+    parser.add_argument("--format", choices=("markdown", "toon"), default="toon")
     parser.add_argument("--quick-flow", action="store_true")
     parser.add_argument("--full-flow", action="store_true")
     parser.add_argument("--feature", default="<feature-name>")
@@ -667,23 +667,20 @@ def main() -> int:
     topology = build_topology(root)
     if args.build_pack:
         value = build_pack(root, topology, args.task, args.goal, args.path, args.tag, args.budget, selectors, configured_exclusions)
-        output_path = root / f"_ai_sdlc/context/task-packs/{args.task}.json"
+        output_path = root / f"_ai_sdlc/context/task-packs/{args.task}.toon"
     else:
         value = topology
-        output_path = root / "_ai_sdlc/context/topology.json"
+        output_path = root / "_ai_sdlc/context/topology.toon"
     markdown_output = migrate_concept_text(
         markdown(value),
         profile_key="task-pack.md" if args.build_pack else "topology.md",
         generated_by_override=args.generated_by,
     )
     if args.write:
-        atomic_write(root, output_path, json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
-        atomic_write(root, output_path.with_suffix(".toon"), encode_toon(value))
+        atomic_write(root, output_path, encode_toon(value))
         atomic_write(root, output_path.with_suffix(".md"), markdown_output)
         write_bundle_indexes(root / "_ai_sdlc")
-    if args.format == "json":
-        print(json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False))
-    elif args.format == "toon":
+    if args.format == "toon":
         print(encode_toon(value), end="")
     else:
         print(markdown_output, end="")

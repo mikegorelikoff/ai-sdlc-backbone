@@ -44,7 +44,7 @@ Choose --quick-flow for bounded assumption-driven progress or --full-flow
 for strict verification only as described below.
 Read the required evidence,
 produce or report `_ai_sdlc/context/project-context.{md,toon}` and optional topology and task-pack records below `_ai_sdlc/context/`, preserve human approval boundaries,
-and return blockers plus a complete ai-sdlc-handoff/v1.
+and return blockers plus a complete ai-sdlc-handoff/v2.
 ```
 
 This is an agent instruction, not a shell command. Terminal commands belong in the helper section.
@@ -62,8 +62,10 @@ This is an agent instruction, not a shell command. Terminal commands belong in t
 - Write both projections to `<root>/_ai_sdlc/context/project-context.{md,toon}`.
 - Do not place project-wide context inside one feature folder.
 - Do not overwrite either output when `--check` or `--emit` is used.
-- Route topology to `_ai_sdlc/context/topology.{toon,json,md}` and task packs to
-  `_ai_sdlc/context/task-packs/<task>.{toon,json,md}` only with `--write`.
+- Route topology to `_ai_sdlc/context/topology.toon` with optional human
+  `_ai_sdlc/context/topology.md`, and task packs to
+  `_ai_sdlc/context/task-packs/<task>.toon` with optional human Markdown only
+  with `--write`.
 
 ## Human checkpoints
 
@@ -88,11 +90,13 @@ Humans accept or reject material product, security, QA, policy, rollout, release
 
 The router loads these skill-owned procedures just in time. Read only the selector matching the current phase, active role, and action; a selected step is normative and an unselected step stays out of context.
 
-| Selector | Phases | Roles | Load rule | Step | Reason |
-| --- | --- | --- | --- | --- | --- |
-| `prepare` | `prepare`, `clarify`, `route` | `software-engineer` | `required` | [`steps/01-prepare.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-project-context/steps/01-prepare.md) | establish inputs, authority, lifecycle state, and safe artifact routing |
-| `execute` | `execute` | `software-engineer` | `on-demand` | [`steps/02-execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-project-context/steps/02-execute.md) | perform only the selected owning-skill procedure |
-| `validate-and-handoff` | `validate`, `handoff`, `complete` | `software-engineer` | `before-completion` | [`steps/03-validate-and-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-project-context/steps/03-validate-and-handoff.md) | verify outputs and return an explicit evidence-backed handoff |
+| Selector | Type | Phases | Roles | Dependencies | Operation | Side effect | Load rule | Step | Reason |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `preflight` | `analysis` | `prepare` | `software-engineer` | none | `inspect-and-route` | `none` | `required` | [`steps/01-prepare.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-project-context/steps/01-prepare.md) | establish inputs, authority, lifecycle state, and safe artifact routing |
+| `context` | `context` | `clarify`, `route` | `software-engineer` | `preflight` | `compile-context` | `none` | `required` | [`steps/02-context.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-project-context/steps/02-context.md) | compile the minimum sufficient context before the owning action |
+| `execute` | `action` | `execute` | `software-engineer` | `context` | `execute-procedure` | `workspace-write` | `on-demand` | [`steps/02-execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-project-context/steps/02-execute.md) | perform only the selected owning-skill procedure |
+| `validate` | `validation` | `validate` | `software-engineer` | `execute` | `validate-evidence` | `none` | `before-completion` | [`steps/03-validate-and-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-project-context/steps/03-validate-and-handoff.md) | validate outputs, evidence, acceptance, and residual risk |
+| `handoff` | `handoff` | `handoff`, `complete` | `software-engineer` | `validate` | `handoff-result` | `none` | `before-completion` | [`steps/04-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-project-context/steps/04-handoff.md) | return a journal-backed owner and next-action handoff |
 
 Resolve the current step with `ai-sdlc-shared-runtime/scripts/ai_sdlc_steps.py`. A missing, unsafe, oversized, or unmatched step is a blocker rather than permission to broad-load the package.
 
@@ -128,7 +132,7 @@ The TOON schema `ai-sdlc-project-context/v1` includes repository, revision,
 fingerprint, drift status, stack, commands, architecture paths, and evidence
 rows with exact `path`, `line`, `kind`, and `detail` fields.
 
-The complete TOON/JSON `ai-sdlc-context-pack/v3` record includes task identity,
+The canonical TOON `ai-sdlc-context-pack/v3` record includes task identity,
 typed presentation preferences, content authority, topology and revision
 identity, deterministic budget use, selector outcomes, relevance-ranked source
 ranges, exclusions, freshness warnings, sufficient-context status, targeted
@@ -161,7 +165,7 @@ On a blocker, preserve failed/stale evidence, name the accountable owner and exa
 
 - Return generation, drift, blockers, evidence coverage, and output paths
   directly in the active agent response.
-- Before the final response, emit the `ai-sdlc-handoff/v1` contract with
+- Before the final response, emit the `ai-sdlc-handoff/v2` contract with
   `result`, `blockers`, `next_required`, and `next_optional`; every action
   includes `reason`, `command`, and `expected_artifact`.
 - Do not create `summary.txt`, `*-summary.txt`, or ad hoc context files.
@@ -221,6 +225,6 @@ Reject unsupported inference without repository evidence.
 
 ## Source contract
 
-This page is generated from [`skills/ai-sdlc-project-context/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-project-context/SKILL.md) plus its linked `steps/manifest.json` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
+This page is generated from [`skills/ai-sdlc-project-context/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-project-context/SKILL.md) plus its linked `steps/manifest.toon` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
 
 [Back to the skill catalog](../skills.md) · [Script reference](../scripts.md) · [Choose a workflow](../../flows/index.md)

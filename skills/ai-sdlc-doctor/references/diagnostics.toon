@@ -1,0 +1,8 @@
+checks[6]{code,description}:
+  python-version,Python 3.9 or newer is available.
+  git-available,Git is available on PATH.
+  repository-layout,Required harness directories and files exist.
+  module-contracts,Module manifests have valid core fields and unique IDs.
+  skill-registration,Registered skill paths contain SKILL.md.
+  docs-configuration,MkDocs configuration and docs requirements exist.
+schema: ai-sdlc-diagnostic-registry/v1

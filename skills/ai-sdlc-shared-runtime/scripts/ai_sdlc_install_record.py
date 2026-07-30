@@ -4,9 +4,14 @@
 from __future__ import annotations
 
 import argparse
-import json
 import re
+import sys
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parent
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 
 
 REQUIRED = {"schema", "revision", "skills_cli", "agent", "selection", "inventory"}
@@ -28,8 +33,8 @@ def published_inventory() -> list[str]:
 
 def validate(record_path: Path, skills_root: Path) -> list[str]:
     try:
-        value = json.loads(record_path.read_text(encoding="utf-8-sig"))
-    except (OSError, json.JSONDecodeError) as exc:
+        value = toon_codec.loads(record_path.read_text(encoding="utf-8-sig"))
+    except (OSError, toon_codec.ToonDecodeError) as exc:
         return [f"cannot read install record: {exc}"]
     if not isinstance(value, dict) or set(value) != REQUIRED:
         return ["install record must contain exactly schema, revision, skills_cli, agent, selection, inventory"]
@@ -77,7 +82,7 @@ def validate(record_path: Path, skills_root: Path) -> list[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--record", type=Path, default=Path(".ai-sdlc/harness-install.json"))
+    parser.add_argument("--record", type=Path, default=Path(".ai-sdlc/harness-install.toon"))
     parser.add_argument("--skills-root", type=Path, default=Path(".agents/skills"))
     args = parser.parse_args()
     errors = validate(args.record, args.skills_root)

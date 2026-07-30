@@ -6,7 +6,7 @@ description: Core versioned records used for artifacts, handoffs, modules, compa
 | Schema | Purpose |
 | --- | --- |
 | `ai-sdlc-artifact-metadata/v1` | Route, own, index, and trace Markdown artifacts. |
-| `ai-sdlc-handoff/v1` | Communicate result, blockers, and next actions. |
+| `ai-sdlc-handoff/v2` | Communicate result, blockers, and next actions. |
 | `ai-sdlc-module/v1` | Register compatible core or optional capabilities. |
 | `ai-sdlc-compatibility-result/v1` | Report release contract validation. |
 | `ai-sdlc-change-set/v1` | Identify an isolated draft change, its canonical targets, authority boundary, artifacts, and deterministic fingerprint. |
@@ -26,14 +26,19 @@ description: Core versioned records used for artifacts, handoffs, modules, compa
 | `ai-sdlc-context-selectors/v2` | Declare conditional task, path, and tag selectors with include globs, priority, caps, and exclusions. |
 | `ai-sdlc-context/v3` | Preserve a bounded per-skill evidence snapshot, targeted next reads, gaps, trace IDs, and presentation-only interaction preferences. |
 | `ai-sdlc-context-pack/v3` | Return goal-relevant explained ranges, instruction authority, sufficiency, budget allocation, exclusions, freshness, and task identity. |
-| `ai-sdlc-run-plan/v1` | Define immutable dependency tasks, input fingerprints, retry limits, budgets, and commit boundaries. |
-| `ai-sdlc-run-event/v1` | Append one hash-chained runtime transition with contiguous sequence and evidence payload. |
-| `ai-sdlc-run-state/v1` | Project replayable task status, attempts, readiness, budgets, stop reason, and run identity. |
-| `ai-sdlc-workflow/v1` | Declare capabilities, typed steps, dependencies, bounded conditions, approval gates, isolation, and deterministic hooks. |
-| `ai-sdlc-workflow-plan/v1` | Record condition decisions, safe dependency waves, gates, hooks, host capabilities, and sequential fallbacks. |
-| `ai-sdlc-host-adapter/v1` | Declare host identity, harness API range, capabilities, equivalent operation mappings, concurrency, and isolation. |
-| `ai-sdlc-capability-request/v1` | Request exact portable operations, capabilities, concurrency, and isolation. |
-| `ai-sdlc-capability-negotiation/v1` | Explain native mappings, registered fallbacks, missing requirements, effective limits, and compatibility. |
+| `ai-sdlc-skill-steps/v2` | Declare one skill's semantic DAG, entrypoints, context budget, operations, gates, outputs, side effects, retries, and recovery policy. |
+| `ai-sdlc-step-card/v1` | Carry one dependency-ready semantic step with resolved context, capabilities, idempotency scope, and graph/step fingerprints. |
+| `ai-sdlc-context-pack/v4` | Compile exact per-step source ranges, instruction authority, selected/skipped evidence, mandatory-anchor recall, savings, sufficiency, and direct-read fallback. |
+| `ai-sdlc-run-plan/v2` | Define immutable StepCard-derived dependency tasks, fingerprints, idempotency keys, retry limits, budgets, and commit boundaries. |
+| `ai-sdlc-run-event/v2` | Append one canonical TOON transition with contiguous sequence, previous-event identity, task attempt, and evidence payload. |
+| `ai-sdlc-run-state/v2` | Project replayable task phase, status, attempts, readiness, budgets, stop reason, and run identity. |
+| `ai-sdlc-workflow/v2` | Declare installed skill nodes, canonical phase entrypoints, dependencies, bounded conditions, routing evidence, and explicit approval owners. |
+| `ai-sdlc-workflow-plan/v2` | Record node decisions, dependency waves, approvals, derived capabilities and side effects, plus the embedded runtime plan. |
+| `ai-sdlc-host-adapter/v2` | Declare host identity, harness API range, capabilities, equivalent operation mappings, concurrency, and isolation. |
+| `ai-sdlc-capability-request/v2` | Request execution of one complete StepCard without weakening its operation, side-effect, approval, context, output, evidence, or idempotency semantics. |
+| `ai-sdlc-capability-negotiation/v2` | Explain native mappings, registered equivalent fallbacks, missing requirements, effective limits, compatibility, and preserved StepCard identity. |
+| `ai-sdlc-eval-receipt/v1` | Record deterministic all-skill scenarios or provider-neutral live-protocol checks with a canonical receipt fingerprint. |
+| `ai-sdlc-test-suite-receipt/v1` | Prove that every discovered skill-owned Python test file executed, report explicit status per file, and prevent silent zero-test discovery. |
 | `ai-sdlc-doctor-report/v1` | Report deterministic installation checks, evidence, remediation, and health. |
 | `ai-sdlc-upgrade-inventory/v1` | Describe versioned package files with safe paths, hashes, schemas, and harness API range. |
 | `ai-sdlc-upgrade-plan/v1` | Preview file changes, schema migrations, backups, rollback actions, compatibility, and blockers. |
@@ -47,12 +52,20 @@ description: Core versioned records used for artifacts, handoffs, modules, compa
 
 Required metadata includes feature, artifact, path, workspace, skill, flow mode, state file, decision log, status, owner, timestamps, trace IDs, related artifacts, validation, and metatags.
 
-Versioned schemas evolve additively within a major harness API. Breaking field or authority changes require migration documentation and compatibility review.
+Versioned contracts evolve additively within a major harness API. Breaking
+field or authority changes require an explicit decision, source regeneration
+guidance, and compatibility review. Runtime never silently coerces an older
+schema.
 
 ## Representation strategy
 
-Agent-facing records are TOON-first and preserve the complete logical record.
-Generated control-plane artifacts write deterministic `.toon` projections;
-human review uses Markdown. JSON remains for JSON Schema validation, external
-interoperability, exact recovery comparison, and the append-only JSONL runtime
-journal. See [TOON-first agent artifacts](../explanation/toon-first.md).
+TOON is the only structured machine-data representation. One shared canonical
+codec reads and writes contracts, fixtures, manifests, context, plans, journal
+events, state, and receipts. Human review uses Markdown, but Markdown never
+replaces a required machine field.
+
+Every runtime event is one hash-chained
+`_ai_sdlc/runs/<run-id>/journal/<sequence>.toon` file. Repository and strict
+documentation-build gates reject alternate machine artifacts or identifiers
+and validate all TOON inputs. See
+[TOON-only agent artifacts](../explanation/toon-first.md).

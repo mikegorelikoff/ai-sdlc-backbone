@@ -38,7 +38,7 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 - Report the installed skills root, runtime path, checked downstream script,
   exact command, exit status, and any missing module.
 - Return progress, blockers, and recommendations directly in the active agent response.
-- Before the final response, emit the `ai-sdlc-handoff/v1` contract with
+- Before the final response, emit the `ai-sdlc-handoff/v2` contract with
   `result`, `blockers`, `next_required`, and `next_optional`; every action
   includes `reason`, `command`, and `expected_artifact`.
 - Do not create `summary.txt`, `*-summary.txt`, or a runtime status artifact.

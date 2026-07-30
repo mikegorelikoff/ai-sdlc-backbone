@@ -11,7 +11,7 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 ### 0.1 Required Inputs
 
 - Feature root in `specs/` or `specs-refiniment/`.
-- A JSON change set with stable changed references and exact source evidence.
+- A TOON change set with stable changed references and exact source evidence.
 - Readable feature artifacts and, in full flow, canonical lifecycle state.
 
 ### 0.2 Clarification Rules
@@ -32,7 +32,7 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 - Return changed refs, stale artifacts, affected stages, blockers, and ordered
   reopen actions directly in the active agent response.
-- Before the final response, emit `ai-sdlc-handoff/v1` with `result`,
+- Before the final response, emit `ai-sdlc-handoff/v2` with `result`,
   `blockers`, `next_required`, and `next_optional`; every action includes
   `reason`, `command`, and `expected_artifact`.
 - Do not create `summary.txt`, `*-summary.txt`, or ad hoc recovery files.

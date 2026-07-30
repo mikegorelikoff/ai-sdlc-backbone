@@ -58,17 +58,17 @@ The solution separates orchestration data from execution code and separates skil
 2. Flow registry: schema-validated role, action, flow-step, and context-selector declarations.
 3. Role contracts: five source-neutral Markdown references.
 4. Flow steps: complete clarification, routing, execution, handoff, validation, and completion instructions.
-5. Per-skill step packages: `steps/manifest.json` plus prepare, execute, and validate/handoff Markdown procedures, or a more specific phase set where the skill requires it.
+5. Per-skill step packages: `steps/manifest.toon` plus prepare, execute, and validate/handoff Markdown procedures, or a more specific phase set where the skill requires it.
 6. Concise SKILL.md routers: trigger metadata, skill card, selector table, and mandatory progressive-disclosure rules.
 7. Flow entrypoint: argument parsing, repository wiring, and selected owning-skill step evidence.
 8. Documentation generator and install smoke harness.
 9. Unit, contract, integration, drift, size-budget, installation, and context-economics tests.
 
 ## Interfaces and Contracts
-DecisionCard schema id remains `ai-sdlc-flow/v2`. The skill-step manifest schema is `ai-sdlc-skill-steps/v1`; each selector contains id, path, phases, roles, actions, load rule, max_tokens, and reason. The canonical selector CLI accepts `--skill`, `--phase`, optional `--role` and `--action`, repository root, and output format. A SKILL.md router links every declared step and requires prepare before action, execute only for the selected work, and validation/handoff before completion.
+DecisionCard schema id remains `ai-sdlc-flow/v3`. The skill-step manifest schema is `ai-sdlc-skill-steps/v1`; each selector contains id, path, phases, roles, actions, load rule, max_tokens, and reason. The canonical selector CLI accepts `--skill`, `--phase`, optional `--role` and `--action`, repository root, and output format. A SKILL.md router links every declared step and requires prepare before action, execute only for the selected work, and validation/handoff before completion.
 
 ## Data Model
-Role records contain id, label, and aliases. Action records map stable action ids and codes to skills and owners. Flow selectors choose role/flow references. Skill-step manifests map a skill and selector ids to contained Markdown paths, lifecycle phases, canonical roles, optional actions, load rules, token caps, and human-readable reasons. Selection results contain selected/skipped records, token counts, manifest and selection fingerprints, and the broad per-skill baseline. Fingerprints are SHA-256 hashes of canonical JSON.
+Role records contain id, label, and aliases. Action records map stable action ids and codes to skills and owners. Flow selectors choose role/flow references. Skill-step manifests map a skill and selector ids to contained Markdown paths, lifecycle phases, canonical roles, optional actions, load rules, token caps, and human-readable reasons. Selection results contain selected/skipped records, token counts, manifest and selection fingerprints, and the broad per-skill baseline. Fingerprints are SHA-256 hashes of canonical TOON.
 
 ## Error Handling
 Reject unsupported schemas, unknown role/action/skill/phase ids, ambiguous aliases, invalid menu modes, unknown selector fields, invalid priorities/token caps/load rules, duplicate selector ids or paths, missing or unlinked step files, non-regular files, absolute paths, traversal, symlink escapes, oversized selections, and missing installed runtime modules. Errors identify the invalid field and remediation; v1 errors name the v2 migration.

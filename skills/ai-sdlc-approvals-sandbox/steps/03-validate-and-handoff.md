@@ -32,22 +32,18 @@ Quality gate:
 
 Valid request:
 
-```json
-{
-  "sandbox_permissions": "require_escalated",
-  "justification": "Allow running Go tests with a writable external cache for this package?",
-  "prefix_rule": ["go", "test", "./internal/service/..."]
-}
+```toon
+justification: Allow running Go tests with a writable external cache for this package?
+prefix_rule[3]: go,test,./internal/service/...
+sandbox_permissions: require_escalated
 ```
 
 Invalid counter-example:
 
-```json
-{
-  "sandbox_permissions": "require_escalated",
-  "justification": "Need permissions.",
-  "prefix_rule": ["python3"]
-}
+```toon
+justification: Need permissions.
+prefix_rule[1]: python3
+sandbox_permissions: require_escalated
 ```
 
 Reject this because the justification is vague and the prefix allows arbitrary scripts.

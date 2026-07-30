@@ -16,12 +16,12 @@ python3 skills/ai-sdlc-flow/scripts/flow.py explore \
   [--role software-engineer] [--action implementation] --format markdown
 ```
 
-After the contributor explicitly accepts the displayed JSON card, pass that
+After the contributor explicitly accepts the displayed TOON card, pass that
 same saved card to the separate mutation command:
 
 ```bash
 python3 skills/ai-sdlc-flow/scripts/flow.py apply \
-  --card <accepted-card.json> --execute
+  --card <accepted-card.toon> --execute
 ```
 
 Use `.agents/skills/` instead of `skills/` in a project-scoped installation.

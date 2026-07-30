@@ -10,18 +10,18 @@ Enter after execution has produced the expected artifact, code, plan, decision, 
 
 ## Output Spec
 
-The `ai-sdlc-change-set/v1` record is written as complete TOON plus JSON and contains `change_id`, `title`,
+The `ai-sdlc-change-set/v1` record is written as canonical TOON and contains `change_id`, `title`,
 `summary`, `status`, `owner`, `flow_mode`, dates, canonical targets, workspace
 artifact paths, authority rules, and `contract_fingerprint`.
 
-The `ai-sdlc-spec-delta/v1` TOON/JSON pair contains normalized operations, target
+The `ai-sdlc-spec-delta/v1` TOON record contains normalized operations, target
 and source evidence, exact source hashes, and a deterministic fingerprint.
 
-The `ai-sdlc-change-preview/v1` TOON/JSON pair contains virtual target hashes and
+The `ai-sdlc-change-preview/v1` TOON record contains virtual target hashes and
 diffs, conservative conflicts, stale references, reopen actions, gates, and a
 fingerprint that becomes invalid when any input drifts.
 
-The JSON schemas `ai-sdlc-change-approval/v1` and
+The TOON schemas `ai-sdlc-change-approval/v1` and
 `ai-sdlc-change-recovery/v1` bind a structurally valid approval record to the
 current preview and preserve transaction, backup, apply, and rollback evidence.
 They do not authenticate the named owner or prove authorization. Branch
@@ -30,7 +30,7 @@ enforced control must establish that authority before apply.
 
 Quality gate:
 
-- Pass when the workspace has every required artifact, the JSON record matches
+- Pass when the workspace has every required artifact, the TOON record matches
   the schema, paths are safe and unique, headings and metadata are complete,
   and the fingerprint recomputes exactly.
 - Fail when creation would overwrite a workspace, a target crosses a safety

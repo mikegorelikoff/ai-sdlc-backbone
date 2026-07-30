@@ -1,0 +1,21 @@
+id: high-assurance
+rules[2]:
+  - actions[1]: change.apply
+    description: Require fresh evidence and security review for canonical changes.
+    effect: require
+    id: org-high-assurance-change
+    protected: true
+    required_gates[2]: fresh-evidence,security-review
+    waivable: true
+    when[0]:
+  - actions[1]: release.publish
+    description: "Require current evidence, security review, and provenance for release."
+    effect: require
+    id: org-high-assurance-release
+    protected: true
+    required_gates[3]: fresh-evidence,security-review,signed-provenance
+    waivable: false
+    when[0]:
+schema: ai-sdlc-policy-layer/v1
+scope: organization
+version: 1.0.0

@@ -38,7 +38,7 @@ python3 .agents/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_specs_index.py \
 ```
 
 Expected outputs are top-level `specs-refiniment/payments/external-*.md`, a
-portable `specs-refiniment/payments/external-specs.json`, and refreshed
+portable `specs-refiniment/payments/external-specs.toon`, and refreshed
 refinement indexes. The manifest contains source-relative paths, destinations,
 the source Git revision when available, byte sizes, SHA-256 hashes, and a
 fingerprint. It never records the absolute source checkout path.

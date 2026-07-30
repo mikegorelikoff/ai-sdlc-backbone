@@ -1,0 +1,38 @@
+commands[12]:
+  - argv[2]: python3,skills/ai-sdlc-flow/tests/test_flow.py
+    id: flow-contracts
+    trace_ids[6]: AC-001,AC-002,AC-004,TC-001,TC-002,TC-004
+  - argv[2]: python3,skills/ai-sdlc-validation/tests/test_validation_helpers.py
+    id: validation-planner
+    trace_ids[2]: AC-006,TC-006
+  - argv[2]: python3,skills/_shared/test_each_skill_tests.py
+    id: all-skill-tests
+    trace_ids[10]: AC-001,AC-002,AC-003,AC-004,AC-006,TC-001,TC-002,TC-003,TC-004,TC-006
+  - argv[2]: python3,skills/_shared/test_all_skill_scripts.py
+    id: skill-contracts
+    trace_ids[6]: AC-001,AC-003,AC-006,TC-001,TC-003,TC-006
+  - argv[2]: python3,skills/_shared/test_modules.py
+    id: module-registry
+    trace_ids[4]: AC-002,AC-003,TC-002,TC-003
+  - argv[5]: python3,skills/_shared/ai_sdlc_compatibility.py,"--skip-git-audit","--format",toon
+    id: compatibility
+    trace_ids[4]: AC-002,AC-003,TC-002,TC-003
+  - argv[4]: python3,skills/_shared/sync_installed_runtime.py,"--check","--quick-flow"
+    id: runtime-mirrors
+    trace_ids[2]: AC-005,TC-005
+  - argv[2]: python3,docs/scripts/validate_docs.py
+    id: docs-catalog
+    trace_ids[6]: AC-002,AC-003,AC-006,TC-002,TC-003,TC-006
+  - argv[2]: python3,docs/tests/test_docs.py
+    id: docs-tests
+    trace_ids[6]: AC-002,AC-003,AC-006,TC-002,TC-003,TC-006
+  - argv[7]: python3,skills/_shared/ai_sdlc_install_smoke.py,"--source",.,"--mode",emulated,"--quick-flow"
+    id: install-smoke
+    trace_ids[6]: AC-001,AC-003,AC-006,TC-001,TC-003,TC-006
+  - argv[4]: python3,skills/ai-sdlc-sdd/scripts/validate_spec.py,specs/012-deduplicate-skill-entrypoints,"--quick-flow"
+    id: sdd-gate
+    trace_ids[2]: AC-006,TC-006
+  - argv[3]: git,diff,"--check"
+    id: diff-hygiene
+    trace_ids[2]: AC-006,TC-006
+schema: ai-sdlc-validation-command-plan/v1

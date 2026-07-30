@@ -11,7 +11,7 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 ### 0.1 Required Inputs
 
 - Versioned adapter manifest and capability request.
-- Exact portable operations, required capabilities, isolation need, and desired concurrency.
+- One complete context-ready StepCard, desired concurrency, and isolation need.
 
 ### 0.2 Clarification Rules
 
@@ -24,14 +24,15 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 - Support `--quick-flow` and `--full-flow`; full flow takes precedence.
 - Both modes use identical compatibility and fallback rules.
-- Full flow reviews every mapping, limit, fallback, and unsupported requirement.
+- Full flow reviews the StepCard, mapping, derived capability, side-effect,
+  evidence, idempotency, limit, fallback, and unsupported-requirement fields.
 
 ### 0.3 Output Rules
 
 - Default to complete TOON with mappings, missing requirements, fallbacks,
   effective limits, compatibility, source fingerprint, and result fingerprint.
 - Return summaries directly in the active agent response.
-- Emit `ai-sdlc-handoff/v1` with `result`, `blockers`, `next_required`, and
+- Emit `ai-sdlc-handoff/v2` with `result`, `blockers`, `next_required`, and
   `next_optional`; actions include `reason`, `command`, and `expected_artifact`.
 - Do not create `summary.txt`, `*-summary.txt`, or another standalone summary file.
 

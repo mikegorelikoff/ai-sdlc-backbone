@@ -1,0 +1,31 @@
+"$id": "https://github.com/mikegorelikoff/ai-sdlc-harness/schemas/ai-sdlc-change-approval-v1"
+"$schema": ai-sdlc-toon-contract/v1
+additionalProperties: false
+properties:
+  approved_gates:
+    items:
+      type: string
+    minItems: 1
+    type: array
+    uniqueItems: true
+  change_id:
+    type: string
+  decided_at:
+    format: date-time
+    type: string
+  decision:
+    const: accepted
+  decision_ref:
+    minLength: 1
+    type: string
+  owner:
+    minLength: 1
+    type: string
+  preview_fingerprint:
+    pattern: "^[a-f0-9]{64}$"
+    type: string
+  schema:
+    const: ai-sdlc-change-approval/v1
+required[8]: schema,change_id,preview_fingerprint,decision,owner,decided_at,decision_ref,approved_gates
+title: AI SDLC Change Approval
+type: object

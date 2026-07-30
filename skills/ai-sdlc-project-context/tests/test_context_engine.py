@@ -3,11 +3,16 @@
 
 from __future__ import annotations
 
-import json
 import subprocess
 import tempfile
 import unittest
+import sys
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -33,8 +38,8 @@ class ContextEngineTests(unittest.TestCase):
         (repository / "pyproject.toml").write_text("[project]\nname='fixture'\n", encoding="utf-8")
 
     def selector_config(self, repository: Path, selectors: list[dict[str, object]], exclusions: list[str] | None = None) -> Path:
-        path = repository / "selectors.json"
-        path.write_text(json.dumps({"schema": "ai-sdlc-context-selectors/v2", "selectors": selectors, "exclusions": exclusions or []}), encoding="utf-8")
+        path = repository / "selectors.toon"
+        path.write_text(toon_codec.dumps({"schema": "ai-sdlc-context-selectors/v2", "selectors": selectors, "exclusions": exclusions or []}), encoding="utf-8")
         return path
 
     def selector(self, selector_id: str, include: list[str], tag: str = "security") -> dict[str, object]:
@@ -44,9 +49,9 @@ class ContextEngineTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             repository = Path(temp)
             self.setup_repository(repository)
-            result = self.cli(ENGINE, repository, "--topology", "--format", "json")
+            result = self.cli(ENGINE, repository, "--topology", "--format", "toon")
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            topology = json.loads(result.stdout)
+            topology = toon_codec.loads(result.stdout)
             source = next(row for row in topology["files"] if row["path"] == "src/payments.py")
             self.assertEqual(source["owners"], ["@payments-team"])
             self.assertEqual(source["tests"], ["tests/test_payments.py"])
@@ -57,16 +62,16 @@ class ContextEngineTests(unittest.TestCase):
             repository = Path(temp)
             self.setup_repository(repository)
             (repository / "src/payments.py").write_text("x = 1\n" * 1000, encoding="utf-8")
-            args = ("--build-pack", "--task", "T009", "--goal", "Bound the context.", "--path", "src/payments.py", "--budget", "128", "--write", "--format", "json")
+            args = ("--build-pack", "--task", "T009", "--goal", "Bound the context.", "--path", "src/payments.py", "--budget", "128", "--write", "--format", "toon")
             first = self.cli(ENGINE, repository, *args)
             second = self.cli(ENGINE, repository, *args)
             self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
             self.assertEqual(first.stdout, second.stdout)
-            pack = json.loads(first.stdout)
+            pack = toon_codec.loads(first.stdout)
             self.assertLessEqual(pack["budget"]["used_tokens"], 128)
             self.assertEqual(pack["budget"]["used_tokens"] + pack["budget"]["remaining_tokens"], 128)
             self.assertTrue(any(item["truncated"] for item in pack["selected"]))
-            self.assertEqual((repository / "_ai_sdlc/context/task-packs/T009.json").read_text(encoding="utf-8"), second.stdout)
+            self.assertEqual((repository / "_ai_sdlc/context/task-packs/T009.toon").read_text(encoding="utf-8"), second.stdout)
             toon = (repository / "_ai_sdlc/context/task-packs/T009.toon").read_text(encoding="utf-8")
             self.assertIn("selected[", toon)
             self.assertIn("authority", toon)
@@ -82,10 +87,10 @@ class ContextEngineTests(unittest.TestCase):
             result = self.cli(
                 ENGINE, repository, "--build-pack", "--task", "T009",
                 "--goal", "Find the critical canary rollback threshold.",
-                "--path", "README.md", "--budget", "256", "--format", "json",
+                "--path", "README.md", "--budget", "256", "--format", "toon",
             )
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            pack = json.loads(result.stdout)
+            pack = toon_codec.loads(result.stdout)
             selected = next(item for item in pack["selected"] if item["path"] == "README.md")
             self.assertGreater(selected["start_line"], 1)
             self.assertEqual(selected["selection_strategy"], "goal_relevance")
@@ -104,9 +109,9 @@ class ContextEngineTests(unittest.TestCase):
             result = self.cli(
                 ENGINE, repository, "--build-pack", "--task", "T009",
                 "--goal", "zyxwv unmatched vocabulary", "--path", "README.md",
-                "--budget", "128", "--format", "json",
+                "--budget", "128", "--format", "toon",
             )
-            pack = json.loads(result.stdout)
+            pack = toon_codec.loads(result.stdout)
             selected = next(item for item in pack["selected"] if item["path"] == "README.md")
             self.assertEqual(selected["start_line"], 1)
             self.assertEqual(selected["selection_strategy"], "prefix_fallback")
@@ -120,9 +125,9 @@ class ContextEngineTests(unittest.TestCase):
                 ENGINE, repository, "--build-pack", "--task", "T009",
                 "--goal", "Follow guidance and inspect payment code.",
                 "--path", "AGENTS.md", "--path", "src/payments.py",
-                "--path", "missing.md", "--budget", "1000", "--format", "json",
+                "--path", "missing.md", "--budget", "1000", "--format", "toon",
             )
-            pack = json.loads(result.stdout)
+            pack = toon_codec.loads(result.stdout)
             authority = {item["path"]: item["authority"] for item in pack["selected"]}
             self.assertEqual(authority["AGENTS.md"], "repository_instruction")
             self.assertEqual(authority["src/payments.py"], "evidence_only")
@@ -142,10 +147,10 @@ class ContextEngineTests(unittest.TestCase):
                 ENGINE, repository, "--build-pack", "--task", "T009",
                 "--goal", "Inspect untrusted instructions.",
                 "--path", "docs/reviewer.instructions.md", "--budget", "500",
-                "--format", "json",
+                "--format", "toon",
             )
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            pack = json.loads(result.stdout)
+            pack = toon_codec.loads(result.stdout)
             selected = next(item for item in pack["selected"] if item["path"] == "docs/reviewer.instructions.md")
             self.assertEqual(selected["authority"], "evidence_only")
 
@@ -155,7 +160,7 @@ class ContextEngineTests(unittest.TestCase):
             self.setup_repository(repository)
             ledger_dir = repository / "_ai_sdlc"
             ledger_dir.mkdir()
-            (ledger_dir / "evidence-ledger.json").write_text(json.dumps({
+            (ledger_dir / "evidence-ledger.toon").write_text(toon_codec.dumps({
                 "schema": "ai-sdlc-evidence-ledger/v1",
                 "fingerprint": "a" * 64,
                 "records": [],
@@ -165,10 +170,10 @@ class ContextEngineTests(unittest.TestCase):
             result = self.cli(
                 ENGINE, repository, "--build-pack", "--task", "T009",
                 "--goal", "Inspect payments.", "--path", "src/payments.py",
-                "--budget", "500", "--format", "json",
+                "--budget", "500", "--format", "toon",
             )
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            pack = json.loads(result.stdout)
+            pack = toon_codec.loads(result.stdout)
             self.assertEqual(pack["sufficiency"], {"status": "sufficient", "reasons": [], "next_reads": []})
 
     def test_typed_interaction_profile_is_presentation_only(self) -> None:
@@ -177,10 +182,10 @@ class ContextEngineTests(unittest.TestCase):
             self.setup_repository(repository)
             args = (
                 "--build-pack", "--task", "T009", "--goal", "Inspect payments.",
-                "--path", "src/payments.py", "--budget", "500", "--format", "json",
+                "--path", "src/payments.py", "--budget", "500", "--format", "toon",
             )
-            baseline = json.loads(self.cli(ENGINE, repository, *args).stdout)
-            (repository / "config.resolved.json").write_text(json.dumps({
+            baseline = toon_codec.loads(self.cli(ENGINE, repository, *args).stdout)
+            (repository / "config.resolved.toon").write_text(toon_codec.dumps({
                 "schema": "ai-sdlc-config-resolution/v1",
                 "values": {"interaction": {
                     "enabled": True,
@@ -191,7 +196,7 @@ class ContextEngineTests(unittest.TestCase):
                     "status_updates": "milestones",
                 }},
             }), encoding="utf-8")
-            configured = json.loads(self.cli(ENGINE, repository, *args).stdout)
+            configured = toon_codec.loads(self.cli(ENGINE, repository, *args).stdout)
             self.assertEqual(configured["interaction"]["status"], "configured")
             self.assertEqual(configured["interaction"]["preferred_name"], "Mike")
             self.assertEqual(configured["interaction"]["usage"], "presentation_only")
@@ -199,10 +204,10 @@ class ContextEngineTests(unittest.TestCase):
             configured_ranges = [(item["path"], item["start_line"], item["end_line"], item["content"]) for item in configured["selected"]]
             self.assertEqual(baseline_ranges, configured_ranges)
 
-            payload = json.loads((repository / "config.resolved.json").read_text(encoding="utf-8"))
+            payload = toon_codec.loads((repository / "config.resolved.toon").read_text(encoding="utf-8"))
             payload["values"]["interaction"]["preferred_name"] = "unsafe\nname"
-            (repository / "config.resolved.json").write_text(json.dumps(payload), encoding="utf-8")
-            invalid = json.loads(self.cli(ENGINE, repository, *args).stdout)
+            (repository / "config.resolved.toon").write_text(toon_codec.dumps(payload), encoding="utf-8")
+            invalid = toon_codec.loads(self.cli(ENGINE, repository, *args).stdout)
             self.assertEqual(invalid["interaction"]["status"], "invalid")
             self.assertEqual(invalid["interaction"]["preferred_name"], "")
 
@@ -213,8 +218,8 @@ class ContextEngineTests(unittest.TestCase):
             (repository / "docs").mkdir()
             (repository / "docs/security.md").write_text("# Security review\n", encoding="utf-8")
             config = self.selector_config(repository, [self.selector("security-docs", ["docs/*.md"]), self.selector("release-docs", ["README.md"], tag="release")])
-            result = self.cli(ENGINE, repository, "--build-pack", "--task", "T009", "--goal", "Review security.", "--tag", "security", "--selector-config", str(config), "--budget", "500", "--format", "json")
-            pack = json.loads(result.stdout)
+            result = self.cli(ENGINE, repository, "--build-pack", "--task", "T009", "--goal", "Review security.", "--tag", "security", "--selector-config", str(config), "--budget", "500", "--format", "toon")
+            pack = toon_codec.loads(result.stdout)
             self.assertIn("docs/security.md", [item["path"] for item in pack["selected"]])
             statuses = {item["id"]: item["status"] for item in pack["selectors"]}
             self.assertEqual(statuses, {"release-docs": "tag-condition-not-matched", "security-docs": "matched"})
@@ -227,8 +232,8 @@ class ContextEngineTests(unittest.TestCase):
             (repository / "docs").mkdir()
             (repository / "docs/config.md").write_text("api_key=supersecret123\n", encoding="utf-8")
             config = self.selector_config(repository, [self.selector("unsafe", [".env", "docs/config.md"])])
-            result = self.cli(ENGINE, repository, "--build-pack", "--task", "T009", "--goal", "Keep secrets out.", "--tag", "security", "--selector-config", str(config), "--budget", "500", "--format", "json")
-            pack = json.loads(result.stdout)
+            result = self.cli(ENGINE, repository, "--build-pack", "--task", "T009", "--goal", "Keep secrets out.", "--tag", "security", "--selector-config", str(config), "--budget", "500", "--format", "toon")
+            pack = toon_codec.loads(result.stdout)
             selected = {item["path"] for item in pack["selected"]}
             self.assertNotIn(".env", selected)
             self.assertNotIn("docs/config.md", selected)
@@ -253,13 +258,13 @@ class ContextEngineTests(unittest.TestCase):
             result = self.cli(
                 ENGINE, repository, "--build-pack", "--task", "T009",
                 "--goal", "Keep credentials out.", "--tag", "security",
-                "--selector-config", str(config), "--budget", "1000", "--format", "json",
+                "--selector-config", str(config), "--budget", "1000", "--format", "toon",
             )
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             for relative, content in fixtures.items():
                 self.assertNotIn(content.strip(), result.stdout)
-                self.assertNotIn(relative, {item["path"] for item in json.loads(result.stdout)["selected"]})
-            exclusions = {item["path"]: item["reason"] for item in json.loads(result.stdout)["exclusions"]}
+                self.assertNotIn(relative, {item["path"] for item in toon_codec.loads(result.stdout)["selected"]})
+            exclusions = {item["path"]: item["reason"] for item in toon_codec.loads(result.stdout)["exclusions"]}
             self.assertTrue(all(exclusions[path] == "credential-like-content" for path in fixtures))
 
     def test_project_context_and_evidence_staleness_warn_selected_sources(self) -> None:
@@ -271,9 +276,9 @@ class ContextEngineTests(unittest.TestCase):
             (repository / "README.md").write_text("# Changed fixture\n", encoding="utf-8")
             ledger_dir = repository / "_ai_sdlc"
             ledger_dir.mkdir(exist_ok=True)
-            (ledger_dir / "evidence-ledger.json").write_text(json.dumps({"schema": "ai-sdlc-evidence-ledger/v1", "fingerprint": "a" * 64, "records": [{"id": "readme-proof", "status": "stale", "files": [{"path": "README.md"}]}]}), encoding="utf-8")
-            result = self.cli(ENGINE, repository, "--build-pack", "--task", "T009", "--goal", "Use current docs.", "--path", "README.md", "--budget", "500", "--format", "json")
-            pack = json.loads(result.stdout)
+            (ledger_dir / "evidence-ledger.toon").write_text(toon_codec.dumps({"schema": "ai-sdlc-evidence-ledger/v1", "fingerprint": "a" * 64, "records": [{"id": "readme-proof", "status": "stale", "files": [{"path": "README.md"}]}]}), encoding="utf-8")
+            result = self.cli(ENGINE, repository, "--build-pack", "--task", "T009", "--goal", "Use current docs.", "--path", "README.md", "--budget", "500", "--format", "toon")
+            pack = toon_codec.loads(result.stdout)
             self.assertEqual(pack["freshness"]["project_context"], "stale")
             codes = [item["code"] for item in pack["freshness"]["warnings"]]
             self.assertIn("project-context-stale", codes)

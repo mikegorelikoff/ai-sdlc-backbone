@@ -4,10 +4,15 @@
 from __future__ import annotations
 
 import hashlib
-import json
 import re
 import subprocess
+import sys
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parent
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 from typing import Any
 from ai_sdlc_safe_io import bounded_path
 
@@ -18,7 +23,7 @@ MAX_UNTRACKED_FILE_BYTES = 20_000_000
 
 
 def canonical(value: object) -> str:
-    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return toon_codec.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
 
 def workspace_fingerprint(root: Path, exclude: Path | None = None) -> str:
@@ -133,8 +138,8 @@ def declared_trace_ids(spec_dir: Path) -> set[str]:
 def validate_receipt(path: Path, root: Path) -> list[str]:
     """Validate schema, process outcomes, integrity, revision, and current diff."""
     try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+        value = toon_codec.loads(path.read_text(encoding="utf-8"))
+    except (OSError, toon_codec.ToonDecodeError) as exc:
         return [f"cannot read validation receipt: {exc}"]
     errors: list[str] = []
     if not isinstance(value, dict) or value.get("schema") != RECEIPT_SCHEMA:
@@ -143,7 +148,7 @@ def validate_receipt(path: Path, root: Path) -> list[str]:
         errors.append("validation receipt must disclose local unauthenticated evidence trust")
     if value.get("receipt_fingerprint") != receipt_fingerprint(value):
         errors.append("validation receipt fingerprint mismatch")
-    expected_plan = path.parent / "validation-plan.json"
+    expected_plan = path.parent / "validation-plan.toon"
     try:
         relative_plan = expected_plan.resolve(strict=True).relative_to(root.resolve()).as_posix()
         plan_digest = hashlib.sha256(expected_plan.read_bytes()).hexdigest()

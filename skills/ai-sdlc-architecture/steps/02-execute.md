@@ -16,8 +16,8 @@ Enter only after the prepare step passes and this skill is the selected owner fo
 ## Script Usage
 
 ```bash
-python3 skills/ai-sdlc-architecture/scripts/architecture.py specs/payments --input /tmp/architecture.json --emit --quick-flow
-python3 skills/ai-sdlc-architecture/scripts/architecture.py specs/payments --input /tmp/architecture.json --write --full-flow --format toon
+python3 skills/ai-sdlc-architecture/scripts/architecture.py specs/payments --input /tmp/architecture.toon --emit --quick-flow
+python3 skills/ai-sdlc-architecture/scripts/architecture.py specs/payments --input /tmp/architecture.toon --write --full-flow --format toon
 ```
 
 ## Purpose

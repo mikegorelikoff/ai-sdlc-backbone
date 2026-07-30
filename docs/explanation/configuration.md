@@ -23,27 +23,23 @@ depth, and progress-update cadence.
 
 For example, a local user layer can contain:
 
-```json
-{
-  "schema": "ai-sdlc-config/v1",
-  "values": {
-    "interaction": {
-      "enabled": true,
-      "preferred_name": "Sam",
-      "language": "en",
-      "response_style": "concise",
-      "technical_depth": "practitioner",
-      "status_updates": "milestones"
-    }
-  }
-}
+```toon
+schema: ai-sdlc-config/v1
+values:
+  interaction:
+    enabled: true
+    language: en
+    preferred_name: Sam
+    response_style: concise
+    status_updates: milestones
+    technical_depth: practitioner
 ```
 
 Resolve the layers normally and inspect provenance:
 
 ```bash
 python3 .agents/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_config.py \
-  --user ~/.config/ai-sdlc/config.json \
+  --user ~/.config/ai-sdlc/config.toon \
   --write-root . \
   --format toon
 ```

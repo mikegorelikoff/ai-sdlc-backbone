@@ -10,31 +10,25 @@ its dependency files first, calculate their SHA-256 digests with your approved
 local tooling, then replace every `<captured-sha256>` placeholder below.
 
 Store an `ai-sdlc-evidence-source/v1` manifest below an `evidence/` directory
-with the suffix `.evidence.json`. The record names its lifecycle subjects,
+with the suffix `.evidence.toon`. The record names its lifecycle subjects,
 producer, capture time, evidence artifact, direct dependencies, and any
 upstream evidence records.
 
-```json
-{
-  "schema": "ai-sdlc-evidence-source/v1",
-  "id": "payments-validation",
-  "kind": "validation",
-  "subjects": ["trace:payments:AC-004"],
-  "producer": "QA",
-  "captured_at": "2026-07-19T10:00:00Z",
-  "expires_at": "2026-08-19T10:00:00Z",
-  "artifact": {
-    "path": "evidence/payments-validation.txt",
-    "sha256": "<captured-sha256>"
-  },
-  "dependencies": [
-    {
-      "path": "specs/payments/requirements.md",
-      "sha256": "<captured-sha256>"
-    }
-  ],
-  "depends_on": []
-}
+```toon
+artifact:
+  path: evidence/payments-validation.txt
+  sha256: <captured-sha256>
+captured_at: "2026-07-19T10:00:00Z"
+dependencies[1]:
+  - path: specs/payments/requirements.md
+    sha256: <captured-sha256>
+depends_on[0]:
+expires_at: "2026-08-19T10:00:00Z"
+id: payments-validation
+kind: validation
+producer: QA
+schema: ai-sdlc-evidence-source/v1
+subjects[1]: trace:payments:AC-004
 ```
 
 Build the ledger using an explicit date when evidence expiry is relevant:

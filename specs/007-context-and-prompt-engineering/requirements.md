@@ -78,12 +78,12 @@ The current task-pack engine clips every selected file from line 1. Relevant evi
 ## Inputs
 - Task ID, goal, relevant paths, tags, and token budget.
 - Safe repository sources and selector configuration.
-- Optional resolved `config.resolved.json` using `ai-sdlc-config-resolution/v1`.
+- Optional resolved `config.resolved.toon` using `ai-sdlc-config-resolution/v1`.
 - Optional typed `interaction` preferences controlled by the user.
 - Primary research and official provider/product guidance accessed on 2026-07-20.
 
 ## Outputs
-- `ai-sdlc-context-pack/v3` JSON, TOON, and Markdown projections.
+- `ai-sdlc-context-pack/v3` TOON, TOON, and Markdown projections.
 - Shared context packs containing bounded personalization metadata.
 - Updated schemas, contracts, tests, generated skill reference, and public guidance.
 - SDD traceability and validation evidence for this feature.
@@ -95,7 +95,7 @@ The current task-pack engine clips every selected file from line 1. Relevant evi
 - FR-004: Repository instruction files shall be labeled `repository_instruction`; all other selected source content shall be labeled `evidence_only`.
 - FR-005: The pack shall state that evidence-only content is data, not executable instruction.
 - FR-006: The pack shall report `sufficient`, `review_required`, or `insufficient` with machine-readable reasons and targeted next reads.
-- FR-007: The shared runtime shall safely resolve an optional typed interaction profile from `config.resolved.json`: `enabled`, `preferred_name`, `language`, `response_style`, `technical_depth`, and `status_updates`.
+- FR-007: The shared runtime shall safely resolve an optional typed interaction profile from `config.resolved.toon`: `enabled`, `preferred_name`, `language`, `response_style`, `technical_depth`, and `status_updates`.
 - FR-008: Interaction preferences shall affect presentation only and shall not affect source selection, scoring, permissions, role, identity, safety, evidence requirements, or authority.
 - FR-009: Disabled, absent, or invalid preferences shall be explicit and shall not block context generation.
 - FR-010: Public documentation shall distinguish prompt engineering from context engineering and explain minimal sufficient context, clear prompt structure, authority boundaries, progressive disclosure, compaction/state, evaluation, typed personalization, control, and reset.
@@ -124,7 +124,7 @@ The current task-pack engine clips every selected file from line 1. Relevant evi
 - AC-005: Missing or unreadable requested paths yield `insufficient`; truncation, freshness warnings, or omitted high-priority evidence yield `review_required`; complete clean context yields `sufficient`.
 - AC-006: A valid enabled interaction profile appears in shared and task context packs with only supported typed fields and does not change selected sources.
 - AC-007: Disabled, missing, or invalid interaction configuration produces an explicit status, no unsafe values, and no context-generation failure.
-- AC-008: The v3 JSON schema, project-context skill contract, data-contract reference, configuration docs, and migration notes agree.
+- AC-008: The v3 TOON schema, project-context skill contract, data-contract reference, configuration docs, and migration notes agree.
 - AC-009: Public docs give copyable prompt/context and personalization patterns; they cover preferred address, language, response style, technical depth, and update cadence while explaining user control and the limits of persona prompting.
 - AC-010: Focused unit tests, repository script tests, catalog generation, docs validation, strict MkDocs build, and SDD gates pass.
 
@@ -139,7 +139,7 @@ The current task-pack engine clips every selected file from line 1. Relevant evi
 
 ## Assumptions
 - Quick flow is appropriate because changes are local, reversible, and covered by deterministic tests.
-- `config.resolved.json` is the canonical local resolved configuration when present.
+- `config.resolved.toon` is the canonical local resolved configuration when present.
 - Interaction preferences are explicit user choices, not verified identity or inferred memory.
 - A typed profile is safer, smaller, and more testable than arbitrary persistent instructions.
 - Lexical goal relevance is a transparent improvement over prefix-only clipping even though it is not semantic retrieval.

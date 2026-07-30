@@ -11,13 +11,13 @@ Enter only after the prepare step passes and this skill is the selected owner fo
 ## References
 
 - Read `references/trust-metrics-contract.md` before interpreting results.
-- Validate manifests with `references/package.schema.json`.
+- Validate manifests with `references/package.schema.toon`.
 - Use `scripts/package_trust.py` for trust and `scripts/metrics.py` for aggregation.
 
 ## Script Usage
 
 ```bash
-python3 skills/ai-sdlc-package-trust/scripts/package_trust.py . --package-root package --manifest package.json --allowed-origin repository --allowed-capability filesystem.read --require-provenance --write
+python3 skills/ai-sdlc-package-trust/scripts/package_trust.py . --package-root package --manifest package.toon --allowed-origin repository --allowed-capability filesystem.read --require-provenance --write
 python3 skills/ai-sdlc-package-trust/scripts/metrics.py . --generate --write
 ```
 
@@ -29,7 +29,7 @@ python3 skills/ai-sdlc-package-trust/scripts/metrics.py . --generate --write
 4. Emit an explainable allow or deny decision; never install the package.
 5. Aggregate local run states and evidence coverage using counts and numeric budgets only.
 6. Reject any metrics structure containing content-bearing field names.
-7. Emit deterministic TOON-first local metrics with explicit insufficient-data state.
+7. Emit deterministic canonical TOON local metrics with explicit insufficient-data state.
 
 ## Exit
 

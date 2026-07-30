@@ -1,0 +1,16 @@
+capabilities[1]: filesystem.read
+harness_api:
+  max_exclusive: 5.0.0
+  min: 4.0.0
+host: conformance-read-only
+id: read-only-host
+limits:
+  isolation: false
+  max_concurrency: 1
+operations[4]{host_operation,portable,semantics}:
+  host.analysis,step.analysis,equivalent
+  host.context,step.context,equivalent
+  host.handoff,step.handoff,equivalent
+  host.validation,step.validation,equivalent
+schema: ai-sdlc-host-adapter/v2
+version: 2.0.0

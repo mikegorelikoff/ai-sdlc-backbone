@@ -35,7 +35,7 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 - Return question, source, finding, confidence, blocker, and output path counts
   directly in the active agent response.
-- Before the final response, emit `ai-sdlc-handoff/v1` with `result`,
+- Before the final response, emit `ai-sdlc-handoff/v2` with `result`,
   `blockers`, `next_required`, and `next_optional`; every action includes
   `reason`, `command`, and `expected_artifact`.
 - Do not create `summary.txt`, `*-summary.txt`, or uncited research prose.

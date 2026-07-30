@@ -25,5 +25,5 @@ Each skill owns a bounded outcome and hands its artifacts to a named consumer.
 Do not load the complete catalog into every prompt. Read the route and exact
 skill page required for the current stage.
 
-The individual skill pages remain built and searchable but are intentionally
-absent from the primary sidebar.
+The individual skill pages remain built and directly addressable from the
+generated catalog but are intentionally absent from the primary sidebar.

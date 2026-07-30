@@ -8,7 +8,7 @@ description: Configure presentation preferences separately from enforceable deli
 The installed configuration resolver controls typed **presentation preferences**
 consumed by context packs. It does not enforce workflow rigor, approval, or
 quality gates. The policy skill is the executable control for organization and
-project delivery rules. Do not treat `config.resolved.json` as policy evidence.
+project delivery rules. Do not treat `config.resolved.toon` as policy evidence.
 
 ## Resolve presentation preferences in a consumer
 
@@ -18,12 +18,12 @@ requires it:
 
 ```bash
 python3 .agents/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_config.py \
-  --user ~/.config/ai-sdlc/config.json \
+  --user ~/.config/ai-sdlc/config.toon \
   --write-root . \
   --format toon
 ```
 
-Expected outputs are `config.resolved.json` and
+Expected outputs are `config.resolved.toon` and
 `_ai_sdlc/config-provenance.toon`. Only the validated `interaction` object is
 consumed, as presentation-only metadata, by repository context. It cannot
 change evidence selection, tool authority, flow mode, or gates. Delete the two

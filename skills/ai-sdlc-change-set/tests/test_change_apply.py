@@ -3,11 +3,16 @@
 
 from __future__ import annotations
 
-import json
 import subprocess
 import tempfile
 import unittest
+import sys
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -41,9 +46,9 @@ class ChangeApplyTests(unittest.TestCase):
 
     def approval(self, repository: Path, change_id: str = "add-audit", omit_gate: bool = False, stale: bool = False) -> Path:
         """Create approval tied to the current preview."""
-        preview = self.cli(PREVIEW, repository, "--change-id", change_id, "--preview", "--format", "json")
+        preview = self.cli(PREVIEW, repository, "--change-id", change_id, "--preview", "--format", "toon")
         self.assertEqual(preview.returncode, 0, preview.stdout + preview.stderr)
-        value = json.loads(preview.stdout)
+        value = toon_codec.loads(preview.stdout)
         gates = [item["gate"] for item in value["required_gates"]]
         if omit_gate:
             gates = gates[:-1]
@@ -57,8 +62,8 @@ class ChangeApplyTests(unittest.TestCase):
             "decision_ref": "DEC-100",
             "approved_gates": gates,
         }
-        path = repository / f"{change_id}-approval.json"
-        path.write_text(json.dumps(record), encoding="utf-8")
+        path = repository / f"{change_id}-approval.toon"
+        path.write_text(toon_codec.dumps(record), encoding="utf-8")
         return path
 
     def recovery(self, workspace: Path, target: str, *, existed: bool = False, backup: str = "") -> None:
@@ -68,8 +73,8 @@ class ChangeApplyTests(unittest.TestCase):
             "targets": [{"target": target, "existed": existed, "backup": backup, "staging": f"_ai_sdlc/staging/{target}", "before_sha256": "b" * 64, "after_sha256": "c" * 64}],
             "applied": [target], "rollback_errors": [],
         }
-        path = workspace / "_ai_sdlc/recovery-manifest.json"
-        path.write_text(json.dumps(record), encoding="utf-8")
+        path = workspace / "_ai_sdlc/recovery-manifest.toon"
+        path.write_text(toon_codec.dumps(record), encoding="utf-8")
 
     def test_approved_apply_and_archive_preserve_evidence(self) -> None:
         """Ready approved change applies once and archives complete evidence."""
@@ -81,25 +86,25 @@ class ChangeApplyTests(unittest.TestCase):
             workspace = self.create_workspace(repository, ["specs/audit/requirements.md"])
             self.add_delta(workspace, "audit.md", "specs/audit/requirements.md", "FR-010")
             approval = self.approval(repository)
-            result = self.cli(APPLY, repository, "--change-id", "add-audit", "--apply", "--approval", str(approval), "--format", "json")
+            result = self.cli(APPLY, repository, "--change-id", "add-audit", "--apply", "--approval", str(approval), "--format", "toon")
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertEqual(
-                json.loads(result.stdout)["approval_record_status"],
+                toon_codec.loads(result.stdout)["approval_record_status"],
                 "structurally_valid_identity_not_authenticated",
             )
             self.assertIn("FR-010", target.read_text(encoding="utf-8"))
-            record = json.loads((workspace / "_ai_sdlc/change-set.json").read_text(encoding="utf-8"))
+            record = toon_codec.loads((workspace / "_ai_sdlc/change-set.toon").read_text(encoding="utf-8"))
             self.assertEqual(record["status"], "applied")
-            recovery = json.loads((workspace / "_ai_sdlc/recovery-manifest.json").read_text(encoding="utf-8"))
+            recovery = toon_codec.loads((workspace / "_ai_sdlc/recovery-manifest.toon").read_text(encoding="utf-8"))
             self.assertEqual(recovery["status"], "complete")
-            self.assertTrue((workspace / "evidence/approval.json").is_file())
+            self.assertTrue((workspace / "evidence/approval.toon").is_file())
             self.assertTrue((workspace / "evidence/approval.toon").is_file())
             self.assertIn("status: complete", (workspace / "_ai_sdlc/recovery-manifest.toon").read_text(encoding="utf-8"))
-            archived = self.cli(APPLY, repository, "--change-id", "add-audit", "--archive", "--archive-date", "2026-07-19", "--format", "json")
+            archived = self.cli(APPLY, repository, "--change-id", "add-audit", "--archive", "--archive-date", "2026-07-19", "--format", "toon")
             self.assertEqual(archived.returncode, 0, archived.stdout + archived.stderr)
             archive = repository / "changes/archive/2026-07-19-add-audit"
             self.assertTrue(archive.is_dir())
-            self.assertEqual(json.loads((archive / "_ai_sdlc/change-set.json").read_text(encoding="utf-8"))["status"], "archived")
+            self.assertEqual(toon_codec.loads((archive / "_ai_sdlc/change-set.toon").read_text(encoding="utf-8"))["status"], "archived")
             self.assertIn("status: archived", (archive / "_ai_sdlc/change-set.toon").read_text(encoding="utf-8"))
             self.assertTrue((archive / "_ai_sdlc/backups/specs/audit/requirements.md").is_file())
 
@@ -118,7 +123,7 @@ class ChangeApplyTests(unittest.TestCase):
                 result = self.cli(APPLY, repository, "--change-id", "add-audit", "--apply", "--approval", str(approval))
                 self.assertEqual(result.returncode, 1)
                 self.assertEqual(target.read_bytes(), before)
-                self.assertFalse((workspace / "_ai_sdlc/recovery-manifest.json").exists())
+                self.assertFalse((workspace / "_ai_sdlc/recovery-manifest.toon").exists())
 
     def test_multi_target_failure_rolls_back_every_applied_target(self) -> None:
         """Injected partial failure restores original bytes and draft state."""
@@ -140,9 +145,9 @@ class ChangeApplyTests(unittest.TestCase):
             self.assertIn("rollback was attempted", result.stdout)
             for target_name in targets:
                 self.assertEqual((repository / target_name).read_bytes(), before[target_name])
-            manifest = json.loads((workspace / "_ai_sdlc/recovery-manifest.json").read_text(encoding="utf-8"))
+            manifest = toon_codec.loads((workspace / "_ai_sdlc/recovery-manifest.toon").read_text(encoding="utf-8"))
             self.assertEqual(manifest["status"], "rolled_back")
-            self.assertEqual(json.loads((workspace / "_ai_sdlc/change-set.json").read_text(encoding="utf-8"))["status"], "draft")
+            self.assertEqual(toon_codec.loads((workspace / "_ai_sdlc/change-set.toon").read_text(encoding="utf-8"))["status"], "draft")
 
     def test_repeat_apply_and_archive_before_apply_are_rejected(self) -> None:
         """Lifecycle transitions cannot repeat or skip prerequisites."""
@@ -174,7 +179,7 @@ class ChangeApplyTests(unittest.TestCase):
             outside.write_text("sentinel", encoding="utf-8")
             workspace = self.create_workspace(repository, ["docs/new.md"])
             self.recovery(workspace, "../outside.txt")
-            result = self.cli(APPLY, repository, "--change-id", "add-audit", "--apply", "--approval", str(repository / "missing.json"))
+            result = self.cli(APPLY, repository, "--change-id", "add-audit", "--apply", "--approval", str(repository / "missing.toon"))
             self.assertEqual(result.returncode, 1)
             self.assertEqual(outside.read_text(encoding="utf-8"), "sentinel")
             self.assertIn("not a canonical target", result.stdout)
@@ -189,7 +194,7 @@ class ChangeApplyTests(unittest.TestCase):
             workspace = self.create_workspace(repository, ["docs/new.md"])
             (repository / "docs").symlink_to(outside, target_is_directory=True)
             self.recovery(workspace, "docs/new.md")
-            result = self.cli(APPLY, repository, "--change-id", "add-audit", "--apply", "--approval", str(repository / "missing.json"))
+            result = self.cli(APPLY, repository, "--change-id", "add-audit", "--apply", "--approval", str(repository / "missing.toon"))
             self.assertEqual(result.returncode, 1)
             self.assertFalse((outside / "new.md").exists())
             self.assertIn("symlink", result.stdout)
@@ -202,7 +207,7 @@ class ChangeApplyTests(unittest.TestCase):
             target.write_text("original", encoding="utf-8")
             workspace = self.create_workspace(repository, ["docs/existing.md"])
             self.recovery(workspace, "docs/existing.md", existed=True, backup="../outside.txt")
-            result = self.cli(APPLY, repository, "--change-id", "add-audit", "--apply", "--approval", str(repository / "missing.json"))
+            result = self.cli(APPLY, repository, "--change-id", "add-audit", "--apply", "--approval", str(repository / "missing.toon"))
             self.assertEqual(result.returncode, 1)
             self.assertEqual(target.read_text(encoding="utf-8"), "original")
             self.assertIn("backup path is invalid", result.stdout)

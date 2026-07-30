@@ -12,7 +12,7 @@ artifact_metadata:
   created_at: "2026-07-21"
   updated_at: "2026-07-21"
   trace_ids: ["AC-001", "AC-002", "AC-003", "AC-004", "AC-005", "AC-006", "AC-007", "AC-008", "AC-009", "AC-010", "AC-011", "AC-012", "AC-013", "AC-014", "AC-015", "TC-002", "TC-003", "TC-006", "TC-007", "TC-008", "TC-009", "TC-011", "TC-012", "TC-015"]
-  related_artifacts: ["docs/audits/2026-07-21-production-readiness/validation-report.md", "specs/008-production-readiness-audit/_ai_sdlc/validation-plan.json"]
+  related_artifacts: ["docs/audits/2026-07-21-production-readiness/validation-report.md", "specs/008-production-readiness-audit/_ai_sdlc/validation-plan.toon"]
   validation: ["canonical validation receipt required"]
   metatags: ["ai-sdlc", "validation", "production-readiness"]
 ---
@@ -30,7 +30,7 @@ failure/recovery.
 
 ## Expected evidence
 
-Every command in `_ai_sdlc/validation-plan.json` must exit zero and map to the
+Every command in `_ai_sdlc/validation-plan.toon` must exit zero and map to the
 declared test-case identifiers. The receipt must bind the current Git `HEAD`,
 working-tree fingerprint, canonical plan path/digest, environment, byte-bounded
 output digests, and local unauthenticated trust label.

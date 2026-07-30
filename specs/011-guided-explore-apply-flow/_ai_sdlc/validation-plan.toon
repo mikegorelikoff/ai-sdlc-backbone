@@ -1,0 +1,38 @@
+commands[12]:
+  - argv[2]: python3,skills/ai-sdlc-flow/tests/test_flow.py
+    id: flow-contracts
+    trace_ids[8]: AC-001,AC-002,AC-003,AC-004,AC-005,AC-006,AC-007,AC-008
+  - argv[2]: python3,skills/ai-sdlc-navigator/tests/test_navigate.py
+    id: navigator-regression
+    trace_ids[2]: AC-001,AC-009
+  - argv[2]: python3,skills/_shared/test_all_skill_scripts.py
+    id: skill-contracts
+    trace_ids[2]: AC-009,AC-010
+  - argv[2]: python3,skills/_shared/test_each_skill_tests.py
+    id: all-skill-tests
+    trace_ids[3]: AC-008,AC-009,AC-010
+  - argv[2]: python3,skills/_shared/test_modules.py
+    id: module-registry
+    trace_ids[2]: AC-009,AC-010
+  - argv[5]: python3,skills/_shared/ai_sdlc_compatibility.py,"--skip-git-audit","--format",toon
+    id: compatibility
+    trace_ids[2]: AC-009,AC-010
+  - argv[2]: python3,docs/scripts/validate_docs.py
+    id: docs-catalog
+    trace_ids[1]: AC-010
+  - argv[2]: python3,docs/tests/test_docs.py
+    id: docs-tests
+    trace_ids[1]: AC-010
+  - argv[7]: python3,skills/_shared/ai_sdlc_install_smoke.py,"--source",.,"--mode",emulated,"--full-flow"
+    id: install-smoke
+    trace_ids[2]: AC-009,AC-010
+  - argv[9]: python3,skills/ai-sdlc-sdd/scripts/sdd_status.py,"--spec",specs/011-guided-explore-apply-flow,"--feature",011-guided-explore-apply-flow,"--full-flow","--format",toon
+    id: sdd-gate
+    trace_ids[2]: AC-010,DEC-008
+  - argv[8]: python3,skills/ai-sdlc-shared-runtime/scripts/refinement_status.py,"--feature",011-guided-explore-apply-flow,"--gate",full,"--format",toon
+    id: refinement-gate
+    trace_ids[2]: AC-010,DEC-001
+  - argv[3]: git,diff,"--check"
+    id: diff-hygiene
+    trace_ids[1]: AC-010
+schema: ai-sdlc-validation-command-plan/v1

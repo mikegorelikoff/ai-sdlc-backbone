@@ -4,13 +4,17 @@
 from __future__ import annotations
 
 import argparse
-import json
 import os
 import re
 import sys
 import tempfile
 from datetime import date
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 from typing import Any
 
 _SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
@@ -32,8 +36,8 @@ def toon(value: object) -> str:
 def load(path: Path) -> tuple[dict[str, Any], list[str]]:
     """Load architecture input safely."""
     try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+        value = toon_codec.loads(path.read_text(encoding="utf-8"))
+    except (OSError, toon_codec.ToonDecodeError) as exc:
         return {}, [f"cannot read architecture input: {exc}"]
     if not isinstance(value, dict) or value.get("schema") != SCHEMA:
         return {}, [f"input schema must be {SCHEMA}"]

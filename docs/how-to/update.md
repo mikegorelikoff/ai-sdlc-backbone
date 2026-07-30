@@ -12,14 +12,14 @@ repository.
 
 ## Consumer repository: establish the baseline
 
-Commit or preserve project work, read `.ai-sdlc/harness-install.json`, record
+Commit or preserve project work, read `.ai-sdlc/harness-install.toon`, record
 the installed inventory, and verify selected
 helper imports before updating. A failing baseline makes post-update diagnosis
 ambiguous.
 
 ```bash
 PYTHON_BIN="${PYTHON_BIN:-python3}"
-DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --json
+DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --toon
 git status --short
 "$PYTHON_BIN" .agents/skills/ai-sdlc-flow/scripts/flow.py --help
 "$PYTHON_BIN" .agents/skills/ai-sdlc-sdd/scripts/sdd_artifact_scaffold.py --help
@@ -27,13 +27,13 @@ git status --short
 
 ## Consumer repository: repair or upgrade by exact reinstall
 
-The canonical install removes the generated `skills-lock.json` because it
+The canonical install removes the generated `skills-lock.toon` because it
 contains a machine-specific temporary path. Skills CLI `1.5.19` also reports
 `No project skills to update` for this local-source mode, so `skills update` is
 not a repair or upgrade mechanism here.
 
 For a same-release repair, set `<TARGET-COMMIT>` to the revision already
-recorded in `.ai-sdlc/harness-install.json`. For an upgrade, use the reviewed
+recorded in `.ai-sdlc/harness-install.toon`. For an upgrade, use the reviewed
 immutable commit published for the target release and read its migration notes.
 Then repeat the exact-fetch install with the same selected host and the same
 selection mode. The following derives exact `--skill` arguments from the
@@ -51,7 +51,7 @@ git -C "$TARGET_SRC" remote add origin https://github.com/mikegorelikoff/ai-sdlc
 git -C "$TARGET_SRC" fetch --depth 1 origin "$TARGET_REV"
 git -C "$TARGET_SRC" checkout --detach FETCH_HEAD
 test "$(git -C "$TARGET_SRC" rev-parse HEAD)" = "$TARGET_REV"
-SELECTION=$("$PYTHON_BIN" -c 'import json; print(json.load(open(".ai-sdlc/harness-install.json"))["selection"])')
+SELECTION=$("$PYTHON_BIN" -c 'import toon; print(toon.load(open(".ai-sdlc/harness-install.toon"))["selection"])')
 if test "$SELECTION" = all-skills; then
   cp "$TARGET_SRC/config/ai-sdlc-managed-skills.txt" "$TARGET_TMP/target-managed-skills.txt"
 else
@@ -63,7 +63,7 @@ set --
 while IFS= read -r skill; do set -- "$@" --skill "$skill"; done < "$TARGET_TMP/target-managed-skills.txt"
 DISABLE_TELEMETRY=1 npx -y skills@1.5.19 add "$TARGET_SRC" "$@" --agent codex -y
 git status --short
-DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --json
+DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --toon
 comm -23 "$TARGET_TMP/previous-managed-skills.txt" "$TARGET_TMP/target-managed-skills.txt" > "$TARGET_TMP/retired-managed-skills.txt"
 cat "$TARGET_TMP/retired-managed-skills.txt"
 cp "$TARGET_TMP/retired-managed-skills.txt" .ai-sdlc/retired-managed-skills.txt
@@ -77,9 +77,9 @@ upgrade:
 
 ```bash
 cp "$TARGET_TMP/target-managed-skills.txt" .ai-sdlc/harness-managed-skills.txt
-printf '{"schema":"ai-sdlc-install-record/v1","revision":"%s","skills_cli":"1.5.19","agent":"codex","selection":"%s","inventory":".ai-sdlc/harness-managed-skills.txt"}\n' "$TARGET_REV" "$SELECTION" > .ai-sdlc/harness-install.json
+printf 'agent: codex\ninventory: .ai-sdlc/harness-managed-skills.txt\nrevision: %s\nschema: ai-sdlc-install-record/v1\nselection: %s\nskills_cli: 1.5.19\n' "$TARGET_REV" "$SELECTION" > .ai-sdlc/harness-install.toon
 "$PYTHON_BIN" .agents/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py
-rm skills-lock.json
+rm skills-lock.toon
 rm -rf "$TARGET_TMP"
 rm .ai-sdlc/harness-update-in-progress
 git status --short
@@ -114,7 +114,7 @@ behavior.
 ## Promote the same revision across environments
 
 Use the project-scoped installation commit,
-`.ai-sdlc/harness-install.json`, and
+`.ai-sdlc/harness-install.toon`, and
 `.ai-sdlc/harness-managed-skills.txt` as the team baseline. In each
 environment, fetch the recorded harness revision, use the same pinned Skills
 CLI and explicit host, reinstall the recorded selection, validate the install

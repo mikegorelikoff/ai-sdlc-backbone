@@ -23,11 +23,12 @@ A handoff explains what should happen next; a runtime records whether bounded
 work actually started and how it ended. Versioned run plans define task
 dependencies, input identity, retry limits, budgets, and commit boundaries.
 
-The runtime appends hash-chained JSONL transition events before replacing exact
-JSON recovery state and its complete TOON agent view. If a process stops between
-those writes, replay repairs both projections from the journal. Repeating task
-selection returns the already-running task, and repeating identical completion
-evidence does not create another event.
+The runtime appends one hash-chained TOON event under
+`journal/<sequence>.toon` before atomically replacing the replay-derived
+`state.toon`. If a process stops between those writes, replay repairs the state
+projection from the immutable plan and journal. Repeating task selection
+returns the already-running task, and repeating identical completion evidence
+does not create another event.
 
 Ready tasks require all dependencies to have succeeded. Steps, failures, and
 recorded tokens have separate budgets and stop reasons. Blocked work pauses with
@@ -39,10 +40,16 @@ Runtime state is intentionally host-neutral. It does not execute commands or
 create commits; later workflow and adapter layers perform those actions and
 return exact evidence to the journaled state machine.
 
-Declarative workflow planning validates typed steps and capabilities, evaluates
-bounded conditions, preserves approval gates and hooks, and compiles dependency
-waves. Parallel waves exist only when isolation and host concurrency are
-explicit; otherwise the handoff carries sequential waves and reason-coded
-fallbacks.
+Declarative workflow planning validates skill nodes and their canonical
+entrypoints, evaluates bounded conditions, preserves explicit approval owners,
+and compiles each eligible skill graph into one runtime-compatible plan.
+Dependency waves are deterministic views bounded by requested concurrency;
+the embedded task graph remains sequentially safe.
+
+Every cross-component handoff carries the same StepCard identity, operation,
+capabilities, side-effect class, gates, outputs, context decision, evidence
+requirements, idempotency scope, and fingerprints. A host adapter may map those
+semantics to a native operation or a registered equivalent fallback, but it
+cannot weaken an approval, context, or evidence boundary.
 
 Handoffs keep delivery continuous across roles, assistants, sessions, and context compaction without turning the conversation transcript into a dependency.

@@ -14,7 +14,7 @@ artifact_metadata:
   created_at: "2026-07-21"
   updated_at: "2026-07-21"
   trace_ids: ["T009", "AC-015", "TC-015"]
-  related_artifacts: ["specs/008-production-readiness-audit/commit-readiness.md", "specs/008-production-readiness-audit/_ai_sdlc/validation-receipt.json"]
+  related_artifacts: ["specs/008-production-readiness-audit/commit-readiness.md", "specs/008-production-readiness-audit/_ai_sdlc/validation-receipt.toon"]
   validation: ["Conventional Commit validator with traceability required"]
   metatags: ["ai-sdlc", "implementation", "ai-sdlc-conventional-commit", "commit-message", "validated"]
 ---

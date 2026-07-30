@@ -10,8 +10,8 @@ Enter only after the prepare step passes and this skill is the selected owner fo
 
 ## References
 
-- Use `scripts/run_validation.py` to execute a human-reviewed JSON argv plan
-  without a shell and write `_ai_sdlc/validation-receipt.json` containing actual
+- Use `scripts/run_validation.py` to execute a human-reviewed TOON argv plan
+  without a shell and write `_ai_sdlc/validation-receipt.toon` containing actual
   exit codes, revision/diff identity, environment, duration, and output digests.
   The runner rejects executable paths, Python `-c`, mutating Git, and unbounded
   downloader/build command families, but repository test/scripts still execute
@@ -20,7 +20,7 @@ Enter only after the prepare step passes and this skill is the selected owner fo
   neither authenticated execution nor human approval; protected CI is the
   independent source when that assurance is required. A receipt also does not
   prove that the tests express the right requirement.
-  Store the reviewed plan as `_ai_sdlc/validation-plan.json` beside the receipt;
+  Store the reviewed plan as `_ai_sdlc/validation-plan.toon` beside the receipt;
   the receipt binds its path and digest. The runner requires a valid Git `HEAD`,
   streams bounded output (10 MB total by default), and terminates a noisy or
   timed-out process group rather than retaining unbounded output in memory.

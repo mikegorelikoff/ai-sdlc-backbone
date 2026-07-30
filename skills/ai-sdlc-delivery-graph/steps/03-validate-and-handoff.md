@@ -12,13 +12,13 @@ Enter after execution has produced the expected artifact, code, plan, decision, 
 
 The graph contains sorted nodes, edges, gaps, orphans, coverage counters, source
 hashes, and fingerprints. Rebuilding identical inputs produces byte-identical
-TOON, JSON, and Markdown. `requirement_declarations` inventories FR, NFR, AC,
+TOON, TOON, and Markdown. `requirement_declarations` inventories FR, NFR, AC,
 REQ, story, workflow, and rule nodes. Actionable missing-task/test gaps and
 coverage counters apply only to explicitly declared leaf `AC-###` nodes because
 SDD tasks and tests trace acceptance criteria. Inferred references and parent requirements remain visible for explicit
 paths and orphan review rather than inflating leaf coverage.
 
-The TOON/JSON evidence ledger contains recalculated file identities, resolved subjects,
+The canonical TOON evidence ledger contains recalculated file identities, resolved subjects,
 freshness states, reason codes, upstream state, stale paths, and fresh-only
 requirement coverage.
 

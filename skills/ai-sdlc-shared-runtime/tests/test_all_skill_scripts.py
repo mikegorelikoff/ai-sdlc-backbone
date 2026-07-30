@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import os
 import importlib.util
-import json
 import py_compile
 import re
 import subprocess
@@ -19,6 +18,11 @@ import tempfile
 import textwrap
 import unittest
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
@@ -38,10 +42,10 @@ README = ROOT / "README.md"
 def skill_contract_text(skill_doc: Path) -> str:
     """Return the concise router plus its manifest-ordered normative steps."""
     text = skill_doc.read_text(encoding="utf-8")
-    manifest_path = skill_doc.parent / "steps" / "manifest.json"
-    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    for selector in manifest["selectors"]:
-        text += "\n\n" + (skill_doc.parent / selector["path"]).read_text(
+    manifest_path = skill_doc.parent / "steps" / "manifest.toon"
+    manifest = toon_codec.loads(manifest_path.read_text(encoding="utf-8"))
+    for step in manifest["steps"]:
+        text += "\n\n" + (skill_doc.parent / step["path"]).read_text(
             encoding="utf-8"
         )
     return text
@@ -425,11 +429,22 @@ class ScriptContractTests(unittest.TestCase):
             cwd = Path(temp_dir)
             source = cwd / "input.md"
             source.write_text("# Input\n\nREQ-001: Keep technical selection stable.\n", encoding="utf-8")
-            (cwd / "config.resolved.json").write_text(
-                '{"schema":"ai-sdlc-config-resolution/v1","values":{"interaction":'
-                '{"enabled":true,"preferred_name":"Mike","language":"en",'
-                '"response_style":"concise","technical_depth":"practitioner",'
-                '"status_updates":"milestones"}}}',
+            (cwd / "config.resolved.toon").write_text(
+                toon_codec.dumps(
+                    {
+                        "schema": "ai-sdlc-config-resolution/v1",
+                        "values": {
+                            "interaction": {
+                                "enabled": True,
+                                "preferred_name": "Mike",
+                                "language": "en",
+                                "response_style": "concise",
+                                "technical_depth": "practitioner",
+                                "status_updates": "milestones",
+                            }
+                        },
+                    }
+                ),
                 encoding="utf-8",
             )
             output = emit_context_pack(
@@ -439,8 +454,13 @@ class ScriptContractTests(unittest.TestCase):
             )
             self.assertIn("true,configured,Mike,en,concise,practitioner,milestones,presentation_only", output)
 
-            (cwd / "config.resolved.json").write_text(
-                '{"schema":"ai-sdlc-config-resolution/v1","values":{"interaction":{"enabled":false}}}',
+            (cwd / "config.resolved.toon").write_text(
+                toon_codec.dumps(
+                    {
+                        "schema": "ai-sdlc-config-resolution/v1",
+                        "values": {"interaction": {"enabled": False}},
+                    }
+                ),
                 encoding="utf-8",
             )
             disabled = emit_context_pack(

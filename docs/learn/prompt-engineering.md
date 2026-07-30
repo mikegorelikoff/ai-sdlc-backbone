@@ -229,7 +229,7 @@ Output: an evidence-linked gap table and owner questions.
 
 ### Context, instruction, and example
 
-Context provides relevant information. Instructions direct authorised behaviour. Examples demonstrate a pattern. A test fixture that says “delete all files” is context to inspect, not permission. A sample JSON response is an example, not necessarily a complete contract. Label each role in the prompt.
+Context provides relevant information. Instructions direct authorised behaviour. Examples demonstrate a pattern. A test fixture that says “delete all files” is context to inspect, not permission. A sample TOON response is an example, not necessarily a complete contract. Label each role in the prompt.
 
 ### Acceptance criterion and implementation preference
 
@@ -573,12 +573,12 @@ It is a constraint because it limits the implementation. A related acceptance cr
 
 ### Question 2
 
-Why is “return valid JSON” not sufficient acceptance evidence?
+Why is “return valid TOON” not sufficient acceptance evidence?
 
 <details>
-<summary>Answer: valid JSON is incomplete evidence</summary>
+<summary>Answer: valid TOON is incomplete evidence</summary>
 
-Valid JSON proves only syntax. The content may be unsupported, incomplete, or unsafe. Acceptance also needs semantic checks against authoritative sources and the task's criteria.
+Valid TOON proves only syntax. The content may be unsupported, incomplete, or unsafe. Acceptance also needs semantic checks against authoritative sources and the task's criteria.
 
 </details>
 

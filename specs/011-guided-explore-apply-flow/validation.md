@@ -46,8 +46,8 @@ artifact_metadata:
     - "TC-019"
     - "TC-020"
   related_artifacts:
-    - "specs/011-guided-explore-apply-flow/_ai_sdlc/validation-plan.json"
-    - "specs/011-guided-explore-apply-flow/_ai_sdlc/validation-receipt.json"
+    - "specs/011-guided-explore-apply-flow/_ai_sdlc/validation-plan.toon"
+    - "specs/011-guided-explore-apply-flow/_ai_sdlc/validation-receipt.toon"
     - "specs/011-guided-explore-apply-flow/requirements.md"
     - "specs/011-guided-explore-apply-flow/test-cases.md"
   validation:
@@ -81,7 +81,7 @@ Passed. The reviewed argv-only plan executed 12 focused and repository-level che
 - Full 18-stage refinement gate passed with zero blockers and warnings.
 - `git diff --check` passed.
 
-Machine-verifiable command hashes, byte counts, exit codes, environment, revision, plan hash, and workspace fingerprint are recorded in `_ai_sdlc/validation-receipt.json`.
+Machine-verifiable command hashes, byte counts, exit codes, environment, revision, plan hash, and workspace fingerprint are recorded in `_ai_sdlc/validation-receipt.toon`.
 
 ## Manual Checks
 

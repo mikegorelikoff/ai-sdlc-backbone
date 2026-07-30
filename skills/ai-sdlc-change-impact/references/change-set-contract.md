@@ -1,6 +1,6 @@
 # Change Set Contract
 
-The input is a UTF-8 JSON object using schema `ai-sdlc-change-set/v1` with a
+The input is a UTF-8 TOON object using schema `ai-sdlc-change-set/v1` with a
 non-empty `changes` array. Every change requires:
 
 - unique `id`, such as `CHG-001`;
@@ -11,19 +11,13 @@ non-empty `changes` array. Every change requires:
 
 Example:
 
-```json
-{
-  "schema": "ai-sdlc-change-set/v1",
-  "changes": [
-    {
-      "id": "CHG-001",
-      "changed_ref": "AC-004",
-      "source": {
-        "path": "requirements.md",
-        "line": 121,
-        "detail": "Retry behavior is now mandatory."
-      }
-    }
-  ]
-}
+```toon
+changes[1]:
+  - changed_ref: AC-004
+    id: CHG-001
+    source:
+      detail: Retry behavior is now mandatory.
+      line: 121
+      path: requirements.md
+schema: ai-sdlc-change-set/v1
 ```

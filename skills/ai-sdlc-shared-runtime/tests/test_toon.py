@@ -4,8 +4,14 @@
 from __future__ import annotations
 
 import unittest
+import sys
+from pathlib import Path
 
-from ai_sdlc_toon import encode_toon
+SCRIPT_DIR = Path(__file__).resolve().parents[1] / "scripts"
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+from ai_sdlc_toon import ToonDecodeError, decode_toon, encode_toon
 
 
 class ToonTests(unittest.TestCase):
@@ -41,6 +47,32 @@ class ToonTests(unittest.TestCase):
         self.assertEqual(encode_toon({"values": ["", " true ", "null", "1", "-item"]}), 'values[5]: ""," true ","null","1","-item"\n')
         with self.assertRaises(ValueError):
             encode_toon({"bad": float("nan")})
+
+    def test_round_trip_covers_empty_and_nested_containers(self) -> None:
+        values = (
+            {},
+            [],
+            {"empty_mapping": {}, "empty_list": []},
+            [{"nested": [[], {}, {"value": "stable"}]}],
+        )
+        for value in values:
+            with self.subTest(value=value):
+                rendered = encode_toon(value)
+                self.assertEqual(decode_toon(rendered), value)
+                self.assertEqual(encode_toon(decode_toon(rendered)), rendered)
+
+    def test_decoder_rejects_malformed_or_ambiguous_input(self) -> None:
+        invalid = (
+            "",
+            "items[2]: one\n",
+            "key: first\nkey: second\n",
+            "root:\n   child: odd-indent\n",
+            'value: "unterminated\n',
+        )
+        for value in invalid:
+            with self.subTest(value=value):
+                with self.assertRaises(ToonDecodeError):
+                    decode_toon(value)
 
 
 if __name__ == "__main__":

@@ -3,11 +3,16 @@
 
 from __future__ import annotations
 
-import json
 import subprocess
 import tempfile
 import unittest
+import sys
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -41,7 +46,7 @@ class ChangeSetTests(unittest.TestCase):
             "--date", "2026-07-19",
             "--create",
             "--full-flow",
-            "--format", "json",
+            "--format", "toon",
         )
 
     def test_create_writes_complete_isolated_workspace(self) -> None:
@@ -57,12 +62,12 @@ class ChangeSetTests(unittest.TestCase):
             workspace = repository / "changes/add-session-timeout"
             required = {
                 "proposal.md", "design.md", "tasks.md", "deltas/index.md",
-                "evidence/index.md", "_ai_sdlc/change-set.json", "_ai_sdlc/change-set.toon",
+                "evidence/index.md", "_ai_sdlc/change-set.toon", "_ai_sdlc/change-set.toon",
                 "index.md",
             }
             self.assertEqual(required, {path.relative_to(workspace).as_posix() for path in workspace.rglob("*") if path.is_file()})
             self.assertEqual(target.read_bytes(), before)
-            record = json.loads((workspace / "_ai_sdlc/change-set.json").read_text(encoding="utf-8"))
+            record = toon_codec.loads((workspace / "_ai_sdlc/change-set.toon").read_text(encoding="utf-8"))
             self.assertEqual(record["schema"], "ai-sdlc-change-set/v1")
             self.assertFalse(record["authority"]["canonical_mutation_allowed"])
             self.assertEqual(record["canonical_targets"], ["docs/security.md", "specs/auth/requirements.md"])
@@ -81,7 +86,7 @@ class ChangeSetTests(unittest.TestCase):
                 "--owner", "Security",
                 "--target", "specs/auth/requirements.md",
                 "--date", "2026-07-19",
-                "--emit", "--quick-flow", "--format", "json",
+                "--emit", "--quick-flow", "--format", "toon",
             )
             first = self.run_cli(repository, *args)
             second = self.run_cli(repository, *args)
@@ -127,10 +132,10 @@ class ChangeSetTests(unittest.TestCase):
             created = self.create(repository)
             self.assertEqual(created.returncode, 0, created.stdout + created.stderr)
             workspace = repository / "changes/add-session-timeout"
-            record_path = workspace / "_ai_sdlc/change-set.json"
-            record = json.loads(record_path.read_text(encoding="utf-8"))
+            record_path = workspace / "_ai_sdlc/change-set.toon"
+            record = toon_codec.loads(record_path.read_text(encoding="utf-8"))
             record["owner"] = "Unknown"
-            record_path.write_text(json.dumps(record), encoding="utf-8")
+            record_path.write_text(toon_codec.dumps(record), encoding="utf-8")
             result = self.run_cli(repository, "--change-id", "add-session-timeout", "--validate")
             self.assertEqual(result.returncode, 1)
             self.assertIn("contract_fingerprint is stale", result.stdout)

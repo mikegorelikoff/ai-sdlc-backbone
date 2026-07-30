@@ -6,12 +6,16 @@ from __future__ import annotations
 import argparse
 import difflib
 import hashlib
-import json
 import os
 import re
 import sys
 import tempfile
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 from typing import Any
 
 from spec_delta import analyze_delta_set, semantic_fingerprint
@@ -114,13 +118,13 @@ def concurrent_conflicts(repository: Path, change_id: str, operations: list[dict
     """Find other validated active deltas touching the same requirement."""
     keys = {(item["target"], item["requirement_id"]) for item in operations}
     conflicts: list[dict[str, str]] = []
-    for path in sorted((repository / "changes").glob("*/_ai_sdlc/delta-set.json")):
+    for path in sorted((repository / "changes").glob("*/_ai_sdlc/delta-set.toon")):
         other_id = path.parents[1].name
         if other_id == change_id:
             continue
         try:
-            value = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
+            value = toon_codec.loads(path.read_text(encoding="utf-8"))
+        except (OSError, toon_codec.ToonDecodeError):
             continue
         if value.get("status") != "validated":
             continue
@@ -244,7 +248,7 @@ def main() -> int:
     parser.add_argument("--change-id", required=True)
     parser.add_argument("--preview", action="store_true", required=True)
     parser.add_argument("--write", action="store_true")
-    parser.add_argument("--format", choices=("markdown", "json", "toon"), default="toon")
+    parser.add_argument("--format", choices=("markdown", "toon"), default="toon")
     parser.add_argument("--quick-flow", action="store_true")
     parser.add_argument("--full-flow", action="store_true")
     parser.add_argument("--feature", default="<feature-name>")
@@ -276,16 +280,13 @@ def main() -> int:
     if args.write:
         try:
             workspace = bounded_path(repository, repository / "changes" / args.change_id)
-            atomic_write(workspace, workspace / "_ai_sdlc/apply-preview.json", json.dumps(record, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
             atomic_write(workspace, workspace / "_ai_sdlc/apply-preview.toon", encode_toon(record))
             atomic_write(workspace, workspace / "apply-preview.md", preview_markdown)
             write_bundle_indexes(workspace)
         except ValueError as exc:
             print(f"ERROR: {exc}")
             return 1
-    if args.format == "json":
-        print(json.dumps(record, indent=2, sort_keys=True, ensure_ascii=False))
-    elif args.format == "toon":
+    if args.format == "toon":
         print(render_toon(record), end="")
     else:
         print(preview_markdown, end="")

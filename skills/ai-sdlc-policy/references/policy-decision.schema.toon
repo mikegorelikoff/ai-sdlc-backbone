@@ -1,0 +1,42 @@
+"$id": "https://github.com/mikegorelikoff/ai-sdlc-harness/schemas/ai-sdlc-policy-decision-v1"
+"$schema": ai-sdlc-toon-contract/v1
+additionalProperties: false
+properties:
+  action:
+    type: string
+  as_of:
+    format: date-time
+    type: string
+  context_fingerprint:
+    pattern: "^[a-f0-9]{64}$"
+    type: string
+  fingerprint:
+    pattern: "^[a-f0-9]{64}$"
+    type: string
+  matched_rules:
+    items:
+      type: object
+    type: array
+  policy_fingerprint:
+    pattern: "^[a-f0-9]{64}$"
+    type: string
+  reason_codes:
+    items:
+      type: string
+    type: array
+  required_gates:
+    items:
+      type: string
+    type: array
+    uniqueItems: true
+  result:
+    enum[3]: allow,require,deny
+  schema:
+    const: ai-sdlc-policy-decision/v1
+  waivers:
+    items:
+      type: object
+    type: array
+required[11]: schema,action,as_of,result,required_gates,reason_codes,matched_rules,waivers,policy_fingerprint,context_fingerprint,fingerprint
+title: AI SDLC Policy Decision
+type: object

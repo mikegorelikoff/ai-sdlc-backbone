@@ -87,7 +87,7 @@ smallest safe next action, expected artifact, blockers, and fingerprint.
 Request: add a health endpoint.
 ```
 
-Expected: a grounded `ai-sdlc-handoff/v1` response and no working-tree change.
+Expected: a grounded `ai-sdlc-handoff/v2` response and no working-tree change.
 Confirm with `git status --short` in a terminal. Stop if the skill is not found,
 the agent opens the wrong repository, or any file changes during this read-only
 step.

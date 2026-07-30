@@ -7,15 +7,15 @@ description: Human-facing operating guide for ai-sdlc-workflow, including inputs
 
 | Lifecycle position | Primary owner | Supporting roles | Module | Output |
 | --- | --- | --- | --- | --- |
-| Controlled execution planning | Delivery, Dev | QA, Security, Architecture | `core` | `_ai_sdlc/workflows/<workflow-id>/plan.{toon,json,md}` |
+| Controlled execution planning | Delivery, Dev | QA, Security, Architecture | `core` | `workflow-plan.toon`, `run-plan.toon`, and `plan.md` below `_ai_sdlc/workflows/<workflow-id>/` |
 
 ## Why it exists
 
-Compile portable workflow intent into deterministic, gated, host-safe waves.
+Compile portable workflow intent into deterministic, gated skill waves and one immutable runtime plan.
 
 ## Use it when
 
-AI SDLC declarative workflow planning. Use when an AI assistant needs to validate a versioned workflow, plan typed dependency steps, evaluate bounded conditions, enforce approval gates, attach deterministic hooks, detect cycles, or create safe dependency waves with sequential fallback when host concurrency or isolation is unavailable. Supports `--quick-flow` and `--full-flow`.
+AI SDLC declarative workflow planning. Use when an AI assistant needs to validate a versioned workflow of canonical skill entrypoints, evaluate bounded conditions, enforce explicit approval owners, detect dependency cycles, compile deterministic waves, or produce one runtime-compatible run plan without executing it. Supports `--quick-flow` and `--full-flow`.
 
 If the correct entry point is still unclear, use `ai-sdlc-flow` Explore first instead of guessing.
 
@@ -32,9 +32,10 @@ The summary table above names the primary and supporting human roles for this ca
 
 ## Before you start
 
-- Versioned workflow JSON, declared capabilities, typed steps, dependencies,
-  bounded conditions, approval gates, and deterministic hook declarations.
-- Optional JSON context and explicit host concurrency/isolation capabilities.
+- Versioned workflow TOON whose nodes name installed skills, canonical
+  entrypoints, dependencies, bounded conditions, and approval owners.
+- Optional TOON condition context, requested concurrency, and explicit approved
+  node IDs.
 
 ## Tell your agent
 
@@ -43,8 +44,8 @@ Use ai-sdlc-workflow for <target>.
 Choose --quick-flow for bounded assumption-driven progress or --full-flow
 for strict verification only as described below.
 Read the required evidence,
-produce or report `_ai_sdlc/workflows/<workflow-id>/plan.{toon,json,md}`, preserve human approval boundaries,
-and return blockers plus a complete ai-sdlc-handoff/v1.
+produce or report `workflow-plan.toon`, `run-plan.toon`, and `plan.md` below `_ai_sdlc/workflows/<workflow-id>/`, preserve human approval boundaries,
+and return blockers plus a complete ai-sdlc-handoff/v2.
 ```
 
 This is an agent instruction, not a shell command. Terminal commands belong in the helper section.
@@ -52,9 +53,9 @@ This is an agent instruction, not a shell command. Terminal commands belong in t
 ## What the agent reads
 
 - Exact workflow identity and version.
-- Declared capability set and typed steps.
+- Canonical skill, entrypoint, role, and action for each node.
 - Optional bounded condition context.
-- Explicit host concurrency and isolation support.
+- Requested planning concurrency and explicit approved node IDs.
 
 ## What it may write
 
@@ -64,28 +65,32 @@ This is an agent instruction, not a shell command. Terminal commands belong in t
 
 ## Human checkpoints
 
-- Ask when an action, approval owner, or required capability is missing.
-- Reject unknown fields, undeclared capabilities, cycles, unsafe identifiers,
-  invalid conditions, and hooks without exact targets.
-- Never infer approval, shell authority, network authority, or safe isolation.
+- Ask when a target skill, entrypoint, action, role, or approval owner is
+  materially ambiguous.
+- Reject unknown fields, cycles, unsafe identifiers, invalid conditions, and
+  missing canonical skill graphs.
+- Never infer approval, shell authority, network authority, or host execution.
 
 Humans accept or reject material product, security, QA, policy, rollout, release, and destructive-action decisions; a complete agent handoff is evidence, not approval.
 
 ## Flow modes
 
 - Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Both modes use identical validation, cycle, capability, and fallback rules.
-- Full flow requires review of every skipped/deferred condition, gate, hook, and fallback.
+- Both modes use identical validation, cycle, condition, approval, and
+  compilation rules.
+- Full flow requires review of every skipped, deferred, or blocked node.
 
 ## Procedural step selectors
 
 The router loads these skill-owned procedures just in time. Read only the selector matching the current phase, active role, and action; a selected step is normative and an unselected step stays out of context.
 
-| Selector | Phases | Roles | Load rule | Step | Reason |
-| --- | --- | --- | --- | --- | --- |
-| `prepare` | `prepare`, `clarify`, `route` | `product-manager`, `software-engineer` | `required` | [`steps/01-prepare.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-workflow/steps/01-prepare.md) | establish inputs, authority, lifecycle state, and safe artifact routing |
-| `execute` | `execute` | `product-manager`, `software-engineer` | `on-demand` | [`steps/02-execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-workflow/steps/02-execute.md) | perform only the selected owning-skill procedure |
-| `validate-and-handoff` | `validate`, `handoff`, `complete` | `product-manager`, `software-engineer` | `before-completion` | [`steps/03-validate-and-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-workflow/steps/03-validate-and-handoff.md) | verify outputs and return an explicit evidence-backed handoff |
+| Selector | Type | Phases | Roles | Dependencies | Operation | Side effect | Load rule | Step | Reason |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `preflight` | `analysis` | `prepare` | `product-manager`, `software-engineer` | none | `inspect-and-route` | `none` | `required` | [`steps/01-prepare.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-workflow/steps/01-prepare.md) | establish inputs, authority, lifecycle state, and safe artifact routing |
+| `context` | `context` | `clarify`, `route` | `product-manager`, `software-engineer` | `preflight` | `compile-context` | `none` | `required` | [`steps/02-context.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-workflow/steps/02-context.md) | compile the minimum sufficient context before the owning action |
+| `execute` | `action` | `execute` | `product-manager`, `software-engineer` | `context` | `execute-procedure` | `workspace-write` | `on-demand` | [`steps/02-execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-workflow/steps/02-execute.md) | perform only the selected owning-skill procedure |
+| `validate` | `validation` | `validate` | `product-manager`, `software-engineer` | `execute` | `validate-evidence` | `none` | `before-completion` | [`steps/03-validate-and-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-workflow/steps/03-validate-and-handoff.md) | validate outputs, evidence, acceptance, and residual risk |
+| `handoff` | `handoff` | `handoff`, `complete` | `product-manager`, `software-engineer` | `validate` | `handoff-result` | `none` | `before-completion` | [`steps/04-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-workflow/steps/04-handoff.md) | return a journal-backed owner and next-action handoff |
 
 Resolve the current step with `ai-sdlc-shared-runtime/scripts/ai_sdlc_steps.py`. A missing, unsafe, oversized, or unmatched step is a blocker rather than permission to broad-load the package.
 
@@ -95,44 +100,47 @@ Paths beginning with `skills/` below are canonical **source-checkout** forms for
 
 | Helper | Purpose | Direct starting point | Repository effect |
 | --- | --- | --- | --- |
-| [`workflow.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-workflow/scripts/workflow.py) | Validate and plan declarative, gated, host-safe delivery workflows. | `python3 skills/ai-sdlc-workflow/scripts/workflow.py --help` | May write only through an explicit mutation mode; start with `--help`, check, preview, or emit. |
+| [`workflow.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-workflow/scripts/workflow.py) | Validate and compile v2 workflows from canonical skill-step graphs. | `python3 skills/ai-sdlc-workflow/scripts/workflow.py --help` | May write only through an explicit mutation mode; start with `--help`, check, preview, or emit. |
 
 The owning agent normally runs these helpers. A human uses the direct starting point for diagnosis or reproduction after inspecting `--help` and repository policy.
 
 ### Contract-provided usage
 
 ```bash
-python3 skills/ai-sdlc-workflow/scripts/workflow.py . --workflow workflow.json --validate --format toon
-python3 skills/ai-sdlc-workflow/scripts/workflow.py . --workflow workflow.json --plan --context context.json --concurrency 4 --isolation-supported --write
+python3 skills/ai-sdlc-workflow/scripts/workflow.py . --workflow workflow.toon --validate --format toon
+python3 skills/ai-sdlc-workflow/scripts/workflow.py . --workflow workflow.toon --plan --context context.toon --concurrency 4 --approved-node release --write
 ```
 
 ## Success criteria
 
-The plan records every step as eligible, skipped, or deferred; selected waves;
-approval gates; hooks; fallback reason codes; source and plan fingerprints; and
-explicit host capabilities.
+The plan records every node as eligible, skipped, deferred, or blocked;
+selected waves; explicit approvals; derived capabilities and side effects;
+source fingerprints; and the embedded runtime plan.
 
 Quality gate:
 
-- Pass when the workflow is acyclic, capabilities are declared, conditions are
-  bounded, hook targets resolve, and every planned parallel step is isolated.
+- Pass when the workflow is acyclic, every referenced skill graph validates,
+  conditions are bounded, approval gates are satisfied, and the compiled run
+  plan passes runtime validation.
 - Fail closed on invalid workflow structure or ambiguous authority.
 
 ## Blockers and recovery
 
-- Ask when an action, approval owner, or required capability is missing.
-- Reject unknown fields, undeclared capabilities, cycles, unsafe identifiers,
-  invalid conditions, and hooks without exact targets.
-- Never infer approval, shell authority, network authority, or safe isolation.
+- Ask when a target skill, entrypoint, action, role, or approval owner is
+  materially ambiguous.
+- Reject unknown fields, cycles, unsafe identifiers, invalid conditions, and
+  missing canonical skill graphs.
+- Never infer approval, shell authority, network authority, or host execution.
 
 On a blocker, preserve failed/stale evidence, name the accountable owner and exact missing input, then resume this skill or the earliest reopened producer. Never manufacture completion by editing derived state.
 
 ## Handoff
 
-- Default to complete TOON with workflow fingerprint, step decisions, waves,
-  gates, hooks, fallbacks, host capabilities, and plan fingerprint.
+- Default to complete TOON with workflow fingerprint, node decisions, waves,
+  approvals, derived capabilities and side effects, plus the run-plan
+  fingerprint.
 - Return validation and handoff summaries directly in the active agent response.
-- Emit `ai-sdlc-handoff/v1` with `result`, `blockers`, `next_required`, and
+- Emit `ai-sdlc-handoff/v2` with `result`, `blockers`, `next_required`, and
   `next_optional`; actions include `reason`, `command`, and `expected_artifact`.
 - Do not create `summary.txt`, `*-summary.txt`, or another standalone summary file.
 
@@ -147,7 +155,7 @@ The downstream consumer rechecks artifacts and freshness; it does not trust a pr
 
 ??? info "Artifact metadata"
 
-    - Machine records use `ai-sdlc-workflow/v1` and `ai-sdlc-workflow-plan/v1`.
+    - Machine records use `ai-sdlc-workflow/v2` and `ai-sdlc-workflow-plan/v2`.
     - Workflow-related Markdown uses canonical `artifact_metadata` and `metatags`
       when authored.
 
@@ -160,12 +168,12 @@ The downstream consumer rechecks artifacts and freshness; it does not trust a pr
 ## Example
 
 ```bash
-python3 skills/ai-sdlc-workflow/scripts/workflow.py . --workflow workflow.json --validate --format toon
-python3 skills/ai-sdlc-workflow/scripts/workflow.py . --workflow workflow.json --plan --context context.json --concurrency 4 --isolation-supported --write
+python3 skills/ai-sdlc-workflow/scripts/workflow.py . --workflow workflow.toon --validate --format toon
+python3 skills/ai-sdlc-workflow/scripts/workflow.py . --workflow workflow.toon --plan --context context.toon --concurrency 4 --approved-node release --write
 ```
 
 ## Source contract
 
-This page is generated from [`skills/ai-sdlc-workflow/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-workflow/SKILL.md) plus its linked `steps/manifest.json` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
+This page is generated from [`skills/ai-sdlc-workflow/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-workflow/SKILL.md) plus its linked `steps/manifest.toon` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
 
 [Back to the skill catalog](../skills.md) · [Script reference](../scripts.md) · [Choose a workflow](../../flows/index.md)

@@ -35,7 +35,7 @@ artifact_metadata:
   related_artifacts:
     - "specs/014-one-line-agent-installer/branch-plan.md"
     - "specs/014-one-line-agent-installer/validation.md"
-    - "specs/014-one-line-agent-installer/_ai_sdlc/validation-receipt.json"
+    - "specs/014-one-line-agent-installer/_ai_sdlc/validation-receipt.toon"
   validation:
     - "check_commit_ready.py --quick-flow: passed before staging"
     - "ai-sdlc-validation-receipt/v1: current; 9 commands; 0 failures"

@@ -26,8 +26,18 @@ Quality gate:
 
 Valid finding:
 
-```json
-{"id":"QL-001","lens":"edge-case-hunt","evidence":{"path":"specs/payments/requirements.md","line":88,"detail":"Timeout behavior is unspecified"},"severity":"high","trace_targets":["AC-004","TC-012"],"owner":"BA","resolution_status":"open","next_action":"Define timeout and retry acceptance behavior."}
+```toon
+evidence:
+  detail: Timeout behavior is unspecified
+  line: 88
+  path: specs/payments/requirements.md
+id: QL-001
+lens: edge-case-hunt
+next_action: Define timeout and retry acceptance behavior.
+owner: BA
+resolution_status: open
+severity: high
+trace_targets[2]: AC-004,TC-012
 ```
 
 Invalid counter-example: `The design feels risky.` It has no exact evidence,

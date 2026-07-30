@@ -3,13 +3,18 @@
 
 from __future__ import annotations
 
-import json
 import hashlib
 import subprocess
 import tempfile
 import unittest
 import time
+import sys
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[3]
 SCRIPT = ROOT / "skills/ai-sdlc-validation/scripts/run_validation.py"
@@ -33,10 +38,10 @@ class ValidationReceiptTests(unittest.TestCase):
         (spec / "test-cases.md").write_text("# Tests\n\n- TC-001: validation fixture.\n", encoding="utf-8")
         subprocess.run(["git", "add", "tracked.txt", "validation_check.py", "specs/demo/test-cases.md"], cwd=repository, check=True)
         subprocess.run(["git", "-c", "user.name=Test", "-c", "user.email=test@example.invalid", "-c", "commit.gpgsign=false", "commit", "-m", "fixture"], cwd=repository, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        plan = spec / "_ai_sdlc/validation-plan.json"
+        plan = spec / "_ai_sdlc/validation-plan.toon"
         plan.parent.mkdir(parents=True, exist_ok=True)
-        plan.write_text(json.dumps({"schema": "ai-sdlc-validation-command-plan/v1", "commands": [{"id": "V001", "argv": ["python3", "validation_check.py"], "trace_ids": ["TC-001"]}]}), encoding="utf-8")
-        return plan, repository / "specs/demo/_ai_sdlc/validation-receipt.json"
+        plan.write_text(toon_codec.dumps({"schema": "ai-sdlc-validation-command-plan/v1", "commands": [{"id": "V001", "argv": ["python3", "validation_check.py"], "trace_ids": ["TC-001"]}]}), encoding="utf-8")
+        return plan, repository / "specs/demo/_ai_sdlc/validation-receipt.toon"
 
     def test_success_is_current_then_source_change_makes_receipt_stale(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -69,7 +74,7 @@ class ValidationReceiptTests(unittest.TestCase):
             plan, output = self.fixture(repository, 99)
             created = self.cli(repository, plan, output)
             self.assertEqual(created.returncode, 1)
-            receipt = json.loads(output.read_text(encoding="utf-8"))
+            receipt = toon_codec.loads(output.read_text(encoding="utf-8"))
             self.assertEqual(receipt["commands"][0]["exit_code"], 99)
             verified = self.cli(repository, plan, output, "--verify")
             self.assertEqual(verified.returncode, 1)
@@ -79,7 +84,7 @@ class ValidationReceiptTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             repository = Path(temp)
             subprocess.run(["git", "init"], cwd=repository, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            output = repository / "receipt.json"
+            output = repository / "receipt.toon"
             for index, argv in enumerate((
                 ["python3", "-c", "open('owned','w').write('x')"],
                 ["/tmp/evil/python3", "safe.py"],
@@ -88,8 +93,8 @@ class ValidationReceiptTests(unittest.TestCase):
                 ["make", "dangerous-target"],
             )):
                 with self.subTest(argv=argv):
-                    plan = repository / f"plan-{index}.json"
-                    plan.write_text(json.dumps({"schema": "ai-sdlc-validation-command-plan/v1", "commands": [{"id": "V001", "argv": argv, "trace_ids": []}]}), encoding="utf-8")
+                    plan = repository / f"plan-{index}.toon"
+                    plan.write_text(toon_codec.dumps({"schema": "ai-sdlc-validation-command-plan/v1", "commands": [{"id": "V001", "argv": argv, "trace_ids": []}]}), encoding="utf-8")
                     result = self.cli(repository, plan, output)
                     self.assertEqual(result.returncode, 1)
             self.assertFalse((repository / "owned").exists())
@@ -103,9 +108,9 @@ class ValidationReceiptTests(unittest.TestCase):
             spec = repository / "specs/demo"
             (spec / "_ai_sdlc").mkdir(parents=True)
             (spec / "test-cases.md").write_text("- TC-001: check\n", encoding="utf-8")
-            plan = spec / "_ai_sdlc/validation-plan.json"
-            plan.write_text(json.dumps({"schema": "ai-sdlc-validation-command-plan/v1", "commands": [{"id": "V001", "argv": ["python3", "validation_check.py"], "trace_ids": ["TC-001"]}]}), encoding="utf-8")
-            output = spec / "_ai_sdlc/validation-receipt.json"
+            plan = spec / "_ai_sdlc/validation-plan.toon"
+            plan.write_text(toon_codec.dumps({"schema": "ai-sdlc-validation-command-plan/v1", "commands": [{"id": "V001", "argv": ["python3", "validation_check.py"], "trace_ids": ["TC-001"]}]}), encoding="utf-8")
+            output = spec / "_ai_sdlc/validation-receipt.toon"
             result = self.cli(repository, plan, output)
             self.assertEqual(result.returncode, 1)
             self.assertIn("valid HEAD", result.stdout)
@@ -116,9 +121,9 @@ class ValidationReceiptTests(unittest.TestCase):
             repository = Path(temp)
             plan, output = self.fixture(repository, 0)
             self.assertEqual(self.cli(repository, plan, output).returncode, 0)
-            value = json.loads(plan.read_text(encoding="utf-8"))
+            value = toon_codec.loads(plan.read_text(encoding="utf-8"))
             value["commands"][0]["id"] = "V002"
-            plan.write_text(json.dumps(value), encoding="utf-8")
+            plan.write_text(toon_codec.dumps(value), encoding="utf-8")
             result = self.cli(repository, plan, output, "--verify")
             self.assertEqual(result.returncode, 1)
             self.assertIn("plan digest mismatch", result.stdout)
@@ -130,7 +135,7 @@ class ValidationReceiptTests(unittest.TestCase):
             (repository / "validation_check.py").write_text("print('x' * 1000000)\n", encoding="utf-8")
             result = self.cli(repository, plan, output, "--max-output-bytes", "1024")
             self.assertEqual(result.returncode, 1)
-            receipt = json.loads(output.read_text(encoding="utf-8"))
+            receipt = toon_codec.loads(output.read_text(encoding="utf-8"))
             self.assertEqual(receipt["commands"][0]["exit_code"], 125)
             self.assertTrue(receipt["commands"][0]["output_limited"])
 
@@ -164,7 +169,7 @@ class ValidationReceiptTests(unittest.TestCase):
             )
             result = self.cli(repository, plan, output, "--timeout", "1")
             self.assertEqual(result.returncode, 1)
-            receipt = json.loads(output.read_text(encoding="utf-8"))
+            receipt = toon_codec.loads(output.read_text(encoding="utf-8"))
             self.assertEqual(
                 receipt["commands"][0]["exit_code"],
                 124,
@@ -178,14 +183,14 @@ class ValidationReceiptTests(unittest.TestCase):
             repository = Path(temp)
             plan, output = self.fixture(repository, 0)
             self.assertEqual(self.cli(repository, plan, output).returncode, 0)
-            receipt = json.loads(output.read_text(encoding="utf-8"))
+            receipt = toon_codec.loads(output.read_text(encoding="utf-8"))
             self.assertEqual(receipt["evidence_trust"], "local-structural-not-authenticated")
             receipt["executed_at"] = "forged-by-workspace-writer"
             body = {key: value for key, value in receipt.items() if key != "receipt_fingerprint"}
             receipt["receipt_fingerprint"] = hashlib.sha256(
-                json.dumps(body, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+                toon_codec.dumps(body, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
             ).hexdigest()
-            output.write_text(json.dumps(receipt), encoding="utf-8")
+            output.write_text(toon_codec.dumps(receipt), encoding="utf-8")
             forged = self.cli(repository, plan, output, "--verify")
             self.assertEqual(forged.returncode, 0, forged.stdout + forged.stderr)
 
@@ -193,13 +198,13 @@ class ValidationReceiptTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             repository = Path(temp)
             plan, output = self.fixture(repository, 0)
-            value = json.loads(plan.read_text(encoding="utf-8"))
+            value = toon_codec.loads(plan.read_text(encoding="utf-8"))
             value["commands"][0]["trace_ids"] = []
-            plan.write_text(json.dumps(value), encoding="utf-8")
+            plan.write_text(toon_codec.dumps(value), encoding="utf-8")
             empty = self.cli(repository, plan, output)
             self.assertEqual(empty.returncode, 1)
             value["commands"][0]["trace_ids"] = ["TC-999"]
-            plan.write_text(json.dumps(value), encoding="utf-8")
+            plan.write_text(toon_codec.dumps(value), encoding="utf-8")
             unknown = self.cli(repository, plan, output)
             self.assertEqual(unknown.returncode, 1)
             self.assertIn("not declared", unknown.stdout)

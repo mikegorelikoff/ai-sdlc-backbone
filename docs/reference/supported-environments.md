@@ -34,16 +34,16 @@ files without proving that their Python helpers will run.
 
 | Environment | Evidence | Status |
 | --- | --- | --- |
-| Ubuntu 24.04, Python 3.10 and 3.13 | Repository continuous-integration configuration; release-candidate run pending after publication | Configured candidate; support pending passing remote runs |
-| macOS, POSIX shell | `v3.0.0-rc.2` candidate source checks plus project/global installation smoke | Release candidate tested locally |
-| Codex on macOS, Skills CLI target `codex` | Project/global install smoke, guided flow, SDD, validation, and commit workflow on 2026-07-27 | `v3.0.0-rc.2` candidate manually validated |
+| Ubuntu 24.04, Python 3.10 and 3.13 | Repository continuous-integration configuration; tagged v4 run is checked after publication | Configured; support depends on the published workflow result |
+| macOS, POSIX shell, Python 3.11 | `v4.0.0` source gates, 94-file skill suite, deterministic evaluations, docs build, and project/global installation smoke | v4 mechanically validated locally |
+| Codex on macOS, Skills CLI target `codex` | v4 installed-layout smoke and six-scenario provider-neutral protocol on 2026-07-30 | Package path validated; provider-executed certification remains separately recorded |
 | Windows Subsystem for Linux (WSL) | POSIX-compatible documented route; no recorded candidate run | Recommended candidate route for Windows; not yet verified |
 | Native PowerShell | Installation command only | Limited; end-to-end tutorials use WSL |
 | Offline clean machine | No cached npm or Python packages | Not supported for first bootstrap; use approved mirrors |
 
-“Candidate tested” means that the unreleased corrected tree completed the
-recorded local workflow. It is not a released support promise. The matrix does
-not promise support for every operating-system release,
+“Mechanically validated” means that the tagged source contract completed the
+recorded deterministic workflow. It is not a promise about every provider or
+model. The matrix does not promise support for every operating-system release,
 shell, model provider, or agent host.
 
 ## Agent hosts versus installer targets
@@ -57,7 +57,7 @@ model host. The maintainers' behavioral examples use Codex-style agents.
 The exact manually validated host-scoped install used:
 
 ```bash
-HARNESS_TAG=v3.0.0-rc.2
+HARNESS_TAG=v4.0.0
 HARNESS_TMP="$(mktemp -d)"
 HARNESS_SRC="$HARNESS_TMP/ai-sdlc-harness"
 git init "$HARNESS_SRC"
@@ -82,7 +82,7 @@ host-specific directory.
 ## Installation locations
 
 The canonical `--skill '*' --agent codex` installation creates
-`.agents/skills/` plus a transient `skills-lock.json`. Remove that lock after
+`.agents/skills/` plus a transient `skills-lock.toon`. Remove that lock after
 writing the portable install record because the lock contains the absolute
 temporary source path. A project-scoped `--all` invocation instead targets all
 installer-recognized hosts and can create unrelated host directories; it is
@@ -97,17 +97,17 @@ other agents remains unverified by this harness until the host matrix records a
 passing installation and first workflow.
 
 On a clean home directory, create `$HOME/.codex/skills` before the global Codex
-command and require `skills list --global --agent codex --json` to report
+command and require `skills list --global --agent codex --toon` to report
 `Codex` in every item's `agents` array. CLI `1.5.19` can otherwise copy all 44
 skills into the canonical global store while leaving them unlinked from Codex.
 
-## Release candidate versus stable support
+## Release support
 
 Consumer installation instructions pin Skills CLI `1.5.19`, resolve annotated
-tag `v3.0.0-rc.2`, and record its exact commit. The release candidate passed
-local installation and workflow gates, but protected remote CI and the tagged
-remote installation are verified only after publication. The stable
-`v2.1.0` tag remains the rollback target during candidate evaluation.
+tag `v4.0.0`, and record its exact commit. Local deterministic, documentation,
+and installed-layout gates pass before publication. Protected remote CI and a
+fresh tagged remote installation can be verified only after the tag exists.
+Keep the accepted pre-migration revision as the consumer rollback target.
 
 ## Evidence checklist
 

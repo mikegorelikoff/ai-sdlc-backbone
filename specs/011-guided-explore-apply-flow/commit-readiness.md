@@ -27,7 +27,7 @@ artifact_metadata:
   related_artifacts:
     - "specs/011-guided-explore-apply-flow/code-review.md"
     - "specs/011-guided-explore-apply-flow/validation.md"
-    - "specs/011-guided-explore-apply-flow/_ai_sdlc/validation-receipt.json"
+    - "specs/011-guided-explore-apply-flow/_ai_sdlc/validation-receipt.toon"
   validation:
     - "branch/spec alignment passed"
     - "commit readiness preflight passed"

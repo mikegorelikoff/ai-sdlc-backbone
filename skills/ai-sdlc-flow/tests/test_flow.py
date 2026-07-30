@@ -4,12 +4,16 @@
 from __future__ import annotations
 
 import importlib.util
-import json
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -54,9 +58,9 @@ class FlowTests(unittest.TestCase):
         navigator = "ai-sdlc-navigator"
         self.assertFalse((ROOT / "skills" / navigator / "SKILL.md").exists())
         inventories = (
-            ROOT / "compatibility" / "baseline-v1.json",
+            ROOT / "compatibility" / "baseline-v1.toon",
             ROOT / "config" / "ai-sdlc-managed-skills.txt",
-            ROOT / "modules" / "core" / "module.json",
+            ROOT / "modules" / "core" / "module.toon",
             ROOT / "skills" / "ai-sdlc-shared-runtime"
             / "references" / "ai-sdlc-managed-skills.txt",
         )
@@ -287,7 +291,7 @@ class FlowTests(unittest.TestCase):
             self.assertIsNone(resolved)
             self.assertTrue(any("workspace root" in blocker for blocker in blockers))
 
-    def test_explore_json_is_read_only_and_apply_verifies_one_action(self) -> None:
+    def test_explore_toon_is_read_only_and_apply_verifies_one_action(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             (root / "specs").mkdir()
@@ -296,33 +300,63 @@ class FlowTests(unittest.TestCase):
                 [
                     "python3", str(SCRIPT), "explore", "--root", str(root),
                     "--intent", "Implement API", "--feature", "011-guided-explore-apply-flow",
-                    "--format", "json",
+                    "--format", "toon",
                 ],
                 check=False, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             )
             after = sorted(path.relative_to(root).as_posix() for path in root.rglob("*"))
             self.assertEqual(explored.returncode, 0, explored.stderr)
             self.assertEqual(before, after)
-            card = json.loads(explored.stdout)
+            card = toon_codec.loads(explored.stdout)
             verified = subprocess.run(
                 ["python3", str(SCRIPT), "apply", "--root", str(root), "--card", "-"],
                 input=explored.stdout, check=False, text=True,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             )
             self.assertEqual(verified.returncode, 0, verified.stderr)
-            action = json.loads(verified.stdout)
+            action = toon_codec.loads(verified.stdout)
             self.assertEqual(action["status"], "verified")
-            self.assertEqual(action["action"].count("begin"), 1)
+            self.assertEqual(action["schema"], "ai-sdlc-flow-apply/v3")
+            self.assertGreater(action["planned_tasks"], 0)
+            self.assertFalse((root / "_ai_sdlc/runs").exists())
+            started = subprocess.run(
+                [
+                    "python3",
+                    str(SCRIPT),
+                    "apply",
+                    "--root",
+                    str(root),
+                    "--card",
+                    "-",
+                    "--execute",
+                    "--run-id",
+                    "flow-run",
+                ],
+                input=explored.stdout,
+                check=False,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            self.assertEqual(started.returncode, 0, started.stderr)
+            receipt = toon_codec.loads(started.stdout)
+            self.assertEqual(receipt["status"], "started")
+            self.assertTrue(
+                (root / "_ai_sdlc/runs/flow-run/journal/000001.toon").is_file()
+            )
 
     def test_explicit_source_cannot_remove_mandatory_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             (root / "config").mkdir()
-            (root / "config" / "ai-sdlc.defaults.json").write_text("{}\n", encoding="utf-8")
+            (root / "config" / "ai-sdlc.defaults.toon").write_text(
+                toon_codec.dumps({}) + "\n",
+                encoding="utf-8",
+            )
             extra = root / "extra.md"
             extra.write_text("extra\n", encoding="utf-8")
             records = FLOW.discover_sources(root, "011-guided-explore-apply-flow", (extra,))
-            self.assertTrue(any(item.startswith("config/ai-sdlc.defaults.json:") for item in records))
+            self.assertTrue(any(item.startswith("config/ai-sdlc.defaults.toon:") for item in records))
             self.assertTrue(any(item.startswith("extra.md:") for item in records))
 
     def test_apply_rejects_source_drift_without_mutation(self) -> None:
@@ -335,7 +369,7 @@ class FlowTests(unittest.TestCase):
                 [
                     "python3", str(SCRIPT), "explore", "--root", str(root),
                     "--intent", "Implement API", "--feature", "011-guided-explore-apply-flow",
-                    "--source", "evidence.md", "--format", "json",
+                    "--source", "evidence.md", "--format", "toon",
                 ],
                 check=False, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             )
@@ -395,7 +429,7 @@ class FlowTests(unittest.TestCase):
             self.assertIn("requirements.md:abc", FLOW.render_toon(card))
             self.assertIn("confidence 1.00", FLOW.render_markdown(card))
 
-    def test_v2_card_exposes_role_action_step_and_jit_references(self) -> None:
+    def test_v3_card_exposes_step_card_and_run_plan(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             card = FLOW.build_card(
                 root=Path(temp),
@@ -403,7 +437,7 @@ class FlowTests(unittest.TestCase):
                 feature="013-role-guided-installable-flow",
                 requested_action="implementation",
             )
-            self.assertEqual(card.schema, "ai-sdlc-flow/v2")
+            self.assertEqual(card.schema, "ai-sdlc-flow/v3")
             self.assertEqual(card.active_role, "software-engineer")
             self.assertEqual(card.roles, ("software-engineer",))
             self.assertEqual(card.action_code, "BUILD")
@@ -412,9 +446,15 @@ class FlowTests(unittest.TestCase):
             self.assertTrue(any("steps/execute.md" in item for item in card.selected_references))
             self.assertEqual(
                 card.skill_step_reference,
-                "ai-sdlc-sdd/steps/02-execute.md",
+                "ai-sdlc-sdd/steps/01-prepare.md",
             )
             self.assertTrue(card.step_manifest_fingerprint)
+            self.assertEqual(card.step_card["schema"], "ai-sdlc-step-card/v1")
+            self.assertEqual(card.run_plan["schema"], "ai-sdlc-run-plan/v2")
+            self.assertEqual(
+                card.run_plan_fingerprint,
+                card.run_plan["fingerprint"],
+            )
             self.assertEqual(card.context_economics.recall_percent, 100.0)
             self.assertGreaterEqual(card.context_economics.savings_percent, 15.0)
 
@@ -459,23 +499,23 @@ class FlowTests(unittest.TestCase):
             self.assertEqual(card.menu_options, tuple(sorted(card.menu_options)))
             self.assertGreater(len(card.menu_options), 5)
 
-    def test_v1_card_is_rejected_with_migration_guidance(self) -> None:
+    def test_legacy_card_is_rejected_with_migration_guidance(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
-            payload = json.dumps({"schema": "ai-sdlc-flow/v1"})
+            payload = toon_codec.dumps({"schema": "ai-sdlc-flow/v1"})
             result = subprocess.run(
                 ["python3", str(SCRIPT), "apply", "--root", temp, "--card", "-"],
                 input=payload, check=False, text=True,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             )
             self.assertEqual(result.returncode, 2)
-            self.assertIn("migrate to ai-sdlc-flow/v2", result.stderr)
+            self.assertIn("regenerate ai-sdlc-flow/v3", result.stderr)
 
     def test_apply_revalidates_the_same_bounded_configuration(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             (root / "specs").mkdir()
-            team = root / "team.json"
-            team.write_text(json.dumps({
+            team = root / "team.toon"
+            team.write_text(toon_codec.dumps({
                 "schema": "ai-sdlc-config/v1",
                 "values": {"flow": {
                     "role_aliases": {"builder": "software-engineer"},
@@ -487,7 +527,7 @@ class FlowTests(unittest.TestCase):
                 [
                     "python3", str(SCRIPT), "explore", "--root", str(root),
                     "--intent", "Implement API", "--feature", "013-role-guided-installable-flow",
-                    "--role", "builder", "--team", str(team), "--format", "json",
+                    "--role", "builder", "--team", str(team), "--format", "toon",
                 ],
                 check=False, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             )
@@ -504,8 +544,8 @@ class FlowTests(unittest.TestCase):
 
     def test_selector_rejects_registry_outside_flow_package(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
-            external = Path(temp) / "registry.json"
-            external.write_text("{}", encoding="utf-8")
+            external = Path(temp) / "registry.toon"
+            external.write_text(toon_codec.dumps({}), encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "FLOW_UNSAFE_SELECTOR"):
                 FLOW.load_registry(ROOT, external)
 

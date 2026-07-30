@@ -1,0 +1,83 @@
+"$defs":
+  hash:
+    pattern: "^[a-f0-9]{64}$"
+    type: string
+  step_card:
+    additionalProperties: false
+    properties:
+      capabilities:
+        items:
+          type: string
+        minItems: 1
+        type: array
+        uniqueItems: true
+      commit_boundary:
+        enum[2]: none,after-step
+      context:
+        "$ref": ai-sdlc-context-pack/v4
+      depends_on:
+        items:
+          type: string
+        type: array
+        uniqueItems: true
+      gates:
+        items:
+          type: string
+        minItems: 1
+        type: array
+      graph_fingerprint:
+        "$ref": #/$defs/hash
+      idempotency_scope:
+        minLength: 1
+        type: string
+      load:
+        enum[3]: required,on-demand,before-completion
+      max_attempts:
+        minimum: 1
+        type: integer
+      on_failure:
+        enum[3]: block,retry,handoff
+      operation:
+        type: string
+      outputs:
+        items:
+          type: string
+        minItems: 1
+        type: array
+      path:
+        type: string
+      ready:
+        const: true
+      reason:
+        type: string
+      schema:
+        const: ai-sdlc-step-card/v1
+      side_effect:
+        enum[4]: none,workspace-write,external-write,destructive
+      skill:
+        type: string
+      step_fingerprint:
+        "$ref": #/$defs/hash
+      step_id:
+        type: string
+      step_type:
+        enum[5]: analysis,context,action,validation,handoff
+    required[21]: schema,skill,step_id,path,step_type,depends_on,operation,capabilities,side_effect,gates,outputs,max_attempts,commit_boundary,on_failure,load,reason,context,ready,graph_fingerprint,step_fingerprint,idempotency_scope
+    type: object
+"$id": ai-sdlc-capability-request/v2
+"$schema": ai-sdlc-toon-contract/v1
+additionalProperties: false
+properties:
+  concurrency:
+    maximum: 64
+    minimum: 1
+    type: integer
+  isolation_required:
+    type: boolean
+  schema:
+    const: ai-sdlc-capability-request/v2
+  step_card:
+    "$ref": #/$defs/step_card
+required[4]: schema,step_card,concurrency,isolation_required
+title: AI SDLC Step Capability Request
+type: object

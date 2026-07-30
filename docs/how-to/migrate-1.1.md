@@ -35,10 +35,10 @@ flow behavior remain valid; no bulk rewrite is required.
 
 New generated control-plane data belongs under feature or repository
 `_ai_sdlc` directories. Complete deterministic TOON is the primary
-agent-facing representation. Keep JSON consumers only at JSON Schema, external
-interoperability, recovery comparison, or append-only JSONL journal boundaries.
+agent-facing representation. Keep TOON consumers only at TOON Schema, external
+interoperability, recovery comparison, or append-only per-event TOON journal boundaries.
 Where an older automation explicitly consumes prose, keep `--format markdown`;
-where a supported boundary needs JSON, keep its explicit JSON mode rather than
+where a supported boundary needs TOON, keep its explicit TOON mode rather than
 changing the global representation strategy.
 
 ## Roll back

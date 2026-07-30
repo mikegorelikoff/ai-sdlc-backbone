@@ -1,0 +1,53 @@
+commands[17]:
+  - argv[4]: python3,skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_test_suite.py,"--format",toon
+    id: complete-per-file-suite
+    trace_ids[13]: TC-001,TC-002,TC-003,TC-004,TC-005,TC-006,TC-007,TC-008,TC-009,TC-010,TC-011,TC-012,TC-013
+  - argv[7]: python3,skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_skill_graph.py,"--check","--skills-root",skills,"--format",toon
+    id: semantic-graph-contract
+    trace_ids[4]: AC-001,AC-002,TC-001,TC-002
+  - argv[8]: python3,skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_skill_eval.py,"--mode",deterministic,"--skills-root",skills,"--format",toon
+    id: deterministic-evaluation
+    trace_ids[2]: AC-011,TC-011
+  - argv[8]: python3,skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_skill_eval.py,"--mode",live-protocol,"--skills-root",skills,"--format",toon
+    id: live-protocol
+    trace_ids[2]: AC-012,TC-012
+  - argv[7]: python3,skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_compatibility.py,"--root",.,"--skip-git-audit","--format",toon
+    id: compatibility-contract
+    trace_ids[4]: AC-010,AC-013,TC-010,TC-013
+  - argv[5]: python3,skills/ai-sdlc-shared-runtime/tests/install_smoke.py,"--mode",emulated,"--quick-flow"
+    id: installed-layout-smoke
+    trace_ids[2]: AC-001,NFR-007
+  - argv[5]: python3,skills/ai-sdlc-shared-runtime/tests/install_smoke.py,"--mode",emulated-selective,"--quick-flow"
+    id: selective-layout-smoke
+    trace_ids[2]: AC-002,NFR-007
+  - argv[5]: python3,skills/ai-sdlc-shared-runtime/tests/install_smoke.py,"--mode",emulated-global,"--quick-flow"
+    id: global-layout-smoke
+    trace_ids[2]: AC-010,NFR-007
+  - argv[4]: python3,skills/ai-sdlc-sdd/scripts/check_clarify.py,specs/015-executable-skill-harness-v4,"--quick-flow"
+    id: sdd-clarify
+    trace_ids[13]: AC-001,AC-002,AC-003,AC-004,AC-005,AC-006,AC-007,AC-008,AC-009,AC-010,AC-011,AC-012,AC-013
+  - argv[4]: python3,skills/ai-sdlc-sdd/scripts/check_checklist.py,specs/015-executable-skill-harness-v4,"--quick-flow"
+    id: sdd-checklist
+    trace_ids[13]: AC-001,AC-002,AC-003,AC-004,AC-005,AC-006,AC-007,AC-008,AC-009,AC-010,AC-011,AC-012,AC-013
+  - argv[4]: python3,skills/ai-sdlc-sdd/scripts/analyze_spec.py,specs/015-executable-skill-harness-v4,"--quick-flow"
+    id: sdd-analysis
+    trace_ids[13]: AC-001,AC-002,AC-003,AC-004,AC-005,AC-006,AC-007,AC-008,AC-009,AC-010,AC-011,AC-012,AC-013
+  - argv[4]: python3,skills/ai-sdlc-sdd/scripts/validate_spec.py,specs/015-executable-skill-harness-v4,"--quick-flow"
+    id: sdd-validation
+    trace_ids[13]: AC-001,AC-002,AC-003,AC-004,AC-005,AC-006,AC-007,AC-008,AC-009,AC-010,AC-011,AC-012,AC-013
+  - argv[5]: python3,skills/ai-sdlc-sdd/scripts/plan_links.py,specs/015-executable-skill-harness-v4,"--check","--quick-flow"
+    id: sdd-plan-links
+    trace_ids[13]: AC-001,AC-002,AC-003,AC-004,AC-005,AC-006,AC-007,AC-008,AC-009,AC-010,AC-011,AC-012,AC-013
+  - argv[3]: python3,docs/scripts/build_catalog.py,"--check"
+    id: documentation-catalog
+    trace_ids[3]: AC-002,AC-010,AC-013
+  - argv[2]: python3,docs/scripts/validate_docs.py
+    id: documentation-contract
+    trace_ids[2]: AC-010,AC-013
+  - argv[7]: python3,"-m",unittest,discover,"-s",docs/tests,"-v"
+    id: documentation-tests
+    trace_ids[2]: AC-010,AC-013
+  - argv[3]: git,diff,"--check"
+    id: diff-hygiene
+    trace_ids[2]: AC-010,AC-013
+schema: ai-sdlc-validation-command-plan/v1

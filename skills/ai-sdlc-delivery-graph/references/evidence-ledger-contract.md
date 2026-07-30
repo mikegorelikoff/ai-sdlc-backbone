@@ -3,7 +3,7 @@
 ## Source records
 
 Evidence producers write `ai-sdlc-evidence-source/v1` manifests below an
-`evidence/` directory using the `.evidence.json` suffix. A manifest identifies
+`evidence/` directory using the `.evidence.toon` suffix. A manifest identifies
 the evidence artifact, exact captured hash, lifecycle subjects, producer,
 capture and optional expiry time, direct file dependencies, and upstream
 evidence records. Repository-relative paths may not be absolute, traverse

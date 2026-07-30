@@ -7,7 +7,7 @@ description: Human-facing operating guide for ai-sdlc-delivery-graph, including 
 
 | Lifecycle position | Primary owner | Supporting roles | Module | Output |
 | --- | --- | --- | --- | --- |
-| Traceability and readiness | Delivery, Dev, QA, Architecture | PM, BA, Security, Release | `core` | complete `_ai_sdlc/delivery-graph.toon` for agents, plus `_ai_sdlc/delivery-graph.json` for schema/interoperability and `_ai_sdlc/delivery-graph.md` for human review when `--write` is requested |
+| Traceability and readiness | Delivery, Dev, QA, Architecture | PM, BA, Security, Release | `core` | complete `_ai_sdlc/delivery-graph.toon` for agents, plus `_ai_sdlc/delivery-graph.toon` for schema/interoperability and `_ai_sdlc/delivery-graph.md` for human review when `--write` is requested |
 
 ## Why it exists
 
@@ -42,8 +42,8 @@ Use ai-sdlc-delivery-graph for <target>.
 Choose --quick-flow for bounded assumption-driven progress or --full-flow
 for strict verification only as described below.
 Read the required evidence,
-produce or report complete `_ai_sdlc/delivery-graph.toon` for agents, plus `_ai_sdlc/delivery-graph.json` for schema/interoperability and `_ai_sdlc/delivery-graph.md` for human review when `--write` is requested, preserve human approval boundaries,
-and return blockers plus a complete ai-sdlc-handoff/v1.
+produce or report complete `_ai_sdlc/delivery-graph.toon` for agents, plus `_ai_sdlc/delivery-graph.toon` for schema/interoperability and `_ai_sdlc/delivery-graph.md` for human review when `--write` is requested, preserve human approval boundaries,
+and return blockers plus a complete ai-sdlc-handoff/v2.
 ```
 
 This is an agent instruction, not a shell command. Terminal commands belong in the helper section.
@@ -82,11 +82,13 @@ Humans accept or reject material product, security, QA, policy, rollout, release
 
 The router loads these skill-owned procedures just in time. Read only the selector matching the current phase, active role, and action; a selected step is normative and an unselected step stays out of context.
 
-| Selector | Phases | Roles | Load rule | Step | Reason |
-| --- | --- | --- | --- | --- | --- |
-| `prepare` | `prepare`, `clarify`, `route` | `product-manager`, `software-architect`, `software-engineer`, `qa-engineer` | `required` | [`steps/01-prepare.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-delivery-graph/steps/01-prepare.md) | establish inputs, authority, lifecycle state, and safe artifact routing |
-| `execute` | `execute` | `product-manager`, `software-architect`, `software-engineer`, `qa-engineer` | `on-demand` | [`steps/02-execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-delivery-graph/steps/02-execute.md) | perform only the selected owning-skill procedure |
-| `validate-and-handoff` | `validate`, `handoff`, `complete` | `product-manager`, `software-architect`, `software-engineer`, `qa-engineer` | `before-completion` | [`steps/03-validate-and-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-delivery-graph/steps/03-validate-and-handoff.md) | verify outputs and return an explicit evidence-backed handoff |
+| Selector | Type | Phases | Roles | Dependencies | Operation | Side effect | Load rule | Step | Reason |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `preflight` | `analysis` | `prepare` | `product-manager`, `qa-engineer`, `software-architect`, `software-engineer` | none | `inspect-and-route` | `none` | `required` | [`steps/01-prepare.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-delivery-graph/steps/01-prepare.md) | establish inputs, authority, lifecycle state, and safe artifact routing |
+| `context` | `context` | `clarify`, `route` | `product-manager`, `qa-engineer`, `software-architect`, `software-engineer` | `preflight` | `compile-context` | `none` | `required` | [`steps/02-context.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-delivery-graph/steps/02-context.md) | compile the minimum sufficient context before the owning action |
+| `execute` | `action` | `execute` | `product-manager`, `qa-engineer`, `software-architect`, `software-engineer` | `context` | `execute-procedure` | `workspace-write` | `on-demand` | [`steps/02-execute.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-delivery-graph/steps/02-execute.md) | perform only the selected owning-skill procedure |
+| `validate` | `validation` | `validate` | `product-manager`, `qa-engineer`, `software-architect`, `software-engineer` | `execute` | `validate-evidence` | `none` | `before-completion` | [`steps/03-validate-and-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-delivery-graph/steps/03-validate-and-handoff.md) | validate outputs, evidence, acceptance, and residual risk |
+| `handoff` | `handoff` | `handoff`, `complete` | `product-manager`, `qa-engineer`, `software-architect`, `software-engineer` | `validate` | `handoff-result` | `none` | `before-completion` | [`steps/04-handoff.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-delivery-graph/steps/04-handoff.md) | return a journal-backed owner and next-action handoff |
 
 Resolve the current step with `ai-sdlc-shared-runtime/scripts/ai_sdlc_steps.py`. A missing, unsafe, oversized, or unmatched step is a blocker rather than permission to broad-load the package.
 
@@ -117,13 +119,13 @@ python3 skills/ai-sdlc-delivery-graph/scripts/evidence_ledger.py . --stale --as-
 
 The graph contains sorted nodes, edges, gaps, orphans, coverage counters, source
 hashes, and fingerprints. Rebuilding identical inputs produces byte-identical
-TOON, JSON, and Markdown. `requirement_declarations` inventories FR, NFR, AC,
+TOON, TOON, and Markdown. `requirement_declarations` inventories FR, NFR, AC,
 REQ, story, workflow, and rule nodes. Actionable missing-task/test gaps and
 coverage counters apply only to explicitly declared leaf `AC-###` nodes because
 SDD tasks and tests trace acceptance criteria. Inferred references and parent requirements remain visible for explicit
 paths and orphan review rather than inflating leaf coverage.
 
-The TOON/JSON evidence ledger contains recalculated file identities, resolved subjects,
+The canonical TOON evidence ledger contains recalculated file identities, resolved subjects,
 freshness states, reason codes, upstream state, stale paths, and fresh-only
 requirement coverage.
 
@@ -152,7 +154,7 @@ On a blocker, preserve failed/stale evidence, name the accountable owner and exa
   coverage, gaps, and orphans.
 - Return query paths as ordered node and edge evidence, not prose-only claims.
 - Return the validation and handoff summary directly in the active agent response.
-- Emit `ai-sdlc-handoff/v1` with `result`, `blockers`, `next_required`, and
+- Emit `ai-sdlc-handoff/v2` with `result`, `blockers`, `next_required`, and
   `next_optional`; actions include `reason`, `command`, and `expected_artifact`.
 - Do not create `summary.txt`, `*-summary.txt`, or another standalone summary file.
 - Do not create ad hoc summaries outside the canonical graph outputs.
@@ -196,6 +198,6 @@ acceptance criterion. A following `Refs: AC-004` under `T006` creates a task
 
 ## Source contract
 
-This page is generated from [`skills/ai-sdlc-delivery-graph/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-delivery-graph/SKILL.md) plus its linked `steps/manifest.json` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
+This page is generated from [`skills/ai-sdlc-delivery-graph/SKILL.md`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-delivery-graph/SKILL.md) plus its linked `steps/manifest.toon` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.
 
 [Back to the skill catalog](../skills.md) · [Script reference](../scripts.md) · [Choose a workflow](../../flows/index.md)

@@ -15,8 +15,8 @@ Enter only after the prepare step passes and this skill is the selected owner fo
   exclusions, or the drift schema.
 - Read `references/context-engine-v3-contract.md` before building or reviewing
   topology, selectors, budgets, exclusions, or freshness.
-- Validate custom selectors with `references/context-selector.schema.json` and
-  task packs with `references/context-pack.schema.json`.
+- Validate custom selectors with `references/context-selector.schema.toon` and
+  task packs with `references/context-pack.schema.toon`.
 - Use `scripts/context_engine.py` for topology and task-pack generation.
 - Use `scripts/external_spec_snapshot.py` when a separately governed
   specification repository must be made visible as explicit, reviewed,

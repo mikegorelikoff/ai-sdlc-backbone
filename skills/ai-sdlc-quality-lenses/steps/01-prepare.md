@@ -11,7 +11,7 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 ### 0.1 Required Inputs
 
 - One readable source artifact.
-- One or more lens identifiers from `references/quality-lenses.json`.
+- One or more lens identifiers from `references/quality-lenses.toon`.
 - A feature or initiative identifier.
 - An owner for every finding.
 
@@ -33,7 +33,7 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 - Return selected lenses, finding counts by severity and status, blockers, and
   output paths directly in the active agent response.
-- Before the final response, emit `ai-sdlc-handoff/v1` with `result`,
+- Before the final response, emit `ai-sdlc-handoff/v2` with `result`,
   `blockers`, `next_required`, and `next_optional`; every action includes
   `reason`, `command`, and `expected_artifact`.
 - Do not create `summary.txt`, `*-summary.txt`, or unregistered review files.

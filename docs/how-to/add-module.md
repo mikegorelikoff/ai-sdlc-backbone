@@ -9,7 +9,7 @@ Use a module when several skills or artifacts form a coherent optional capabilit
 
 ## Create the manifest
 
-Add `modules/<id>/module.json` with schema, stable ID, version, kind, harness API range, dependencies, description, and skill entries. Skill paths must remain inside the repository and point to valid packages.
+Add `modules/<id>/module.toon` with schema, stable ID, version, kind, harness API range, dependencies, description, and skill entries. Skill paths must remain inside the repository and point to valid packages.
 
 ## Validate discovery
 

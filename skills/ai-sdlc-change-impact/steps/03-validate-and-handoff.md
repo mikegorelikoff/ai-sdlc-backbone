@@ -25,8 +25,13 @@ Quality gate:
 
 Valid change:
 
-```json
-{"id":"CHG-001","changed_ref":"AC-004","source":{"path":"requirements.md","line":121,"detail":"Retry behavior changed from optional to required."}}
+```toon
+changed_ref: AC-004
+id: CHG-001
+source:
+  detail: Retry behavior changed from optional to required.
+  line: 121
+  path: requirements.md
 ```
 
 Invalid counter-example: `The requirements changed recently.` It cannot prove

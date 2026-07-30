@@ -44,7 +44,7 @@ resolve to that release commit.
 1. Record the current installed inventory and accepted Git baseline.
 2. Review the [tagged installation contract](../how-to/install.md), including
    Node.js `>=22.20.0`, the installer telemetry opt-out, and project scope.
-3. Update in a disposable branch; run `list --json`, navigator `--help`, SDD
+3. Update in a disposable branch; run `list --toon`, navigator `--help`, SDD
    helper `--help`, compatibility, and the first-use smoke.
 4. Preserve consumer-owned specs, decisions, state, policies, and evidence.
 5. Roll back through reviewed Git changes if the accepted baseline or helper

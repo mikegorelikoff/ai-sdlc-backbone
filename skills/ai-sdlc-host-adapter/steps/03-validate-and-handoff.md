@@ -10,19 +10,20 @@ Enter after execution has produced the expected artifact, code, plan, decision, 
 
 ## Output Spec
 
-The negotiation records native and fallback mappings, unsupported operations,
-missing capabilities, requested and effective limits, compatibility, reasons,
-and deterministic fingerprints.
+The negotiation records StepCard identity, native mapping, unsupported
+operation, derived and missing capabilities, side effect, gates, outputs,
+idempotency scope, requested and effective limits, fallbacks, compatibility,
+reasons, and deterministic fingerprints.
 
 Quality gate:
 
-- Pass only when every required operation and capability has an equivalent
-  mapping or registered semantic-preserving fallback.
+- Pass only when the StepCard operation has an equivalent mapping and every
+  derived capability is declared by the adapter.
 - Fail closed when host behavior would change workflow semantics.
 
 ## Scope Boundary
 
-- Do not execute host operations, commands, hooks, or approvals.
+- Do not execute host operations, commands, or approvals.
 - Do not claim capabilities not declared by the adapter.
 - Do not silently drop workflow steps or required gates.
 

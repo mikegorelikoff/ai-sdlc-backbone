@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import json
 import os
 import re
 import subprocess
@@ -13,6 +12,11 @@ import sys
 import tempfile
 from collections import deque
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 from typing import Any
 
 _SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
@@ -38,7 +42,7 @@ SEMANTIC_RELATIONS = {"traces-to", "verifies", "implements", "implemented-by", "
 
 def canonical(value: Any) -> str:
     """Serialize normalized content for hashing and stable output."""
-    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return toon_codec.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
 
 def digest(value: Any) -> str:
@@ -360,14 +364,14 @@ def markdown_graph(graph: dict[str, Any]) -> str:
 
 
 def render(value: dict[str, Any], output_format: str) -> str:
-    """Render JSON, full TOON, or Markdown."""
-    if output_format == "json":
-        return json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
+    """Render TOON, full TOON, or Markdown."""
+    if output_format == "toon":
+        return toon_codec.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
     if output_format == "toon":
         return encode_toon(value)
     if value.get("schema") == GRAPH_SCHEMA:
         return markdown_graph(value)
-    return "```json\n" + json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) + "\n```\n"
+    return "```toon\n" + toon_codec.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) + "\n```\n"
 
 
 def main() -> int:
@@ -381,7 +385,7 @@ def main() -> int:
     actions.add_argument("--orphans", action="store_true")
     parser.add_argument("--to")
     parser.add_argument("--write", action="store_true")
-    parser.add_argument("--format", choices=("markdown", "json", "toon"), default="toon")
+    parser.add_argument("--format", choices=("markdown", "toon"), default="toon")
     parser.add_argument("--quick-flow", action="store_true")
     parser.add_argument("--full-flow", action="store_true")
     parser.add_argument("--feature", default="<feature-name>")
@@ -410,7 +414,6 @@ def main() -> int:
         generated_by_override=args.generated_by,
     )
     if args.write:
-        atomic_write(repository / "_ai_sdlc/delivery-graph.json", json.dumps(graph, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
         atomic_write(repository / "_ai_sdlc/delivery-graph.toon", encode_toon(graph))
         atomic_write(repository / "_ai_sdlc/delivery-graph.md", graph_markdown)
         write_bundle_indexes(repository / "_ai_sdlc")

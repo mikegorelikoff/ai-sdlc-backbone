@@ -3,11 +3,15 @@
 
 from __future__ import annotations
 
-import json
 import unittest
 import subprocess
 import sys
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -29,12 +33,12 @@ UNTRUSTED_INPUT_SKILLS = (
 
 def contract_text(skill_dir: Path) -> str:
     text = (skill_dir / "SKILL.md").read_text(encoding="utf-8")
-    manifest = json.loads(
-        (skill_dir / "steps" / "manifest.json").read_text(encoding="utf-8")
+    manifest = toon_codec.loads(
+        (skill_dir / "steps" / "manifest.toon").read_text(encoding="utf-8")
     )
     return text + "\n".join(
         (skill_dir / selector["path"]).read_text(encoding="utf-8")
-        for selector in manifest["selectors"]
+        for selector in manifest["steps"]
     )
 
 

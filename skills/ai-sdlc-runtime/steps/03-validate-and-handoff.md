@@ -10,11 +10,11 @@ Enter after execution has produced the expected artifact, code, plan, decision, 
 
 ## Output Spec
 
-The hash-chained JSONL journal stores contiguous sequence numbers and transition
-payloads. Exact JSON state supports deterministic replay comparison. Complete
-TOON state exposes the plan identity, task states and attempts, running and ready
-tasks, budgets, stop reason, sequence, and fingerprint to agents. Replay must
-reproduce both projections.
+The hash-chained `journal/*.toon` event files store contiguous sequence numbers
+and transition payloads. `state.toon` exposes plan identity, task protocol
+phases and attempts, running and ready tasks, budgets, stop reason, sequence,
+and fingerprint. Replay must reproduce that projection from immutable
+`plan.toon` plus the journal.
 
 Quality gate:
 

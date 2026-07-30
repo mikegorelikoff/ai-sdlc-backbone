@@ -17,9 +17,9 @@ Enter only after the prepare step passes and this skill is the selected owner fo
 ## Script Usage
 
 ```bash
-python3 skills/ai-sdlc-change-impact/scripts/change_impact.py specs/payments --changes /tmp/changes.json --emit --quick-flow
-python3 skills/ai-sdlc-change-impact/scripts/change_impact.py specs/payments --changes /tmp/changes.json --write --full-flow --format toon
-python3 skills/ai-sdlc-change-impact/scripts/change_impact.py specs/payments --changes /tmp/changes.json --state-check --format toon
+python3 skills/ai-sdlc-change-impact/scripts/change_impact.py specs/payments --changes /tmp/changes.toon --emit --quick-flow
+python3 skills/ai-sdlc-change-impact/scripts/change_impact.py specs/payments --changes /tmp/changes.toon --write --full-flow --format toon
+python3 skills/ai-sdlc-change-impact/scripts/change_impact.py specs/payments --changes /tmp/changes.toon --state-check --format toon
 ```
 
 The change set is read-only input. `--write` atomically creates both report

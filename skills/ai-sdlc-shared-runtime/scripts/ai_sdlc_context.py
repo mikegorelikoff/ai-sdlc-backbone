@@ -11,13 +11,18 @@ from __future__ import annotations
 import csv
 import hashlib
 import io
-import json
 import math
 import os
 import re
 import tempfile
 from dataclasses import dataclass
+import sys
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parent
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 
 from ai_sdlc_paths import (
     INTERNAL_DIR,
@@ -119,7 +124,7 @@ def toon_scalar(value: object) -> str:
     """Serialize a scalar safely on one TOON line."""
     text = str(value).replace("\r", " ").replace("\n", " ")
     if not text or text != text.strip() or any(char in text for char in ":,#[]{}\""):
-        return json.dumps(text, ensure_ascii=False)
+        return toon_codec.dumps(text, ensure_ascii=False)
     return text
 
 
@@ -139,13 +144,13 @@ def resolve_interaction_profile(root: Path) -> dict[str, object]:
         "usage": INTERACTION_USAGE,
         "source": "",
     }
-    path = root / "config.resolved.json"
+    path = root / "config.resolved.toon"
     if not path.is_file() or path.is_symlink():
         return profile
-    profile["source"] = "config.resolved.json"
+    profile["source"] = "config.resolved.toon"
     try:
-        payload = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
+        payload = toon_codec.loads(path.read_text(encoding="utf-8"))
+    except (OSError, toon_codec.ToonDecodeError):
         profile["status"] = "invalid"
         return profile
     if payload.get("schema") != "ai-sdlc-config-resolution/v1" or not isinstance(payload.get("values"), dict):
@@ -490,7 +495,7 @@ def _fingerprint(
     for value in (CONTEXT_SCHEMA, skill, flow_mode, str(budget_tokens), *required_sections, *keywords):
         digest.update(value.encode("utf-8"))
         digest.update(b"\0")
-    digest.update(json.dumps(interaction, sort_keys=True, separators=(",", ":")).encode("utf-8"))
+    digest.update(toon_codec.dumps(interaction, sort_keys=True, separators=(",", ":")).encode("utf-8"))
     digest.update(b"\0")
     for source in sources:
         digest.update(source.display_path.encode("utf-8"))

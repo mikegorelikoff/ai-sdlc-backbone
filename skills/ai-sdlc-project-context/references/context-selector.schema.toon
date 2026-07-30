@@ -1,0 +1,18 @@
+"$id": "https://github.com/mikegorelikoff/ai-sdlc-harness/schemas/ai-sdlc-context-selectors-v2"
+"$schema": ai-sdlc-toon-contract/v1
+additionalProperties: false
+properties:
+  exclusions:
+    items:
+      type: string
+    type: array
+    uniqueItems: true
+  schema:
+    const: ai-sdlc-context-selectors/v2
+  selectors:
+    items:
+      type: object
+    type: array
+required[3]: schema,selectors,exclusions
+title: AI SDLC Context Selectors
+type: object

@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import json
 import os
 import re
 import shutil
@@ -12,6 +11,11 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -70,25 +74,25 @@ def verify_bounded_install(consumer: Path, installed: Path, expected: set[str]) 
             str(consumer),
             "--validate-all",
             "--format",
-            "json",
+            "toon",
         ],
         consumer,
     )
     require(step_result, "bounded installed step manifests")
-    if json.loads(step_result.stdout).get("skills") != len(expected):
+    if toon_codec.loads(step_result.stdout).get("skills") != len(expected):
         raise RuntimeError("bounded installation step inventory is incomplete")
     result = run(
         [
             sys.executable, str(flow), "explore", "--root", str(consumer),
             "--intent", "Implement a bounded API change",
             "--feature", "001-runtime-smoke", "--action", "implementation",
-            "--format", "json",
+            "--format", "toon",
         ],
         consumer,
     )
     require(result, "bounded installed flow")
-    payload = json.loads(result.stdout)
-    if payload.get("schema") != "ai-sdlc-flow/v2":
+    payload = toon_codec.loads(result.stdout)
+    if payload.get("schema") != "ai-sdlc-flow/v3":
         raise RuntimeError("bounded installation did not emit flow v2")
 
 
@@ -110,7 +114,7 @@ def install_npx(source: str, consumer: Path, agent: str | None = None) -> None:
         run(command, consumer),
         "Skills CLI installation",
     )
-    allowed = {".agents", ".git", "skills-lock.json"}
+    allowed = {".agents", ".git", "skills-lock.toon"}
     unexpected = sorted(path.name for path in consumer.iterdir() if path.name not in allowed)
     if unexpected:
         raise RuntimeError(
@@ -171,14 +175,14 @@ def verify(consumer: Path, source_checkout: Path | None = None, expected_skill_c
     sdd_scripts = installed / "ai-sdlc-sdd" / "scripts"
     scaffold = sdd_scripts / "sdd_artifact_scaffold.py"
     commit_ready = installed / "ai-sdlc-commit-prep" / "scripts" / "check_commit_ready.py"
-    config_result = run([sys.executable, str(config_resolver), "--format", "json"], consumer)
+    config_result = run([sys.executable, str(config_resolver), "--format", "toon"], consumer)
     if config_result.returncode and "--base" in config_result.stderr and source_checkout is not None:
         # v1.2.0 predates packaged defaults and requires the release checkout's
         # explicit base file. Preserve that preflight so the immutable-release
         # regression test reaches the SDD root-resolution defect it locks.
-        base_config = source_checkout / "config" / "ai-sdlc.defaults.json"
+        base_config = source_checkout / "config" / "ai-sdlc.defaults.toon"
         config_result = run(
-            [sys.executable, str(config_resolver), "--base", str(base_config), "--format", "json"],
+            [sys.executable, str(config_resolver), "--base", str(base_config), "--format", "toon"],
             consumer,
         )
     require(config_result, "installed packaged configuration defaults")
@@ -190,12 +194,12 @@ def verify(consumer: Path, source_checkout: Path | None = None, expected_skill_c
             str(consumer),
             "--validate-all",
             "--format",
-            "json",
+            "toon",
         ],
         consumer,
     )
     require(step_result, "installed step manifests")
-    if json.loads(step_result.stdout).get("skills") != expected_skill_count:
+    if toon_codec.loads(step_result.stdout).get("skills") != expected_skill_count:
         raise RuntimeError("installed step manifest inventory is incomplete")
     documented_how_to_scripts = (
         installed / "ai-sdlc-host-adapter" / "scripts" / "adapter.py",

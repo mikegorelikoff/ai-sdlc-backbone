@@ -3,11 +3,15 @@
 
 from __future__ import annotations
 
-import json
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -23,7 +27,7 @@ MAX_ROUTER_WORD_RATIO = 0.40
 
 
 def manifests() -> list[Path]:
-    return sorted((ROOT / "skills").glob("*/steps/manifest.json"))
+    return sorted((ROOT / "skills").glob("*/steps/manifest.toon"))
 
 
 def fixture(
@@ -33,35 +37,164 @@ def fixture(
     step_text: str | None = None,
 ) -> Path:
     skill = root / "skills" / "ai-sdlc-fixture"
-    step = skill / "steps" / "execute.md"
-    step.parent.mkdir(parents=True)
+    steps_root = skill / "steps"
+    steps_root.mkdir(parents=True)
     content = step_text or (
         "# Execute\n\n## Entry\n\nUse bounded fixture evidence.\n\n"
         "## Procedure\n\nPerform the selected fixture action deterministically.\n\n"
         "## Exit\n\nReturn explicit validation evidence and stop.\n"
     )
-    step.write_text(content, encoding="utf-8")
+    standard_content = (
+        "# {title}\n\n## Entry\n\nUse bounded fixture evidence.\n\n"
+        "## Procedure\n\nPerform this fixture checkpoint deterministically and "
+        "preserve explicit evidence for the next dependency.\n\n"
+        "## Exit\n\nReturn explicit validation evidence and stop.\n"
+    )
+    for step_id in ("preflight", "context", "validate", "handoff"):
+        steps_root.joinpath(f"{step_id}.md").write_text(
+            standard_content.format(title=step_id.title()),
+            encoding="utf-8",
+        )
+    steps_root.joinpath("execute.md").write_text(content, encoding="utf-8")
+    record = dict(selector or {})
+    execute_path = str(record.pop("path", "steps/execute.md"))
+    execute_id = str(record.pop("id", "execute"))
+    execute_phases = list(record.pop("phases", ["execute"]))
+    execute_roles = list(record.pop("roles", ["software-engineer"]))
+    execute_actions = list(record.pop("actions", []))
+    execute_max = int(record.pop("max_tokens", 256))
+    execute_reason = str(
+        record.pop("reason", "execute the bounded fixture procedure")
+    )
+    execute_load = str(record.pop("load", "on-demand"))
     skill.joinpath("SKILL.md").write_text(
         "---\nname: ai-sdlc-fixture\ndescription: Fixture.\n---\n\n"
-        "# Fixture\n\n[`steps/execute.md`](steps/execute.md)\n",
+        "# Fixture\n\n"
+        "[`steps/preflight.md`](steps/preflight.md)\n"
+        "[`steps/context.md`](steps/context.md)\n"
+        f"[`{execute_path}`]({execute_path})\n"
+        "[`steps/validate.md`](steps/validate.md)\n"
+        "[`steps/handoff.md`](steps/handoff.md)\n",
         encoding="utf-8",
     )
-    record = selector or {
-        "id": "execute",
-        "path": "steps/execute.md",
-        "phases": ["execute"],
-        "roles": ["software-engineer"],
-        "actions": [],
-        "load": "on-demand",
-        "max_tokens": 256,
-        "reason": "execute the bounded fixture procedure",
+
+    context = {
+        "required": True,
+        "budget_tokens": 512,
+        "mandatory": ["step_document"],
+        "selectors": ["step"],
+        "critical_anchors": ["## Entry", "## Procedure", "## Exit"],
+        "min_savings_percent": 0,
+        "fallback": "direct_read",
     }
-    skill.joinpath("steps/manifest.json").write_text(
-        json.dumps(
+
+    def node(
+        step_id: str,
+        path: str,
+        step_type: str,
+        phases: list[str],
+        depends_on: list[str],
+        operation: str,
+    ) -> dict[str, object]:
+        return {
+            "id": step_id,
+            "path": path,
+            "type": step_type,
+            "depends_on": depends_on,
+            "condition": {
+                "phases": phases,
+                "roles": ["software-engineer"],
+                "actions": [],
+            },
+            "load": "required",
+            "max_tokens": 256,
+            "reason": f"run the deterministic {step_id} fixture checkpoint",
+            "operation": operation,
+            "capabilities": ["filesystem.read"],
+            "side_effect": "none",
+            "context": context,
+            "gates": ["fixture-evidence"],
+            "outputs": [f"{step_id}-evidence"],
+            "max_attempts": 1,
+            "commit_boundary": "none",
+            "on_failure": "block",
+        }
+
+    graph = [
+        node(
+            "preflight",
+            "steps/preflight.md",
+            "analysis",
+            ["prepare"],
+            [],
+            "inspect-fixture",
+        ),
+        node(
+            "context",
+            "steps/context.md",
+            "context",
+            ["clarify", "route"],
+            ["preflight"],
+            "compile-context",
+        ),
+        {
+            **node(
+                execute_id,
+                execute_path,
+                "action",
+                execute_phases,
+                ["context"],
+                "execute-fixture",
+            ),
+            "condition": {
+                "phases": execute_phases,
+                "roles": execute_roles,
+                "actions": execute_actions,
+            },
+            "load": execute_load,
+            "max_tokens": execute_max,
+            "reason": execute_reason,
+            "side_effect": "workspace-write",
+            **record,
+        },
+        node(
+            "validate",
+            "steps/validate.md",
+            "validation",
+            ["validate"],
+            [execute_id],
+            "validate-fixture",
+        ),
+        node(
+            "handoff",
+            "steps/handoff.md",
+            "handoff",
+            ["handoff", "complete"],
+            ["validate"],
+            "handoff-fixture",
+        ),
+    ]
+    skill.joinpath("steps/manifest.toon").write_text(
+        toon_codec.dumps(
             {
                 "schema": STEPS.SCHEMA,
                 "skill": "ai-sdlc-fixture",
-                "selectors": [record],
+                "version": STEPS.VERSION,
+                "entrypoints": {
+                    "prepare": ["preflight"],
+                    "clarify": ["context"],
+                    "route": ["context"],
+                    "execute": [execute_id],
+                    "validate": ["validate"],
+                    "handoff": ["handoff"],
+                    "complete": ["handoff"],
+                },
+                "budgets": {
+                    "step_max_tokens": 512,
+                    "context_max_tokens": 512,
+                    "min_context_savings_percent": 0,
+                },
+                "steps": graph,
             }
         ),
         encoding="utf-8",
@@ -80,7 +213,7 @@ class StepManifestTests(unittest.TestCase):
                     ROOT, skill_doc.parent.name
                 )
                 declared = {
-                    selector["path"] for selector in manifest["selectors"]
+                    selector["path"] for selector in manifest["steps"]
                 }
                 actual = {
                     path.relative_to(skill_root).as_posix()
@@ -131,15 +264,15 @@ class StepManifestTests(unittest.TestCase):
             "ai-sdlc-shared-runtime",
         )
         for skill_doc in sorted((ROOT / "skills").glob("*/SKILL.md")):
-            manifest = json.loads(
-                (skill_doc.parent / "steps/manifest.json").read_text(
+            manifest = toon_codec.loads(
+                (skill_doc.parent / "steps/manifest.toon").read_text(
                     encoding="utf-8"
                 )
             )
             aggregate = skill_doc.read_text(encoding="utf-8")
             aggregate += "\n".join(
                 (skill_doc.parent / selector["path"]).read_text(encoding="utf-8")
-                for selector in manifest["selectors"]
+                for selector in manifest["steps"]
             )
             for token in tokens:
                 with self.subTest(skill=skill_doc.parent.name, token=token):
@@ -166,6 +299,75 @@ class StepManifestTests(unittest.TestCase):
         selection = STEPS.select_steps(ROOT, "ai-sdlc-sdd", "execute")
         self.assertEqual(len(selection.selected), 1)
 
+    def test_run_plan_tasks_are_context_complete_step_card_projections(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            fixture(root)
+            first = STEPS.compile_run_plan(
+                root,
+                "ai-sdlc-fixture",
+                "execute",
+                role="software-engineer",
+                goal="execute deterministic fixture",
+                trace_ids=("FR-007",),
+            )
+            second = STEPS.compile_run_plan(
+                root,
+                "ai-sdlc-fixture",
+                "execute",
+                role="software-engineer",
+                goal="execute deterministic fixture",
+                trace_ids=("FR-007",),
+            )
+            self.assertEqual(STEPS.render_toon(first), STEPS.render_toon(second))
+            self.assertTrue(first["tasks"])
+            for task in first["tasks"]:
+                with self.subTest(step=task["step_id"]):
+                    self.assertEqual(task["schema"], STEPS.STEP_CARD_SCHEMA)
+                    self.assertEqual(
+                        task["context"]["schema"],
+                        "ai-sdlc-context-pack/v4",
+                    )
+                    self.assertTrue(task["ready"])
+                    self.assertTrue(task["context"]["sufficient"])
+                    self.assertEqual(
+                        task["graph_fingerprint"],
+                        first["graph_fingerprint"],
+                    )
+                    self.assertEqual(
+                        task["idempotency_scope"],
+                        (
+                            f"{task['skill']}:{task['step_id']}:"
+                            f"{first['graph_fingerprint']}"
+                        ),
+                    )
+
+    def test_run_plan_fails_closed_when_any_step_context_is_insufficient(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            skill = fixture(root)
+            manifest_path = skill / "steps/manifest.toon"
+            manifest = toon_codec.loads(
+                manifest_path.read_text(encoding="utf-8")
+            )
+            execute = next(
+                step for step in manifest["steps"] if step["id"] == "execute"
+            )
+            execute["context"]["critical_anchors"].append(
+                "MUST-PRESERVE-THIS-ANCHOR"
+            )
+            manifest_path.write_text(
+                toon_codec.dumps(manifest),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(ValueError, "STEP_CONTEXT_INSUFFICIENT"):
+                STEPS.compile_run_plan(
+                    root,
+                    "ai-sdlc-fixture",
+                    "execute",
+                    role="software-engineer",
+                )
+
     def test_unknown_phase_role_and_skill_fail_closed(self) -> None:
         with self.assertRaisesRegex(ValueError, "STEP_UNKNOWN_PHASE"):
             STEPS.select_steps(ROOT, "ai-sdlc-sdd", "invent")
@@ -183,7 +385,7 @@ class StepManifestTests(unittest.TestCase):
                 "---\nname: ai-sdlc-sdd\ndescription: Incomplete shadow.\n---\n",
                 encoding="utf-8",
             )
-            with self.assertRaisesRegex(ValueError, "missing steps/manifest.json"):
+            with self.assertRaisesRegex(ValueError, "missing steps/manifest.toon"):
                 STEPS.load_manifest(root, "ai-sdlc-sdd")
 
     def test_broken_target_symlink_cannot_fall_back_to_packaged_copy(self) -> None:
@@ -223,7 +425,11 @@ class StepManifestTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
-            too_large = "# Execute\n\n" + ("bounded evidence " * 500)
+            too_large = (
+                "# Execute\n\n## Entry\n\nEnter safely.\n\n## Procedure\n\n"
+                + ("bounded evidence " * 500)
+                + "\n\n## Exit\n\nReturn evidence.\n"
+            )
             fixture(root, step_text=too_large)
             with self.assertRaisesRegex(ValueError, "STEP_TOKEN_OVERFLOW"):
                 STEPS.load_manifest(root, "ai-sdlc-fixture")
@@ -251,7 +457,7 @@ class StepManifestTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "undeclared step files"):
                 STEPS.load_manifest(root, "ai-sdlc-fixture")
 
-    def test_overlapping_selectors_fail_closed(self) -> None:
+    def test_dependency_cycle_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             skill = fixture(root)
@@ -268,22 +474,25 @@ class StepManifestTests(unittest.TestCase):
                 + "\n[`steps/also-execute.md`](steps/also-execute.md)\n",
                 encoding="utf-8",
             )
-            manifest_path = skill / "steps" / "manifest.json"
-            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-            manifest["selectors"].append(
+            manifest_path = skill / "steps" / "manifest.toon"
+            manifest = toon_codec.loads(manifest_path.read_text(encoding="utf-8"))
+            execute = next(
+                step for step in manifest["steps"] if step["id"] == "execute"
+            )
+            execute["depends_on"] = ["also-execute"]
+            also_execute = dict(execute)
+            also_execute.update(
                 {
                     "id": "also-execute",
                     "path": "steps/also-execute.md",
-                    "phases": ["execute"],
-                    "roles": ["software-engineer"],
-                    "actions": [],
-                    "load": "on-demand",
-                    "max_tokens": 256,
-                    "reason": "overlapping selector must fail closed",
+                    "depends_on": ["execute"],
+                    "reason": "dependency cycle must fail closed",
+                    "outputs": ["also-execute-evidence"],
                 }
             )
-            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
-            with self.assertRaisesRegex(ValueError, "overlapping selectors"):
+            manifest["steps"].append(also_execute)
+            manifest_path.write_text(toon_codec.dumps(manifest), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "dependency cycle"):
                 STEPS.load_manifest(root, "ai-sdlc-fixture")
 
 

@@ -63,7 +63,7 @@ BEGINNER_TERMS = (
     "handoff",
 )
 CANONICAL_INSTALL = 'DISABLE_TELEMETRY=1 npx -y skills@1.5.19 add "$HARNESS_SRC" --skill \'*\' --agent codex -y'
-CANONICAL_RELEASE_TAG = "v3.0.0-rc.2"
+CANONICAL_RELEASE_TAG = "v4.0.0"
 FLOW_PAGES = {
     "flows/index.md",
     "flows/refinement.md",
@@ -76,27 +76,27 @@ TUTORIAL_NAVIGATOR_INTENT = "Implement GET /health behavior while preserving exi
 IMPLEMENTATION_CONTRACT = (
     ("branch", "ai-sdlc-branching", "feature/<slug>"),
     ("sdd", "ai-sdlc-sdd", "specs/<feature>/"),
-    ("task_context", "ai-sdlc-project-context", "task-packs/<task>"),
+    ("task_context", "ai-sdlc-project-context", "ai-sdlc-context-pack/v4"),
     ("implement", "Host coding agent", "Code, tests"),
     ("validate", "ai-sdlc-validation", "Exact command outcomes"),
     ("review", "ai-sdlc-code-review", "Evidence-ranked findings"),
     ("commit_prep", "ai-sdlc-commit-prep", "traceable commit"),
-    ("release_handoff", "ai-sdlc-validation", "ai-sdlc-handoff/v1"),
+    ("release_handoff", "ai-sdlc-validation", "ai-sdlc-handoff/v2"),
 )
 CONTROL_PLANE_CONTRACT = (
     ("controlled_change", "ai-sdlc-change-set", "changes/<change-id>/"),
     ("change_impact", "ai-sdlc-change-impact", "change-impact.md"),
-    ("delivery_graph", "ai-sdlc-delivery-graph", "delivery-graph.{toon,json,md}"),
-    ("evidence_freshness", "ai-sdlc-delivery-graph", "evidence-ledger.{toon,json,md}"),
-    ("policy_waiver", "ai-sdlc-policy", "policy-resolution.{toon,json}"),
+    ("delivery_graph", "ai-sdlc-delivery-graph", "delivery-graph.toon"),
+    ("evidence_freshness", "ai-sdlc-delivery-graph", "evidence-ledger.toon"),
+    ("policy_waiver", "ai-sdlc-policy", "policy-resolution.toon"),
     ("context_pack", "ai-sdlc-project-context", "_ai_sdlc/context/project-context.md"),
-    ("runtime", "ai-sdlc-runtime", "journal.jsonl"),
-    ("workflow_plan", "ai-sdlc-workflow", "plan.{toon,json,md}"),
-    ("host_adapter", "ai-sdlc-host-adapter", "negotiation.{toon,json,md}"),
-    ("doctor", "ai-sdlc-doctor", "doctor/report.{toon,json,md}"),
-    ("upgrade", "ai-sdlc-doctor", "upgrades/<id>/plan.{toon,json,md}"),
-    ("package_trust", "ai-sdlc-package-trust", "decision.{toon,json,md}"),
-    ("local_metrics", "ai-sdlc-package-trust", "metrics/local.{toon,json,md}"),
+    ("runtime", "ai-sdlc-runtime", "journal/<sequence>.toon"),
+    ("workflow_plan", "ai-sdlc-workflow", "workflow-plan.toon"),
+    ("host_adapter", "ai-sdlc-host-adapter", "negotiation.toon"),
+    ("doctor", "ai-sdlc-doctor", "doctor/report.toon"),
+    ("upgrade", "ai-sdlc-doctor", "upgrades/<id>/plan.toon"),
+    ("package_trust", "ai-sdlc-package-trust", "decision.toon"),
+    ("local_metrics", "ai-sdlc-package-trust", "metrics/local.toon"),
 )
 CONTRACT_HEADERS = (
     "Predecessor / entry",
@@ -191,7 +191,7 @@ MATURITY_HEADINGS = (
 )
 MAINTAINER_TOKENS = (
     "SKILL.md",
-    "module.json",
+    "module.toon",
     "skills/ai-sdlc-shared-runtime",
     "test_all_skill_scripts.py",
     "build_catalog.py",
@@ -355,7 +355,7 @@ def validate_onboarding(root: Path = ROOT) -> list[str]:
     if actual_inventory != expected_inventory:
         errors.append("config/ai-sdlc-managed-skills.txt: inventory does not exactly match sorted skill packages")
     runtime_references = root / "skills/ai-sdlc-shared-runtime/references"
-    for name in ("ai-sdlc.defaults.json", "ai-sdlc-config.schema.json"):
+    for name in ("ai-sdlc.defaults.toon", "ai-sdlc-config.schema.toon"):
         if not (runtime_references / name).is_file():
             errors.append(f"skills/ai-sdlc-shared-runtime/references/{name}: missing installed configuration asset")
         elif not (root / "config" / name).is_file() or (root / "config" / name).read_bytes() != (runtime_references / name).read_bytes():
@@ -375,7 +375,7 @@ def validate_onboarding(root: Path = ROOT) -> list[str]:
             errors.append(f"{display_path(path)}: uses non-canonical product name AI SDLC Skill Library")
         if "github.com/mikegorelikoff/ai-sdlc-harness/releases/tag/v1." in text:
             errors.append(f"{display_path(path)}: links to a nonexistent GitHub Release instead of the version tag")
-        if path != docs / "reference/scripts.md" and "config/ai-sdlc.defaults.json" in text:
+        if path != docs / "reference/scripts.md" and "config/ai-sdlc.defaults.toon" in text:
             errors.append(f"{display_path(path)}: uses source-only presentation configuration path")
 
     short_install = (
@@ -615,18 +615,18 @@ def validate_flows(root: Path = ROOT) -> list[str]:
             "Human checkpoint",
             "Expected tree",
             "deliberate regression",
-            "ai-sdlc-handoff/v1",
+            "ai-sdlc-handoff/v2",
             '"$PYTHON_BIN" -m unittest -v',
             "git diff --check",
             "feature/001-health-endpoint",
             "test_deliberate_unknown_route_regression.py",
-            "ai-sdlc-flow/v2",
+            "ai-sdlc-flow/v3",
             TUTORIAL_NAVIGATOR_INTENT,
         )
         for token in required:
             if token.lower() not in text.lower():
                 errors.append(f"docs/tutorials/first-feature.md: missing runnable tutorial contract {token}")
-        handoffs = re.findall(r"```toon\n(schema: ai-sdlc-handoff/v1.*?)(?:\n```)", text, re.DOTALL)
+        handoffs = re.findall(r"```toon\n(schema: ai-sdlc-handoff/v2.*?)(?:\n```)", text, re.DOTALL)
         if not handoffs:
             errors.append("docs/tutorials/first-feature.md: missing parseable handoff example")
         for handoff in handoffs:
@@ -1077,8 +1077,6 @@ def validate_material(root: Path = ROOT) -> list[str]:
             "navigation.path",
             "navigation.prune",
             "navigation.top",
-            "search.suggest",
-            "search.highlight",
             "content.code.copy",
             "scheme: default",
             "scheme: slate",
@@ -1156,7 +1154,7 @@ def main() -> int:
         return 1
     pages, _ = collect_pages()
     skill_count = len(list((ROOT / "skills").glob("*/SKILL.md")))
-    module_count = len(list((ROOT / "modules").glob("*/module.json")))
+    module_count = len(list((ROOT / "modules").glob("*/module.toon")))
     print(f"Documentation valid: {len(pages)} public pages, {skill_count} skills, {module_count} modules")
     return 0
 

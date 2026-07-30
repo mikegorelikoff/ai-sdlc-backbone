@@ -1,0 +1,32 @@
+"$id": "https://github.com/mikegorelikoff/ai-sdlc-harness/schemas/ai-sdlc-change-preview-v1"
+"$schema": ai-sdlc-toon-contract/v1
+properties:
+  authority:
+    type: object
+  change_id:
+    type: string
+  conflicts:
+    type: array
+  delta_fingerprint:
+    pattern: "^[a-f0-9]{64}$"
+    type: string
+  preview_fingerprint:
+    pattern: "^[a-f0-9]{64}$"
+    type: string
+  reopen_actions:
+    type: array
+  required_gates:
+    minItems: 2
+    type: array
+  schema:
+    const: ai-sdlc-change-preview/v1
+  stale_references:
+    type: array
+  status:
+    enum[2]: ready,blocked
+  targets:
+    minItems: 1
+    type: array
+required[11]: schema,change_id,status,delta_fingerprint,targets,conflicts,stale_references,reopen_actions,required_gates,authority,preview_fingerprint
+title: AI SDLC Change Apply Preview
+type: object

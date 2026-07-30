@@ -4,17 +4,22 @@
 from __future__ import annotations
 
 import hashlib
-import json
 import re
 import subprocess
 from dataclasses import asdict, dataclass
+import sys
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parent
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 from typing import Iterable
 
 import ai_sdlc_steps
 
 
-SCHEMA = "ai-sdlc-flow/v2"
+SCHEMA = "ai-sdlc-flow/v3"
 REGISTRY_SCHEMA = "ai-sdlc-flow-selectors/v1"
 REFINEMENT_ROOT = "specs-refiniment"
 IMPLEMENTATION_ROOT = "specs"
@@ -95,6 +100,10 @@ class DecisionCard:
     config_fingerprint: str
     skill_step_reference: str
     step_manifest_fingerprint: str
+    step_selection_fingerprint: str
+    step_card: dict[str, object]
+    run_plan: dict[str, object]
+    run_plan_fingerprint: str
 
 
 @dataclass(frozen=True)
@@ -106,6 +115,8 @@ class JitReferenceSelection:
     broad_tokens: int
     skill_step_reference: str
     step_manifest_fingerprint: str
+    step_selection_fingerprint: str
+    step_card: dict[str, object]
 
 
 INTENT_RULES: tuple[tuple[str, tuple[str, ...], str, str, str], ...] = (
@@ -121,7 +132,7 @@ INTENT_RULES: tuple[tuple[str, tuple[str, ...], str, str, str], ...] = (
 
 
 def _canonical(value: object) -> str:
-    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return toon_codec.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
 
 def _digest(value: object) -> str:
@@ -204,7 +215,7 @@ def flow_skill_root(root: Path | None = None) -> Path:
         candidates.extend((root.resolve() / "skills" / "ai-sdlc-flow", root.resolve() / ".agents" / "skills" / "ai-sdlc-flow"))
     candidates.append(Path(__file__).resolve().parents[2] / "ai-sdlc-flow")
     for candidate in candidates:
-        if (candidate / "references" / "selector-registry.json").is_file():
+        if (candidate / "references" / "selector-registry.toon").is_file():
             return candidate.resolve()
     raise ValueError("FLOW_REGISTRY_MISSING: ai-sdlc-flow selector registry was not found")
 
@@ -212,7 +223,7 @@ def flow_skill_root(root: Path | None = None) -> Path:
 def load_registry(root: Path | None = None, path: Path | None = None) -> dict[str, object]:
     """Load and validate the trusted declarative selector registry."""
     skill_root = flow_skill_root(root)
-    registry_path = (path or skill_root / "references" / "selector-registry.json").resolve()
+    registry_path = (path or skill_root / "references" / "selector-registry.toon").resolve()
     try:
         registry_path.relative_to(skill_root)
     except ValueError as exc:
@@ -220,8 +231,8 @@ def load_registry(root: Path | None = None, path: Path | None = None) -> dict[st
     if registry_path.is_symlink() or not registry_path.is_file():
         raise ValueError("FLOW_UNSAFE_SELECTOR: registry must be a regular non-symlink file")
     try:
-        value = json.loads(registry_path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+        value = toon_codec.loads(registry_path.read_text(encoding="utf-8"))
+    except (OSError, toon_codec.ToonDecodeError) as exc:
         raise ValueError(f"FLOW_INVALID_REGISTRY: {exc}") from exc
     if not isinstance(value, dict) or value.get("schema") != REGISTRY_SCHEMA:
         raise ValueError(f"FLOW_INVALID_REGISTRY: schema must be {REGISTRY_SCHEMA}")
@@ -433,7 +444,7 @@ def source_hashes(root: Path, paths: Iterable[Path]) -> tuple[str, ...]:
 def discover_sources(root: Path, feature: str, explicit: Iterable[Path] = ()) -> tuple[str, ...]:
     root = root.resolve()
     mandatory = (
-        root / "modules/core/module.json", root / "config/ai-sdlc.defaults.json",
+        root / "modules/core/module.toon", root / "config/ai-sdlc.defaults.toon",
         root / "config/ai-sdlc-managed-skills.txt", root / "_ai_sdlc/context/project-context.md",
         root / REFINEMENT_ROOT / "_ai_sdlc/specs-index.toon",
         root / REFINEMENT_ROOT / feature / "_ai_sdlc/state.toon",
@@ -510,6 +521,9 @@ def select_references(
     action: str,
     step: str,
     skill: str,
+    *,
+    goal: str = "",
+    trace_ids: Iterable[str] = (),
 ) -> JitReferenceSelection:
     """Select trusted flow references plus one owning-skill procedure."""
     skill_root = flow_skill_root(root)
@@ -550,6 +564,8 @@ def select_references(
         Path(step).stem,
         role=role,
         action=action,
+        goal=goal,
+        trace_ids=trace_ids,
     )
     selected.extend(skill_steps.selected)
     skipped.extend(f"skill-step:{record}" for record in skill_steps.skipped)
@@ -574,6 +590,12 @@ def select_references(
         broad_tokens=broad_reference_tokens(root) + skill_steps.broad_tokens,
         skill_step_reference=selected_step,
         step_manifest_fingerprint=skill_steps.manifest_fingerprint,
+        step_selection_fingerprint=skill_steps.selection_fingerprint,
+        step_card=(
+            dict(skill_steps.step_cards[0])
+            if skill_steps.step_cards
+            else {}
+        ),
     )
 
 
@@ -583,7 +605,7 @@ def broad_reference_tokens(root: Path) -> int:
     total = 0
     for folder in ("references", "steps"):
         for path in sorted((skill_root / folder).rglob("*")):
-            if path.is_file() and not path.is_symlink() and path.suffix in {".md", ".json"}:
+            if path.is_file() and not path.is_symlink() and path.suffix in {".md", ".toon"}:
                 total += (len(path.read_text(encoding="utf-8")) + 3) // 4
     return total
 
@@ -666,8 +688,15 @@ def build_card(
     broad_tokens = broad_reference_tokens(root)
     skill_step_reference = ""
     step_manifest_fingerprint = _digest({})
+    step_selection_fingerprint = _digest({})
+    step_card: dict[str, object] = {}
+    run_plan: dict[str, object] = {}
+    run_plan_fingerprint = _digest({})
     if active_role and step:
         try:
+            context_trace = tuple(
+                value for value in (feature, action_id) if value
+            )
             jit = select_references(
                 root,
                 registry,
@@ -675,6 +704,8 @@ def build_card(
                 action_id,
                 step,
                 skill,
+                goal=intent,
+                trace_ids=context_trace,
             )
             selected = jit.selected
             skipped = jit.skipped
@@ -683,6 +714,18 @@ def build_card(
             broad_tokens = jit.broad_tokens
             skill_step_reference = jit.skill_step_reference
             step_manifest_fingerprint = jit.step_manifest_fingerprint
+            step_selection_fingerprint = jit.step_selection_fingerprint
+            step_card = jit.step_card
+            run_plan = ai_sdlc_steps.compile_run_plan(
+                root,
+                skill,
+                Path(step).stem,
+                role=active_role,
+                action=action_id,
+                goal=intent,
+                trace_ids=context_trace,
+            )
+            run_plan_fingerprint = str(run_plan["fingerprint"])
         except ValueError as exc:
             blockers.append(str(exc))
     context = economics or choose_context(
@@ -703,6 +746,10 @@ def build_card(
         "selector_fingerprint": selector_fingerprint, "config_fingerprint": config_fingerprint,
         "skill_step_reference": skill_step_reference,
         "step_manifest_fingerprint": step_manifest_fingerprint,
+        "step_selection_fingerprint": step_selection_fingerprint,
+        "step_card": step_card,
+        "run_plan": run_plan,
+        "run_plan_fingerprint": run_plan_fingerprint,
         "context_economics": asdict(context), "sources": sources, "project_context": project_context,
         "blockers": tuple(blockers), "planned_writes": planned,
     }
@@ -748,6 +795,10 @@ def build_card(
         config_fingerprint=config_fingerprint,
         skill_step_reference=skill_step_reference,
         step_manifest_fingerprint=step_manifest_fingerprint,
+        step_selection_fingerprint=step_selection_fingerprint,
+        step_card=step_card,
+        run_plan=run_plan,
+        run_plan_fingerprint=run_plan_fingerprint,
     )
 
 
@@ -772,6 +823,7 @@ def render_markdown(card: DecisionCard) -> str:
         f"- Stage/rigor: `{card.stage or 'unselected'}` / `{card.rigor}`",
         f"- Context: `{e.selected_strategy}`; net={e.net_tokens}, savings={e.savings_percent}%, recall={e.recall_percent}%",
         f"- Selector/manifest/config fingerprints: `{card.selector_fingerprint}` / `{card.step_manifest_fingerprint}` / `{card.config_fingerprint}`",
+        f"- Step selection/run plan: `{card.step_selection_fingerprint}` / `{card.run_plan_fingerprint}`",
         f"- Evidence hashes: {', '.join(card.sources) if card.sources else 'none'}",
         f"- Planned writes: {', '.join(card.planned_writes) if card.planned_writes else 'none'}",
         f"- Blockers: {'; '.join(card.blockers) if card.blockers else 'none'}",
@@ -781,6 +833,4 @@ def render_markdown(card: DecisionCard) -> str:
 
 
 def render_toon(card: DecisionCard) -> str:
-    value = semantic_dict(card)
-    lines = [f"{key}: {_canonical(item) if isinstance(item, (dict, list, tuple)) else item}" for key, item in value.items()]
-    return "\n".join(lines) + "\n"
+    return toon_codec.encode_toon(semantic_dict(card))

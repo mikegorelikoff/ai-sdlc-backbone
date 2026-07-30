@@ -149,7 +149,7 @@ def main() -> int:
             # Full flow needs decision traceability before an auditable commit.
             errors.append(f"missing decision log for full flow: {spec_dir / 'decision-log.md'}")
         if args.full_flow:
-            errors.extend(validate_receipt(spec_dir / "_ai_sdlc/validation-receipt.json", ROOT))
+            errors.extend(validate_receipt(spec_dir / "_ai_sdlc/validation-receipt.toon", ROOT))
 
     if errors:
         for error in errors:

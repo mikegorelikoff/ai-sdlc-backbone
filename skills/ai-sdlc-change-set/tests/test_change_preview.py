@@ -3,12 +3,17 @@
 
 from __future__ import annotations
 
-import json
 import subprocess
 import tempfile
 import textwrap
 import unittest
+import sys
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -97,8 +102,8 @@ To: Named session
 """
 
     def preview(self, repository: Path, change_id: str = "evolve-auth", *args: str) -> subprocess.CompletedProcess[str]:
-        """Run preview in JSON by default."""
-        return self.cli(PREVIEW, repository, "--change-id", change_id, "--preview", "--format", "json", *args)
+        """Run preview in TOON by default."""
+        return self.cli(PREVIEW, repository, "--change-id", change_id, "--preview", "--format", "toon", *args)
 
     def test_ready_preview_builds_diff_impact_and_gates_without_mutation(self) -> None:
         """A valid delta produces exact virtual targets and no writes to truth."""
@@ -110,7 +115,7 @@ To: Named session
             before = target.read_bytes()
             result = self.preview(repository, "evolve-auth", "--write")
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            record = json.loads(result.stdout)
+            record = toon_codec.loads(result.stdout)
             self.assertEqual(record["status"], "ready")
             self.assertIn("+### Requirement: Session timeout", record["targets"][0]["diff"])
             self.assertIn("-### Requirement: Retained sessions", record["targets"][0]["diff"])
@@ -118,7 +123,7 @@ To: Named session
             self.assertIn("security-policy-review", [item["gate"] for item in record["required_gates"]])
             self.assertEqual(target.read_bytes(), before)
             self.assertTrue((workspace / "apply-preview.md").is_file())
-            self.assertTrue((workspace / "_ai_sdlc/apply-preview.json").is_file())
+            self.assertTrue((workspace / "_ai_sdlc/apply-preview.toon").is_file())
             toon = (workspace / "_ai_sdlc/apply-preview.toon").read_text(encoding="utf-8")
             self.assertIn("targets[1]", toon)
             self.assertIn("required_gates", toon)
@@ -170,7 +175,7 @@ The system MUST authenticate users.
 """)
             other = repository / "changes/other/_ai_sdlc"
             other.mkdir(parents=True)
-            (other / "delta-set.json").write_text(json.dumps({"status": "validated", "operations": [{"target": "specs/auth/requirements.md", "requirement_id": "FR-001"}]}), encoding="utf-8")
+            (other / "delta-set.toon").write_text(toon_codec.dumps({"status": "validated", "operations": [{"target": "specs/auth/requirements.md", "requirement_id": "FR-001"}]}), encoding="utf-8")
             result = self.preview(repository)
             self.assertEqual(result.returncode, 2)
             self.assertIn("concurrent-change-overlap", result.stdout)
@@ -208,7 +213,7 @@ The system SHALL audit access.
 """, target="specs/audit/requirements.md")
             result = self.preview(repository)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            record = json.loads(result.stdout)
+            record = toon_codec.loads(result.stdout)
             self.assertFalse(record["targets"][0]["exists"])
             self.assertIn("new-artifact-ownership", [item["gate"] for item in record["required_gates"]])
 

@@ -5,12 +5,16 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import json
 import os
 import re
 import sys
 import tempfile
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 from typing import Any
 
 from change_set import validate_workspace
@@ -43,7 +47,7 @@ def sha256_bytes(value: bytes) -> str:
 def semantic_fingerprint(record: dict[str, Any]) -> str:
     """Hash a record without its fingerprint field."""
     payload = {key: value for key, value in record.items() if key != "contract_fingerprint"}
-    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    encoded = toon_codec.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     return sha256_bytes(encoded.encode("utf-8"))
 
 
@@ -254,7 +258,7 @@ def main() -> int:
     parser.add_argument("--change-id", required=True)
     parser.add_argument("--validate", action="store_true", required=True)
     parser.add_argument("--write", action="store_true")
-    parser.add_argument("--format", choices=("markdown", "json", "toon"), default="toon")
+    parser.add_argument("--format", choices=("markdown", "toon"), default="toon")
     parser.add_argument("--quick-flow", action="store_true")
     parser.add_argument("--full-flow", action="store_true")
     parser.add_argument("--feature", default="<feature-name>")
@@ -280,11 +284,8 @@ def main() -> int:
             print(f"ERROR: {error}")
         return 1
     if args.write:
-        atomic_write(workspace, workspace / "_ai_sdlc/delta-set.json", json.dumps(record, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
         atomic_write(workspace, workspace / "_ai_sdlc/delta-set.toon", encode_toon(record))
-    if args.format == "json":
-        print(json.dumps(record, indent=2, sort_keys=True, ensure_ascii=False))
-    elif args.format == "toon":
+    if args.format == "toon":
         print(render_toon(record), end="")
     else:
         print(f"Delta set: {args.change_id}")

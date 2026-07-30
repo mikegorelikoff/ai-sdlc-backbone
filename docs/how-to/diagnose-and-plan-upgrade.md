@@ -6,7 +6,7 @@ description: Inspect installation health and preview versioned file, schema, bac
 # Diagnose and plan an upgrade
 
 Run from the root of an installed consumer repository. The doctor writes only
-diagnostic evidence. Upgrade mode also requires two reviewed inventory JSON
+diagnostic evidence. Upgrade mode also requires two reviewed inventory TOON
 files; create them from the schema/examples under
 `.agents/skills/ai-sdlc-doctor/references/` and do not substitute guessed
 hashes or version ranges.
@@ -25,7 +25,7 @@ paths, exact hashes, schema identities, versions, and harness API ranges:
 
 ```bash
 python3 .agents/skills/ai-sdlc-doctor/scripts/doctor.py . --upgrade \
-  --current current-inventory.json --target target-inventory.json \
+  --current current-inventory.toon --target target-inventory.toon \
   --upgrade-id upgrade-190 --write
 ```
 

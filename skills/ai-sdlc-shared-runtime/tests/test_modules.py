@@ -3,11 +3,16 @@
 
 from __future__ import annotations
 
-import json
 import subprocess
 import tempfile
 import unittest
+import sys
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -19,9 +24,9 @@ def module(root: Path, module_id: str, kind: str, skill: str, api_min: str = "1.
     skill_path = root / "skills" / skill
     skill_path.mkdir(parents=True, exist_ok=True)
     (skill_path / "SKILL.md").write_text(f"---\nname: {skill}\ndescription: fixture\n---\n", encoding="utf-8")
-    manifest = root / "modules" / module_id / "module.json"
+    manifest = root / "modules" / module_id / "module.toon"
     manifest.parent.mkdir(parents=True, exist_ok=True)
-    manifest.write_text(json.dumps({"schema": "ai-sdlc-module/v1", "id": module_id, "version": "1.0.0", "kind": kind, "harness_api": {"min": api_min, "max_exclusive": api_max}, "requires": requires or [], "description": "fixture", "skills": [{"name": skill, "path": f"skills/{skill}"}]}), encoding="utf-8")
+    manifest.write_text(toon_codec.dumps({"schema": "ai-sdlc-module/v1", "id": module_id, "version": "1.0.0", "kind": kind, "harness_api": {"min": api_min, "max_exclusive": api_max}, "requires": requires or [], "description": "fixture", "skills": [{"name": skill, "path": f"skills/{skill}"}]}), encoding="utf-8")
 
 
 class ModuleTests(unittest.TestCase):
@@ -33,9 +38,9 @@ class ModuleTests(unittest.TestCase):
 
     def test_repo_core_manifest_is_valid(self) -> None:
         """The shipped core registry should discover every listed skill."""
-        result = self.run_modules(ROOT, "--harness-version", "3.0.0", "--format", "toon")
+        result = self.run_modules(ROOT, "--harness-version", "4.0.0", "--format", "toon")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn("core,3.0.0-rc.2,core,yes,yes", result.stdout)
+        self.assertIn("core,4.0.0,core,yes,yes", result.stdout)
         self.assertIn("ai-sdlc-change-set", result.stdout)
         self.assertIn("ai-sdlc-delivery-graph", result.stdout)
         self.assertIn("ai-sdlc-policy", result.stdout)
@@ -51,10 +56,10 @@ class ModuleTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             module(root, "core", "core", "ai-sdlc-core")
-            manifest = root / "modules" / "core" / "module.json"
-            value = json.loads(manifest.read_text(encoding="utf-8"))
+            manifest = root / "modules" / "core" / "module.toon"
+            value = toon_codec.loads(manifest.read_text(encoding="utf-8"))
             value["version"] = "3.0.0-rc.2"
-            manifest.write_text(json.dumps(value), encoding="utf-8")
+            manifest.write_text(toon_codec.dumps(value), encoding="utf-8")
             result = self.run_modules(root, "--format", "toon")
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertIn("core,3.0.0-rc.2,core,yes,yes", result.stdout)

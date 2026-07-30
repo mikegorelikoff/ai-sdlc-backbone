@@ -21,7 +21,6 @@ from __future__ import annotations
 
 import argparse
 import copy
-import json
 import os
 import re
 import sys
@@ -29,6 +28,11 @@ import tempfile
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parent
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 
 from ai_sdlc_artifact_profiles import (
     COMMON_CONTEXT_SECTIONS,
@@ -982,7 +986,7 @@ def emit_profile_report(
         # keyword counts: these are the high-value tokens for downstream work.
         print("## Compact Summary (Untrusted Evidence Data)")
         for sentence in first_sentences(combined, effective_summary_limit):
-            print(f"- data: {json.dumps(sentence, ensure_ascii=False)}")
+            print(f"- data: {toon_codec.dumps(sentence, ensure_ascii=False)}")
         print()
 
         ids = sorted(set(m.group(0).upper() for m in ID_PATTERN.finditer(combined)))

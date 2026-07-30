@@ -10,20 +10,21 @@ Enter after execution has produced the expected artifact, code, plan, decision, 
 
 ## Output Spec
 
-The plan records every step as eligible, skipped, or deferred; selected waves;
-approval gates; hooks; fallback reason codes; source and plan fingerprints; and
-explicit host capabilities.
+The plan records every node as eligible, skipped, deferred, or blocked;
+selected waves; explicit approvals; derived capabilities and side effects;
+source fingerprints; and the embedded runtime plan.
 
 Quality gate:
 
-- Pass when the workflow is acyclic, capabilities are declared, conditions are
-  bounded, hook targets resolve, and every planned parallel step is isolated.
+- Pass when the workflow is acyclic, every referenced skill graph validates,
+  conditions are bounded, approval gates are satisfied, and the compiled run
+  plan passes runtime validation.
 - Fail closed on invalid workflow structure or ambiguous authority.
 
 ## Scope Boundary
 
-- Do not execute workflow actions or hooks.
-- Do not grant capabilities, approvals, isolation, or concurrency implicitly.
+- Do not execute workflow nodes.
+- Do not grant capabilities, approvals, or concurrency implicitly.
 - Do not mutate policy, feature state, runtime state, or canonical artifacts.
 
 ## Exit

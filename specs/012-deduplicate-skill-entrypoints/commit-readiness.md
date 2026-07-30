@@ -24,7 +24,7 @@ artifact_metadata:
   related_artifacts:
     - "specs/012-deduplicate-skill-entrypoints/code-review.md"
     - "specs/012-deduplicate-skill-entrypoints/validation.md"
-    - "specs/012-deduplicate-skill-entrypoints/_ai_sdlc/validation-receipt.json"
+    - "specs/012-deduplicate-skill-entrypoints/_ai_sdlc/validation-receipt.toon"
   validation:
     - "branch/spec alignment passed"
     - "commit readiness preflight passed"

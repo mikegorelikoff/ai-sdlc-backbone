@@ -1,0 +1,92 @@
+"$defs":
+  hash:
+    pattern: "^[a-f0-9]{64}$"
+    type: string
+  range:
+    additionalProperties: false
+    properties:
+      authority:
+        enum[3]: skill_instruction,repository_instruction,evidence_only
+      content:
+        type: string
+      end_line:
+        minimum: 0
+        type: integer
+      estimated_tokens:
+        minimum: 1
+        type: integer
+      matched_terms:
+        items:
+          type: string
+        type: array
+      path:
+        type: string
+      reasons:
+        items:
+          type: string
+        minItems: 1
+        type: array
+      sha256:
+        "$ref": #/$defs/hash
+      start_line:
+        minimum: 1
+        type: integer
+      strategy:
+        enum[4]: mandatory-step-document,full-source,lexical-range,prefix-fallback
+    required[10]: path,sha256,authority,start_line,end_line,estimated_tokens,strategy,reasons,matched_terms,content
+    type: object
+"$id": ai-sdlc-context-pack/v4
+"$schema": ai-sdlc-toon-contract/v1
+additionalProperties: false
+properties:
+  budget_tokens:
+    minimum: 64
+    type: integer
+  critical_recall_percent:
+    maximum: 100
+    minimum: 0
+    type: number
+  critical_retained:
+    minimum: 0
+    type: integer
+  critical_total:
+    minimum: 0
+    type: integer
+  direct_read_paths:
+    items:
+      type: string
+    type: array
+  fingerprint:
+    "$ref": #/$defs/hash
+  packed_tokens:
+    minimum: 0
+    type: integer
+  raw_tokens:
+    minimum: 0
+    type: integer
+  reason:
+    minLength: 1
+    type: string
+  savings_percent:
+    type: number
+  schema:
+    const: ai-sdlc-context-pack/v4
+  selected:
+    items:
+      "$ref": #/$defs/range
+    type: array
+  skill:
+    type: string
+  skipped:
+    items:
+      type: string
+    type: array
+  step_id:
+    type: string
+  strategy:
+    enum[2]: packed,direct_read
+  sufficient:
+    type: boolean
+required[17]: schema,skill,step_id,budget_tokens,raw_tokens,packed_tokens,savings_percent,critical_total,critical_retained,critical_recall_percent,sufficient,strategy,reason,selected,skipped,direct_read_paths,fingerprint
+title: AI SDLC Per-Step Context Pack
+type: object

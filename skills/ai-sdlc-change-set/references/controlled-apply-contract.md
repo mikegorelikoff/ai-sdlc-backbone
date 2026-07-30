@@ -2,7 +2,7 @@
 
 ## Approval
 
-Apply requires an `ai-sdlc-change-approval/v1` JSON record. It must accept the
+Apply requires an `ai-sdlc-change-approval/v1` TOON record. It must accept the
 exact current preview fingerprint, identify an accountable owner and decision
 reference, use an ISO timestamp, and approve every gate discovered by preview.
 Missing, rejected, stale, partial, or malformed approval fails before staging.

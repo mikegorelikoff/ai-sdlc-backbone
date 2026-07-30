@@ -1,0 +1,45 @@
+id: harness-default
+rules[5]:
+  - actions[1]: change.preview
+    description: Allow non-mutating change preview.
+    effect: allow
+    id: base-change-preview
+    protected: true
+    required_gates[0]:
+    waivable: false
+    when[0]:
+  - actions[2]: delivery.graph.index,delivery.evidence.index
+    description: Allow read-only delivery indexing.
+    effect: allow
+    id: base-delivery-index
+    protected: true
+    required_gates[0]:
+    waivable: false
+    when[0]:
+  - actions[1]: change.apply
+    description: "Require validated deltas, owner approval, and policy evaluation before canonical apply."
+    effect: require
+    id: base-change-apply
+    protected: true
+    required_gates[3]: delta-validation,owner-approval,policy-evaluation
+    waivable: false
+    when[0]:
+  - actions[1]: release.publish
+    description: Require complete validation and traceability before publication.
+    effect: require
+    id: base-release-publish
+    protected: true
+    required_gates[2]: full-validation,traceability
+    waivable: false
+    when[0]:
+  - actions[1]: command.destructive
+    description: Deny destructive command execution through policy automation.
+    effect: deny
+    id: base-destructive-command
+    protected: true
+    required_gates[0]:
+    waivable: false
+    when[0]:
+schema: ai-sdlc-policy-layer/v1
+scope: base
+version: 1.0.0

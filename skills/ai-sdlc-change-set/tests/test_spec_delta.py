@@ -3,12 +3,17 @@
 
 from __future__ import annotations
 
-import json
 import subprocess
 import tempfile
 import textwrap
 import unittest
+import sys
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -111,13 +116,13 @@ To: Named user session
             workspace, target = self.fixture(repository)
             self.write_delta(workspace, "auth.md", self.valid_body())
             before = target.read_bytes()
-            first = self.validate(repository, "--write", "--format", "json")
+            first = self.validate(repository, "--write", "--format", "toon")
             self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
             self.assertEqual(target.read_bytes(), before)
-            projection = json.loads((workspace / "_ai_sdlc/delta-set.json").read_text(encoding="utf-8"))
+            projection = toon_codec.loads((workspace / "_ai_sdlc/delta-set.toon").read_text(encoding="utf-8"))
             self.assertEqual([item["operation"] for item in projection["operations"]], ["MODIFIED", "REMOVED", "RENAMED", "ADDED"])
-            second = self.validate(repository, "--format", "json")
-            self.assertEqual(json.loads(first.stdout)["contract_fingerprint"], json.loads(second.stdout)["contract_fingerprint"])
+            second = self.validate(repository, "--format", "toon")
+            self.assertEqual(toon_codec.loads(first.stdout)["contract_fingerprint"], toon_codec.loads(second.stdout)["contract_fingerprint"])
             self.assertFalse(projection["authority"]["canonical_mutation_allowed"])
             toon = (workspace / "_ai_sdlc/delta-set.toon").read_text(encoding="utf-8")
             self.assertIn("operations[4]:", toon)

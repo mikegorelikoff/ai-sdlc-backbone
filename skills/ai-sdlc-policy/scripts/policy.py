@@ -5,13 +5,17 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import json
 import os
 import re
 import sys
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 from typing import Any
 
 _SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
@@ -32,8 +36,8 @@ EFFECT_STRENGTH = {"allow": 0, "require": 1, "deny": 2}
 
 
 def canonical(value: Any) -> str:
-    """Serialize deterministic JSON for hashing."""
-    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    """Serialize deterministic TOON for hashing."""
+    return toon_codec.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
 
 def digest(value: Any) -> str:
@@ -110,8 +114,8 @@ def load_layer(path: Path, expected_scope: str, source_name: str | None = None) 
     """Load and validate one strict policy layer."""
     try:
         raw = path.read_text(encoding="utf-8")
-        value = json.loads(raw)
-    except (OSError, json.JSONDecodeError) as exc:
+        value = toon_codec.loads(raw)
+    except (OSError, toon_codec.ToonDecodeError) as exc:
         return {}, [f"cannot read policy layer {path}: {exc}"]
     errors: list[str] = []
     required = {"schema", "id", "version", "scope", "rules"}
@@ -229,8 +233,8 @@ def action_matches(patterns: list[str], action: str) -> bool:
 def load_waiver(path: Path, source_name: str | None = None) -> tuple[dict[str, Any], list[str]]:
     """Load one strict waiver contract."""
     try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+        value = toon_codec.loads(path.read_text(encoding="utf-8"))
+    except (OSError, toon_codec.ToonDecodeError) as exc:
         return {}, [f"cannot read waiver {path}: {exc}"]
     errors: list[str] = []
     if not isinstance(value, dict) or set(value) != WAIVER_FIELDS:
@@ -343,7 +347,7 @@ def main() -> int:
     parser.add_argument("--waiver", type=Path, action="append", default=[])
     parser.add_argument("--as-of", default=datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"))
     parser.add_argument("--write", action="store_true")
-    parser.add_argument("--format", choices=("markdown", "json", "toon"), default="toon")
+    parser.add_argument("--format", choices=("markdown", "toon"), default="toon")
     parser.add_argument("--quick-flow", action="store_true")
     parser.add_argument("--full-flow", action="store_true")
     parser.add_argument("--feature", default="<feature-name>")
@@ -362,9 +366,9 @@ def main() -> int:
         print(f"ERROR: repository does not exist: {repository}")
         return 1
     profile_root = Path(__file__).resolve().parents[1] / "references/profiles"
-    paths: list[tuple[Path, str, str]] = [(args.base.resolve() if args.base else profile_root / "default.json", "base", args.base.as_posix() if args.base else "profile:default")]
+    paths: list[tuple[Path, str, str]] = [(args.base.resolve() if args.base else profile_root / "default.toon", "base", args.base.as_posix() if args.base else "profile:default")]
     if args.profile != "standard":
-        paths.append((profile_root / f"{args.profile}.json", "organization", f"profile:{args.profile}"))
+        paths.append((profile_root / f"{args.profile}.toon", "organization", f"profile:{args.profile}"))
     for path, scope in ((args.organization, "organization"), (args.project, "project"), (args.user, "user")):
         if path:
             resolved = path.resolve()
@@ -397,12 +401,12 @@ def main() -> int:
             print("ERROR: --context is required for evaluation")
             return 1
         try:
-            context = json.loads(args.context.resolve().read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as exc:
+            context = toon_codec.loads(args.context.resolve().read_text(encoding="utf-8"))
+        except (OSError, toon_codec.ToonDecodeError) as exc:
             print(f"ERROR: cannot read context: {exc}")
             return 1
         if not isinstance(context, dict):
-            print("ERROR: context must be a JSON object")
+            print("ERROR: context must be a TOON object")
             return 1
         as_of, time_error = timestamp(args.as_of, "as_of")
         if time_error or as_of is None:
@@ -427,17 +431,13 @@ def main() -> int:
             return 1
         value = evaluate(resolution, action, context, waiver_values, as_of)
         if args.write:
-            decision_path = repository / f"_ai_sdlc/policy-decisions/{value['fingerprint']}.json"
-            atomic_write(repository, decision_path, json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
-            atomic_write(repository, decision_path.with_suffix(".toon"), encode_toon(value))
+            decision_path = repository / f"_ai_sdlc/policy-decisions/{value['fingerprint']}.toon"
+            atomic_write(repository, decision_path, encode_toon(value))
     else:
         value = resolution
         if args.write:
-            atomic_write(repository, repository / "_ai_sdlc/policy-resolution.json", json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
             atomic_write(repository, repository / "_ai_sdlc/policy-resolution.toon", encode_toon(value))
-    if args.format == "json":
-        print(json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False))
-    elif args.format == "toon":
+    if args.format == "toon":
         print(encode_toon(value), end="")
     else:
         print(markdown(value), end="")

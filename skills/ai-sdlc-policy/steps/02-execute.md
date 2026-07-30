@@ -11,9 +11,9 @@ Enter only after the prepare step passes and this skill is the selected owner fo
 ## References
 
 - Read `references/policy-contract.md` before resolving or evaluating policy.
-- Validate source layers with `references/policy-layer.schema.json`, waivers
-  with `references/policy-waiver.schema.json`, and decisions with
-  `references/policy-decision.schema.json`.
+- Validate source layers with `references/policy-layer.schema.toon`, waivers
+  with `references/policy-waiver.schema.toon`, and decisions with
+  `references/policy-decision.schema.toon`.
 - Reuse organization profiles from `references/profiles/`.
 - Use `scripts/policy.py` for resolution, evaluation, and explain output.
 
@@ -21,8 +21,8 @@ Enter only after the prepare step passes and this skill is the selected owner fo
 
 ```bash
 python3 skills/ai-sdlc-policy/scripts/policy.py . --resolve --profile high-assurance --format toon
-python3 skills/ai-sdlc-policy/scripts/policy.py . --evaluate change.apply --context policy-context.json --profile regulated --format toon
-python3 skills/ai-sdlc-policy/scripts/policy.py . --explain release.publish --context release-context.json --waiver waiver.json --format markdown
+python3 skills/ai-sdlc-policy/scripts/policy.py . --evaluate change.apply --context policy-context.toon --profile regulated --format toon
+python3 skills/ai-sdlc-policy/scripts/policy.py . --explain release.publish --context release-context.toon --waiver waiver.toon --format markdown
 ```
 
 ## Purpose
@@ -34,7 +34,7 @@ accountable, expiring exceptions without silently weakening organization rules.
 
 - Versioned base, organization, project, and user policy layers.
 - A stable action such as `change.apply`, `release.publish`, or
-  `command.destructive` and a JSON context object.
+  `command.destructive` and a TOON context object.
 - Optional waiver files tied to exact rule IDs, actions, subjects, constraints,
   owners, approvers, decisions, issue times, and expiry times.
 

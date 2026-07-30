@@ -4,9 +4,19 @@
 from __future__ import annotations
 
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
+
+_TOON_RUNTIME = (
+    Path(__file__).resolve().parents[2]
+    / "ai-sdlc-shared-runtime"
+    / "scripts"
+)
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -26,7 +36,10 @@ class ProjectContextTests(unittest.TestCase):
             root = Path(temp)
             subprocess.run(["git", "init"], cwd=root, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             (root / "README.md").write_text("Run npm test\n", encoding="utf-8")
-            (root / "package.json").write_text('{"scripts":{"test":"npm test"}}\n', encoding="utf-8")
+            (root / "package.toon").write_text(
+                toon_codec.dumps({"scripts": {"test": "npm test"}}) + "\n",
+                encoding="utf-8",
+            )
             result = self.run_context(root, "--write", "--format", "toon")
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertTrue((root / "_ai_sdlc/context/project-context.md").is_file())

@@ -33,7 +33,7 @@ cross-product decisions to the named owner.
 Use the existing decision-log columns. A complete row has this form:
 
 ```markdown
-| DEC-042 | 2026-07-21 | accepted / rejected | Product Owner: <name-or-governed-role> | Accept revision `<full-commit>` for AC-001 and AC-002; non-blocking follow-up `<ticket-or-none>` remains owned by `<owner>` | Demonstration `<link-or-local-evidence>`; validation receipt `specs/<feature>/_ai_sdlc/validation-receipt.json`; review `<reference>` | accept; reject; follow-up | requirements.md; test-cases.md; tasks.md; reviewed code | AC-001; AC-002; TC-001; TC-002; T001; `<full-commit>`; follow-up ticket or `none` |
+| DEC-042 | 2026-07-21 | accepted / rejected | Product Owner: <name-or-governed-role> | Accept revision `<full-commit>` for AC-001 and AC-002; non-blocking follow-up `<ticket-or-none>` remains owned by `<owner>` | Demonstration `<link-or-local-evidence>`; validation receipt `specs/<feature>/_ai_sdlc/validation-receipt.toon`; review `<reference>` | accept; reject; follow-up | requirements.md; test-cases.md; tasks.md; reviewed code | AC-001; AC-002; TC-001; TC-002; T001; `<full-commit>`; follow-up ticket or `none` |
 ```
 
 Replace every placeholder. Use `rejected` when intended behavior is absent or

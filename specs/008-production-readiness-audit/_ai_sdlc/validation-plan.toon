@@ -1,0 +1,20 @@
+commands[6]:
+  - argv[2]: python3,skills/_shared/test_all_skill_scripts.py
+    id: V001
+    trace_ids[2]: TC-009,TC-012
+  - argv[2]: python3,skills/_shared/test_each_skill_tests.py
+    id: V002
+    trace_ids[2]: TC-009,TC-012
+  - argv[2]: python3,docs/scripts/validate_docs.py
+    id: V003
+    trace_ids[4]: TC-006,TC-007,TC-008,TC-011
+  - argv[4]: python3,"-m",unittest,docs.tests.test_docs
+    id: V004
+    trace_ids[3]: TC-006,TC-007,TC-008
+  - argv[4]: python3,skills/_shared/ai_sdlc_install_smoke.py,"--mode",emulated
+    id: V005
+    trace_ids[2]: TC-002,TC-003
+  - argv[3]: git,diff,"--check"
+    id: V006
+    trace_ids[1]: TC-015
+schema: ai-sdlc-validation-command-plan/v1

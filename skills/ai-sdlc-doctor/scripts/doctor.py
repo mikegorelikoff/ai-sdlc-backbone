@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import json
 import os
 import re
 import shutil
@@ -16,6 +15,7 @@ from typing import Any
 
 _SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
 sys.path.insert(0, str(_SHARED))
+import ai_sdlc_toon as toon_codec
 from ai_sdlc_toon import encode_toon
 from ai_sdlc_okf import migrate_concept_text, write_bundle_indexes
 
@@ -27,7 +27,7 @@ FILE_FIELDS = {"path", "sha256", "schema"}
 
 
 def canonical(value: Any) -> str:
-    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return toon_codec.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
 
 def digest(value: Any) -> str:
@@ -64,10 +64,10 @@ def doctor(repository: Path) -> dict[str, Any]:
     module_errors: list[str] = []
     module_ids: list[str] = []
     registered: list[tuple[str, str]] = []
-    for path in sorted((repository / "modules").glob("*/module.json")):
+    for path in sorted((repository / "modules").glob("*/module.toon")):
         try:
-            value = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
+            value = toon_codec.loads(path.read_text(encoding="utf-8"))
+        except (OSError, toon_codec.ToonDecodeError):
             module_errors.append(f"{path.parent.name}:unreadable")
             continue
         if value.get("schema") != "ai-sdlc-module/v1" or not isinstance(value.get("id"), str) or not isinstance(value.get("skills"), list):
@@ -176,8 +176,8 @@ def markdown(value: dict[str, Any]) -> str:
 
 def load(path: Path, label: str) -> tuple[Any, list[str]]:
     try:
-        return json.loads(path.resolve().read_text(encoding="utf-8")), []
-    except (OSError, json.JSONDecodeError) as exc:
+        return toon_codec.loads(path.resolve().read_text(encoding="utf-8")), []
+    except (OSError, toon_codec.ToonDecodeError) as exc:
         return {}, [f"cannot read {label}: {exc}"]
 
 
@@ -192,7 +192,7 @@ def main() -> int:
     parser.add_argument("--upgrade-id")
     parser.add_argument("--harness-api", default="1.0.0")
     parser.add_argument("--write", action="store_true")
-    parser.add_argument("--format", choices=("toon", "json", "markdown"), default="toon")
+    parser.add_argument("--format", choices=("toon", "markdown"), default="toon")
     parser.add_argument("--quick-flow", action="store_true")
     parser.add_argument("--full-flow", action="store_true")
     parser.add_argument("--feature", default="<feature-name>")
@@ -213,7 +213,7 @@ def main() -> int:
         return 1
     if args.doctor:
         value = doctor(repository)
-        output = repository / "_ai_sdlc/doctor/report.json"
+        output = repository / "_ai_sdlc/doctor/report.toon"
         exit_code = 0 if value["status"] == "healthy" else 2
     else:
         if not args.current or not args.target or not args.upgrade_id or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", args.upgrade_id):
@@ -233,7 +233,7 @@ def main() -> int:
                 print(f"ERROR: {error}")
             return 1
         value = upgrade_plan(current, target, args.upgrade_id, active_api)
-        output = repository / f"_ai_sdlc/upgrades/{args.upgrade_id}/plan.json"
+        output = repository / f"_ai_sdlc/upgrades/{args.upgrade_id}/plan.toon"
         exit_code = 0 if value["compatible"] else 2
     report_markdown = migrate_concept_text(
         markdown(value),
@@ -241,16 +241,13 @@ def main() -> int:
         generated_by_override=args.generated_by,
     )
     if args.write:
-        atomic_write(output, json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
-        atomic_write(output.with_suffix(".toon"), encode_toon(value))
+        atomic_write(output, encode_toon(value))
         atomic_write(output.with_suffix(".md"), report_markdown)
         write_bundle_indexes(repository / "_ai_sdlc")
-    if args.format == "json":
-        print(json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False))
+    if args.format == "toon":
+        print(encode_toon(value), end="")
     elif args.format == "markdown":
         print(report_markdown, end="")
-    else:
-        print(encode_toon(value), end="")
     return exit_code
 
 

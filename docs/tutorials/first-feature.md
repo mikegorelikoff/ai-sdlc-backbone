@@ -16,35 +16,35 @@ chat.
 
 `/health` is a web route used to report whether the tiny process is alive.
 Hypertext Transfer Protocol (HTTP) `GET` means read that route; status `200`
-means the request succeeded; `{"status": "ok"}` is the expected JavaScript
-Object Notation (JSON) response body.
+means the request succeeded; a body mapping whose `status` field is `ok` is
+the expected result.
 
 You need network access, Git, Python 3.10+, Node.js `>=22.20.0`, npm, and a
 supported AI agent. The commands are written for Linux/macOS/WSL or Git Bash;
 PowerShell users should use WSL for this end-to-end fixture. Every repository
 created here is disposable.
 
-## 0. Open the release-candidate source checkout
+## 0. Open the release source checkout
 
-This tutorial validates `v3.0.0-rc.2`, including the documentation, security,
-and workflow fixes that are not present in `v1.2.0`. Acquire the annotated tag
-explicitly:
+This tutorial validates `v4.0.0`, including executable skill graphs, per-step
+context, durable replay, and canonical TOON contracts. Acquire the annotated
+tag explicitly:
 
 ```bash
 CANDIDATE_PARENT="$(mktemp -d)"
 git clone https://github.com/mikegorelikoff/ai-sdlc-harness.git "$CANDIDATE_PARENT/ai-sdlc-harness"
 cd "$CANDIDATE_PARENT/ai-sdlc-harness"
 test "$(git remote get-url origin)" = "https://github.com/mikegorelikoff/ai-sdlc-harness.git"
-git fetch --depth 1 origin refs/tags/v3.0.0-rc.2:refs/tags/v3.0.0-rc.2
-git checkout --detach 'v3.0.0-rc.2^{commit}'
+git fetch --depth 1 origin refs/tags/v4.0.0:refs/tags/v4.0.0
+git checkout --detach 'v4.0.0^{commit}'
 ```
 
 The captured commit below is evidence for the bytes exercised, not a signature
 or permission grant. A contributor may instead open an already reviewed,
 committed source checkout containing this page.
-Capture the exact candidate revision only from a clean committed checkout so
-the recorded revision identifies every installed byte. The Git checks below
-fail on tracked, staged, or untracked candidate content:
+Capture the exact release revision only from a clean committed checkout so the
+recorded revision identifies every installed byte. The Git checks below fail
+on tracked, staged, or untracked source content:
 
 !!! terminal "Linux/macOS/WSL/Git Bash"
 
@@ -63,7 +63,7 @@ fail on tracked, staged, or untracked candidate content:
     "$PYTHON_BIN" --version
     ```
 
-If any clean-check command fails, stop and commit or discard the candidate
+If any clean-check command fails, stop and commit or discard the source
 content through normal review before recording `HARNESS_REV`. If Node is older than `22.20.0`, stop and upgrade Node before invoking the
 pinned Skills CLI. The CLI package declares that engine floor; changing the
 Node version is safer than forcing installation with an unsupported runtime.
@@ -119,7 +119,7 @@ The repository is on `dev` and clean. The `.disabled` file is not discovered by
 
 Reuse the scope, telemetry, and trust rules from the
 [canonical project-scoped installation](../how-to/install.md), but do **not**
-rerun that guide's stable-source selection in this candidate exercise. Preserve
+rerun that guide's stable-source selection in this release exercise. Preserve
 the `HARNESS_SRC` and `HARNESS_REV` captured in step 0, then inspect what the
 installer adds.
 
@@ -128,14 +128,14 @@ installer adds.
     ```bash
     test "$(git -C "$HARNESS_SRC" rev-parse HEAD)" = "$HARNESS_REV"
     DISABLE_TELEMETRY=1 npx -y skills@1.5.19 add "$HARNESS_SRC" --skill '*' --agent codex -y
-    DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --json
+    DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --toon
     "$PYTHON_BIN" .agents/skills/ai-sdlc-flow/scripts/flow.py --help
     "$PYTHON_BIN" .agents/skills/ai-sdlc-sdd/scripts/sdd_artifact_scaffold.py --help
     mkdir -p .ai-sdlc
     cp "$HARNESS_SRC/config/ai-sdlc-managed-skills.txt" .ai-sdlc/harness-managed-skills.txt
-    printf '{"schema":"ai-sdlc-install-record/v1","revision":"%s","skills_cli":"1.5.19","agent":"codex","selection":"all-skills","inventory":".ai-sdlc/harness-managed-skills.txt"}\n' "$HARNESS_REV" > .ai-sdlc/harness-install.json
+    printf 'agent: codex\ninventory: .ai-sdlc/harness-managed-skills.txt\nrevision: %s\nschema: ai-sdlc-install-record/v1\nselection: all-skills\nskills_cli: 1.5.19\n' "$HARNESS_REV" > .ai-sdlc/harness-install.toon
     "$PYTHON_BIN" .agents/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py
-    rm skills-lock.json
+    rm skills-lock.toon
     git status --short
     ```
 
@@ -156,7 +156,7 @@ scope.
 
     ```bash
     git status --short
-    git add .agents .ai-sdlc/harness-install.json .ai-sdlc/harness-managed-skills.txt
+    git add .agents .ai-sdlc/harness-install.toon .ai-sdlc/harness-managed-skills.txt
     git diff --cached --stat
     git commit -m "chore: install AI SDLC harness"
     git init --bare "$TUTORIAL_ROOT/health-origin.git"
@@ -178,7 +178,7 @@ existing reviewed remote and never creates this fixture-only exception.
     Do not modify the repository. Use feature `001-health-endpoint` and find
     the smallest safe workflow for:
     Implement GET /health behavior while preserving existing route behavior.
-    The new route must return status 200 and {"status": "ok"}.
+    The new route must return status 200 and a body mapping with status=ok.
     The existing /version and unknown-path behavior must not change.
     Report evidence, roles, rigor, context economics, blockers, planned writes,
     next checkpoint, and fingerprint. Do not Apply yet.
@@ -192,7 +192,7 @@ existing reviewed remote and never creates this fixture-only exception.
 The deterministic routing record uses its own schema:
 
 ```toon
-schema: ai-sdlc-flow/v2
+schema: ai-sdlc-flow/v3
 mode: explore
 intent_class: implementation
 feature: 001-health-endpoint
@@ -206,7 +206,7 @@ blockers[0]{message}:
 The agent's final workflow handoff is a separate valid contract:
 
 ```toon
-schema: ai-sdlc-handoff/v1
+schema: ai-sdlc-handoff/v2
 result: complete
 summary: Navigation selected the smallest implementation path.
 
@@ -260,7 +260,7 @@ empty. This is the branch-before-repository-mutation boundary.
     ```text
     Use ai-sdlc-sdd --quick-flow for feature 001-health-endpoint.
     Before code, create a minimal complete SDD with:
-    - GET /health returns status 200 and {"status": "ok"};
+    - GET /health returns status 200 and a body mapping with status=ok;
     - /version and unknown paths retain current behavior;
     - no network, framework, authentication, persistence, or deployment work;
     - tests are derived before implementation;
@@ -294,7 +294,7 @@ specs/001-health-endpoint/
 Representative trace:
 
 ```text
-AC-001: GET /health returns 200 and {"status": "ok"}.
+AC-001: GET /health returns 200 and a body mapping with status=ok.
 AC-002: Existing /version and unknown-path behavior remains unchanged.
 TC-001 -> AC-001: call /health and compare exact status/body.
 TC-002 -> AC-002: run existing regression tests.
@@ -323,7 +323,7 @@ Expected behavior:
 
 ```python
 >>> route("/health")
-(200, {"status": "ok"})
+(200, body mapping with status=ok)
 ```
 
 Expected trusted suite at this point: three passing tests—the new health case
@@ -389,7 +389,7 @@ the feature's SDD, `app.py`, and `test_app.py` changes.
     ```text
     Use ai-sdlc-validation --quick-flow for specs/001-health-endpoint and the
     current diff. Write the reviewed argv plan below to
-    specs/001-health-endpoint/_ai_sdlc/validation-plan.json, finalize
+    specs/001-health-endpoint/_ai_sdlc/validation-plan.toon, finalize
     validation.md with the intended AC/TC mapping and residual risks, execute
     the canonical runner, verify its receipt, and only then complete validation
     state. Do not substitute prose that merely says PASS.
@@ -397,8 +397,15 @@ the feature's SDD, `app.py`, and `test_app.py` changes.
 
 Reviewed plan:
 
-```json
-{"schema":"ai-sdlc-validation-command-plan/v1","commands":[{"id":"V001","argv":["python3","-m","unittest","-v"],"trace_ids":["AC-001","AC-002","TC-001","TC-002"]},{"id":"V002","argv":["git","diff","--check"],"trace_ids":["AC-001","AC-002"]}]}
+```toon
+commands[2]:
+  - argv[4]: python3,"-m",unittest,"-v"
+    id: V001
+    trace_ids[4]: AC-001,AC-002,TC-001,TC-002
+  - argv[3]: git,diff,"--check"
+    id: V002
+    trace_ids[2]: AC-001,AC-002
+schema: ai-sdlc-validation-command-plan/v1
 ```
 
 !!! terminal "Run in terminal"
@@ -409,13 +416,13 @@ Reviewed plan:
       --skill ai-sdlc-validation --quick-flow
     "$PYTHON_BIN" .agents/skills/ai-sdlc-validation/scripts/run_validation.py \
       --root . \
-      --plan specs/001-health-endpoint/_ai_sdlc/validation-plan.json \
-      --output specs/001-health-endpoint/_ai_sdlc/validation-receipt.json \
+      --plan specs/001-health-endpoint/_ai_sdlc/validation-plan.toon \
+      --output specs/001-health-endpoint/_ai_sdlc/validation-receipt.toon \
       --quick-flow
     "$PYTHON_BIN" .agents/skills/ai-sdlc-validation/scripts/run_validation.py \
       --root . \
-      --plan specs/001-health-endpoint/_ai_sdlc/validation-plan.json \
-      --output specs/001-health-endpoint/_ai_sdlc/validation-receipt.json \
+      --plan specs/001-health-endpoint/_ai_sdlc/validation-plan.toon \
+      --output specs/001-health-endpoint/_ai_sdlc/validation-receipt.toon \
       --verify --quick-flow
     "$PYTHON_BIN" .agents/skills/ai-sdlc-shared-runtime/scripts/state_machine.py complete \
       --feature 001-health-endpoint --workspace implementation \
@@ -481,5 +488,5 @@ Expected final evidence:
     ```
 
 The guarded second removal applies only when Step 0 created the public-site
-candidate clone. Only remove these disposable paths. Never use cleanup commands
+release clone. Only remove these disposable paths. Never use cleanup commands
 on a real consumer repository or its authoritative artifacts.

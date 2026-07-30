@@ -39,7 +39,7 @@ artifact_metadata:
 Task context packs gain goal-relevant ranges, authority labeling, sufficiency signals, and an optional typed interaction profile. Public docs gain modern context, prompt, and personalization guidance and explicitly reject persona-based capability claims and implicit personal-data memory.
 
 ## Acceptance Scenarios
-TC-001 through TC-010 pass. Generated JSON and shared TOON packs preserve exact source text, expose the complete typed presentation-only interaction profile, separate recognized repository instructions from evidence-only content, and return actionable sufficient, review-required, or insufficient decisions.
+TC-001 through TC-010 pass. Generated TOON and shared TOON packs preserve exact source text, expose the complete typed presentation-only interaction profile, separate recognized repository instructions from evidence-only content, and return actionable sufficient, review-required, or insufficient decisions.
 
 ## Regression Targets
 - Existing topology, selectors, budgets, exclusions, freshness, write paths, and fingerprints.
@@ -56,7 +56,7 @@ Highest risks are schema drift between runtime and docs, selection that hides re
 - PASS: `python3 skills/_shared/test_all_skill_scripts.py` — 25 tests.
 - PASS: `python3 -m unittest -v skills._shared.test_config` — 7 tests.
 - PASS: `python3 skills/_shared/sync_installed_runtime.py --check`.
-- PASS: JSON syntax checks and runtime/schema contract assertions.
+- PASS: TOON syntax checks and runtime/schema contract assertions.
 - PASS: `python3 docs/scripts/build_catalog.py --check` and `python3 docs/scripts/validate_docs.py`.
 - PASS: `python3 -m unittest discover -s docs/tests -p 'test_*.py' -v` — 17 tests.
 - PASS: `mkdocs build --strict` and `python3 docs/scripts/validate_rendered.py site` — 132 HTML pages and 20,040 local targets.

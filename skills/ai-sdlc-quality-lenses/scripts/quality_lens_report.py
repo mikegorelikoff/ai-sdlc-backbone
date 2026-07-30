@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import json
 import os
 import re
 import sys
@@ -12,6 +11,11 @@ import tempfile
 from collections import Counter
 from datetime import date
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 from typing import Any
 
 _SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
@@ -20,7 +24,7 @@ from ai_sdlc_okf import migrate_concept_text, write_bundle_indexes  # noqa: E402
 
 
 SKILL_DIR = Path(__file__).resolve().parents[1]
-REGISTRY_PATH = SKILL_DIR / "references" / "quality-lenses.json"
+REGISTRY_PATH = SKILL_DIR / "references" / "quality-lenses.toon"
 SEVERITIES = ("critical", "high", "medium", "low", "info")
 STATUSES = ("open", "accepted", "mitigated", "rejected", "deferred")
 ARTIFACT_KINDS = ("requirements", "design", "plan", "tasks", "tests", "change", "ux", "research", "release", "general")
@@ -28,7 +32,7 @@ ARTIFACT_KINDS = ("requirements", "design", "plan", "tasks", "tests", "change", 
 
 def load_registry() -> dict[str, Any]:
     """Load the bundled versioned registry."""
-    return json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    return toon_codec.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
 
 
 def lens_map(registry: dict[str, Any]) -> dict[str, dict[str, Any]]:
@@ -59,15 +63,15 @@ def select_lenses(registry: dict[str, Any], requested: list[str], artifact_kind:
 
 
 def load_findings(path: Path) -> tuple[list[dict[str, Any]], list[str]]:
-    """Load a findings JSON array without raising user-facing tracebacks."""
+    """Load a findings TOON array without raising user-facing tracebacks."""
     try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+        value = toon_codec.loads(path.read_text(encoding="utf-8"))
+    except (OSError, toon_codec.ToonDecodeError) as exc:
         return [], [f"cannot read findings: {exc}"]
     if not isinstance(value, list):
-        return [], ["findings root must be a JSON array"]
+        return [], ["findings root must be a TOON array"]
     if not all(isinstance(item, dict) for item in value):
-        return [], ["every finding must be a JSON object"]
+        return [], ["every finding must be a TOON object"]
     return value, []
 
 

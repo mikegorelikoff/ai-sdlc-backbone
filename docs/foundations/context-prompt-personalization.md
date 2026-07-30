@@ -17,7 +17,7 @@ separate design problems:
 | Layer | Question | Harness mechanism |
 | --- | --- | --- |
 | Prompt engineering | What outcome, constraints, tools, and output should the agent follow? | Skill instructions and task request. |
-| Context engineering | What is the smallest current evidence set sufficient for this task? | Project context, task packs, feature indexes, state, decisions, and targeted reads. |
+| Context engineering | What is the smallest current evidence set sufficient for this semantic step? | StepCard context contracts, mandatory anchors, exact ranges, authority labels, project context, feature indexes, state, decisions, and direct-read fallback. |
 | Personalization | How should the agent communicate with this user? | Optional typed interaction profile. |
 
 Keep these layers separate. A preferred name or concise style changes
@@ -35,17 +35,43 @@ notes, and compaction for long work.
 
 The harness applies that principle by:
 
-1. starting from the task outcome, paths, and tags;
-2. selecting goal-relevant exact ranges rather than blindly copying file prefixes;
-3. labeling repository instructions separately from evidence-only content;
-4. checking whether requested evidence is sufficient;
-5. returning targeted next reads for missing, stale, truncated, or omitted context;
-6. preserving decisions, state, and handoffs outside chat history.
+1. starting from the selected semantic step, its operation, output, gates, and
+   canonical step document;
+2. requiring explicit critical anchors and using topology, trace IDs, paths,
+   and tags as deterministic selectors;
+3. selecting goal-relevant exact ranges rather than blindly copying file
+   prefixes;
+4. labeling skill instructions, repository instructions, and evidence-only
+   content separately;
+5. recording why every source was selected or skipped;
+6. calculating raw and packed tokens, critical-anchor recall, and net savings;
+7. accepting packed context only with 100 percent critical recall and at least
+   15 percent savings, otherwise requiring exact direct reads;
+8. preserving decisions, state, journal events, and handoffs outside chat
+   history.
 
 A `review_required` context pack is not a failure. It is an explicit signal to
 retrieve a named range or review stale evidence before claiming completion.
 `insufficient` means a required source is unavailable and work that depends on
 it should stop.
+
+## Context is compiled per semantic step
+
+Executable skills do not build one vague context bundle for an entire request.
+The v2 semantic graph produces a StepCard for each dependency-ready node. Its
+context contract names the mandatory step document, critical anchors, topology
+and trace selectors, budget, sufficiency threshold, and direct-read policy.
+
+The `ai-sdlc-context-pack/v4` result contains exact source hashes and line
+ranges, instruction authority, matched terms, selection reasons, skipped-source
+reasons, token estimates, critical recall, savings, sufficiency, strategy, and
+fingerprint. Identical repository bytes and StepCard inputs must produce
+byte-identical TOON.
+
+`packed` means the bounded ranges are sufficient to execute the step.
+`direct_read` means compression would be unsafe or pointless; the agent reads
+the named files directly. It is a first-class deterministic decision, not an
+eval failure and not permission to broaden the search.
 
 ## Use a stable prompt contract
 
@@ -119,29 +145,25 @@ name or profile.
 
 ## Configure and control preferences
 
-Create a local user layer such as `~/.config/ai-sdlc/config.json`:
+Create a local user layer such as `~/.config/ai-sdlc/config.toon`:
 
-```json
-{
-  "schema": "ai-sdlc-config/v1",
-  "values": {
-    "interaction": {
-      "enabled": true,
-      "preferred_name": "Sam",
-      "language": "en",
-      "response_style": "concise",
-      "technical_depth": "practitioner",
-      "status_updates": "milestones"
-    }
-  }
-}
+```toon
+schema: ai-sdlc-config/v1
+values:
+  interaction:
+    enabled: true
+    preferred_name: Sam
+    language: en
+    response_style: concise
+    technical_depth: practitioner
+    status_updates: milestones
 ```
 
 Resolve it with provenance:
 
 ```bash
 python3 .agents/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_config.py \
-  --user ~/.config/ai-sdlc/config.json \
+  --user ~/.config/ai-sdlc/config.toon \
   --write-root . \
   --format toon
 ```
@@ -157,6 +179,8 @@ delete the local user layer and resolve again to stop applying it. Review
 - Do not load every available file or tool definition up front.
 - Do not hide missing evidence behind confident prose.
 - Do not mix untrusted content with instructions or permissions.
+- Do not treat a token budget as permission to drop a mandatory anchor.
+- Do not trust packed context that cannot explain skipped sources and recall.
 - Do not store an unbounded biography when a typed preference is enough.
 - Do not repeat the user's name mechanically.
 - Do not use a generic “expert persona” as a substitute for requirements,

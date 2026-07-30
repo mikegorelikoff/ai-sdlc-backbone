@@ -10,7 +10,7 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 ### 0.1 Required Inputs
 
-- Action name and JSON context for evaluation.
+- Action name and TOON context for evaluation.
 - Base policy plus optional organization profile, project, and user layers.
 - Explicit owner-approved waiver record when an allowed exception is requested.
 
@@ -33,7 +33,7 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 - Report resolved policy fingerprint, layer provenance, action decision, matched
   rules, required gates, reason codes, and applied or rejected waivers.
 - Return validation and handoff summaries directly in the active agent response.
-- Emit `ai-sdlc-handoff/v1` with `result`, `blockers`, `next_required`, and
+- Emit `ai-sdlc-handoff/v2` with `result`, `blockers`, `next_required`, and
   `next_optional`; actions include `reason`, `command`, and `expected_artifact`.
 - Do not create `summary.txt`, `*-summary.txt`, or another standalone summary file.
 

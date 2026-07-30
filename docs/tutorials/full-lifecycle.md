@@ -52,10 +52,10 @@ and accept each handoff.
     DISABLE_TELEMETRY=1 npx -y skills@1.5.19 add "$HARNESS_SRC" --skill '*' --agent codex -y
     mkdir -p .ai-sdlc
     cp "$HARNESS_SRC/config/ai-sdlc-managed-skills.txt" .ai-sdlc/harness-managed-skills.txt
-    printf '{"schema":"ai-sdlc-install-record/v1","revision":"%s","skills_cli":"1.5.19","agent":"codex","selection":"all-skills","inventory":".ai-sdlc/harness-managed-skills.txt"}\n' "$HARNESS_REV" > .ai-sdlc/harness-install.json
+    printf 'agent: codex\ninventory: .ai-sdlc/harness-managed-skills.txt\nrevision: %s\nschema: ai-sdlc-install-record/v1\nselection: all-skills\nskills_cli: 1.5.19\n' "$HARNESS_REV" > .ai-sdlc/harness-install.toon
     "$PYTHON_BIN" .agents/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py
-    rm skills-lock.json
-    git add .agents .ai-sdlc/harness-install.json .ai-sdlc/harness-managed-skills.txt
+    rm skills-lock.toon
+    git add .agents .ai-sdlc/harness-install.toon .ai-sdlc/harness-managed-skills.txt
     git commit -m "chore: install AI SDLC harness"
     git init --bare "$ORIGIN_ROOT"
     git remote add origin "$ORIGIN_ROOT"
@@ -81,7 +81,7 @@ Expected starting tree:
 scenario.md
 decisions.md
 .agents/skills/
-.ai-sdlc/harness-install.json
+.ai-sdlc/harness-install.toon
 .ai-sdlc/harness-managed-skills.txt
 ```
 
@@ -96,7 +96,7 @@ specs index, exact predecessor artifacts, and only the targeted scenario
 context. It writes the named canonical artifact under
 `specs-refiniment/organization-sso/`, runs the owning scaffold and quality
 gate, records material decisions, refreshes indexes, and returns a valid
-`ai-sdlc-handoff/v1`. The accountable human accepts or rejects the exit gate.
+`ai-sdlc-handoff/v2`. The accountable human accepts or rejects the exit gate.
 
 Do not ask the agent to “continue everything” without the explicit next stage:
 that would hide approval boundaries and make blocked/resume behavior impossible

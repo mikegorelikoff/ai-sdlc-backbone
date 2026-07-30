@@ -4,12 +4,17 @@
 from __future__ import annotations
 
 import argparse
-import json
 import os
 import re
 import tempfile
 from dataclasses import dataclass
+import sys
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parent
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 from typing import Any
 
 from ai_sdlc_okf import migrate_concept_text, write_bundle_indexes
@@ -68,8 +73,8 @@ def read_manifest(root: Path, path: Path, harness_version: tuple[int, int, int])
     """Read and validate one module manifest."""
     prefix = path.relative_to(root).as_posix()
     try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+        value = toon_codec.loads(path.read_text(encoding="utf-8"))
+    except (OSError, toon_codec.ToonDecodeError) as exc:
         return None, [f"{prefix}: cannot read manifest: {exc}"]
     if not isinstance(value, dict):
         return None, [f"{prefix}: manifest must be an object"]
@@ -130,7 +135,7 @@ def discover(root: Path, harness: str) -> tuple[list[Module], list[str]]:
         return [], ["harness version must use x.y.z"]
     modules: list[Module] = []
     errors: list[str] = []
-    for path in sorted((root / "modules").glob("*/module.json")):
+    for path in sorted((root / "modules").glob("*/module.toon")):
         module, manifest_errors = read_manifest(root, path, harness_version)
         errors.extend(manifest_errors)
         if module:
@@ -157,9 +162,9 @@ def config_enabled(path: Path | None) -> tuple[set[str], list[str]]:
     if path is None:
         return set(), []
     try:
-        value = json.loads(path.read_text(encoding="utf-8"))
+        value = toon_codec.loads(path.read_text(encoding="utf-8"))
         enabled = value.get("values", {}).get("modules", {}).get("enabled", [])
-    except (OSError, json.JSONDecodeError, AttributeError) as exc:
+    except (OSError, toon_codec.ToonDecodeError, AttributeError) as exc:
         return set(), [f"cannot read resolved config: {exc}"]
     if not isinstance(enabled, list) or not all(isinstance(item, str) for item in enabled):
         return set(), ["resolved config modules.enabled must be a string array"]

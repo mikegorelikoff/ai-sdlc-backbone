@@ -4,13 +4,17 @@
 from __future__ import annotations
 
 import argparse
-import json
 import os
 import re
 import sys
 import tempfile
 from datetime import date
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 from typing import Any
 
 _SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
@@ -29,11 +33,18 @@ def toon(value: object) -> str:
     return re.sub(r"[\r\n,]+", "; ", str(value)).strip()
 
 
+def portable_feature_root(root: Path) -> str:
+    """Return a repository-relative feature path without host identity."""
+    if root.parent.name in {"specs", "specs-refiniment"}:
+        return f"{root.parent.name}/{root.name}"
+    return root.name
+
+
 def load(path: Path) -> tuple[dict[str, Any], list[str]]:
     """Load research input safely."""
     try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+        value = toon_codec.loads(path.read_text(encoding="utf-8"))
+    except (OSError, toon_codec.ToonDecodeError) as exc:
         return {}, [f"cannot read research input: {exc}"]
     if not isinstance(value, dict) or value.get("schema") != SCHEMA:
         return {}, [f"input schema must be {SCHEMA}"]
@@ -108,19 +119,27 @@ def validate(value: dict[str, Any], full_flow: bool) -> list[str]:
 
 def render_toon(root: Path, flow: str, value: dict[str, Any]) -> str:
     """Render bounded machine research output."""
-    fields = {"questions": ("id", "question", "trace_targets"), "sources": ("id", "title", "locator", "type", "accessed_at", "credibility", "notes"), "findings": ("id", "statement", "source_ids", "confidence", "limitations", "trace_targets"), "open_questions": ("id", "question", "owner", "next_action")}
-    lines = ["schema: ai-sdlc-research/v1", f"feature_root: {toon(root.as_posix())}", f"flow_mode: {flow}", f"scope: {toon(value['scope'])}", f"topic: {toon(value['topic'])}"]
-    for name, columns in fields.items():
-        lines.extend(["", f"{name}[{len(value[name])}]{{{','.join(columns)}}}:"])
-        lines.extend("  " + ",".join(toon(item.get(field, "")) for field in columns) for item in value[name])
-    return "\n".join(lines).rstrip() + "\n"
+    return toon_codec.encode_toon(
+        {
+            "schema": "ai-sdlc-research/v1",
+            "feature_root": portable_feature_root(root),
+            "flow_mode": flow,
+            "scope": value["scope"],
+            "topic": value["topic"],
+            "questions": value["questions"],
+            "sources": value["sources"],
+            "findings": value["findings"],
+            "open_questions": value["open_questions"],
+        }
+    )
 
 
 def render_markdown(root: Path, flow: str, value: dict[str, Any]) -> str:
     """Render readable sourced research with metadata."""
     refs = sorted({ref for name in ("questions", "findings") for item in value[name] for ref in item["trace_targets"]})
     workspace = "implementation" if root.parent.name == "specs" else "refinement"
-    lines = ["---", "artifact_metadata:", '  schema: "ai-sdlc-research-metadata/v1"', f'  feature: "{toon(root.name)}"', '  artifact: "research.md"', f'  path: "{toon((root / "research.md").as_posix())}"', f'  workspace: "{workspace}"', '  skill: "ai-sdlc-research"', f'  flow_mode: "{flow}"', f'  state_file: "{toon((root / "_ai_sdlc/state.toon").as_posix())}"', '  status: "review"', f'  updated_at: "{date.today().isoformat()}"', "  trace_ids:"]
+    feature_root = portable_feature_root(root)
+    lines = ["---", "artifact_metadata:", '  schema: "ai-sdlc-research-metadata/v1"', f'  feature: "{toon(root.name)}"', '  artifact: "research.md"', f'  path: "{feature_root}/research.md"', f'  workspace: "{workspace}"', '  skill: "ai-sdlc-research"', f'  flow_mode: "{flow}"', f'  state_file: "{feature_root}/_ai_sdlc/state.toon"', '  status: "review"', f'  updated_at: "{date.today().isoformat()}"', "  trace_ids:"]
     lines.extend(f'    - "{toon(ref)}"' for ref in refs)
     lines.extend(["  metatags:", '    - "ai-sdlc"', '    - "research"', '    - "evidence"', '    - "traceable"', "---", "", "# Research", "", f"## Topic\n\n{value['topic']}"])
     for name in COLLECTIONS:

@@ -21,7 +21,7 @@ Status meanings: **resolved** has repository evidence and focused validation;
 | AUD-008 | High | Supply chain; CTO, Security, DevOps | Mutable Actions and unlocked transitive docs deps | Full-SHA action pins, Dependabot, hashed lock, `--require-hashes` | Resolved |
 | AUD-009 | High | Context secrecy; Security | Ordinary high-signal source could emit credential-shaped line | Central fail-closed screening plus vendor token/bearer/URL/key tests | Resolved |
 | AUD-010 | High | Prompt injection; Security | Any `*.instructions.md` gained instruction authority | Conservative explicit paths; arbitrary docs stay evidence-only; adversarial test | Resolved |
-| AUD-011 | High | Approval; Security | Local JSON could be described as authenticated human approval | Result says identity not authenticated; protected external control required | Resolved with external enforcement limitation |
+| AUD-011 | High | Approval; Security | Local TOON could be described as authenticated human approval | Result says identity not authenticated; protected external control required | Resolved with external enforcement limitation |
 | AUD-012 | High | Foundations; Trainee, Writer | Basic software/AI/LLM/token/confabulation concepts absent | Three new foundation chapters and glossary coverage test | Resolved |
 | AUD-013 | High | Roles; VP, PM, PO, BA, QA, Writer | Required canonical role guides absent | Role index plus 13 guides with ownership, workflow, mistakes, checklist | Resolved |
 | AUD-014 | High | Tutorials; Lead, PM, QA, Writer | Nine required change scenarios absent | Ten-pattern tutorial group plus runnable first feature | Resolved; scenario smoke depth accepted limitation |

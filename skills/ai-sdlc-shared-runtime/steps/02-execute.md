@@ -12,8 +12,15 @@ Enter only after the prepare step passes and this skill is the selected owner fo
 
 - `scripts/` is the canonical runtime source in repository and installed layouts.
 - `references/` contains packaged configuration defaults and schema.
-- `references/skill-steps.schema.json` defines the portable
-  `ai-sdlc-skill-steps/v1` progressive-disclosure contract.
+- `references/skill-steps.schema.toon` defines the portable
+  `ai-sdlc-skill-steps/v2` progressive-disclosure contract.
+- `references/step-card.schema.toon` and
+  `references/step-context-pack.schema.toon` define the just-in-time execution
+  and context-engineering boundary.
+- `references/eval-receipt.schema.toon` defines deterministic and
+  provider-neutral evaluation evidence.
+- `references/test-suite-receipt.schema.toon` defines complete per-file test
+  execution evidence and prevents a zero-test discovery pass.
 - Downstream scripts resolve only this sibling package; there is no mirror,
   synchronization step, or source-tree fallback.
 
@@ -23,6 +30,13 @@ Enter only after the prepare step passes and this skill is the selected owner fo
 
   ```bash
   python3 -m unittest discover -s skills/ai-sdlc-shared-runtime/tests -p 'test*.py' -v
+  ```
+
+- Verify every skill-owned test file, including hyphenated package paths:
+
+  ```bash
+  python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_test_suite.py \
+    --format toon
   ```
 
 - Verify an installed downstream helper from a consumer repository:

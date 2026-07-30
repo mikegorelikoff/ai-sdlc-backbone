@@ -3,11 +3,16 @@
 
 from __future__ import annotations
 
-import json
 import subprocess
 import tempfile
 import unittest
+import sys
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -29,14 +34,19 @@ class ResearchTests(unittest.TestCase):
         """Valid multi-source evidence should create canonical outputs."""
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
-            path = root / "research.json"
-            path.write_text(json.dumps(self.value()), encoding="utf-8")
+            path = root / "research.toon"
+            path.write_text(toon_codec.dumps(self.value()), encoding="utf-8")
             result = self.run_research(root, path, "--write", "--full-flow", "--format", "toon")
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertIn("schema: ai-sdlc-research/v1", result.stdout)
             self.assertIn("RF-001", result.stdout)
             self.assertTrue((root / "research.md").is_file())
             self.assertTrue((root / "_ai_sdlc/research.toon").is_file())
+            self.assertNotIn(str(root), result.stdout)
+            self.assertNotIn(
+                str(root),
+                (root / "research.md").read_text(encoding="utf-8"),
+            )
 
     def test_unregistered_source_citation_is_rejected(self) -> None:
         """Findings cannot cite invented sources."""
@@ -44,8 +54,8 @@ class ResearchTests(unittest.TestCase):
             root = Path(temp)
             value = self.value()
             value["findings"][0]["source_ids"] = ["SRC-999"]  # type: ignore[index]
-            path = root / "research.json"
-            path.write_text(json.dumps(value), encoding="utf-8")
+            path = root / "research.toon"
+            path.write_text(toon_codec.dumps(value), encoding="utf-8")
             result = self.run_research(root, path)
             self.assertEqual(result.returncode, 1)
             self.assertIn("registered sources", result.stdout)
@@ -56,8 +66,8 @@ class ResearchTests(unittest.TestCase):
             root = Path(temp)
             value = self.value()
             value["sources"][1]["type"] = "official-documentation"  # type: ignore[index]
-            path = root / "research.json"
-            path.write_text(json.dumps(value), encoding="utf-8")
+            path = root / "research.toon"
+            path.write_text(toon_codec.dumps(value), encoding="utf-8")
             result = self.run_research(root, path, "--full-flow")
             self.assertEqual(result.returncode, 1)
             self.assertIn("at least two source types", result.stdout)
@@ -70,8 +80,8 @@ class ResearchTests(unittest.TestCase):
             value["scope"] = "external"
             for source in value["sources"]:  # type: ignore[index]
                 source["locator"] = "evidence/local.md"
-            path = root / "research.json"
-            path.write_text(json.dumps(value), encoding="utf-8")
+            path = root / "research.toon"
+            path.write_text(toon_codec.dumps(value), encoding="utf-8")
             result = self.run_research(root, path)
             self.assertEqual(result.returncode, 1)
             self.assertIn("direct HTTP(S) source", result.stdout)

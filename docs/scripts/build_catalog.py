@@ -6,11 +6,16 @@ from __future__ import annotations
 import argparse
 import ast
 import importlib.util
-import json
 import re
 import tempfile
 from dataclasses import dataclass
+import sys
 from pathlib import Path
+
+_TOON_RUNTIME = Path(__file__).resolve().parents[2] / "skills" / "ai-sdlc-shared-runtime" / "scripts"
+if str(_TOON_RUNTIME) not in sys.path:
+    sys.path.insert(0, str(_TOON_RUNTIME))
+import ai_sdlc_toon as toon_codec  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -335,7 +340,7 @@ TASK_SELECTION_HINTS: dict[str, tuple[str, str, str]] = {
     "ai-sdlc-retrospective": ("Learn from a completed delivery run", "Complete run evidence and outcomes", "Improvement proposal or policy/change set"),
     "ai-sdlc-host-adapter": ("Verify workflow portability to a host", "Validated workflow capability requirements", "Host approval or safe fallback"),
     "ai-sdlc-doctor": ("Diagnose install or upgrade health", "Installed package and repository state", "Authorized update or support owner"),
-    "ai-sdlc-workflow": ("Plan a reusable controlled execution", "Declared tasks, gates, dependencies, and hooks", "Runtime execution"),
+    "ai-sdlc-workflow": ("Plan a reusable controlled execution", "Installed skills, entrypoints, dependencies, conditions, and approvals", "Runtime execution"),
     "ai-sdlc-quality-lenses": ("Apply a focused cross-lifecycle review", "Existing authoritative artifact and selected lens", "Artifact owner or accountable gate"),
 }
 
@@ -381,7 +386,7 @@ def research_read_contract() -> str:
 
 - `<feature-root>/_ai_sdlc/state.toon` before any durable write.
 - The matching `specs/_ai_sdlc/specs-index.toon` or `specs-refiniment/_ai_sdlc/specs-index.toon` before broad repository reads.
-- `/tmp/research.json`, or another explicitly supplied input file, conforming to `ai-sdlc-research-input/v1`.
+- `/tmp/research.toon`, or another explicitly supplied input file, conforming to `ai-sdlc-research-input/v1`.
 - Every repository evidence path and direct source locator registered by that input.
 
 ### Optional reads
@@ -393,31 +398,32 @@ def research_read_contract() -> str:
 
 For current claims, compare the source publication date with the date the event or data applies to, record ISO `accessed_at`, search for superseding primary or official material, and preserve material contradictions and freshness limitations.
 
-The [research input contract](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-research/references/research-contract.md) defines required fields; the [web research protocol](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-research/references/web-research-protocol.md) defines direct-source and freshness behavior. JSON is used only at this validated interoperability boundary; durable repository output remains Markdown plus TOON."""
+The [research input contract](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-research/references/research-contract.md) defines required fields; the [web research protocol](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-research/references/web-research-protocol.md) defines direct-source and freshness behavior. Research uses canonical TOON for structured interchange and Markdown for the human deliverable."""
 
 
 def research_input_example() -> str:
     """Return a minimal valid research input shape for onboarding."""
-    return """Create `/tmp/research.json` with the validated input shape before running the helper:
+    return """Create `/tmp/research.toon` with the validated input shape before running the helper:
 
-```json
-{
-  "schema": "ai-sdlc-research-input/v1",
-  "topic": "Current payment retry requirements",
-  "scope": "external",
-  "questions": [
-    {"id": "Q-001", "question": "What is currently required?", "trace_targets": ["REQ-014"]}
-  ],
-  "sources": [
-    {"id": "SRC-001", "title": "Primary guidance", "locator": "https://example.org/guidance", "type": "official-guidance", "accessed_at": "2026-07-19", "credibility": "primary", "notes": "Check for superseding guidance"}
-  ],
-  "findings": [
-    {"id": "F-001", "statement": "The current guidance requires a bounded retry policy.", "source_ids": ["SRC-001"], "confidence": "medium", "limitations": "Jurisdiction review is still required", "trace_targets": ["REQ-014"]}
-  ],
-  "open_questions": [
-    {"id": "OQ-001", "question": "Which jurisdictions apply?", "owner": "Legal", "next_action": "Confirm scope"}
-  ]
-}
+```toon
+findings[1]:
+  - confidence: medium
+    id: F-001
+    limitations: Jurisdiction review is still required
+    source_ids[1]: SRC-001
+    statement: The current guidance requires a bounded retry policy.
+    trace_targets[1]: REQ-014
+open_questions[1]{id,next_action,owner,question}:
+  OQ-001,Confirm scope,Legal,Which jurisdictions apply?
+questions[1]:
+  - id: Q-001
+    question: What is currently required?
+    trace_targets[1]: REQ-014
+schema: ai-sdlc-research-input/v1
+scope: external
+sources[1]{accessed_at,credibility,id,locator,notes,title,type}:
+  2026-07-19,primary,SRC-001,"https://example.org/guidance",Check for superseding guidance,Primary guidance,official-guidance
+topic: Current payment retry requirements
 ```
 
 Then run the source-contract command. External or current work must use internet research to open and verify direct pages; never replace it with model memory.
@@ -432,8 +438,8 @@ These are independent operations. Pick exactly one branch for the current reques
 
 | Branch | Choose it when | Do not choose it when | Helper | Durable output |
 | --- | --- | --- | --- | --- |
-| **A — Verify a package** | A package must be evaluated against origin, API, capability, integrity, and provenance policy. | You need to install, execute, publish, sign, approve, or delete it; use the separately authorized package lifecycle workflow instead. | `package_trust.py` | `_ai_sdlc/trust/<package-id>/decision.{toon,json,md}` |
-| **B — Generate local metrics** | You need reproducible content-free counts, budgets, statuses, coverage, freshness, and fingerprints from local run evidence. | You need content analytics, event telemetry, or upload; use an approved observability/privacy workflow instead. | `metrics.py` | `_ai_sdlc/metrics/local.{toon,json,md}` |
+| **A — Verify a package** | A package must be evaluated against origin, API, capability, integrity, and provenance policy. | You need to install, execute, publish, sign, approve, or delete it; use the separately authorized package lifecycle workflow instead. | `package_trust.py` | `_ai_sdlc/trust/<package-id>/decision.toon` with optional human Markdown |
+| **B — Generate local metrics** | You need reproducible content-free counts, budgets, statuses, coverage, freshness, and fingerprints from local run evidence. | You need content analytics, event telemetry, or upload; use an approved observability/privacy workflow instead. | `metrics.py` | `_ai_sdlc/metrics/local.toon` with optional human Markdown |
 
 ### Branch A — Verify a package
 
@@ -450,7 +456,7 @@ Start in report mode, explain every control, and do not install or execute anyth
 **Terminal starting point.**
 
 ```bash
-python3 skills/ai-sdlc-package-trust/scripts/package_trust.py . --package-root package --manifest package.json --allowed-origin repository --allowed-capability filesystem.read --require-provenance
+python3 skills/ai-sdlc-package-trust/scripts/package_trust.py . --package-root package --manifest package.toon --allowed-origin repository --allowed-capability filesystem.read --require-provenance
 ```
 
 **Human checkpoint.** A security or release owner supplies the policy and reviews allow/deny evidence. An `allow` result is evidence only, never installation or execution approval.
@@ -467,11 +473,11 @@ controls[2]{code,status,evidence}:
   provenance,fail,required evidence missing
 ```
 
-**Blockers and output.** Missing package root, manifest, allowed origin, valid harness API, or readable declared files blocks evaluation. Preserve the reason and write only `_ai_sdlc/trust/<package-id>/decision.{toon,json,md}` when explicit write mode is authorized.
+**Blockers and output.** Missing package root, manifest, allowed origin, valid harness API, or readable declared files blocks evaluation. Preserve the reason and write only `_ai_sdlc/trust/<package-id>/decision.toon` plus optional human Markdown when explicit write mode is authorized.
 
 ### Branch B — Generate local metrics
 
-**Inputs and reads.** Read only repository-local `_ai_sdlc/runs/*/state.json` records with schema `ai-sdlc-run-state/v1` and optional `_ai_sdlc/evidence-ledger.json` with schema `ai-sdlc-evidence-ledger/v1`. Aggregate schemas, fingerprints, statuses, booleans, and numeric counts or budgets only.
+**Inputs and reads.** Read only repository-local `_ai_sdlc/runs/*/state.toon` records with schema `ai-sdlc-run-state/v2` and optional `_ai_sdlc/evidence-ledger.toon` with schema `ai-sdlc-evidence-ledger/v1`. Aggregate schemas, fingerprints, statuses, booleans, and numeric counts or budgets only.
 
 **Tell your agent.**
 
@@ -502,7 +508,7 @@ tasks:
   total: 0
 ```
 
-**Blockers and output.** A missing repository or any forbidden content-bearing field blocks the operation. Otherwise write only `_ai_sdlc/metrics/local.{toon,json,md}` in explicit write mode; the helper has no network operation and never uploads metrics.
+**Blockers and output.** A missing repository or any forbidden content-bearing field blocks the operation. Otherwise write only `_ai_sdlc/metrics/local.toon` plus optional human Markdown in explicit write mode; the helper has no network operation and never uploads metrics.
 """
 
 
@@ -588,8 +594,8 @@ def skill_card(text: str, source: Path) -> dict[str, str]:
 def load_modules() -> list[dict[str, object]]:
     """Load versioned module manifests."""
     modules: list[dict[str, object]] = []
-    for path in sorted((ROOT / "modules").glob("*/module.json")):
-        data = json.loads(path.read_text(encoding="utf-8"))
+    for path in sorted((ROOT / "modules").glob("*/module.toon")):
+        data = toon_codec.loads(path.read_text(encoding="utf-8"))
         data["manifest_path"] = path.relative_to(ROOT).as_posix()
         modules.append(data)
     return modules
@@ -611,14 +617,14 @@ def skill_sources() -> list[Path]:
 
 def skill_step_manifest(path: Path) -> dict[str, object]:
     """Load one skill's ordered progressive-disclosure manifest."""
-    manifest_path = path.parent / "steps" / "manifest.json"
-    return json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest_path = path.parent / "steps" / "manifest.toon"
+    return toon_codec.loads(manifest_path.read_text(encoding="utf-8"))
 
 
 def skill_contract_text(path: Path) -> str:
     """Return a router plus only its declared normative step sources."""
     text = path.read_text(encoding="utf-8")
-    for selector in skill_step_manifest(path)["selectors"]:
+    for selector in skill_step_manifest(path)["steps"]:
         text += "\n\n" + (path.parent / selector["path"]).read_text(encoding="utf-8")
     return text
 
@@ -626,17 +632,24 @@ def skill_contract_text(path: Path) -> str:
 def render_step_selector_rows(path: Path) -> list[str]:
     """Render public selector guidance from the authoritative manifest."""
     rows = [
-        "| Selector | Phases | Roles | Load rule | Step | Reason |",
-        "| --- | --- | --- | --- | --- | --- |",
+        "| Selector | Type | Phases | Roles | Dependencies | Operation | Side effect | Load rule | Step | Reason |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
-    for selector in skill_step_manifest(path)["selectors"]:
-        phases = ", ".join(f"`{value}`" for value in selector["phases"])
-        roles = ", ".join(f"`{value}`" for value in selector["roles"]) or "any"
+    for selector in skill_step_manifest(path)["steps"]:
+        condition = selector["condition"]
+        phases = ", ".join(f"`{value}`" for value in condition["phases"])
+        roles = ", ".join(f"`{value}`" for value in condition["roles"]) or "any"
+        dependencies = (
+            ", ".join(f"`{value}`" for value in selector["depends_on"])
+            or "none"
+        )
         relative = Path(selector["path"])
         source = source_link(path.parent / relative, f"`{relative.as_posix()}`")
         rows.append(
-            f"| `{selector['id']}` | {phases} | {roles} | `{selector['load']}` | "
-            f"{source} | {markdown_cell(selector['reason'])} |"
+            f"| `{selector['id']}` | `{selector['type']}` | {phases} | {roles} | "
+            f"{dependencies} | `{selector['operation']}` | "
+            f"`{selector['side_effect']}` | `{selector['load']}` | {source} | "
+            f"{markdown_cell(selector['reason'])} |"
         )
     return rows
 
@@ -854,7 +867,7 @@ def render_skill_guide(
         prompt_mode,
         "Read the required evidence,",
         f"produce or report {card['Output']}, preserve human approval boundaries,",
-        "and return blockers plus a complete ai-sdlc-handoff/v1.",
+        "and return blockers plus a complete ai-sdlc-handoff/v2.",
     ]
     checkpoint_guidance = clarification
     mode_guidance = modes
@@ -869,7 +882,7 @@ def render_skill_guide(
             "Choose Branch A or Branch B above and copy its branch-specific prompt.",
             "Do not send a combined package-verification and metrics request.",
             "Apply --quick-flow or --full-flow only to the selected branch,",
-            "preserve human approval boundaries, and return ai-sdlc-handoff/v1.",
+            "preserve human approval boundaries, and return ai-sdlc-handoff/v2.",
         ]
         agent_reads = (
             "Read only the inputs named by the selected branch above. Branch A "
@@ -1020,7 +1033,7 @@ def render_skill_guide(
         "",
         "## Source contract",
         "",
-        f"This page is generated from {source_link(path, f'`{source_relative}`')} plus its linked `steps/manifest.json` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.",
+        f"This page is generated from {source_link(path, f'`{source_relative}`')} plus its linked `steps/manifest.toon` procedures. Edit the source router or owning step, rerun the catalog generator, and review both changes together; never hand-edit this page.",
         "",
         "[Back to the skill catalog](../skills.md) · [Script reference](../scripts.md) · [Choose a workflow](../../flows/index.md)",
         "",
@@ -1029,11 +1042,11 @@ def render_skill_guide(
 
 
 def validate_research_example(content: str) -> list[str]:
-    """Run the published JSON through the authoritative research helper."""
+    """Run the published TOON through the authoritative research helper."""
     example = section_body(content, "## Example")
-    blocks = re.findall(r"```json\n(.*?)\n```", example, flags=re.DOTALL)
+    blocks = re.findall(r"```toon\n(.*?)\n```", example, flags=re.DOTALL)
     if len(blocks) != 1:
-        return ["ai-sdlc-research: expected exactly one JSON input example"]
+        return ["ai-sdlc-research: expected exactly one TOON input example"]
     script = ROOT / "skills/ai-sdlc-research/scripts/research.py"
     spec = importlib.util.spec_from_file_location("ai_sdlc_research_contract", script)
     if spec is None or spec.loader is None:
@@ -1041,12 +1054,12 @@ def validate_research_example(content: str) -> list[str]:
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     with tempfile.TemporaryDirectory() as temp_dir:
-        input_path = Path(temp_dir) / "research.json"
+        input_path = Path(temp_dir) / "research.toon"
         input_path.write_text(blocks[0] + "\n", encoding="utf-8")
         value, errors = module.load(input_path)
     if not errors:
         errors.extend(module.validate(value, full_flow=False))
-    return [f"ai-sdlc-research: published JSON fails helper: {error}" for error in errors]
+    return [f"ai-sdlc-research: published TOON fails helper: {error}" for error in errors]
 
 
 def validate_package_trust_branches(content: str) -> list[str]:
@@ -1065,14 +1078,14 @@ def validate_package_trust_branches(content: str) -> list[str]:
         + (
             "package_trust.py",
             "ai-sdlc-package-trust-decision/v1",
-            "_ai_sdlc/trust/<package-id>/decision.{toon,json,md}",
+            "_ai_sdlc/trust/<package-id>/decision.toon",
         ),
         "### Branch B — Generate local metrics": common
         + (
             "metrics.py",
             "ai-sdlc-local-metrics/v1",
             "status: insufficient-data",
-            "_ai_sdlc/metrics/local.{toon,json,md}",
+            "_ai_sdlc/metrics/local.toon",
             "helper has no network operation",
         ),
     }
@@ -1106,7 +1119,7 @@ def validate_skill_guide(content: str, skill_id: str) -> list[str]:
         errors.append(f"{skill_id}: Skill Card summary absorbed nested contract sections")
     for token in (
         skill_id,
-        "ai-sdlc-handoff/v1",
+        "ai-sdlc-handoff/v2",
         "SKILL.md",
         "--quick-flow",
         "--full-flow",
@@ -1126,8 +1139,8 @@ def validate_skill_guide(content: str, skill_id: str) -> list[str]:
             "<feature-root>/_ai_sdlc/state.toon",
             "specs/_ai_sdlc/specs-index.toon",
             "ai-sdlc-research-input/v1",
-            '"scope": "external"',
-            '"accessed_at"',
+            "scope: external",
+            "accessed_at",
             "Direct web pages",
             "never replace it with model memory",
         ):
@@ -1190,7 +1203,7 @@ def validate_coverage_manifest(
     skill_count: int,
     records: list[ScriptRecord],
 ) -> list[str]:
-    """Validate TOON-first source-to-page closure."""
+    """Validate TOON-only source-to-page closure."""
     errors: list[str] = []
     for token in (
         "schema: ai-sdlc-documentation-coverage/v1",

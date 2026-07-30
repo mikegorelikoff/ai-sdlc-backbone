@@ -55,11 +55,18 @@ makes the next step visible.
 Markdown is the detailed human authority for requirements, design, test cases,
 QA plans, decisions, and delivery plans. TOON is the complete token-efficient
 representation agents read for state, indexes, plans, context packs, and
-control-plane results. JSON stays at schema, interoperability, exact recovery,
-and JSONL journal boundaries.
+control-plane results. It is the only structured machine-data representation:
+the same canonical codec covers manifests, contracts, fixtures, context,
+journal events, replay state, and evaluation receipts.
 
 A projection can be rebuilt. Authoritative product intent and accepted
 decisions cannot be reconstructed safely by guessing.
+
+Context is compiled at the semantic-step boundary. Mandatory anchors,
+instruction authority, exact source ranges, exclusions, token savings, and
+critical recall are explicit. When packing would lose a critical anchor or save
+too little, the StepCard requires direct reading rather than trusting a lossy
+summary.
 
 ## State is not truth by itself
 

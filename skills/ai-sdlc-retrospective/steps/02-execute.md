@@ -17,8 +17,8 @@ Enter only after the prepare step passes and this skill is the selected owner fo
 ## Script Usage
 
 ```bash
-python3 skills/ai-sdlc-retrospective/scripts/retrospective.py specs/payments --input /tmp/retro.json --emit --quick-flow
-python3 skills/ai-sdlc-retrospective/scripts/retrospective.py specs/payments --input /tmp/retro.json --write --full-flow --format toon
+python3 skills/ai-sdlc-retrospective/scripts/retrospective.py specs/payments --input /tmp/retro.toon --emit --quick-flow
+python3 skills/ai-sdlc-retrospective/scripts/retrospective.py specs/payments --input /tmp/retro.toon --write --full-flow --format toon
 ```
 
 The finalizer never writes any path named by a proposal `target`.

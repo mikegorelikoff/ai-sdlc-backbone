@@ -62,12 +62,12 @@ flowchart LR
 ```
 
 How to test:
-1. Explore a refinement or implementation request and inspect the Markdown, TOON, and JSON card evidence.
+1. Explore a refinement or implementation request and inspect the Markdown, TOON, and TOON card evidence.
 2. Change a fingerprinted source and confirm Apply rejects route drift without mutation.
 3. Run the reviewed validation plan and documentation, module, compatibility, and install-smoke gates.
 
 Validation:
-- python3 skills/ai-sdlc-validation/scripts/run_validation.py --root . --plan specs/011-guided-explore-apply-flow/_ai_sdlc/validation-plan.json --output specs/011-guided-explore-apply-flow/_ai_sdlc/validation-receipt.json --timeout 900 --full-flow --feature 011-guided-explore-apply-flow --state-workspace implementation -> 12/12 passed
-- python3 skills/ai-sdlc-validation/scripts/run_validation.py --root . --plan specs/011-guided-explore-apply-flow/_ai_sdlc/validation-plan.json --output specs/011-guided-explore-apply-flow/_ai_sdlc/validation-receipt.json --verify --full-flow --feature 011-guided-explore-apply-flow --state-workspace implementation -> current
+- python3 skills/ai-sdlc-validation/scripts/run_validation.py --root . --plan specs/011-guided-explore-apply-flow/_ai_sdlc/validation-plan.toon --output specs/011-guided-explore-apply-flow/_ai_sdlc/validation-receipt.toon --timeout 900 --full-flow --feature 011-guided-explore-apply-flow --state-workspace implementation -> 12/12 passed
+- python3 skills/ai-sdlc-validation/scripts/run_validation.py --root . --plan specs/011-guided-explore-apply-flow/_ai_sdlc/validation-plan.toon --output specs/011-guided-explore-apply-flow/_ai_sdlc/validation-receipt.toon --verify --full-flow --feature 011-guided-explore-apply-flow --state-workspace implementation -> current
 - git diff --check -> passed
 ````

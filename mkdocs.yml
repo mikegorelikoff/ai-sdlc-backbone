@@ -43,15 +43,11 @@ theme:
     - navigation.top
     - navigation.footer
     - toc.follow
-    - search.suggest
-    - search.highlight
-    - search.share
     - content.code.copy
     - content.code.annotate
     - content.tabs.link
 
-plugins:
-  - search
+plugins: []
 
 markdown_extensions:
   - admonition
@@ -139,6 +135,7 @@ nav:
       - Adopt an existing project: tutorials/existing-project.md
       - Run the full lifecycle: tutorials/full-lifecycle.md
       - How-to catalog: how-to/index.md
+      - Migrate to 4.0: how-to/migrate-4.0.md
       - Learning path: start.md
       - Role paths: roles/index.md
       - Pilot and adoption: adoption/index.md
@@ -160,6 +157,7 @@ nav:
       - Compatibility: reference/compatibility.md
       - Supported environments: reference/supported-environments.md
       - Supported versions: reference/versions.md
+      - Release 4.0: reference/release-4.0.md
   - Project:
       - Overview: project/index.md
       - Status and limitations: explanation/maturity-limitations.md
