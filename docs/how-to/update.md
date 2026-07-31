@@ -1,174 +1,141 @@
 ---
 title: Update safely
-description: Upgrade the installed harness while protecting team configuration, user overrides, and public compatibility contracts.
+description: Repair or upgrade a project-scoped installation from an exact revision without losing provenance or local review.
 ---
 
 # Update safely
 
-This page separates two execution contexts. **Consumer repository** commands
-update installed skills in a software project. **Source checkout** commands test
-and publish the harness itself. Do not run source-only paths in a consumer
-repository.
+## Goal
 
-## Consumer repository: establish the baseline
+Replace only reviewed Harness-managed skill directories, regenerate
+deterministic TOON provenance, and preserve unrelated project and third-party
+content.
 
-Commit or preserve project work, read `.ai-sdlc/harness-install.toon`, record
-the installed inventory, and verify selected
-helper imports before updating. A failing baseline makes post-update diagnosis
-ambiguous.
+## When to use it
+
+Use this procedure for a same-revision repair or an upgrade to a reviewed
+release. A **Consumer repository** contains the installed `.agents/skills`
+tree. A **Source checkout** contains this Harness repository and maintainer
+paths such as `skills/ai-sdlc-shared-runtime`. Keep those execution contexts
+separate.
+
+## Prerequisites
+
+- the existing installation is committed or otherwise recoverable;
+- `.ai-sdlc/harness-install.toon`,
+  `.ai-sdlc/harness-install-lock.toon`, and the managed inventory are present;
+- the current validator result and Git diff have been preserved;
+- the target release and migration notes have been reviewed;
+- Git and Python `3.10+` are available.
+
+## Procedure
+
+### Establish the consumer baseline
 
 ```bash
 PYTHON_BIN="${PYTHON_BIN:-python3}"
-DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --toon
+"$PYTHON_BIN" .agents/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py
 git status --short
-"$PYTHON_BIN" .agents/skills/ai-sdlc-flow/scripts/flow.py --help
-"$PYTHON_BIN" .agents/skills/ai-sdlc-sdd/scripts/sdd_artifact_scaffold.py --help
+git diff -- .agents/skills .ai-sdlc
 ```
 
-## Consumer repository: repair or upgrade by exact reinstall
+Stop if a managed directory differs from its recorded digest and ownership of
+that change is unclear. The validator is expected to fail on a local edit; that
+failure is evidence to resolve, not a reason to discard the edit.
 
-The canonical install removes the generated `skills-lock.toon` because it
-contains a machine-specific temporary path. Skills CLI `1.5.19` also reports
-`No project skills to update` for this local-source mode, so `skills update` is
-not a repair or upgrade mechanism here.
-
-For a same-release repair, set `<TARGET-COMMIT>` to the revision already
-recorded in `.ai-sdlc/harness-install.toon`. For an upgrade, use the reviewed
-immutable commit published for the target release and read its migration notes.
-Then repeat the exact-fetch install with the same selected host and the same
-selection mode. The following derives exact `--skill` arguments from the
-previous managed inventory for an explicit subset; an all-skills install uses
-the target release's full inventory:
+### Resolve the exact target
 
 ```bash
-TARGET_REV=<TARGET-COMMIT>
+TARGET_TAG=v4.0.1
 TARGET_TMP="$(mktemp -d)"
 TARGET_SRC="$TARGET_TMP/ai-sdlc-harness"
-test -f .ai-sdlc/harness-managed-skills.txt
-cp .ai-sdlc/harness-managed-skills.txt "$TARGET_TMP/previous-managed-skills.txt"
 git init "$TARGET_SRC"
 git -C "$TARGET_SRC" remote add origin https://github.com/mikegorelikoff/ai-sdlc-harness.git
-git -C "$TARGET_SRC" fetch --depth 1 origin "$TARGET_REV"
-git -C "$TARGET_SRC" checkout --detach FETCH_HEAD
-test "$(git -C "$TARGET_SRC" rev-parse HEAD)" = "$TARGET_REV"
-SELECTION=$("$PYTHON_BIN" -c 'import toon; print(toon.load(open(".ai-sdlc/harness-install.toon"))["selection"])')
-if test "$SELECTION" = all-skills; then
-  cp "$TARGET_SRC/config/ai-sdlc-managed-skills.txt" "$TARGET_TMP/target-managed-skills.txt"
-else
-  comm -12 "$TARGET_TMP/previous-managed-skills.txt" "$TARGET_SRC/config/ai-sdlc-managed-skills.txt" > "$TARGET_TMP/target-managed-skills.txt"
-fi
-grep -qx ai-sdlc-shared-runtime "$TARGET_TMP/target-managed-skills.txt"
-printf '%s\n' "$TARGET_REV" > .ai-sdlc/harness-update-in-progress
-set --
-while IFS= read -r skill; do set -- "$@" --skill "$skill"; done < "$TARGET_TMP/target-managed-skills.txt"
-DISABLE_TELEMETRY=1 npx -y skills@1.5.19 add "$TARGET_SRC" "$@" --agent codex -y
-git status --short
-DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --toon
-comm -23 "$TARGET_TMP/previous-managed-skills.txt" "$TARGET_TMP/target-managed-skills.txt" > "$TARGET_TMP/retired-managed-skills.txt"
-cat "$TARGET_TMP/retired-managed-skills.txt"
-cp "$TARGET_TMP/retired-managed-skills.txt" .ai-sdlc/retired-managed-skills.txt
+git -C "$TARGET_SRC" fetch --depth 1 origin "refs/tags/$TARGET_TAG:refs/tags/$TARGET_TAG"
+git -C "$TARGET_SRC" checkout --detach "$TARGET_TAG^{commit}"
+TARGET_REV="$(git -C "$TARGET_SRC" rev-parse HEAD)"
+test "$(git -C "$TARGET_SRC" rev-list -n 1 "$TARGET_TAG")" = "$TARGET_REV"
+git -C "$TARGET_SRC" status --short
 ```
 
-Stop here and review the printed retired-skill list. For every listed name,
-compare `.agents/skills/<name>` with the prior installation revision. Remove a
-directory only when it is confirmed to be an unmodified, harness-owned skill;
-record every retained or removed item in the update review. Then finish the
-upgrade:
+For a same-release repair, fetch the exact revision already recorded in
+`harness-install.toon` instead of selecting a newer tag.
+
+Compare the old and target managed inventories:
 
 ```bash
-cp "$TARGET_TMP/target-managed-skills.txt" .ai-sdlc/harness-managed-skills.txt
-printf 'agent: codex\ninventory: .ai-sdlc/harness-managed-skills.txt\nrevision: %s\nschema: ai-sdlc-install-record/v1\nselection: %s\nskills_cli: 1.5.19\n' "$TARGET_REV" "$SELECTION" > .ai-sdlc/harness-install.toon
+comm -23 .ai-sdlc/harness-managed-skills.txt "$TARGET_SRC/config/ai-sdlc-managed-skills.txt"
+comm -13 .ai-sdlc/harness-managed-skills.txt "$TARGET_SRC/config/ai-sdlc-managed-skills.txt"
+```
+
+The first command prints retired managed names; the second prints newly added
+names. Review both sets and the target migration guide before replacement.
+
+### Apply the reviewed replacement
+
+The installer normally refuses any differing managed destination. The explicit
+environment flag below is the human-reviewed replacement authority:
+
+```bash
+AI_SDLC_SOURCE="$TARGET_SRC" \
+AI_SDLC_REVISION="$TARGET_REV" \
+AI_SDLC_INSTALL_REPLACE=1 \
+"$TARGET_SRC/install.sh" codex
+```
+
+The native installer stages and hashes all target skills before applying
+changes, keeps rollback backups during the operation, preserves unrelated
+skills, and writes a new deterministic `harness-install-lock.toon`.
+
+It does not remove retired directories automatically. For each retired name,
+compare `.agents/skills/<name>` with the previously accepted revision. Remove
+it only when it is confirmed to be an unmodified Harness-owned directory;
+retain and document any ambiguous or locally modified directory.
+
+### Clean up and review
+
+```bash
 "$PYTHON_BIN" .agents/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py
-rm skills-lock.toon
-rm -rf "$TARGET_TMP"
-rm .ai-sdlc/harness-update-in-progress
 git status --short
+git diff --check
+git diff -- .agents/skills .ai-sdlc
+rm -rf "$TARGET_TMP"
 ```
 
-If execution stops while `.ai-sdlc/harness-update-in-progress` exists, do not
-continue normal work. Read its target revision, preserve `git status --short`,
-and rerun this entire exact-fetch procedure for that same revision and prior
-selection. The final install-record validator must pass and the marker must be
-removed in the same reviewed change. If rerun is impossible, restore only the
-installed and `.ai-sdlc` paths from the last accepted installation commit, run
-the installed smoke, and confirm product specs/code are untouched.
-
-Do not copy the placeholder literally. If the pilot uses another agent, replace
-`codex` consistently. The explicit-subset path never silently expands scope:
-newly published skills require a separate review and an intentional inventory
-edit. A retired selected skill appears in `retired-managed-skills.txt`.
-
-Review every added, changed, or removed installed file before acceptance. Team
-and project artifacts are not installer-owned and must not be overwritten.
-The saved `retired-managed-skills.txt` output is the sorted set of previously harness-managed skill
-names absent from the target release. If it is non-empty, inspect each matching
-`.agents/skills/<name>` against the prior installation commit and remove only
-confirmed old harness-owned directories; the reinstall does not remove them.
-Never remove a same-named directory whose ownership or local modification is
-unclear. Record the disposition in the update commit before deleting the
-temporary comparison directory in the final command block.
-Re-run the inventory and portable helper checks. Commit the accepted update
-alone so it can be audited, reverted, or bisected independently from product
-behavior.
-
-## Promote the same revision across environments
-
-Use the project-scoped installation commit,
-`.ai-sdlc/harness-install.toon`, and
-`.ai-sdlc/harness-managed-skills.txt` as the team baseline. In each
-environment, fetch the recorded harness revision, use the same pinned Skills
-CLI and explicit host, reinstall the recorded selection, validate the install
-record, and compare the Git diff with the accepted baseline. Promote a new
-revision through a dedicated update commit; do not let each workstation choose
-“latest” independently.
-
-Global installations are separate workstation state. Update them per host,
-start a new host session, and verify with the global list command. They cannot
-replace repository provenance or Continuous Integration (CI). When both scopes
-exist, the committed project inventory is the repository's reviewed authority,
-even if a host defines its own resolution precedence.
-
-## Source checkout: release validation
-
-Maintainers validate the full repository only from a clone of this source:
+Commit the update separately from product changes:
 
 ```bash
-"$PYTHON_BIN" skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_compatibility.py --skip-git-audit --format toon
-"$PYTHON_BIN" skills/ai-sdlc-shared-runtime/tests/test_all_skill_scripts.py
-"$PYTHON_BIN" skills/ai-sdlc-shared-runtime/tests/test_each_skill_tests.py
-"$PYTHON_BIN" python3 -m unittest discover -s skills/ai-sdlc-shared-runtime/tests -p 'test*.py' -v
+git add .agents/skills .ai-sdlc/harness-install.toon .ai-sdlc/harness-install-lock.toon .ai-sdlc/harness-managed-skills.txt
+git diff --cached --check
+git commit -m "chore: update AI SDLC harness"
 ```
 
-Review renamed skills, flag changes, module API ranges, artifact routes,
-migrations, deprecations, installed-runtime drift, and documentation. Protected
-gates must not be weakened by an override that merely survived syntactically.
+## Verify
 
-## Roll back
+- the install-record validator passes;
+- record and lock point to `TARGET_REV`;
+- all managed names and digests match;
+- additions and retirements match the reviewed inventory comparison;
+- no unrelated agent skill or product file changed;
+- one bounded Explore flow and the relevant project validation pass.
 
-Stop new agent writes, capture the inventory and Git status, and restore the
-last accepted project-scoped installation through reviewed Git changes or the
-pinned prior release. Preserve product specs, decisions, state, evidence, and
-the update failure record. Removing a skill is not permission to delete
-artifacts it produced.
+Maintainers validating a source checkout must also run the canonical release
+suite and the native installed-layout smoke before publishing. Consumer
+repositories must not substitute source-only test paths for their installed
+validator.
 
-## Remove and verify cleanup
+## Troubleshooting
 
-The portable baseline intentionally has no CLI lock, so uninstall through the
-dedicated reviewed installation commit: revert that commit, or remove only the
-tracked harness paths it added after comparing them with the commit. Never
-delete the entire `.agents` tree when it also contains project-owned or other
-provider content.
+| Symptom | Safe response |
+| --- | --- |
+| Existing managed digest differs before review | Preserve the diff and identify its owner; do not set the replacement flag yet. |
+| Target revision does not match the tag | Stop and resolve remote/tag integrity before running installer code. |
+| Replacement is interrupted | Inspect Git status and rerun the same exact target after confirming no unowned content was touched. |
+| Retired directory remains | Compare it with the prior accepted revision; remove only confirmed unmodified Harness content. |
+| Post-update validation fails | Use the installation commit for rollback of only `.agents/skills` and `.ai-sdlc`, then validate the restored record. |
 
-Preserve specifications, decisions, evidence, configuration, and product code.
-The acceptance evidence is a reviewed Git diff showing removal of exactly the
-skill directories named by the pre-removal
-`.ai-sdlc/harness-managed-skills.txt` (45 only for an all-skills install) and
-both portable record files, no unrelated path, and no empty installer-created
-directory that the project does not own. Retain a reviewed copy of the managed
-inventory with the removal commit or ticket so the ownership decision remains
-auditable after the live record is removed.
+## Next step
 
-Manual review is intentional. An installer cannot safely infer whether a
-same-named directory is harness-owned, locally modified, linked for another
-host, or project-owned. Automation may produce retired names and hashes; it
-must not recursively delete paths without that ownership decision.
+Run the target release migration guide and a low-risk first workflow. Promote
+the same installation commit across environments; do not let each workstation
+resolve “latest” independently.

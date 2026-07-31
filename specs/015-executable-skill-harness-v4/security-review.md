@@ -31,6 +31,7 @@ artifact_metadata:
     - "AC-008"
     - "AC-009"
     - "AC-013"
+    - "NFR-007"
     - "NFR-008"
     - "TC-001"
     - "TC-003"
@@ -39,6 +40,7 @@ artifact_metadata:
     - "TC-009"
     - "TC-012"
     - "TC-013"
+    - "DEC-009"
   related_artifacts:
     - "specs/015-executable-skill-harness-v4/branch-plan.md"
     - "specs/015-executable-skill-harness-v4/code-review.md"
@@ -95,6 +97,11 @@ artifact_metadata:
 - Open questions/blockers: Filesystem journals are not authenticated distributed ledgers and cannot make an external side effect transactional. Hosts must honor idempotency keys and return durable effect receipts; provider certification must preserve execution identity and recovery evidence.
 
 ## Security Validation
-- Confirmed facts: Independent review corrected completion-identity drift, interrupted terminal recovery, pre-lock replay, replaceable journal sequences, failure-budget retry bypass, under-validated event payloads, and evaluation-output path escape. Focused runtime, evaluation, validation-runner, context, documentation, compile, and canonicality checks pass. The final release suite will re-execute the complete deterministic plan and verify its current receipt before commit.
-- Evidence: `specs/015-executable-skill-harness-v4/code-review.md`; focused test results; AC-001 through AC-013; TC-001 through TC-013; the canonical validation plan and receipt.
+- Confirmed facts: Independent review corrected completion-identity drift, interrupted terminal recovery, pre-lock replay, replaceable journal sequences, failure-budget retry bypass, under-validated event payloads, evaluation-output path escape, and the non-conforming external consumer-install boundary. The native installer allows only a clean exact Git revision and project-scoped Codex target; rejects source, destination, and metadata links; rejects alternate machine artifacts and unknown inventory entries; compares staged and installed tree digests; refuses unreviewed replacement; serializes mutations through Git metadata; and restores the accepted tree after caught apply failures. The full 17-command plan, receipt freshness check, 10 native-installer cases, native 44-skill consumer workflow, strict documentation build, rendered-link validation, compatibility audit, canonicality scan, and diff hygiene pass.
+- Evidence: `ai_sdlc_install.py`; `ai_sdlc_install_record.py`; `install.sh`; `test_native_install.py`; `install_smoke.py`; `specs/015-executable-skill-harness-v4/code-review.md`; AC-001 through AC-013; NFR-007; TC-001 through TC-013; DEC-009; the canonical validation plan and current receipt.
 - Open questions/blockers: No unresolved security implementation finding. Provider-executed TC-012 and remote publication evidence cannot be fabricated locally and remain disclosed release-owner evidence; local fingerprints detect drift but do not provide cryptographic signer identity. No external security-standard conformance claim is made by this review.
+
+## Native Installer Residual Boundary
+- Confirmed facts: The bootstrap fetches a sanitized exact tag or lowercase commit, requires an annotated release tag when a name is used, and persists no source-control credential or absolute source path. Local source overrides remain an explicit trust decision. Existing differing managed content requires the reviewed replacement flag; unrelated skills are not changed.
+- Evidence: Shell syntax check; clean-source and revision checks; missing-local-path, dirty-source, link, alternate-artifact, existing-difference, concurrency, rollback, and installed-digest regressions; install and update guides.
+- Open questions/blockers: Annotated does not mean cryptographically signed. Remote identity, transport credentials, signature policy, and source-host authorization remain adopter controls. Abrupt process or machine termination can bypass caught-failure rollback, so the consumer Git baseline and exact-revision recovery procedure remain required.

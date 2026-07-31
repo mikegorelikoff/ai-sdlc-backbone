@@ -10,7 +10,7 @@ The notes are field evidence, not proof that every interpretation is correct.
 
 | Feedback or difficulty | Disposition | Resolution or owner |
 | --- | --- | --- |
-| Global installation reported 88 failures for Eve and PromptScript. | Resolved | Broad `--all --global` selected unsupported targets. Use `--skill '*' --agent codex --global`; see [Install](../how-to/install.md#optional-install-globally-for-codex). The skills themselves did not fail 88 times. |
+| Global installation reported broad host-target failures. | Superseded | v4 supports only the native project-scoped Codex path; see [Supported environments](../reference/supported-environments.md#installation-contract). Treat global or other-host support as a separate conformance task. |
 | Guided routing did not see globally installed skills. | Resolved | Flow discovers siblings from its executing packaged root and reports searched roots. A fresh host session may still be needed for the host registry. |
 | Guided routing recommended skills outside the current package. | Resolved for deterministic flow | Required unavailable skills are blockers; optional actions are limited to discovered skills. Challenge host/model suggestions against `skill_roots`. |
 | Local installation created an additional agent directory. | Clarified | `.agents/skills/` is the canonical project store. A host may create aliases or links. Inspect the CLI inventory, Git status, and symlinks; do not delete `.agents` as a duplicate. |

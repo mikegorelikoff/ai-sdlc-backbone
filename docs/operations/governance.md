@@ -29,12 +29,12 @@ permission, and a chat message does not replace a required approval system.
 
 ## Data and secrets
 
-The installer is a separate data boundary. The third-party Skills CLI documents
-anonymous telemetry of skill name, skill files, and timestamp by default. The
-canonical install commands set `DISABLE_TELEMETRY=1`; a pilot must record the
-human privacy/data owner's choice, provider policy, retention, and any approved
-exception. Content-free local metrics do not imply that npm, GitHub, the agent
-host, or model provider is network-free.
+The installer is a separate data boundary. The native v4 installer reads one
+reviewed Git checkout, writes project-local skills and TOON provenance, and
+makes no telemetry request. A pilot must still record the approved Git
+origin/mirror, revision, network logging, human data owner, provider policy,
+retention, and any exception. Content-free local metrics do not imply that
+GitHub, the agent host, or model provider is network-free.
 
 Classify data before an agent can read it.
 
@@ -67,7 +67,7 @@ blocker for confidential or regulated data, not permission to proceed.
 | Agent/model host | Prompts, selected source, diffs, tool results, metadata | Provider, model, region, retention, training use, access, deletion, contract |
 | Browser/search | Search text, opened URLs, page content, IP/identity metadata | Approved domains, logging, safe-search policy, confidential terms prohibited |
 | Connectors | Query parameters and returned mail/calendar/document data | OAuth scopes, tenant boundary, recipients, retention, revocation, audit log |
-| npm/GitHub installer | Package/source requests and upstream CLI telemetry unless disabled | Mirror, proxy logs, account identity, integrity, telemetry opt-out |
+| Git source install | Source request, remote identity, revision, proxy metadata | Mirror, proxy logs, account identity, tag/commit integrity, native installer review |
 | Continuous integration | Source, commands, logs, caches, artifacts, job metadata | Fork exposure, secret masking, retention, artifact access, runner location |
 | Error/reporting systems | Stack traces, filenames, snippets, environment metadata | Redaction, access, retention, downstream processors, deletion |
 

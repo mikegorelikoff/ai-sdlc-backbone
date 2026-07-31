@@ -25,12 +25,12 @@ Reference pages state the contracts precisely. Use them while configuring automa
 - [**Release 1.2 audit**](release-1.2.md) — guided onboarding closeout and release evidence.
 - [**Release 2.0 candidate**](release-2.0.md) — major-version scope, evidence, limitations, and rollback.
 - [**Release 3.0 candidate**](release-3.0.md) — role-guided flow, progressive disclosure, canonical runtime, OKF bundles, and migration evidence.
-- [**Release 4.0**](release-4.0.md) — executable skill DAGs, per-step context engineering, durable replay, canonical TOON, validation, and rollback.
+- [**Release 4.0.1**](release-4.0.md) — executable skill DAGs, native deterministic installation, per-step context engineering, durable replay, canonical TOON, validation, and rollback.
 
 </div>
 
 The generated [coverage manifest](catalog-coverage.toon) closes the current
-44-skill and 102-script source inventories against their documentation. It is
+44-skill and 112-script source inventories against their documentation. It is
 TOON because agents consume it for drift checks; the Markdown catalogs remain
 the human navigation surface.
 

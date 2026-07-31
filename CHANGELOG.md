@@ -2,6 +2,35 @@
 
 ## Unreleased
 
+## v4.0.1 - 2026-07-30
+
+### Fixed
+
+- Replaced the external consumer installer with a Harness-owned deterministic
+  installer after the post-publication `v4.0.0` smoke exposed a non-TOON
+  generated lock.
+- Added clean-revision binding, staged content hashing, symlink and non-TOON
+  rejection, reviewed replacement authority, caught-failure rollback, and an
+  installed tree-integrity validator.
+- Replaced unsupported structured-list examples with the installed native
+  record validator and narrowed the validated install target to
+  project-scoped Codex.
+
+### Added
+
+- Added `ai-sdlc-install-record/v2` and
+  `ai-sdlc-install-lock/v1`, including deterministic per-skill SHA-256
+  fingerprints without timestamps or absolute machine paths.
+- Added native installer regression tests and installed-layout smoke coverage.
+
+### Validation
+
+- Passed all 95 skill-owned test files with receipt fingerprint
+  `4d7881a8cdb44d4f8cbbb7e995d8384f8d07968a4bdf0d892bbfb30ef0e47d9f`.
+- Passed the native 44-skill installed workflow, exact API `4.0.0`
+  compatibility, documentation source/tests, strict site build, rendered-link
+  validation, and repository-wide TOON-only gates.
+
 ## v4.0.0 - 2026-07-30
 
 ### Added
@@ -42,6 +71,12 @@
 
 - Removed alternate serializers, parsers, CLI output modes, compatibility
   readers, source artifacts, and in-runtime legacy conversion paths.
+
+### Known issue
+
+- The initial external consumer installer creates a non-TOON lock. Preserve
+  the immutable `v4.0.0` tag and update fresh or existing installations to
+  `v4.0.1`.
 
 ### Documentation
 

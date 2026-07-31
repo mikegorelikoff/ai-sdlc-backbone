@@ -16,6 +16,7 @@ import ai_sdlc_toon as toon_codec  # noqa: E402
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
 import ai_sdlc_install_record as install_record
+from ai_sdlc_install import INSTALLER_ID, LOCK_SCHEMA, RECORD_SCHEMA, directory_digest
 
 
 class InstallRecordTests(unittest.TestCase):
@@ -28,9 +29,23 @@ class InstallRecordTests(unittest.TestCase):
         record.parent.mkdir(parents=True)
         (record.parent / "harness-managed-skills.txt").write_text("\n".join(names) + "\n", encoding="utf-8")
         record.write_text(toon_codec.dumps({
-            "schema": "ai-sdlc-install-record/v1", "revision": "a" * 40,
-            "skills_cli": "1.5.19", "agent": "codex", "selection": selection,
+            "schema": RECORD_SCHEMA, "revision": "a" * 40,
+            "installer": INSTALLER_ID, "agent": "codex", "selection": selection,
             "inventory": ".ai-sdlc/harness-managed-skills.txt",
+            "lock": ".ai-sdlc/harness-install-lock.toon", "target": ".agents/skills",
+        }), encoding="utf-8")
+        (record.parent / "harness-install-lock.toon").write_text(toon_codec.dumps({
+            "schema": LOCK_SCHEMA, "revision": "a" * 40,
+            "installer": INSTALLER_ID, "agent": "codex", "selection": selection,
+            "target": ".agents/skills",
+            "skills": [
+                {
+                    "name": name,
+                    "path": f".agents/skills/{name}",
+                    "sha256": directory_digest(skills / name),
+                }
+                for name in names
+            ],
         }), encoding="utf-8")
         return record, skills
 
@@ -56,6 +71,14 @@ class InstallRecordTests(unittest.TestCase):
             record, skills = self.fixture(Path(temp))
             (record.parent / "harness-managed-skills.txt").write_text("ai-sdlc-flow\n", encoding="utf-8")
             self.assertTrue(any("must include ai-sdlc-shared-runtime" in error for error in install_record.validate(record, skills)))
+
+    def test_tampered_installed_skill_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            record, skills = self.fixture(Path(temp))
+            (skills / "ai-sdlc-flow" / "tampered.txt").write_text("changed\n", encoding="utf-8")
+            self.assertTrue(
+                any("installed skill digest differs" in error for error in install_record.validate(record, skills))
+            )
 
     def test_truncated_all_skills_inventory_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

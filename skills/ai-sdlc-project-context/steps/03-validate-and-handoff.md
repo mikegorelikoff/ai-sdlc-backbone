@@ -32,7 +32,7 @@ Quality gate:
 Valid evidence:
 
 ```text
-path=README.md line=37 kind=command detail=npx skills add ...
+path=README.md line=32 kind=command detail=curl ... install.sh ... codex
 ```
 
 Invalid counter-example:

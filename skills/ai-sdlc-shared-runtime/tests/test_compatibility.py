@@ -304,7 +304,10 @@ class CompatibilityTests(unittest.TestCase):
                 root / "guide.md",
             ):
                 path.parent.mkdir(parents=True, exist_ok=True)
-                path.write_text("npx skills add compatibility update rollback\n", encoding="utf-8")
+                path.write_text(
+                    "install.sh harness-install-lock.toon compatibility update rollback\n",
+                    encoding="utf-8",
+                )
             baseline = {
                 "schema": "ai-sdlc-compatibility-baseline/v1",
                 "release": "fixture",

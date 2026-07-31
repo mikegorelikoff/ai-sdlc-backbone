@@ -5,7 +5,7 @@ description: Move to executable semantic skill graphs, deterministic per-step co
 
 # Migrate to 4.0
 
-Release `v4.0.0` introduces Harness API `4.0.0` as a deliberate hard cut.
+Release family `v4.0.x` introduces Harness API `4.0.0` as a deliberate hard cut.
 Preserve human-authored requirements, decisions, source code, and evidence,
 but regenerate harness-managed machine artifacts from their authoritative
 sources. The v4 runtime does not include an alternate parser, compatibility
@@ -34,7 +34,7 @@ reader, or in-place conversion mode.
    inventory, module ranges, and clean Git state.
 2. Create a migration branch and back up consumer-owned `specs/`,
    `specs-refiniment/`, `_ai_sdlc/`, policy, and evidence paths.
-3. Fetch annotated tag `v4.0.0`, resolve it to an immutable commit, review the
+3. Fetch annotated tag `v4.0.1`, resolve it to an immutable commit, review the
    release notes and install diff, then install project-scoped skills from that
    detached checkout.
 4. Replace only files named by the harness-managed inventory. Preserve

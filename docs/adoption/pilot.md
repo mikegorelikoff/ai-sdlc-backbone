@@ -24,7 +24,7 @@ Complete this table before installation.
 | Cost/resource owner | Person accountable for the cost/resource ledger, ranges, missing data, and capacity assumptions. |
 | Role owners | Product/BA, engineering, QA, security, delivery/release, and repository maintainer. |
 | Agent boundary | Approved host, models, tools, network access, filesystem scope, and escalation process. |
-| Installer telemetry decision | Whether the third-party Skills CLI may send its anonymous skill-name/file/timestamp telemetry, opt-out setting, policy owner, and retention decision. |
+| Installer trust decision | Approved Git origin or mirror, immutable revision, native installer review owner, and retained provenance. |
 | Baseline window | Comparable recent work or at least one pre-pilot observation period. |
 | Checkpoints | Kickoff, end of week one, midpoint, final review, and incident reviews. |
 | Decision date | Date and forum for stop, adjust, continue, or scale. |
@@ -115,7 +115,7 @@ incident records, and review notes according to retention policy.
 1. Stop new agent mutations.
 2. Capture `git status --short`, installed inventory, current branch, and exact failure.
 3. Revoke or narrow temporary permissions and credentials.
-4. Use the documented [installation rollback](../how-to/install.md#update-remove-or-roll-back).
+4. Use the documented [installation rollback](../how-to/update.md#troubleshooting).
 5. Restore accepted files through reviewed Git changes; do not delete evidence to make status green.
 6. Validate the repository and record why the pilot stopped.
 

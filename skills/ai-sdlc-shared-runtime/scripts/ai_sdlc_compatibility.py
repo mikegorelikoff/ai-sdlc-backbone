@@ -334,8 +334,8 @@ def validate_routes_and_docs(root: Path, baseline: dict[str, Any]) -> list[str]:
     for name, route in baseline.get("routes", {}).items():
         if route not in combined:
             errors.append(f"documented route missing ({name}): {route}")
-    if not re.search(r"\bnpx\s+(?:-y\s+)?skills(?:@[0-9.]+)?\s+add\b", combined, re.IGNORECASE):
-        errors.append("install/update documentation missing: versioned npx skills add")
+    if "install.sh" not in combined or "harness-install-lock.toon" not in combined:
+        errors.append("install/update documentation missing: native installer and deterministic TOON lock")
     for phrase in ("compatibility", "update", "rollback"):
         if phrase.lower() not in combined.lower():
             errors.append(f"install/update documentation missing: {phrase}")

@@ -29,24 +29,25 @@ From the project that will use the Harness, install every skill for one agent
 with one command:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/main/install.sh | sh -s -- codex
+curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.0.1/install.sh | sh -s -- codex
 ```
 
 Then verify the project-scoped installation:
 
 ```bash
-DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --toon
+python3 .agents/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py
 ```
 
-Prerequisites are Git, Node.js `>=22.20.0`, npm, Python `3.10+`, and a
-supported AI agent host. Replace `codex` with your Skills CLI agent identifier.
-Review remote scripts before running them.
+Prerequisites are Git, Python `3.10+`, and Codex. The harness-owned
+deterministic installer writes only the project-scoped skill inventory,
+portable TOON install record, and content-addressed TOON lock. Review remote
+scripts before running them.
 
 ## Expected first result
 
-The installer adds project-scoped Harness skills for the named agent. The
-verification command returns a TOON inventory that includes the installed
-`ai-sdlc-*` skills. Start with a read-only Explore request:
+The installer adds all 44 project-scoped Harness skills for Codex. The
+verification command checks the exact revision, inventory, target paths, and
+per-skill digests. Start with a read-only Explore request:
 
 ```text
 Use ai-sdlc-flow to Explore this request. Show the route, evidence, rigor,
@@ -106,15 +107,16 @@ does not claim a built-in technical integration with the other two.
 
 ## Security and privacy
 
-Treat agent instructions, generated commands, packages, and external content
-as untrusted until reviewed. The installer disables Skills CLI telemetry, but
-that does not change the data behavior of your agent host or model provider.
-Do not send secrets or restricted data unless your organization permits it.
-Report vulnerabilities privately through [SECURITY.md](SECURITY.md).
+Treat agent instructions, generated commands, packages, remote Git content,
+and external content as untrusted until reviewed. The native installer does
+not invoke a package registry or emit telemetry, but that does not change the
+data behavior of Git, your agent host, or model provider. Do not send secrets
+or restricted data unless your organization permits it. Report
+vulnerabilities privately through [SECURITY.md](SECURITY.md).
 
 ## Project status
 
-The current stable release is `v4.0.0` with Harness API `4.0.0`. It is a hard
+The current stable release is `v4.0.1` with Harness API `4.0.0`. It is a hard
 cut to canonical TOON contracts, executable semantic skill graphs, per-step
 context engineering, and durable journaled execution. Review
 [compatibility](docs/reference/compatibility.md), [limitations](docs/explanation/maturity-limitations.md),

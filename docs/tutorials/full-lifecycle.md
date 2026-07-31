@@ -30,8 +30,6 @@ and accept each handoff.
     git diff --cached --quiet
     test -z "$(git ls-files --others --exclude-standard)"
     test -f docs/tutorials/full-lifecycle.md
-    node --version  # expected: v22.20.0 or newer
-    npm --version
     PYTHON_BIN="${PYTHON_BIN:-python3}"
     "$PYTHON_BIN" --version  # expected: Python 3.10 or newer
     TUTORIAL_ROOT="$(mktemp -d)"
@@ -49,13 +47,9 @@ and accept each handoff.
     git config --local commit.gpgsign false
     git add scenario.md decisions.md
     git commit -m "chore: initialize organization SSO scenario"
-    DISABLE_TELEMETRY=1 npx -y skills@1.5.19 add "$HARNESS_SRC" --skill '*' --agent codex -y
-    mkdir -p .ai-sdlc
-    cp "$HARNESS_SRC/config/ai-sdlc-managed-skills.txt" .ai-sdlc/harness-managed-skills.txt
-    printf 'agent: codex\ninventory: .ai-sdlc/harness-managed-skills.txt\nrevision: %s\nschema: ai-sdlc-install-record/v1\nselection: all-skills\nskills_cli: 1.5.19\n' "$HARNESS_REV" > .ai-sdlc/harness-install.toon
+    AI_SDLC_SOURCE="$HARNESS_SRC" AI_SDLC_REVISION="$HARNESS_REV" "$HARNESS_SRC/install.sh" codex
     "$PYTHON_BIN" .agents/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py
-    rm skills-lock.toon
-    git add .agents .ai-sdlc/harness-install.toon .ai-sdlc/harness-managed-skills.txt
+    git add .agents .ai-sdlc/harness-install.toon .ai-sdlc/harness-install-lock.toon .ai-sdlc/harness-managed-skills.txt
     git commit -m "chore: install AI SDLC harness"
     git init --bare "$ORIGIN_ROOT"
     git remote add origin "$ORIGIN_ROOT"
@@ -66,7 +60,7 @@ and accept each handoff.
 
     Stop if the candidate has tracked, staged, or untracked changes: otherwise
     the installed bytes would not be identified by `HARNESS_REV`. Also stop if
-    Node is older than 22.20.0 or Python is older than 3.10.
+    Python is older than 3.10.
 
 !!! warning "Human checkpoint"
 
@@ -82,6 +76,7 @@ scenario.md
 decisions.md
 .agents/skills/
 .ai-sdlc/harness-install.toon
+.ai-sdlc/harness-install-lock.toon
 .ai-sdlc/harness-managed-skills.txt
 ```
 

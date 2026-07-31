@@ -43,7 +43,7 @@ description: Canonical definitions for AI SDLC, SDD, lifecycle roles, artifacts,
 | Large language model (LLM) | Model trained on large text or code corpora to predict token sequences and perform language-oriented tasks. |
 | Machine learning (ML) | AI approach in which behavior is learned from data or experience rather than expressed only as hand-written rules. |
 | Module | Versioned compatible group of core or optional skills. |
-| `npx` | npm package runner used here to execute the pinned third-party Skills CLI package. |
+| Native installer | Harness-owned project installer that stages, hashes, copies, and records managed skills without a package registry. |
 | PM | Product manager role responsible for customer problem, value, priority, scope, and success measures. |
 | Product owner (PO) | Delegated role accountable for day-to-day backlog ordering, story clarity, and acceptance decisions within the product direction; the product manager retains broader product strategy and outcome accountability unless local governance says otherwise. |
 | Policy | Versioned rules that allow, require gates for, or deny a delivery action. |

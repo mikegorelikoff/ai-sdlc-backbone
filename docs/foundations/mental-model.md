@@ -15,7 +15,7 @@ treating a skill name as a shell command and treating agent output as approval.
 Harness source repository
   skills/ + shared helpers + modules + schemas + tests + public docs
                      |
-                     | Skills CLI install
+                     | native deterministic install
                      v
 Installed agent environment
   selected SKILL.md packages + references + scripts available to the agent

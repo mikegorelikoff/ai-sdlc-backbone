@@ -63,10 +63,10 @@ artifact_metadata:
 - AC-007: requirements.md -> test-cases.md (TC-007) -> tasks.md (T005, T007, T010) -> qa.md -> decision-log.md
 - AC-008: requirements.md -> test-cases.md (TC-008) -> tasks.md (T005, T007, T010) -> qa.md -> decision-log.md
 - AC-009: requirements.md -> test-cases.md (TC-009) -> tasks.md (T005, T007, T010) -> qa.md -> decision-log.md
-- AC-010: requirements.md -> test-cases.md (TC-010) -> tasks.md (T001, T006, T007, T009, T010) -> qa.md -> decision-log.md
+- AC-010: requirements.md -> test-cases.md (TC-010) -> tasks.md (T001, T006, T007, T009, T010, T011) -> qa.md -> decision-log.md
 - AC-011: requirements.md -> test-cases.md (TC-011) -> tasks.md (T008, T009, T010) -> qa.md -> decision-log.md
 - AC-012: requirements.md -> test-cases.md (TC-012) -> tasks.md (T008, T009, T010) -> qa.md -> decision-log.md
-- AC-013: requirements.md -> test-cases.md (TC-013) -> tasks.md (T001, T007, T009, T010) -> qa.md -> decision-log.md
+- AC-013: requirements.md -> test-cases.md (TC-013) -> tasks.md (T001, T007, T009, T010, T011) -> qa.md -> decision-log.md
 
 ## Task Execution Plan
 - [x] T001: Add v4 TOON contracts, the shared canonical codec, and graph model with hard-cut schema diagnostics.; refs: FR-001, FR-009, FR-011, AC-001, AC-010, AC-013, DEC-002, DEC-007; output: v2 skill graph plus StepCard, workflow, run, flow, context, adapter, handoff, eval, and complete test-suite contracts
@@ -78,7 +78,8 @@ artifact_metadata:
 - [x] T007: Add codec, schema, selector, context, flow, runtime, adapter, security, installed-layout, and TOON-only repository tests.; refs: TC-001, TC-002, TC-003, TC-004, TC-005, TC-006, TC-007, TC-008, TC-009, TC-010, TC-013, AC-001, AC-002, AC-003, AC-004, AC-005, AC-006, AC-007, AC-008, AC-009, AC-010, AC-013; output: focused positive, blocked, invalid, replay, drift, zero-write, malformed-input, context-safety, and repository-absence suites
 - [x] T008: Add all-skill deterministic eval receipts, complete per-file test execution, and provider-neutral live protocol validation.; refs: FR-008, AC-011, AC-012, TC-011, TC-012, DEC-005; output: `ai_sdlc_skill_eval.py`, `ai_sdlc_test_suite.py`, deterministic scenario matrix, live protocol, and receipt contracts
 - [x] T009: Update compatibility baseline, registries, context-engineering concepts, maintainer guidance, public references, decisions, and changelog for the TOON-only v4 hard cut.; refs: FR-010, FR-011, AC-002, AC-010, AC-011, AC-012, AC-013, DEC-007; output: synchronized v4 documentation and generated catalogs
-- [x] T010: Execute SDD, all-skill, compatibility, package, security, TOON canonicality, documentation-build, and diff validation; record deterministic receipts and the remaining live release gate.; refs: AC-001, AC-002, AC-003, AC-004, AC-005, AC-006, AC-007, AC-008, AC-009, AC-010, AC-011, AC-012, AC-013; output: current validation report, 94-file test-suite evidence, and auditable deterministic TOON receipts
+- [x] T010: Execute SDD, all-skill, compatibility, package, security, TOON canonicality, documentation-build, and diff validation; record deterministic receipts and the remaining live release gate.; refs: AC-001, AC-002, AC-003, AC-004, AC-005, AC-006, AC-007, AC-008, AC-009, AC-010, AC-011, AC-012, AC-013; output: current validation report, 95-file test-suite evidence, and auditable deterministic TOON receipts
+- [x] T011: Replace the incompatible external consumer path with a deterministic native installer, portable TOON record and lock, installed digest validation, native smoke, and immutable v4.0.1 correction.; refs: NFR-007, NFR-008, AC-010, AC-013, DEC-009; output: native installer, install record v2, install lock v1, corrective documentation, and fresh tagged-install gate
 
 ## Task Dependencies
 - T001: depends on previous applicable task / none
@@ -91,6 +92,7 @@ artifact_metadata:
 - T008: depends on T006, T007
 - T009: depends on T006, T008
 - T010: depends on T007, T008, T009
+- T011: depends on T007, T009, T010
 
 ## Validation Sequence
 - 1. `python3 skills/ai-sdlc-sdd/scripts/check_clarify.py <spec-dir> --full-flow`

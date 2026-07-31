@@ -96,3 +96,17 @@ machine artifact. Public paths remain unchanged; the generated lifecycle,
 role, script, module, and skill catalogs remain the supported discovery
 surface. Rendered validation fails if a build introduces an alternate machine
 artifact extension.
+
+## Native TOON-only installation correction
+
+On 2026-07-30, the first fresh installation from the published `v4.0.0` tag
+proved that the third-party installer generated a non-TOON lock and silently
+ignored the documentation's requested structured-list flag. That contradicted
+the release's repository-wide machine-boundary contract.
+
+The published tag remains immutable. Corrective release `v4.0.1` replaces the
+external installer with a source-owned Python installer, pins the primary
+one-line command to the release tag, narrows the validated target to
+project-scoped Codex, and writes a deterministic content-addressed TOON lock.
+The installed validator recomputes all managed digests. Global and other-host
+installation remain explicit future conformance work.

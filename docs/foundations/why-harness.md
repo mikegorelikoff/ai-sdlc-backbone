@@ -45,7 +45,7 @@ approval, recovery, and evidence freshness matter.
 - Humans willing to own decisions and review agent changes.
 - An agent environment that can read skill packages and run allowed helpers.
 - Python 3.10+ for deterministic repository scripts.
-- Node.js `>=22.20.0`/npm and network access for the documented Skills CLI installation.
+- Git network access to a reviewed release or an approved local mirror.
 - A willingness to keep authoritative artifacts in the repository.
 
 ## Poor fit and non-goals

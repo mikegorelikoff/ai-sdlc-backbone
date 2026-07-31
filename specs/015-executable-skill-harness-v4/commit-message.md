@@ -40,6 +40,7 @@ artifact_metadata:
     - "AC-013"
     - "DEC-007"
     - "DEC-008"
+    - "DEC-009"
     - "T001"
     - "T002"
     - "T003"
@@ -50,6 +51,7 @@ artifact_metadata:
     - "T008"
     - "T009"
     - "T010"
+    - "T011"
   related_artifacts:
     - "specs/015-executable-skill-harness-v4/commit-readiness.md"
     - "specs/015-executable-skill-harness-v4/validation.md"
@@ -67,43 +69,41 @@ artifact_metadata:
 # Commit Message
 
 ````text
-chore(release)!: publish v4.0.0
+fix(install): enforce TOON-only native installation
 
 Spec: specs/015-executable-skill-harness-v4
-Task: T001, T002, T003, T004, T005, T006, T007, T008, T009, T010
+Task: T011
+Decision: DEC-009
 
 Business context:
-Make every installable skill deterministic, context-complete, recoverable, and auditable while eliminating dual machine contracts that caused routing, replay, and maintenance drift.
+The first tagged v4 installation proved that the external installer generated a non-TOON lock, violating the release's hard machine-boundary requirement.
 
 Implementation details:
-- Upgrade all 44 skills to semantic v2 DAGs with generated routers, explicit context and handoff nodes, StepCards, gates, retry policy, and recovery evidence.
-- Add context pack v4 with critical-anchor recall, source authority, exact ranges, token economics, fingerprints, and fail-closed direct-read fallback.
-- Integrate flow v3, workflow v2, runtime v2, host adapter v2, and handoff v2 with durable per-step journals, idempotency, strict replay, effect receipts, and interrupted-completion recovery.
-- Make canonical TOON the only structured machine boundary across contracts, configuration, fixtures, state, journals, receipts, historical evidence, and generated output.
-- Add complete per-file testing, deterministic and provider-neutral evaluation protocols, compatibility gates, migration guidance, release documentation, code review, and security review.
+- Replace the external consumer path with a Harness-owned installer that binds a clean Git revision, validates the managed inventory, rejects links and non-TOON artifacts, stages and rehashes every skill, and rolls back caught partial-application failures.
+- Add portable install-record v2 plus a deterministic content-addressed TOON lock and an installed validator that recomputes every managed digest.
+- Narrow validated installation to project-scoped Codex, pin the primary command to immutable v4.0.1, and document v4.0.0 as superseded without moving its tag.
+- Add native installer unit and installed-layout smoke coverage, update CI and generated catalogs, and keep every repository machine boundary TOON-only.
 
 Mermaid diagram:
 ```mermaid
 flowchart LR
-    Request["User request"] --> Explore["Explore and selector"]
-    Explore --> Context["Context pack v4"]
-    Context --> Apply["Fingerprint-checked Apply"]
-    Apply --> Runtime["Durable runtime v2"]
-    Runtime --> Evidence["Evidence, receipts, and handoff"]
+    Tag["Immutable v4.0.1"] --> Stage["Stage and hash 44 skills"]
+    Stage --> Install["Serialized project install"]
+    Install --> Lock["TOON record and digest lock"]
+    Lock --> Verify["Recompute installed bytes"]
 ```
 
 How to test:
 1. Verify the current Feature 015 receipt and inspect the 17 command results.
-2. Run the complete 94-file suite and both deterministic evaluation modes.
+2. Run the complete 95-file suite and native installed-layout smoke.
 3. Build documentation strictly and validate all rendered local targets.
-4. Run the compatibility history audit before and after the release commit.
+4. Run exact compatibility and a fresh tagged native installation.
 
 Validation:
 - python3 skills/ai-sdlc-validation/scripts/run_validation.py --root . --plan specs/015-executable-skill-harness-v4/_ai_sdlc/validation-plan.toon --output specs/015-executable-skill-harness-v4/_ai_sdlc/validation-receipt.toon --verify --quick-flow -> current; 17/17 commands passed
-- python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_test_suite.py --format toon -> passed; 94/94 files
-- python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_compatibility.py --root . --git-base v2.1.0 --git-executable /usr/bin/git --allow-pending-last --format toon -> compatible
-- mkdocs build --strict and python3 docs/scripts/validate_rendered.py site -> passed; 201 HTML pages and 5,428 local targets
+- python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_test_suite.py --format toon -> passed; 95/95 files
+- python3 skills/ai-sdlc-shared-runtime/tests/install_smoke.py --mode native --source . --agent codex --quick-flow -> passed
+- python3 skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_compatibility.py --git-executable /usr/bin/git --format toon -> compatible
+- mkdocs build --strict and python3 docs/scripts/validate_rendered.py site -> passed; 201 HTML pages and 5,423 local targets
 - git diff --check -> passed
-
-BREAKING CHANGE: pre-v4 machine artifacts must be regenerated as canonical TOON; alternate readers, serializers, and legacy in-place conversion are removed.
 ````

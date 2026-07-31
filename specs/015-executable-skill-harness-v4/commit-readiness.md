@@ -1,7 +1,7 @@
 ---
 type: "ai-sdlc.commit-readiness"
 title: "Commit Readiness"
-description: "Auditable scope, validation, staging, and release evidence for executable harness v4."
+description: "Auditable scope, validation, staging, and release evidence for the native v4 installer correction."
 tags:
   - "ai-sdlc"
   - "commit"
@@ -40,6 +40,7 @@ artifact_metadata:
     - "AC-013"
     - "DEC-007"
     - "DEC-008"
+    - "DEC-009"
     - "T001"
     - "T002"
     - "T003"
@@ -50,6 +51,7 @@ artifact_metadata:
     - "T008"
     - "T009"
     - "T010"
+    - "T011"
   related_artifacts:
     - "specs/015-executable-skill-harness-v4/code-review.md"
     - "specs/015-executable-skill-harness-v4/security-review.md"
@@ -74,32 +76,33 @@ artifact_metadata:
 
 ## Result
 
-Feature 015 is ready for one breaking release commit on
+Feature 015 is ready for one corrective patch commit on
 `feature/015-executable-skill-harness-v4`.
 
 ## Scope
 
-- All 44 skills move to validated semantic DAGs with generated concise routers,
-  explicit context and handoff nodes, retry boundaries, evidence, and recovery.
-- Selector, context compiler, flow, workflow, runtime, host adapter, and handoff
-  share one fingerprinted StepCard execution contract.
-- Contracts, configuration, fixtures, manifests, state, journals, historical
-  receipts, and generated machine outputs complete the canonical TOON hard cut.
-- Tests, installation layouts, compatibility history, Feature 015 SDD evidence,
-  public documentation, migration guidance, and release notes are synchronized
-  with API `4.0.0`.
-- Code and security reviews resolved replay identity, interruption recovery,
-  mutation locking, journal creation, retry budget, input validation, and
-  evaluation-output containment findings.
+- Replace the incompatible external consumer path with a Harness-owned native
+  installer while preserving Harness API `4.0.0`.
+- Bind installation to a clean exact Git revision, a canonical managed
+  inventory, verified per-skill tree digests, and portable TOON-only record and
+  lock contracts.
+- Refuse links, alternate machine artifacts, unreviewed managed differences,
+  unsupported host scope, concurrent installer mutation, and ambiguous missing
+  local sources before changing the consumer.
+- Cover caught-failure rollback, installed digest validation, deterministic
+  two-consumer provenance, and a complete 44-skill installed SDD workflow.
+- Preserve immutable `v4.0.0` history and document `v4.0.1` as the corrective
+  release under DEC-009.
 
 ## Staging
 
-- Include all changed and replacement paths because each belongs to T001
-  through T010 and the repository-wide hard cut.
-- Include generated skill routers and documentation catalogs because their
-  canonical sources changed and drift checks pass.
-- Include earlier spec and receipt migrations because the repository-wide
-  absence gate intentionally covers historical tracked artifacts.
+- Include the native installer, bootstrap, record and lock contracts,
+  validators, focused tests, installed-layout smoke, CI, and generated catalog
+  projections because each belongs to T011.
+- Include synchronized installation, update, migration, release, compatibility,
+  security, Feature 015, decision, and changelog documentation under DEC-009.
+- Include the refreshed validation receipt because it binds the exact
+  pre-commit corrective workspace.
 - Exclude unrelated paths: none detected.
 - Exclude local locks, caches, strict-build output, and temporary comparison
   receipts through repository ignore rules or explicit cleanup.
@@ -108,12 +111,14 @@ Feature 015 is ready for one breaking release commit on
 
 - Canonical validation receipt: 17 of 17 commands passed and freshness verify
   passed.
-- Complete skill-owned suite: 94 of 94 test files passed.
+- Complete skill-owned suite: 95 of 95 test files passed.
+- Native installation: 10 installer cases, 6 record cases, and the complete
+  44-skill installed workflow passed.
 - Deterministic evaluation: 44 skills and 220 scenarios passed; two 31,999-byte
   runs were identical.
 - Offline provider-neutral protocol: 6 of 6 scenarios passed.
 - Documentation: 200 public pages, 46 unit tests, strict build, 201 rendered
-  HTML pages, and 5,428 local targets passed.
+  HTML pages, and 5,423 local targets passed.
 - Compatibility: API `4.0.0`, 12 contracts, 44 skills, five modules, and all
   18 protected history subjects pass in exact order.
 - Diff hygiene, path review, canonical TOON-only gate, and synthetic-secret

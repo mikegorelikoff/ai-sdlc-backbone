@@ -694,6 +694,7 @@ class ScriptContractTests(unittest.TestCase):
                 "ai_sdlc_context_benchmark.py",
                 "refinement_status.py",
                 "ai_sdlc_migrate.py",
+                "ai_sdlc_install.py",
                 "ai_sdlc_install_record.py",
             }:
                 continue

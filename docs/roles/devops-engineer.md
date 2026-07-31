@@ -41,7 +41,7 @@ production promotion.
 
 ## Example workflow
 
-Provision exact Git, Node.js, npm, Python, and agent versions; install in an
+Provision exact Git, Python, and agent versions; install in an
 empty Git repository; record created paths and counts; run installed-only helper
 checks; add consumer CI; test update, rollback, remove, and artifact preservation;
 repeat on every claimed OS and host.

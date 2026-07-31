@@ -21,11 +21,11 @@ repository, and entering an agent prompt.
     git status --short
     PYTHON_BIN="${PYTHON_BIN:-python3}"
     "$PYTHON_BIN" --version
-    DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --toon
+    "$PYTHON_BIN" .agents/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py
     ```
 
-Expected: a clean or understood Git tree, Python 3.10+, and installed AI SDLC
-skills for the agent you are about to use.
+Expected: a clean or understood Git tree, Python 3.10+, and a valid
+content-addressed installation of all managed AI SDLC skills.
 
 ## Minute 5–10: choose one real request
 

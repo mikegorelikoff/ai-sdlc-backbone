@@ -42,7 +42,7 @@ explain. Escalate those decisions to the named owner.
 
 ## Example workflow
 
-1. Verify Git, Node.js, npm, Python, network, and agent host.
+1. Verify Git, Python 3.10+, network, and the Codex project host.
 2. Install project-scoped skills and inspect every created path.
 3. Ask `ai-sdlc-flow` Explore with quick rigor to route one low-risk request.
 4. Create a task branch, specification, tests, and implementation in that order.

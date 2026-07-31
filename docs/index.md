@@ -53,21 +53,21 @@ the [quick, full, and expert paths](how-to/choose-flow.md).
 
 ## Five-minute first success
 
-Install the skills into a project for one agent with one command. This path
-requires Node.js `>=22.20.0`:
+Install the skills into a project for Codex with one command. This path
+requires Git and Python `3.10+`:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/main/install.sh | sh -s -- codex
+curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.0.1/install.sh | sh -s -- codex
 ```
 
-Then inspect the resulting inventory:
+Then validate the resulting TOON provenance:
 
 ```bash
-DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --toon
+python3 .agents/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py
 ```
 
-The second command must return TOON containing installed `ai-sdlc-*` skills.
-Then ask your agent to Explore a request without applying changes:
+The second command must validate all 44 installed skills and their locked
+content digests. Then ask your agent to Explore a request without applying changes:
 
 ```text
 Use ai-sdlc-flow to Explore this request. Show the route, evidence, rigor,

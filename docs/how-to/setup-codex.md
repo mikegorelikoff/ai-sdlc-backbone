@@ -6,8 +6,8 @@ description: Install, authenticate, open a consumer repository, and verify the C
 # Set up Codex CLI
 
 Use this guide when Codex is the agent host selected for the documented pilot.
-Codex is separate from the harness and from the third-party Skills CLI: Codex
-runs the agent session, while the Skills CLI copies harness skills into the
+Codex is separate from the Harness installer: Codex runs the agent session,
+while the Harness-owned native installer copies and locks skills in the
 consumer repository.
 
 ## Prerequisites and data boundary

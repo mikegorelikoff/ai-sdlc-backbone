@@ -61,9 +61,9 @@ Enter only after the prepare step passes and this skill is the selected owner fo
 ## Purpose
 
 Keep installed AI SDLC capabilities executable without assuming that the user
-cloned the harness source repository. Skills CLI discovers folders containing
-`SKILL.md`; this package makes the shared runtime part of that discovered
-installation set.
+cloned the Harness source repository. The native installer reads the published
+managed inventory and copies every selected `SKILL.md` package with the shared
+runtime as one content-addressed installation set.
 
 ## Inputs
 

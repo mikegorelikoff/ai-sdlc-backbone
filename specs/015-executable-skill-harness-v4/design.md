@@ -63,6 +63,7 @@ The architecture has seven deterministic layers: canonical TOON decoding and sch
 - Host adapter: full StepCard capability negotiation and semantic-preserving execution mapping.
 - Skill graph generator: semantic scaffold, router generation, inventory validation, and drift check; it contains no legacy conversion mode.
 - Eval harness: all-skill deterministic fixtures, byte-repeatability receipts, repository TOON-only checks, and provider-neutral live protocol.
+- Native installer: immutable source verification, managed-inventory selection, link and format rejection, staged content hashing, serialized replacement with caught-failure rollback, and portable installed provenance.
 
 ## Interfaces and Contracts
 - `ai-sdlc-skill-steps/v2`: skill, version, entrypoints, budgets, and typed semantic nodes.
@@ -73,6 +74,7 @@ The architecture has seven deterministic layers: canonical TOON decoding and sch
 - `ai-sdlc-flow/v3`: Explore decision and Apply receipt.
 - `ai-sdlc-host-adapter/v2` and `ai-sdlc-handoff/v2`: StepCard capability, evidence, and status exchange.
 - `ai-sdlc-eval-receipt/v1`: deterministic or live suite receipt.
+- `ai-sdlc-install-record/v2` and `ai-sdlc-install-lock/v1`: exact source, agent, target, inventory, installer identity, and per-skill content digests.
 - Canonical TOON bytes are the only machine interchange representation for every contract, fixture, journal, state, and receipt.
 
 ## Data Model
@@ -83,6 +85,7 @@ A semantic step has a stable ID, document path, type, dependencies, condition, s
 - Older schemas are decoded only as canonical TOON and rejected by exact expected-versus-received schema checks; there is no alternate parser, coercion path, or runtime conversion mode.
 - No ready node, insufficient context, unsupported capability, stale fingerprint, and unsatisfied gate produce typed blocked outcomes before side effects.
 - Started but non-terminal tasks are recoverable; replay reuses completed results and retries only within declared limits.
+- Dirty or mismatched source revisions, unreviewed managed differences, symbolic links, non-TOON machine artifacts, unsupported host scope, staged digest drift, or installed digest drift stop native installation.
 - Idempotency collisions with different payloads fail closed.
 - Task protocol order is strict: planned, started, terminal, evidence, result. Out-of-order or identity-mismatched events are rejected.
 

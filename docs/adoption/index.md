@@ -25,7 +25,7 @@ Use this path to answer four questions in order:
 | AI use | Agents already help analyze, plan, code, test, or review. | The team wants an autonomous replacement for accountable roles. |
 | Problem | Decisions disappear in chat; handoffs, tests, or scope are hard to reconstruct. | Existing evidence is already complete and the extra workflow has no named benefit. |
 | Control | People can approve intent, risk, exceptions, release, and destructive actions. | No one will own gates or review agent output. |
-| Tooling | Git, Python 3.10+, Node/npm, and a supported skill host are available. | Agent execution, repository writes, or required dependencies are prohibited. |
+| Tooling | Git, Python 3.10+, and the validated Codex project host are available. | Agent execution, repository writes, or required dependencies are prohibited. |
 | Pilot | One owner, one team, one repository, a baseline, and stop conditions can be named. | The first step must be an organization-wide mandate. |
 
 If the problem is primarily CI, deployment, project tracking, observability, or

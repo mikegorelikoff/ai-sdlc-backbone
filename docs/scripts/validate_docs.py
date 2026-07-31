@@ -62,8 +62,11 @@ BEGINNER_TERMS = (
     "gate",
     "handoff",
 )
-CANONICAL_INSTALL = 'DISABLE_TELEMETRY=1 npx -y skills@1.5.19 add "$HARNESS_SRC" --skill \'*\' --agent codex -y'
-CANONICAL_RELEASE_TAG = "v4.0.0"
+CANONICAL_INSTALL = (
+    'AI_SDLC_SOURCE="$HARNESS_SRC" AI_SDLC_REVISION="$HARNESS_REV" '
+    '"$HARNESS_SRC/install.sh" codex'
+)
+CANONICAL_RELEASE_TAG = "v4.0.1"
 FLOW_PAGES = {
     "flows/index.md",
     "flows/refinement.md",
@@ -380,7 +383,7 @@ def validate_onboarding(root: Path = ROOT) -> list[str]:
 
     short_install = (
         "curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/"
-        "ai-sdlc-harness/main/install.sh | sh -s -- codex"
+        "ai-sdlc-harness/v4.0.1/install.sh | sh -s -- codex"
     )
     for relative in ("README.md", "docs/index.md"):
         path = root / relative
@@ -1031,26 +1034,12 @@ def validate_adoption_operations(root: Path = ROOT) -> list[str]:
     errors.extend(validate_canonical_sources(root))
     errors.extend(validate_section_indexes(root))
     install = read("how-to/install.md")
-    if "https://www.skills.sh/docs/cli#telemetry" not in install or "DISABLE_TELEMETRY=1" not in install:
-        errors.append("docs/how-to/install.md: missing third-party installer telemetry disclosure and opt-out")
+    if "harness-owned deterministic installer" not in install:
+        errors.append("docs/how-to/install.md: missing native deterministic installer boundary")
     for relative in ("README.md", "docs/index.md", "docs/how-to/install.md"):
         text = (root / relative).read_text(encoding="utf-8") if (root / relative).is_file() else ""
-        if "22.20.0" not in text:
-            errors.append(f"{relative}: missing pinned Node.js engine floor 22.20.0")
-    public_paths = ([root / "README.md"] if (root / "README.md").is_file() else [])
-    if (root / "docs").is_dir():
-        public_paths.extend((root / "docs").rglob("*.md"))
-    for path in public_paths:
-        text = path.read_text(encoding="utf-8")
-        powershell_telemetry = False
-        for line in text.splitlines():
-            if "$env:DISABLE_TELEMETRY" in line:
-                powershell_telemetry = True
-            if "npx -y skills@1.5.19" in line and "DISABLE_TELEMETRY=1" not in line:
-                if not powershell_telemetry:
-                    errors.append(f"{display_path(path, root)}: Skills CLI command lacks telemetry opt-out")
-            if not line.strip() and powershell_telemetry:
-                powershell_telemetry = False
+        if "Python" not in text or "3.10" not in text:
+            errors.append(f"{relative}: missing Python 3.10 installer floor")
     state = root / "specs/005-guided-onboarding-documentation/_ai_sdlc/state.toon"
     if not state.is_file():
         errors.append("specs/005-guided-onboarding-documentation: authoritative state.toon is missing")
@@ -1104,12 +1093,10 @@ def validate_workflow(root: Path = ROOT) -> list[str]:
         "actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6",
         "actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5",
         "actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6",
-        "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4",
         "python3 -m pip install --require-hashes -r requirements-docs.lock",
         "mkdocs build --strict",
         "python3 docs/scripts/validate_rendered.py site",
-        "python3 skills/ai-sdlc-shared-runtime/tests/install_smoke.py --mode npx",
-        "--mode npx-remote",
+        "python3 skills/ai-sdlc-shared-runtime/tests/install_smoke.py --mode native",
         "README.md",
         "FAQ.md",
         "CONTRIBUTING.md",

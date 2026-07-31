@@ -19,14 +19,14 @@ Hypertext Transfer Protocol (HTTP) `GET` means read that route; status `200`
 means the request succeeded; a body mapping whose `status` field is `ok` is
 the expected result.
 
-You need network access, Git, Python 3.10+, Node.js `>=22.20.0`, npm, and a
-supported AI agent. The commands are written for Linux/macOS/WSL or Git Bash;
+You need network access, Git, Python 3.10+, and Codex. The commands are written
+for Linux/macOS/WSL or Git Bash;
 PowerShell users should use WSL for this end-to-end fixture. Every repository
 created here is disposable.
 
 ## 0. Open the release source checkout
 
-This tutorial validates `v4.0.0`, including executable skill graphs, per-step
+This tutorial validates `v4.0.1`, including executable skill graphs, per-step
 context, durable replay, and canonical TOON contracts. Acquire the annotated
 tag explicitly:
 
@@ -35,8 +35,8 @@ CANDIDATE_PARENT="$(mktemp -d)"
 git clone https://github.com/mikegorelikoff/ai-sdlc-harness.git "$CANDIDATE_PARENT/ai-sdlc-harness"
 cd "$CANDIDATE_PARENT/ai-sdlc-harness"
 test "$(git remote get-url origin)" = "https://github.com/mikegorelikoff/ai-sdlc-harness.git"
-git fetch --depth 1 origin refs/tags/v4.0.0:refs/tags/v4.0.0
-git checkout --detach 'v4.0.0^{commit}'
+git fetch --depth 1 origin refs/tags/v4.0.1:refs/tags/v4.0.1
+git checkout --detach 'v4.0.1^{commit}'
 ```
 
 The captured commit below is evidence for the bytes exercised, not a signature
@@ -57,18 +57,14 @@ on tracked, staged, or untracked source content:
     test -f "$HARNESS_SRC/docs/tutorials/first-feature.md"
     TUTORIAL_ROOT="$(mktemp -d)"
     cd "$HARNESS_SRC"
-    node --version  # expected: v22.20.0 or newer
-    npm --version
     PYTHON_BIN="${PYTHON_BIN:-python3}"
     "$PYTHON_BIN" --version
     ```
 
 If any clean-check command fails, stop and commit or discard the source
-content through normal review before recording `HARNESS_REV`. If Node is older than `22.20.0`, stop and upgrade Node before invoking the
-pinned Skills CLI. The CLI package declares that engine floor; changing the
-Node version is safer than forcing installation with an unsupported runtime.
-If Python is older than 3.10, stop as well; installation alone does not verify
-the helper runtime. Windows users should perform the complete fixture in WSL.
+content through normal review before recording `HARNESS_REV`. If Python is
+older than 3.10, stop as well. Windows users should perform the complete
+fixture in WSL.
 
 ## 1. Create a clean consumer and explicit base branch
 
@@ -117,7 +113,7 @@ The repository is on `dev` and clean. The `.disabled` file is not discovered by
 
 ## 2. Install and commit the accepted baseline
 
-Reuse the scope, telemetry, and trust rules from the
+Reuse the scope, provenance, and trust rules from the
 [canonical project-scoped installation](../how-to/install.md), but do **not**
 rerun that guide's stable-source selection in this release exercise. Preserve
 the `HARNESS_SRC` and `HARNESS_REV` captured in step 0, then inspect what the
@@ -127,26 +123,19 @@ installer adds.
 
     ```bash
     test "$(git -C "$HARNESS_SRC" rev-parse HEAD)" = "$HARNESS_REV"
-    DISABLE_TELEMETRY=1 npx -y skills@1.5.19 add "$HARNESS_SRC" --skill '*' --agent codex -y
-    DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --toon
+    AI_SDLC_SOURCE="$HARNESS_SRC" AI_SDLC_REVISION="$HARNESS_REV" "$HARNESS_SRC/install.sh" codex
+    "$PYTHON_BIN" .agents/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py
     "$PYTHON_BIN" .agents/skills/ai-sdlc-flow/scripts/flow.py --help
     "$PYTHON_BIN" .agents/skills/ai-sdlc-sdd/scripts/sdd_artifact_scaffold.py --help
-    mkdir -p .ai-sdlc
-    cp "$HARNESS_SRC/config/ai-sdlc-managed-skills.txt" .ai-sdlc/harness-managed-skills.txt
-    printf 'agent: codex\ninventory: .ai-sdlc/harness-managed-skills.txt\nrevision: %s\nschema: ai-sdlc-install-record/v1\nselection: all-skills\nskills_cli: 1.5.19\n' "$HARNESS_REV" > .ai-sdlc/harness-install.toon
-    "$PYTHON_BIN" .agents/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py
-    rm skills-lock.toon
     git status --short
     ```
 
 !!! warning "Human checkpoint"
 
     Review the installed diff and source identity. Continue only if changes are
-    limited to `.agents/skills/` and the two portable harness records under
-    `.ai-sdlc/`. The transient
-    CLI lock contains an absolute temporary path and must be absent. Installed
-    instructions run with the agent's authority; inventory is not a trust
-    decision.
+    limited to `.agents/skills/` and the three portable Harness provenance
+    files under `.ai-sdlc/`. Installed instructions run with the agent's
+    authority; inventory is not a trust decision.
 
 Commit the accepted installation before feature work. This keeps the later
 branch gate clean and prevents package files from being mistaken for feature
@@ -156,7 +145,7 @@ scope.
 
     ```bash
     git status --short
-    git add .agents .ai-sdlc/harness-install.toon .ai-sdlc/harness-managed-skills.txt
+    git add .agents .ai-sdlc/harness-install.toon .ai-sdlc/harness-install-lock.toon .ai-sdlc/harness-managed-skills.txt
     git diff --cached --stat
     git commit -m "chore: install AI SDLC harness"
     git init --bare "$TUTORIAL_ROOT/health-origin.git"

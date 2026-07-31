@@ -1,16 +1,16 @@
 commands[17]:
   - argv[4]: python3,skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_test_suite.py,"--format",toon
-    duration_ms: 76981
+    duration_ms: 81988
     exit_code: 0
     id: complete-per-file-suite
     output_limited: false
     stderr_bytes: 0
     stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-    stdout_bytes: 6368
-    stdout_sha256: 8e089e824bbfe630458af570a508312e4ac4ce2f91382eb17e3f7d498eaebec6
+    stdout_bytes: 6438
+    stdout_sha256: e13d902ba7a25fbd83c1db2cf2197df4d908e43dab929b49a487226df0164e6e
     trace_ids[13]: TC-001,TC-002,TC-003,TC-004,TC-005,TC-006,TC-007,TC-008,TC-009,TC-010,TC-011,TC-012,TC-013
   - argv[7]: python3,skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_skill_graph.py,"--check","--skills-root",skills,"--format",toon
-    duration_ms: 185
+    duration_ms: 179
     exit_code: 0
     id: semantic-graph-contract
     output_limited: false
@@ -20,27 +20,27 @@ commands[17]:
     stdout_sha256: f9f4ddb212787ec1711405f5f35fbbb85ca54f8f7afaea6e152d9babec8d5905
     trace_ids[4]: AC-001,AC-002,TC-001,TC-002
   - argv[8]: python3,skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_skill_eval.py,"--mode",deterministic,"--skills-root",skills,"--format",toon
-    duration_ms: 37964
+    duration_ms: 34305
     exit_code: 0
     id: deterministic-evaluation
     output_limited: false
     stderr_bytes: 0
     stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
     stdout_bytes: 31999
-    stdout_sha256: 0bb94bc50137092c20b2d1f0ff1932c78d1713fdea86af90b78e1cb4436baf6e
+    stdout_sha256: 9e0ab183cadd167366b83f97d18489896280b99c1c06af3ade1c91219626dbb7
     trace_ids[2]: AC-011,TC-011
   - argv[8]: python3,skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_skill_eval.py,"--mode",live-protocol,"--skills-root",skills,"--format",toon
-    duration_ms: 1946
+    duration_ms: 1859
     exit_code: 0
     id: live-protocol
     output_limited: false
     stderr_bytes: 0
     stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
     stdout_bytes: 2028
-    stdout_sha256: 883bef45e23968fbc165272f8d86c375de41e48c4cad59dfcd145281d2e1adc7
+    stdout_sha256: d3312ba1e76e7ae2617bbb79e152d5e2b849eaa99fcfe315d57666185f187be2
     trace_ids[2]: AC-012,TC-012
   - argv[7]: python3,skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_compatibility.py,"--root",.,"--skip-git-audit","--format",toon
-    duration_ms: 293
+    duration_ms: 298
     exit_code: 0
     id: compatibility-contract
     output_limited: false
@@ -49,38 +49,38 @@ commands[17]:
     stdout_bytes: 1669
     stdout_sha256: 2226112bd699d11e936e60c2df270f8e17a02b86b2e09d9ff93591c8914ae85d
     trace_ids[4]: AC-010,AC-013,TC-010,TC-013
-  - argv[5]: python3,skills/ai-sdlc-shared-runtime/tests/install_smoke.py,"--mode",emulated,"--quick-flow"
-    duration_ms: 6514
+  - argv[9]: python3,skills/ai-sdlc-shared-runtime/tests/install_smoke.py,"--mode",native,"--source",.,"--agent",codex,"--quick-flow"
+    duration_ms: 6769
     exit_code: 0
-    id: installed-layout-smoke
+    id: native-installed-layout-smoke
     output_limited: false
     stderr_bytes: 0
     stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-    stdout_bytes: 110
-    stdout_sha256: 85d8fab75e865b5e824db21ef17ed7dca3228951a59145ed361eab3ebb866d0c
-    trace_ids[2]: AC-001,NFR-007
-  - argv[5]: python3,skills/ai-sdlc-shared-runtime/tests/install_smoke.py,"--mode",emulated-selective,"--quick-flow"
-    duration_ms: 453
+    stdout_bytes: 108
+    stdout_sha256: fdb83cd1cd009c4cf965ed4b0c543da5d47fcd41dff43cc86f760f05d299d27b
+    trace_ids[4]: AC-001,AC-010,AC-013,NFR-007
+  - argv[2]: python3,skills/ai-sdlc-shared-runtime/tests/test_native_install.py
+    duration_ms: 2201
     exit_code: 0
-    id: selective-layout-smoke
+    id: native-installer-contracts
     output_limited: false
-    stderr_bytes: 0
-    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-    stdout_bytes: 63
-    stdout_sha256: b2369bb0edbf5d4ad6fb76acc1927a7769075dab18881fd39817cc81f910d6b1
-    trace_ids[2]: AC-002,NFR-007
-  - argv[5]: python3,skills/ai-sdlc-shared-runtime/tests/install_smoke.py,"--mode",emulated-global,"--quick-flow"
-    duration_ms: 454
+    stderr_bytes: 109
+    stderr_sha256: 9ca0dcf67716bfc68fef82e3308ceaf20b419e7a989ad75d9f301875151d5833
+    stdout_bytes: 0
+    stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    trace_ids[3]: AC-010,AC-013,NFR-007
+  - argv[2]: python3,skills/ai-sdlc-shared-runtime/tests/test_install_record.py
+    duration_ms: 71
     exit_code: 0
-    id: global-layout-smoke
+    id: native-install-record-contracts
     output_limited: false
-    stderr_bytes: 0
-    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-    stdout_bytes: 109
-    stdout_sha256: ed9ce9ef86a46eb3cdcad292a037ef9a59bccb35dfe85227abf1a9e40f94d436
-    trace_ids[2]: AC-010,NFR-007
+    stderr_bytes: 104
+    stderr_sha256: 3b276704f3e563f93455088f7ce46c6323f4b89f61012ff8ddd99bba729ec60f
+    stdout_bytes: 0
+    stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    trace_ids[3]: AC-010,AC-013,NFR-007
   - argv[4]: python3,skills/ai-sdlc-sdd/scripts/check_clarify.py,specs/015-executable-skill-harness-v4,"--quick-flow"
-    duration_ms: 128
+    duration_ms: 74
     exit_code: 0
     id: sdd-clarify
     output_limited: false
@@ -90,7 +90,7 @@ commands[17]:
     stdout_sha256: 0051722dcb8794bf0ca48f67dee785fbcec6ac2a41d0ac10bf7fc344ce16aee5
     trace_ids[13]: AC-001,AC-002,AC-003,AC-004,AC-005,AC-006,AC-007,AC-008,AC-009,AC-010,AC-011,AC-012,AC-013
   - argv[4]: python3,skills/ai-sdlc-sdd/scripts/check_checklist.py,specs/015-executable-skill-harness-v4,"--quick-flow"
-    duration_ms: 76
+    duration_ms: 75
     exit_code: 0
     id: sdd-checklist
     output_limited: false
@@ -100,7 +100,7 @@ commands[17]:
     stdout_sha256: d182a9c65a6a24c6e0615de4d8e2e6439ecd7f95d00c141e9cf4cbde9e48d313
     trace_ids[13]: AC-001,AC-002,AC-003,AC-004,AC-005,AC-006,AC-007,AC-008,AC-009,AC-010,AC-011,AC-012,AC-013
   - argv[4]: python3,skills/ai-sdlc-sdd/scripts/analyze_spec.py,specs/015-executable-skill-harness-v4,"--quick-flow"
-    duration_ms: 72
+    duration_ms: 74
     exit_code: 0
     id: sdd-analysis
     output_limited: false
@@ -120,7 +120,7 @@ commands[17]:
     stdout_sha256: c1c3579f5b64fcd40bbd5463b7e6d9ab1b26993e5c7b3cb8ee547ad09c2e733d
     trace_ids[13]: AC-001,AC-002,AC-003,AC-004,AC-005,AC-006,AC-007,AC-008,AC-009,AC-010,AC-011,AC-012,AC-013
   - argv[5]: python3,skills/ai-sdlc-sdd/scripts/plan_links.py,specs/015-executable-skill-harness-v4,"--check","--quick-flow"
-    duration_ms: 125
+    duration_ms: 75
     exit_code: 0
     id: sdd-plan-links
     output_limited: false
@@ -130,32 +130,32 @@ commands[17]:
     stdout_sha256: 91dd4802963d8072021460c0ea2ed4575e23a7a18e0ff05eac769adf8b1885b2
     trace_ids[13]: AC-001,AC-002,AC-003,AC-004,AC-005,AC-006,AC-007,AC-008,AC-009,AC-010,AC-011,AC-012,AC-013
   - argv[3]: python3,docs/scripts/build_catalog.py,"--check"
-    duration_ms: 613
+    duration_ms: 552
     exit_code: 0
     id: documentation-catalog
     output_limited: false
     stderr_bytes: 0
     stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
     stdout_bytes: 49
-    stdout_sha256: 210f875bd0f4d91de86bba2396c089a4ed10a63bbe6df264d2354e9d53f9ed2a
+    stdout_sha256: 226029e4539c1a77ed11452ab922e06016c0ae019b9eb0a917746f7f5de00dea
     trace_ids[3]: AC-002,AC-010,AC-013
   - argv[2]: python3,docs/scripts/validate_docs.py
-    duration_ms: 1642
+    duration_ms: 1413
     exit_code: 0
     id: documentation-contract
     output_limited: false
     stderr_bytes: 0
     stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
     stdout_bytes: 109
-    stdout_sha256: 3d4ad4d08ba4a6072048f217dc6c42798f97f885a25152a213c561e3a6f9cf4f
+    stdout_sha256: 3796b7939e3a9c846891d8a0a0dc52299702b825f62f5cb12c11fabbd4295520
     trace_ids[2]: AC-010,AC-013
   - argv[7]: python3,"-m",unittest,discover,"-s",docs/tests,"-v"
-    duration_ms: 6067
+    duration_ms: 6934
     exit_code: 0
     id: documentation-tests
     output_limited: false
-    stderr_bytes: 4322
-    stderr_sha256: e283c887177545f7f9829c2193841cda526b8890f191033fc51d1dbfcddf4a9f
+    stderr_bytes: 6194
+    stderr_sha256: dcd19319d7ebbdf3329e860ebfe15af69cf516215deea54c3e5131aa27866bad
     stdout_bytes: 0
     stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
     trace_ids[2]: AC-010,AC-013
@@ -171,12 +171,12 @@ commands[17]:
     trace_ids[2]: AC-010,AC-013
 environment:
   platform: macOS-26.3.1-arm64-arm-64bit
-  python: 3.9.6
+  python: 3.11.15
 evidence_trust: local-structural-not-authenticated
-executed_at: "2026-07-30T11:57:17.766694Z"
+executed_at: "2026-07-31T11:58:13.214338Z"
 plan_path: specs/015-executable-skill-harness-v4/_ai_sdlc/validation-plan.toon
-plan_sha256: 63868a0820932fcba3b8e18026f4f5ff2cc4ae731e2937213cdcd33a768cd83c
-receipt_fingerprint: 3e50ea69d02b1001402fe8575745619cd659b7a0afcdfc50e06f199c109f6cf2
-revision: 3f12836515f5ef3c3a861f366bbfd90924eb138a
+plan_sha256: 27a2412cb128317cb30dd3579c46d27c0075b447c00c6d291deb9b21aec9779b
+receipt_fingerprint: 9d2894dfc223b1e0670c8de524bbfcc51766a657cdfae29c3c08486b583cf705
+revision: d5ffe7ae7216c9a4f42dd3ea55b2aa5caa92fc9c
 schema: ai-sdlc-validation-receipt/v1
-workspace_fingerprint: 1b5c0102777679089eaa5c6ee087f5a9e553ffa637b0d35a79ad41c54129f4ea
+workspace_fingerprint: 748baca47d2d5b2eb53eaa2851bc2341e7fc4f731cd16ca77147969b131fe67f

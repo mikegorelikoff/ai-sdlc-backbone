@@ -24,10 +24,10 @@ exit. A command can modify files or contact a network; a prompt sent to an AI
 agent is different because the agent decides which tools to request. Neither
 form is permission to ignore a human checkpoint.
 
-`npx` is npm's package runner. In this repository it downloads and runs the
-exactly named Skills CLI package version. It is third-party executable code,
-not a built-in harness command, so the install guide pins its version and
-discloses its telemetry boundary.
+The v4 installation path uses the Harness's own Python installer from an exact
+Git revision. It does not download or execute a package-manager CLI. Git source
+review and Python execution remain trust boundaries, so inspect the pinned
+checkout before running it when policy requires.
 
 Installation examples also use these shell forms:
 
@@ -91,7 +91,7 @@ to adapt the command in place.
 For a failed first install, do not improvise a generic remove command. If the
 consumer repository was disposable, delete that entire verified fixture from
 its parent. Otherwise use the ownership-safe [uninstall
-procedure](../how-to/update.md#remove-and-verify-cleanup) and review every managed path first.
+procedure](../how-to/update.md#clean-up-and-review) and review every managed path first.
 
 Continue with [Software delivery foundations](software-delivery.md) for the
 lifecycle concepts or [Install the harness](../how-to/install.md) when this

@@ -18,9 +18,9 @@ generated files before commit and apply your repository retention policy.
 ## External data behavior
 
 Harness helpers do not redefine the network or telemetry behavior of your
-agent host, model provider, package manager, Git remote, or Skills CLI. The
-documented installer sets `DISABLE_TELEMETRY=1` for the Skills CLI. It does not
-guarantee that other tools send no data.
+agent host, model provider, package manager, or Git remote. The native Harness
+installer makes no telemetry request and does not contact a package registry.
+It does not guarantee that Git, Codex, connectors, or other tools send no data.
 
 ## Secrets and restricted data
 

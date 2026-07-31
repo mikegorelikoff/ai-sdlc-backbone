@@ -12,9 +12,27 @@ _TOON_RUNTIME = Path(__file__).resolve().parent
 if str(_TOON_RUNTIME) not in sys.path:
     sys.path.insert(0, str(_TOON_RUNTIME))
 import ai_sdlc_toon as toon_codec  # noqa: E402
+from ai_sdlc_install import (  # noqa: E402
+    INSTALLER_ID,
+    LOCK_SCHEMA,
+    RECORD_SCHEMA,
+    InstallError,
+    directory_digest,
+)
 
 
-REQUIRED = {"schema", "revision", "skills_cli", "agent", "selection", "inventory"}
+REQUIRED = {
+    "schema",
+    "revision",
+    "installer",
+    "agent",
+    "selection",
+    "inventory",
+    "lock",
+    "target",
+}
+LOCK_REQUIRED = {"schema", "revision", "installer", "agent", "selection", "skills", "target"}
+LOCK_ENTRY_REQUIRED = {"name", "path", "sha256"}
 SKILL_NAME_RE = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 
 
@@ -37,20 +55,29 @@ def validate(record_path: Path, skills_root: Path) -> list[str]:
     except (OSError, toon_codec.ToonDecodeError) as exc:
         return [f"cannot read install record: {exc}"]
     if not isinstance(value, dict) or set(value) != REQUIRED:
-        return ["install record must contain exactly schema, revision, skills_cli, agent, selection, inventory"]
+        return [
+            "install record must contain exactly schema, revision, installer, "
+            "agent, selection, inventory, lock, target"
+        ]
     errors: list[str] = []
-    if value["schema"] != "ai-sdlc-install-record/v1":
-        errors.append("install record schema must be ai-sdlc-install-record/v1")
+    if value["schema"] != RECORD_SCHEMA:
+        errors.append(f"install record schema must be {RECORD_SCHEMA}")
     if not isinstance(value["revision"], str) or not re.fullmatch(r"[0-9a-f]{40}", value["revision"]):
         errors.append("install record revision must be a lowercase 40-character Git SHA")
-    if not isinstance(value["skills_cli"], str) or not re.fullmatch(r"\d+\.\d+\.\d+", value["skills_cli"]):
-        errors.append("install record skills_cli must be an exact semantic version")
-    if not isinstance(value["agent"], str) or not value["agent"].strip():
-        errors.append("install record agent must be non-empty")
+    if value["installer"] != INSTALLER_ID:
+        errors.append(f"install record installer must be {INSTALLER_ID}")
+    if value["agent"] != "codex":
+        errors.append("install record agent must be codex")
     if value["selection"] not in {"all-skills", "explicit-skills"}:
         errors.append("install record selection is invalid")
     if value["inventory"] != ".ai-sdlc/harness-managed-skills.txt":
         errors.append("install record inventory must be .ai-sdlc/harness-managed-skills.txt")
+        return errors
+    if value["lock"] != ".ai-sdlc/harness-install-lock.toon":
+        errors.append("install record lock must be .ai-sdlc/harness-install-lock.toon")
+        return errors
+    if value["target"] != ".agents/skills":
+        errors.append("install record target must be .agents/skills")
         return errors
     inventory_path = record_path.resolve().parent.parent / value["inventory"]
     try:
@@ -77,6 +104,53 @@ def validate(record_path: Path, skills_root: Path) -> list[str]:
     missing = sorted(set(names) - set(installed))
     if missing:
         errors.append(f"managed skills are not installed: {', '.join(missing)}")
+        return errors
+
+    lock_path = record_path.resolve().parent.parent / value["lock"]
+    try:
+        lock = toon_codec.loads(lock_path.read_text(encoding="utf-8-sig"))
+    except (OSError, toon_codec.ToonDecodeError) as exc:
+        errors.append(f"cannot read deterministic install lock: {exc}")
+        return errors
+    if not isinstance(lock, dict) or set(lock) != LOCK_REQUIRED:
+        errors.append(
+            "install lock must contain exactly schema, revision, installer, "
+            "agent, selection, skills, target"
+        )
+        return errors
+    for field in ("revision", "installer", "agent", "selection", "target"):
+        if lock[field] != value[field]:
+            errors.append(f"install lock {field} must match the install record")
+    if lock["schema"] != LOCK_SCHEMA:
+        errors.append(f"install lock schema must be {LOCK_SCHEMA}")
+    entries = lock["skills"]
+    if not isinstance(entries, list):
+        errors.append("install lock skills must be a list")
+        return errors
+    locked_names: list[str] = []
+    for entry in entries:
+        if not isinstance(entry, dict) or set(entry) != LOCK_ENTRY_REQUIRED:
+            errors.append("every install lock entry must contain exactly name, path, sha256")
+            return errors
+        name = entry["name"]
+        if not isinstance(name, str) or not SKILL_NAME_RE.fullmatch(name):
+            errors.append("install lock contains an invalid skill name")
+            continue
+        locked_names.append(name)
+        if entry["path"] != f".agents/skills/{name}":
+            errors.append(f"install lock path is invalid for {name}")
+        if not isinstance(entry["sha256"], str) or not re.fullmatch(r"[0-9a-f]{64}", entry["sha256"]):
+            errors.append(f"install lock digest is invalid for {name}")
+            continue
+        try:
+            actual_digest = directory_digest(skills_root / name)
+        except (InstallError, OSError) as exc:
+            errors.append(f"cannot hash installed skill {name}: {exc}")
+            continue
+        if actual_digest != entry["sha256"]:
+            errors.append(f"installed skill digest differs for {name}")
+    if locked_names != names:
+        errors.append("install lock skill names must exactly match the managed inventory")
     return errors
 
 

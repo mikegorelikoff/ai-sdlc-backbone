@@ -125,4 +125,8 @@ artifact_metadata:
 - [x] T010. Execute SDD, all-skill, compatibility, package, security, TOON canonicality, documentation-build, and diff validation; record deterministic receipts and the remaining live release gate.
   Refs: AC-001, AC-002, AC-003, AC-004, AC-005, AC-006, AC-007, AC-008, AC-009, AC-010, AC-011, AC-012, AC-013
   Depends on: T007, T008, T009
-  Output: current validation report, 94-file test-suite evidence, and auditable deterministic TOON receipts
+  Output: current validation report, 95-file test-suite evidence, and auditable deterministic TOON receipts
+- [x] T011. Replace the incompatible external consumer path with a deterministic native installer, portable TOON record and lock, installed digest validation, native smoke, and immutable v4.0.1 correction.
+  Refs: NFR-007, NFR-008, AC-010, AC-013, DEC-009
+  Depends on: T007, T009, T010
+  Output: native installer, install record v2, install lock v1, corrective documentation, and fresh tagged-install gate

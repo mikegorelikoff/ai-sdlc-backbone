@@ -118,16 +118,14 @@ class DocumentationValidationTests(unittest.TestCase):
                 relative,
             )
 
-    def test_global_install_is_advanced_and_agent_scoped(self) -> None:
+    def test_global_install_is_explicitly_unsupported(self) -> None:
         install = (DOCS_ROOT / "how-to/install.md").read_text(encoding="utf-8")
         readme = (DOCS_ROOT.parent / "README.md").read_text(encoding="utf-8")
         command = "--skill '*' --agent codex --global --copy -y"
-        self.assertIn(command, install)
+        self.assertNotIn(command, install)
         self.assertNotIn(command, readme)
-        self.assertIn('mkdir -p "$HOME/.codex/skills"', install)
-        self.assertIn('`"agents": ["Codex"]`', install)
-        self.assertNotIn("--all --global -y", install)
-        self.assertIn("Never combine global scope with `--all`", install)
+        self.assertIn("Global installation is intentionally outside the v4 validated path", install)
+        self.assertIn("project-scoped install", install)
 
     def test_root_documents_reject_broken_link_and_machine_path(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -435,7 +433,7 @@ class DocumentationValidationTests(unittest.TestCase):
         skills = skill_sources()
         records = [script_record(path) for path in script_sources()]
         self.assertEqual(len(skills), 44)
-        self.assertEqual(len(records), 110)
+        self.assertEqual(len(records), 112)
         self.assertEqual(len(SKILL_SELECTION_BOUNDARIES), 44)
         self.assertEqual(validate_selection_contract(skills), [])
         self.assertEqual(validate_role_skill_groups(skills), [])
@@ -461,7 +459,7 @@ class DocumentationValidationTests(unittest.TestCase):
         self.assertTrue(coverage.startswith("schema: ai-sdlc-documentation-coverage/v1\n"))
         self.assertEqual(
             sum(record.classification == "canonical shared helper" for record in records),
-            27,
+            28,
         )
 
     def test_generated_catalog_rejects_missing_sections_and_paths(self) -> None:

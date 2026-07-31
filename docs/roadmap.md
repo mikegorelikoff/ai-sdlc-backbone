@@ -8,7 +8,7 @@ making it less inspectable, portable, or safe.
 
 ## Now
 
-- Verify `v4.0.0` through protected CI and a fresh tagged installation, then
+- Verify `v4.0.1` through protected CI and a fresh tagged native installation, then
   link that post-publication evidence from the release.
 - Record provider-executed live protocol receipts for the reference host and
   expand the certification matrix only where an accountable owner exists.

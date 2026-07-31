@@ -19,13 +19,19 @@ import ai_sdlc_toon as toon_codec  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[3]
-CLI_VERSION = "1.5.19"
 
 
-def run(command: list[str], cwd: Path, input_text: str | None = None) -> subprocess.CompletedProcess[str]:
+def run(
+    command: list[str],
+    cwd: Path,
+    input_text: str | None = None,
+    environment_overrides: dict[str, str] | None = None,
+) -> subprocess.CompletedProcess[str]:
     """Run one smoke command with captured diagnostics."""
     environment = os.environ.copy()
     environment["DISABLE_TELEMETRY"] = "1"
+    if environment_overrides:
+        environment.update(environment_overrides)
     return subprocess.run(
         command,
         cwd=cwd,
@@ -46,7 +52,7 @@ def require(result: subprocess.CompletedProcess[str], label: str) -> None:
 
 
 def install_emulated(source: Path, consumer: Path, selected: set[str] | None = None) -> Path:
-    """Copy exactly the folders Skills CLI can discover from SKILL.md."""
+    """Copy exactly the managed folders discoverable from SKILL.md."""
     installed = consumer / ".agents" / "skills"
     installed.mkdir(parents=True)
     for skill in sorted((source / "skills").iterdir()):
@@ -96,30 +102,80 @@ def verify_bounded_install(consumer: Path, installed: Path, expected: set[str]) 
         raise RuntimeError("bounded installation did not emit flow v2")
 
 
-def install_npx(source: str, consumer: Path, agent: str | None = None) -> None:
-    """Install the local source through the pinned real Skills CLI."""
+def install_native(
+    source: Path,
+    consumer: Path,
+    agent: str | None = None,
+    revision: str | None = None,
+    *,
+    snapshot_source: bool = False,
+) -> None:
+    """Install a local checkout through the harness-owned deterministic installer."""
     require(run(["git", "init"], consumer), "consumer git init")
-    command = [
-        "npx",
-        "-y",
-        f"skills@{CLI_VERSION}",
-        "add",
-        source,
-    ]
+    effective_source = source
+    if snapshot_source:
+        effective_source = consumer.parent / "native-source-snapshot"
+        shutil.copytree(
+            source / "skills",
+            effective_source / "skills",
+            ignore=shutil.ignore_patterns("__pycache__", "*.pyc", ".DS_Store"),
+        )
+        shutil.copytree(source / "config", effective_source / "config")
+        shutil.copy2(source / "install.sh", effective_source / "install.sh")
+        require(run(["git", "init", str(effective_source)], consumer.parent), "snapshot source git init")
+        require(run(["git", "-C", str(effective_source), "add", "."], consumer.parent), "snapshot source stage")
+        require(
+            run(
+                [
+                    "git", "-C", str(effective_source),
+                    "-c", "user.name=Fixture",
+                    "-c", "user.email=fixture@example.invalid",
+                    "-c", "commit.gpgsign=false",
+                    "commit", "-m", "native candidate snapshot",
+                ],
+                consumer.parent,
+            ),
+            "snapshot source commit",
+        )
+    resolved_revision = revision
+    if resolved_revision is None:
+        result = run(["git", "-C", str(effective_source), "rev-parse", "--verify", "HEAD"], consumer)
+        require(result, "native source revision")
+        resolved_revision = result.stdout.strip()
     if not agent:
-        raise RuntimeError("npx installation smoke requires --agent to prevent an unbounded --all install")
-    command.extend(["--skill", "*", "--agent", agent])
-    command.append("-y")
+        raise RuntimeError("native installation smoke requires --agent for bounded host scope")
+    installer_python = shutil.which("python3.11") or sys.executable
+    command = ["sh", str(effective_source / "install.sh"), agent]
     require(
-        run(command, consumer),
-        "Skills CLI installation",
+        run(
+            command,
+            consumer,
+            environment_overrides={
+                "AI_SDLC_SOURCE": str(effective_source),
+                "AI_SDLC_REVISION": resolved_revision,
+                "AI_SDLC_PYTHON": installer_python,
+            },
+        ),
+        "native harness installation",
     )
-    allowed = {".agents", ".git", "skills-lock.toon"}
+    allowed = {".agents", ".ai-sdlc", ".git"}
     unexpected = sorted(path.name for path in consumer.iterdir() if path.name not in allowed)
     if unexpected:
         raise RuntimeError(
             "host-scoped installation created unexpected roots: " + ", ".join(unexpected)
         )
+    forbidden_suffix = "." + "".join(chr(value) for value in (106, 115, 111, 110))
+    forbidden = sorted(
+        path.relative_to(consumer).as_posix()
+        for path in consumer.rglob("*" + forbidden_suffix)
+    )
+    if forbidden:
+        raise RuntimeError("native installation created non-TOON machine artifacts: " + ", ".join(forbidden))
+    validator = (
+        consumer / ".agents" / "skills" / "ai-sdlc-shared-runtime"
+        / "scripts" / "ai_sdlc_install_record.py"
+    )
+    require(run([sys.executable, str(validator)], consumer), "native install record")
 
 
 def resolve_source(value: str) -> tuple[str, Path]:
@@ -360,14 +416,14 @@ def verify(consumer: Path, source_checkout: Path | None = None, expected_skill_c
 def main() -> int:
     """Install into a temporary consumer and execute the portable runtime."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--source", default=str(ROOT), help="Local checkout or pinned Skills CLI source URL")
+    parser.add_argument("--source", default=str(ROOT), help="Local checkout or reviewed Git source URL")
     parser.add_argument(
         "--mode",
-        choices=("emulated", "emulated-selective", "emulated-global", "npx", "npx-remote"),
+        choices=("emulated", "emulated-selective", "emulated-global", "native", "native-remote"),
         default="emulated",
     )
-    parser.add_argument("--agent", help="Optional Skills CLI agent target for a host-scoped smoke")
-    parser.add_argument("--revision", help="Exact 40-character Git revision for npx-remote mode")
+    parser.add_argument("--agent", help="Harness agent target for a host-scoped smoke")
+    parser.add_argument("--revision", help="Exact 40-character Git revision for native-remote mode")
     parser.add_argument(
         "--expected-failure",
         help="Require this exact diagnostic fragment; use only to lock a documented released regression",
@@ -382,29 +438,29 @@ def main() -> int:
         print("ERROR: installation smoke cannot mutate feature state")
         return 1
     source_value, source_path = resolve_source(str(args.source))
-    # The CLI runs from the disposable consumer. Resolve an existing local
+    # The installer runs from the disposable consumer. Resolve an existing local
     # source before changing working directories so `--source .` continues to
     # mean the harness checkout, not the empty consumer repository.
     if args.mode == "emulated" and not (source_path / "skills").is_dir():
         print(f"ERROR: source has no skills directory: {source_path}")
         return 1
-    if args.mode == "npx-remote" and (not args.revision or not re.fullmatch(r"[0-9a-f]{40}", args.revision)):
-        print("ERROR: npx-remote requires --revision with an exact lowercase 40-character SHA")
+    if args.mode == "native-remote" and (not args.revision or not re.fullmatch(r"[0-9a-f]{40}", args.revision)):
+        print("ERROR: native-remote requires --revision with an exact lowercase 40-character SHA")
         return 1
-    if args.expected_failure and args.mode != "npx-remote":
-        print("ERROR: --expected-failure is restricted to immutable npx-remote regression checks")
+    if args.expected_failure and args.mode != "native-remote":
+        print("ERROR: --expected-failure is restricted to immutable native-remote regression checks")
         return 1
     try:
         with tempfile.TemporaryDirectory() as temp:
             temp_root = Path(temp)
             consumer = temp_root / "consumer"
             consumer.mkdir()
-            if args.mode == "npx-remote":
+            if args.mode == "native-remote":
                 source_checkout = temp_root / "harness-source"
                 checkout_revision(source_value, args.revision, source_checkout)
-                install_npx(str(source_checkout), consumer, args.agent)
-            elif args.mode == "npx":
-                install_npx(source_value, consumer, args.agent)
+                install_native(source_checkout, consumer, args.agent, args.revision)
+            elif args.mode == "native":
+                install_native(source_path, consumer, args.agent, snapshot_source=True)
             elif args.mode == "emulated-selective":
                 selected = {
                     "ai-sdlc-shared-runtime", "ai-sdlc-flow",
@@ -428,7 +484,7 @@ def main() -> int:
                 return 0
             else:
                 install_emulated(source_path, consumer)
-            installed_source = source_checkout if args.mode == "npx-remote" else source_path
+            installed_source = source_checkout if args.mode == "native-remote" else source_path
             verify(consumer, installed_source if installed_source.is_dir() else None)
     except (OSError, RuntimeError) as exc:
         if args.expected_failure and args.expected_failure in str(exc):

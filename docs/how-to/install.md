@@ -1,417 +1,180 @@
 ---
 title: Install the harness
-description: Install AI SDLC skills into a consumer repository, verify the result, and understand scope, trust, and rollback.
+description: Install AI SDLC Harness from an immutable revision with deterministic TOON-only provenance.
 ---
 
 # Install the harness
 
-This procedure installs agent skills into a project using the Skills CLI. It
-does not copy this source repository into your application and it does not
-create delivery artifacts until you ask an agent to use a workflow.
+## Goal
 
-## One-line install (recommended)
+Install all 44 Harness skills into one consumer repository, bind them to an
+exact Git revision, and produce a portable content-addressed TOON record that
+can be verified without a package registry.
 
-Use this path for a first project-scoped install. Replace `codex` with your
-Skills CLI agent identifier:
+## When to use it
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/main/install.sh | sh -s -- codex
-```
+Use the one-line path for a first Codex pilot. Use the pinned path when release
+review, reproducibility, an approved mirror, or audit evidence matters. The v4
+harness-owned deterministic installer replaces the third-party skill installer
+and currently validates only project-scoped Codex installations.
 
-The wrapper pins Skills CLI, disables its telemetry, selects every harness
-skill, and targets only the agent you name. You need Node.js `22.20.0+`, npm,
-and a configured agent host. Run the command from the consumer project,
-review the files the installer reports,
-then run one bounded flow Explore request. If this works, stop here and use the
-[first 30 minutes](../onboarding/first-30-minutes.md). The detailed sections
-below are only for pinned revisions, privacy review, global installs, or
-troubleshooting.
+## Prerequisites
 
-If you already cloned the harness, the equivalent direct command is
-`./install.sh codex`. The wrapper accepts `AI_SDLC_SOURCE` and
-`AI_SDLC_SKILLS_CLI_VERSION` overrides for reviewed mirrors and maintainer
-testing. Use the pinned-revision procedure below when immutable source
-verification is required; a `curl` command against `main` is intentionally the
-convenience path, not a reproducible audit record.
+- Git and network access to the reviewed source remote;
+- Python `3.10+`;
+- Codex configured for the consumer repository;
+- permission to add `.agents/skills/` and `.ai-sdlc/`;
+- a clean or understood consumer working tree.
 
-The install must contain `ai-sdlc-flow` and its sibling
-`ai-sdlc-shared-runtime`. Explore activates exactly one of five documented
-roles and loads its current flow step, the owning skill's selected procedural
-step, and selector-approved references. Every installed skill includes a
-`steps/manifest.toon`; missing manifests or files are an invalid installation.
-Use `--role` or `--action` only when you need an explicit override; the v2
-DecisionCard shows any handoff, owning-skill step, and selected or skipped
-reference.
-
-## Before you begin
-
-!!! note "Current release"
-
-    These consumer commands install `v4.0.0`. Resolve the annotated tag to an
-    exact commit, review the release notes, and apply your organization's trust
-    policy. The harness supports multiple agent hosts; use the host-specific
-    install scope documented below.
-
-You need:
-
-- Git and a repository with a clean or understood working tree;
-- Node.js `>=22.20.0`/npm with `npx`;
-- Python 3.10 or newer for deterministic helpers;
-- network access to npm and GitHub during installation;
-- an AI agent environment selected for a pilot; see [supported environments](../reference/supported-environments.md);
-- permission to add project-scoped agent files.
-
-Choose a low-risk consumer repository for your first use. The **consumer
-repository** is the software project receiving skills. The **harness source
-repository** is this GitHub project, used by maintainers and contributors.
-For a host-specific setup, follow the relevant guide in [supported environments](../reference/supported-environments.md)
-before the first agent prompt.
-
-Install missing prerequisites from the official [Git](https://git-scm.com/downloads),
-[Node.js](https://nodejs.org/en/download), and
-[Python](https://www.python.org/downloads/) distribution pages or an approved
-organizational package mirror. Do not use an agent-generated download URL.
-
-The shell blocks below use POSIX syntax (Linux, macOS, Windows Subsystem for
-Linux (WSL), or Git Bash). In PowerShell, set the opt-out once in the session
-and run the same pinned CLI:
-
-```powershell
-$env:DISABLE_TELEMETRY = "1"
-$HarnessTag = "v4.0.0"
-$HarnessSource = Join-Path ([System.IO.Path]::GetTempPath()) ("ai-sdlc-harness-" + [guid]::NewGuid())
-node --version  # expected: v22.20.0 or newer
-git init $HarnessSource
-git -C $HarnessSource remote add origin https://github.com/mikegorelikoff/ai-sdlc-harness.git
-git -C $HarnessSource fetch --depth 1 origin ("refs/tags/{0}:refs/tags/{0}" -f $HarnessTag)
-git -C $HarnessSource checkout --detach ($HarnessTag + "^{commit}")
-$HarnessRevision = git -C $HarnessSource rev-parse HEAD
-if ((git -C $HarnessSource rev-list -n 1 $HarnessTag) -ne $HarnessRevision) { throw "Harness revision mismatch" }
-npx -y skills@1.5.19 add $HarnessSource --skill '*' --agent codex -y
-npx -y skills@1.5.19 list --toon
-New-Item -ItemType Directory -Force .ai-sdlc | Out-Null
-Copy-Item (Join-Path $HarnessSource "config/ai-sdlc-managed-skills.txt") .ai-sdlc/harness-managed-skills.txt
-@"
-agent: codex
-inventory: .ai-sdlc/harness-managed-skills.txt
-revision: $HarnessRevision
-schema: ai-sdlc-install-record/v1
-selection: all-skills
-skills_cli: 1.5.19
-"@ | Set-Content -Encoding utf8 .ai-sdlc/harness-install.toon
-python .agents/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py
-Remove-Item -LiteralPath skills-lock.toon
-Remove-Item -LiteralPath $HarnessSource -Recurse -Force
-```
-
-Do not paste the PowerShell environment assignment into a POSIX shell; use the
-`DISABLE_TELEMETRY=1` prefix shown in the POSIX blocks instead.
-
-## Decide the installer telemetry boundary
-
-The third-party Skills CLI is separate from the harness. Its
-[official CLI documentation](https://www.skills.sh/docs/cli#telemetry) says
-that it sends anonymous telemetry by default, including the skill name, skill
-files, and a timestamp. The harness's content-free local metrics do not send
-network requests, but that property does not cover npm, GitHub, the Skills CLI,
-your agent host, or model provider.
-
-The canonical commands below set `DISABLE_TELEMETRY=1`. Keep that privacy-safe
-default unless a human data/privacy owner explicitly accepts the upstream
-collection and retention policy. `DO_NOT_TRACK=1` is also supported upstream;
-use the form required by your organization consistently.
-
-## Inspect before installing
-
-Inspecting repository files in a browser or a separately cloned checkout is the
-only inspection that occurs before third-party installer code runs. The
-following `--list` command still downloads and executes the pinned Skills CLI;
-review `npm view skills@1.5.19 dist.integrity repository engines --toon` and
-your approved npm provenance before invoking it.
-
-!!! terminal "Run in terminal — from the consumer repository"
-
-    ```bash
-    HARNESS_TAG=v4.0.0
-    HARNESS_TMP="$(mktemp -d)"
-    HARNESS_SRC="$HARNESS_TMP/ai-sdlc-harness"
-    git --version
-    node --version
-    npm --version
-    PYTHON_BIN="${PYTHON_BIN:-python3}"
-    "$PYTHON_BIN" --version
-    npm view skills@1.5.19 dist.integrity repository engines --toon
-    git init "$HARNESS_SRC"
-    git -C "$HARNESS_SRC" remote add origin https://github.com/mikegorelikoff/ai-sdlc-harness.git
-    git -C "$HARNESS_SRC" fetch --depth 1 origin "refs/tags/$HARNESS_TAG:refs/tags/$HARNESS_TAG"
-    git -C "$HARNESS_SRC" checkout --detach "$HARNESS_TAG^{commit}"
-    HARNESS_REV="$(git -C "$HARNESS_SRC" rev-parse HEAD)"
-    test "$(git -C "$HARNESS_SRC" rev-list -n 1 "$HARNESS_TAG")" = "$HARNESS_REV"
-    DISABLE_TELEMETRY=1 npx -y skills@1.5.19 add "$HARNESS_SRC" --list
-    ```
-
-Stop unless Node reports `v22.20.0` or newer and Python reports 3.10 or newer.
-The installer does not enforce the Python floor. `npm view
-skills@1.5.19 engines --toon` is the recovery check when a pinned CLI invocation
-reports an engine mismatch.
-
-This lists available skills without installing them. Review the repository
-origin and selected package names. The annotated `v4.0.0` tag is resolved
-to the exact revision checked above. Skills CLI `1.5.19` treats the final
-segment of a GitHub `/tree/...` URL as a branch, so installation uses the
-verified detached local checkout instead.
-
-## Install project-scoped skills
-
-!!! terminal "Run in terminal — from the consumer repository"
-
-    ```bash
-    DISABLE_TELEMETRY=1 npx -y skills@1.5.19 add "$HARNESS_SRC" --skill '*' --agent codex -y
-    ```
-
-Run this in the same terminal session as the inspection block so
-`HARNESS_SRC` still names the verified checkout. `--skill '*'` selects all 44
-harness skills—including the shared runtime—while `--agent codex` selects the
-one manually validated host target. `--all` would override that scope: a clean
-baseline test of CLI
-`1.5.19` reported 73 possible targets; that broad mode is not the canonical
-pilot path. Because `-g` is absent, installation remains project-scoped. Stop
-if the CLI summary names unexpected locations.
-
-### Understand the created directories
-
-For this project-scoped path, `.agents/skills/` is the canonical universal
-skill store, not an accidental duplicate. A host or installer may also create
-a host-specific directory or symlink. Inspect before deciding:
+Check the environment:
 
 ```bash
-DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --toon
+git --version
+python3 --version
 git status --short
-find . -maxdepth 3 -type l -print
 ```
 
-Do not delete `.agents/` merely because another folder shows the same skill
-names; host links can depend on it. An unexpected regular copy, unclear owner,
-or unrelated pre-existing directory is a blocker for manual comparison, not
-permission for recursive cleanup.
+Stop if Python is older than 3.10, existing changes are not understood, or the
+source remote has not passed your trust policy.
 
-For a smaller installation, create the reviewed inventory first and use it as
-the exact installer input; do not copy the 44-name full inventory afterward:
+## Procedure
+
+### One-line project install
+
+Run this from the consumer repository:
 
 ```bash
-mkdir -p .ai-sdlc
-printf '%s\n' \
-  ai-sdlc-commit-prep \
-  ai-sdlc-conventional-commit \
-  ai-sdlc-flow \
-  ai-sdlc-project-context \
-  ai-sdlc-sdd \
-  ai-sdlc-shared-runtime \
-  ai-sdlc-validation | sort -u > .ai-sdlc/harness-managed-skills.txt
-set --
-while IFS= read -r skill; do set -- "$@" --skill "$skill"; done < .ai-sdlc/harness-managed-skills.txt
-DISABLE_TELEMETRY=1 npx -y skills@1.5.19 add "$HARNESS_SRC" "$@" --agent codex -y
+curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.0.1/install.sh | sh -s -- codex
 ```
 
-This starter subset includes the canonical shared runtime plus the commit-message dependency
-used by commit prep. Keep `selection` as `explicit-skills` in the record below.
-For all skills, retain the canonical wildcard command and full packaged
-inventory. The validator treats the managed inventory as ownership, requires
-every managed name to be installed, and permits unrelated project or
-third-party skill directories to coexist.
+The bootstrap script fetches the annotated `v4.0.1` tag into a temporary clean
+checkout and runs the source-owned installer. It does not invoke npm, a package
+registry, or the external Skills CLI. The installer rejects an unclean source,
+unknown inventory entries, symbolic links, non-TOON machine artifacts,
+unreviewed managed-file differences, digest drift, and any agent target other
+than `codex`.
 
-## Optional: install globally for Codex
+### Inspect and install an immutable release
 
-Project-scoped installation is the auditable team default. Use global scope
-only when one person intentionally wants the skills available to Codex across
-multiple repositories. Run this in the same terminal session as the inspection
-block, before deleting `HARNESS_SRC`:
+Use this path when you need to inspect the exact source before execution:
 
 ```bash
-mkdir -p "$HOME/.codex/skills"
-DISABLE_TELEMETRY=1 npx -y skills@1.5.19 add "$HARNESS_SRC" --skill '*' --agent codex --global --copy -y
-DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --global --agent codex
+HARNESS_TAG=v4.0.1
+HARNESS_TMP="$(mktemp -d)"
+HARNESS_SRC="$HARNESS_TMP/ai-sdlc-harness"
+git init "$HARNESS_SRC"
+git -C "$HARNESS_SRC" remote add origin https://github.com/mikegorelikoff/ai-sdlc-harness.git
+git -C "$HARNESS_SRC" fetch --depth 1 origin "refs/tags/$HARNESS_TAG:refs/tags/$HARNESS_TAG"
+git -C "$HARNESS_SRC" checkout --detach "$HARNESS_TAG^{commit}"
+HARNESS_REV="$(git -C "$HARNESS_SRC" rev-parse HEAD)"
+test "$(git -C "$HARNESS_SRC" rev-list -n 1 "$HARNESS_TAG")" = "$HARNESS_REV"
+git -C "$HARNESS_SRC" status --short
+git -C "$HARNESS_SRC" diff --check
 ```
 
-Expected: 44 skills install for the single `codex` target and the list command
-shows `"agents": ["Codex"]` for every global inventory item. `--copy` makes
-the selected installation method explicit before the temporary checkout is
-removed. Pre-creating `$HOME/.codex/skills` is required for a clean-home test
-because the pinned CLI can otherwise populate `$HOME/.agents/skills` without
-linking the inventory to Codex. Treat an empty `agents` array or “not linked”
-result as a failed verification even when the install summary says success.
-
-The upstream CLI defines these flags differently:
-
-- `--skill '*'` selects every skill from this repository;
-- `--agent codex` selects one agent;
-- `--global` (or `-g`) selects user scope;
-- `--all` selects every skill **and every recognized agent**.
-
-Never combine global scope with `--all` or `--agent '*'` for this harness.
-Skills CLI `1.5.19` recognizes agents that do not define global installation,
-including Eve and PromptScript. With 44 skills, those two unsupported targets
-produce a batch of target-specific failures even when supported targets
-installed correctly. Rerun the explicit command above; do not interpret that
-failure count as broken harness skills. The flag meanings are defined by the
-[official Skills CLI documentation](https://github.com/vercel-labs/skills#options),
-and the clean-home behavior is tracked in the upstream
-[global directory issue](https://github.com/vercel-labs/skills/issues/537).
-
-Global installation is workstation state: it is not committed with a consumer
-repository and the project-scoped `.ai-sdlc/harness-install.toon` procedure
-below does not describe it. Record the CLI version, harness revision, selected
-agent, installation method, and verification output in your workstation or
-organizational inventory. Use project scope when repository-level provenance
-and peer review are required.
-
-After changing a global inventory, start a fresh agent-host session. A host may
-cache its skill registry for one conversation. This refreshes host discovery;
-it does not replace filesystem verification. For a direct POSIX diagnostic,
-run the packaged flow Explore diagnostic:
+Review `install.sh`, the managed inventory, the native installer, and the
+selected skill directories. Then run the exact project-scoped install from the
+consumer repository:
 
 ```bash
-python3 "$HOME/.agents/skills/ai-sdlc-flow/scripts/flow.py" explore \
-  --root /path/to/consumer --intent "<request>" \
-  --feature 001-example --quick-flow --format toon
+AI_SDLC_SOURCE="$HARNESS_SRC" AI_SDLC_REVISION="$HARNESS_REV" "$HARNESS_SRC/install.sh" codex
 ```
 
-If that flow report is correct but the host cannot invoke a skill after a new session,
-record host, version, target, scope, and `skills list` evidence as a host
-conformance issue. Do not install every recognized agent as a workaround.
+The operation stages all managed directories, checks source and staged
+digests, preflights every destination, and applies the accepted set with
+rollback backups. Existing unrelated skills are left untouched. An existing
+managed directory with different content is a hard stop; follow the update
+guide instead of overwriting it.
 
-## Verify the result
+### Understand the installed artifacts
 
-!!! terminal "Run in terminal"
+The native install creates only these Harness-owned roots:
 
-    ```bash
-    DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --toon
-    git status --short
-    "$PYTHON_BIN" --version
-    "$PYTHON_BIN" .agents/skills/ai-sdlc-flow/scripts/flow.py --help
-    "$PYTHON_BIN" .agents/skills/ai-sdlc-sdd/scripts/sdd_artifact_scaffold.py --help
-    ```
+```text
+.agents/skills/<managed-skill>/
+.ai-sdlc/harness-install.toon
+.ai-sdlc/harness-install-lock.toon
+.ai-sdlc/harness-managed-skills.txt
+```
 
-Expected result:
+`harness-install.toon` records the immutable revision, agent, selection,
+target, inventory, lock, and installer identity.
+`harness-install-lock.toon` contains sorted skill names, canonical installed
+paths, and SHA-256 tree digests over relative paths, permission modes, lengths,
+and file bytes. It contains no timestamps or machine-specific absolute paths,
+so two installations of the same revision produce identical provenance. The
+plain-text managed inventory exists for portable shell review; all structured
+machine boundaries are TOON.
 
-- for `all-skills`, the list contains all 44 managed names; for
-  `explicit-skills`, every name in the reviewed managed inventory is present;
-  either list may also contain unrelated project or third-party skills;
-- Git shows only the agent/skill files you intended to add;
-- Python reports 3.10 or newer;
-- flow and SDD helper usage render without an import traceback;
-- no application source, secrets, or existing project artifacts were replaced.
+## Verify
 
-The Codex-scoped command creates `.agents/skills/` and a transient
-`skills-lock.toon`. CLI `1.5.19` records the absolute temporary source path in
-that lock and cannot update this local-source installation, so the lock is not
-portable team provenance and must not be committed. Record portable identity,
-then remove only the transient lock:
+Validate the record, inventory, lock, paths, and installed bytes:
 
 ```bash
-mkdir -p .ai-sdlc
-test -f .ai-sdlc/harness-managed-skills.txt || cp "$HARNESS_SRC/config/ai-sdlc-managed-skills.txt" .ai-sdlc/harness-managed-skills.txt
-HARNESS_SELECTION=all-skills # use explicit-skills when you ran the subset block
-printf 'agent: codex\ninventory: .ai-sdlc/harness-managed-skills.txt\nrevision: %s\nschema: ai-sdlc-install-record/v1\nselection: %s\nskills_cli: 1.5.19\n' "$(git -C "$HARNESS_SRC" rev-parse HEAD)" "$HARNESS_SELECTION" > .ai-sdlc/harness-install.toon
+PYTHON_BIN="${PYTHON_BIN:-python3}"
 "$PYTHON_BIN" .agents/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py
-rm skills-lock.toon
-rm -rf "$HARNESS_TMP"
+"$PYTHON_BIN" .agents/skills/ai-sdlc-flow/scripts/flow.py --help
+"$PYTHON_BIN" .agents/skills/ai-sdlc-sdd/scripts/sdd_artifact_scaffold.py --help
 git status --short
 ```
 
-The installed validator checks record fields, revision syntax, sorted managed
-inventory, full-versus-explicit selection integrity, and presence of every
-managed skill before temporary source cleanup. Unrelated installed skills are
-allowed and are never claimed as harness-owned. The published TOON Schema remains available for organization
-tooling. Commit `.agents/skills/` and both portable harness records. Skill documentation uses logical paths such as
-`skills/<name>`; in a consumer installation, resolve those paths beneath
-`.agents/skills/`.
+Expected:
 
-!!! warning "Human checkpoint"
+- the validator reports a valid install record;
+- the managed inventory and lock contain 44 skills;
+- every locked content digest matches the installed directory;
+- helper usage renders without an import traceback;
+- Git shows only the expected `.agents/` and `.ai-sdlc/` additions.
 
-    Review and commit the accepted `.agents/skills/` inventory and portable
-    install record before starting a feature branch. Installation is not
-    approval for an agent to modify product code, policy, or delivery evidence.
-
-From a clean consumer baseline, create that auditable installation commit with
-exact paths rather than broad staging:
+After verification, remove only the temporary reviewed checkout:
 
 ```bash
-git status --short
-git add .agents/skills .ai-sdlc/harness-install.toon .ai-sdlc/harness-managed-skills.txt
+rm -rf "$HARNESS_TMP"
+```
+
+Review the complete diff and commit exact paths:
+
+```bash
+git add .agents/skills .ai-sdlc/harness-install.toon .ai-sdlc/harness-install-lock.toon .ai-sdlc/harness-managed-skills.txt
 git diff --cached --check
 git diff --cached --stat
-git diff --cached
 git commit -m "chore: install AI SDLC harness"
-git status --short
 ```
 
-Expected: the staged diff contains only the reviewed managed skills and two
-portable records; the commit succeeds; final status prints nothing. If Git asks
-for identity, unrelated paths appear, or status remains dirty, stop and use the
-[Git and terminal primer](../foundations/git-and-terminal-primer.md) plus
-[troubleshooting](../operations/troubleshooting.md). Do not use `git add -A` as
-a shortcut.
+## Trust and network boundary
 
-## Verify first use
+The one-line convenience command executes the remote shell script from the
+immutable `v4.0.1` tag; the script verifies and fetches the same release before
+copying skills. Use
+the pinned path when your policy requires review before execution. Set
+`AI_SDLC_SOURCE` to a clean local checkout from an approved mirror and
+`AI_SDLC_REVISION` to its exact HEAD when public GitHub access is unavailable.
 
-!!! example "Tell your agent"
+The native installer makes no telemetry request. Git, the remote host, Codex,
+and the model provider remain separate network and data boundaries. Do not put
+credentials, restricted source, prompts, or model payloads into installation
+evidence.
 
-    ```text
-    Use ai-sdlc-flow to Explore with quick rigor.
-    Inspect this repository without modifying it. Report the detected context,
-    one required next action, optional actions, reasons, expected artifacts,
-    and blockers for this request: add a health endpoint.
-    ```
+Global installation is intentionally outside the v4 validated path. Commit the
+project-scoped install so the repository, not workstation-global state, is the
+reviewed authority.
 
-Expected result: a read-only `ai-sdlc-handoff/v2` recommendation grounded in
-repository evidence. If the agent cannot find the skill, verify the target
-agent and installation scope with `DISABLE_TELEMETRY=1 npx -y skills@1.5.19 list --toon`
-before reinstalling.
-
-## Update, remove, or roll back
-
-Skills CLI `1.5.19` does not update this exact local-source installation and its
-generic remove operation can leave the transient lock and empty host
-directories. Do not use those commands as the canonical lifecycle. Follow
-[Update safely](update.md) for exact reinstall, reviewed rollback, and cleanup.
-Preserve project-owned specs, decisions, state, configuration, and evidence;
-they are never installer-owned. For schema recovery, see
-[Migrate to 1.1](migrate-1.1.md).
-
-## Offline and private environments
-
-The Skills CLI installation path requires registry and Git access. In an
-offline environment, prepare and review a pinned package mirror through your
-organization's approved supply-chain process. A local harness checkout can run
-tests and compatibility validation, but this documentation does not claim that
-cloning alone installs skills into another agent environment.
-
-An offline invocation succeeds only when every required npm package and source
-object already exists in an approved local cache or mirror. A clean offline
-machine is therefore expected to fail. Prepare the mirror while connected,
-record integrity metadata, disconnect, and test the complete install in a
-disposable repository before organizational rollout.
-
-For a private repository, configure an SSH key, GitHub CLI login, or approved
-HTTPS credential with read access. Never paste tokens into an agent prompt.
-
-## Troubleshooting first install
+## Troubleshooting
 
 | Symptom | Safe response |
 | --- | --- |
-| Command appears hung | Wait for the npm/Git timeout; use `Ctrl-C` once, then check approved proxy/DNS/TLS access. Do not repeatedly launch installers. |
-| Engine mismatch | Compare `node --version` with `npm view skills@1.5.19 engines --toon`; upgrade Node through an approved source. |
-| `python3` missing or below 3.10 | Install a supported Python, set `PYTHON_BIN` to its exact executable (for example `PYTHON_BIN=/opt/homebrew/bin/python3.11`), rerun `"$PYTHON_BIN" --version`, and substitute `"$PYTHON_BIN"` for displayed `python3` helper commands. Do not assume `python` and `python3` are the same. |
-| `list --toon` requires network | This CLI behavior is expected; use an approved registry/cache or record the offline limitation. |
-| Skill helper path missing | Confirm `.agents/skills/ai-sdlc-shared-runtime` and the selected skill both exist; reinstall the pair if either is absent. |
-| Unexpected agent directories | Do not commit or use the generic CLI remover. If the repository is disposable, delete that whole verified fixture from its parent. Otherwise follow the ownership-safe [uninstall procedure](update.md#remove-and-verify-cleanup), review every managed path, inspect status, and reinstall with an explicit `--agent`. |
-| Flow reports a missing runtime or owning skill | Start a fresh host session and run the packaged flow diagnostic above. Repair the explicit Codex-scoped install only when the required sibling `SKILL.md` is absent; otherwise record a host-conformance issue. |
-| Project and global installations both exist | Treat the committed project inventory as repository authority. Compare revisions and update workstation state separately; do not assume host precedence or mix evidence from two revisions. |
-| Authentication or certificate failure | Stop and ask the repository/network owner. Never disable TLS verification or paste a token into chat. |
+| `source checkout is dirty` | Fetch a fresh immutable checkout. Do not bypass this for a release install. |
+| `managed destination differs` | Preserve `git status`, review local changes, and use the update procedure only after the difference is owned. |
+| `legacy installer lock exists` | Run `git status --short`, confirm the diagnostic's exact root file is an installer-owned legacy artifact, then remove only that file before retrying. |
+| `source revision mismatch` | Re-resolve the tag and compare its commit with `HARNESS_REV`; never relabel a different checkout. |
+| `non-TOON machine artifact` | Stop and inspect the named source file; the v4 installer will not copy it. |
+| `installed skill digest differs` | Treat the installation as modified or corrupt; compare with the accepted revision before repair. |
+| Python is too old | Install an organization-approved Python 3.10+ runtime or set `AI_SDLC_PYTHON` to one. |
+| Git fetch fails | Check approved proxy, DNS, TLS, credentials, or mirror access; do not substitute an unreviewed download. |
 
-After any failed attempt, inspect `git status --short`. Remove only files that
-the installer created and that a human has verified are not project-owned. The
-successful POSIX sequence removes only the unique directory named by
-`HARNESS_TMP`; after a failure, inspect that variable and remove that exact
-temporary directory only after preserving useful diagnostics.
+## Next step
+
+Complete [your first 30 minutes](../onboarding/first-30-minutes.md), then use
+the [safe update guide](update.md) for repair or upgrade. Review
+[supported environments](../reference/supported-environments.md) before
+claiming another host or scope is supported.

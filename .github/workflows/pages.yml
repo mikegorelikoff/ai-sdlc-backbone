@@ -58,10 +58,6 @@ jobs:
           python-version: "3.13"
           cache: pip
           cache-dependency-path: requirements-docs.lock
-      - name: Set up Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: "22.20.0"
       - name: Install documentation dependencies
         run: python3 -m pip install --require-hashes -r requirements-docs.lock
       - name: Validate generated catalogs
@@ -71,9 +67,7 @@ jobs:
       - name: Report Learn page token counts
         run: python3 docs/scripts/learning_tokens.py --config mkdocs.yml --encoding o200k_base --minimum 6000 --maximum 8000
       - name: Smoke test checked-out candidate installation
-        run: python3 skills/ai-sdlc-shared-runtime/tests/install_smoke.py --mode npx --source . --agent codex
-      - name: Smoke test previous published release
-        run: python3 skills/ai-sdlc-shared-runtime/tests/install_smoke.py --mode npx-remote --source https://github.com/mikegorelikoff/ai-sdlc-harness.git --revision 5c9c29dd25c8d38046b9908aea5f6716275f02c2 --agent codex
+        run: python3 skills/ai-sdlc-shared-runtime/tests/install_smoke.py --mode native --source . --agent codex
       - name: Run documentation tests
         run: python3 -m unittest discover -s docs/tests -v
       - name: Build documentation

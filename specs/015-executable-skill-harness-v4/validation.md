@@ -40,6 +40,7 @@ artifact_metadata:
     - "AC-013"
     - "DEC-007"
     - "DEC-008"
+    - "DEC-009"
     - "NFR-001"
     - "NFR-002"
     - "NFR-003"
@@ -61,6 +62,7 @@ artifact_metadata:
     - "TC-011"
     - "TC-012"
     - "TC-013"
+    - "T011"
   related_artifacts:
     - "specs/015-executable-skill-harness-v4/_ai_sdlc/validation-plan.toon"
     - "specs/015-executable-skill-harness-v4/_ai_sdlc/validation-receipt.toon"
@@ -72,7 +74,7 @@ artifact_metadata:
     - "specs/015-executable-skill-harness-v4/tasks.md"
     - "specs/015-executable-skill-harness-v4/test-cases.md"
   validation:
-    - "ai-sdlc-test-suite-receipt/v1: 94 test files; 0 failures"
+    - "ai-sdlc-test-suite-receipt/v1: 95 test files; 0 failures"
     - "ai-sdlc-eval-receipt/v1: 44 skills; 220 deterministic scenarios; 0 failures"
     - "ai-sdlc-live-eval-protocol/v1: 6 offline scenarios; 0 failures"
     - "ai-sdlc-validation-receipt/v1: current command evidence"
@@ -91,7 +93,7 @@ artifact_metadata:
 
 The executable skill harness v4 implementation passes its deterministic
 implementation gates. The repository now validates 44 semantic skill graphs
-with 221 nodes, runs every one of 94 skill-owned test files explicitly, and
+with 221 nodes, runs every one of 95 skill-owned test files explicitly, and
 exercises 220 deterministic evaluation scenarios without failures.
 
 Context-engineering behavior is enforced as executable protocol: each planned
@@ -113,7 +115,7 @@ attempt, and idempotency scope to an append-only journal.
   side-effect idempotency.
 - Full StepCard agreement across selector, flow, workflow, runtime, host
   adapter, and handoff boundaries.
-- Source-checkout, selective, and disposable-global installed layouts.
+- Source-checkout and native project-scoped installed layouts.
 - Compatibility API 4.0.0, 12 protected contracts, 44 skills, five modules,
   generated catalogs, strict documentation build, and rendered-link integrity.
 - Repository-wide TOON-only absence, decoding, canonical byte stability, and
@@ -125,8 +127,11 @@ attempt, and idempotency scope to an append-only journal.
   `specs/015-executable-skill-harness-v4/_ai_sdlc/validation-plan.toon`.
 - Current command receipt:
   `specs/015-executable-skill-harness-v4/_ai_sdlc/validation-receipt.toon`.
-- Complete test-suite receipt: 94/94 files passed; fingerprint
-  `47a19d8e5d7fb4c7b296366905112b646d3f0ead8f30811a74f7c4874ecdec4c`.
+- Complete test-suite receipt: 95/95 files passed; fingerprint
+  `4d7881a8cdb44d4f8cbbb7e995d8384f8d07968a4bdf0d892bbfb30ef0e47d9f`.
+- Native installation: 10 installer cases, 6 record cases, deterministic lock
+  equality across two consumers, and the complete 44-skill installed workflow
+  passed.
 - Deterministic evaluation: 44 skills, 220 scenarios, two runs with identical
   31,999-byte output; receipt fingerprint
   `1d47e6bbd5259b874ee9600040bf1aa716684fd0cdb2740b9bcaba910943f0d2`.
@@ -134,7 +139,7 @@ attempt, and idempotency scope to an append-only journal.
   receipt fingerprint
   `39589f99fbc80b108649b07f02dbc43a2fe6dadc5744508af88aed1dd1541ac2`.
 - Documentation: 200 public pages, 46 unit tests, and a strict rendered site
-  with 201 HTML pages and 5,428 validated local targets.
+  with 201 HTML pages and 5,423 validated local targets.
 - Hash-locked documentation dependencies installed and verified with Python
   3.11.
 - Exact release-history compatibility passed after the v4 release subject with

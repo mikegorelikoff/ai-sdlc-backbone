@@ -157,7 +157,7 @@ nav:
       - Compatibility: reference/compatibility.md
       - Supported environments: reference/supported-environments.md
       - Supported versions: reference/versions.md
-      - Release 4.0: reference/release-4.0.md
+      - Release 4.0.1: reference/release-4.0.md
   - Project:
       - Overview: project/index.md
       - Status and limitations: explanation/maturity-limitations.md

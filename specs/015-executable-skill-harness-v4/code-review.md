@@ -42,6 +42,7 @@ artifact_metadata:
     - "DEC-004"
     - "DEC-006"
     - "DEC-007"
+    - "DEC-009"
   related_artifacts:
     - "specs/015-executable-skill-harness-v4/requirements.md"
     - "specs/015-executable-skill-harness-v4/design.md"
@@ -78,6 +79,7 @@ boundaries before comparing prior validation conclusions.
 | Medium | `runtime.py` mutation path; NFR-002 | Mutable commands replayed the journal before acquiring the run lock, so two processes could derive the same next sequence. Event writes could replace an existing sequence, and a stopped failure budget could be reopened by retry. | Mutations acquire the lock before replay, event destinations are create-only, payload and attempt invariants fail closed, and retry requires a paused non-exhausted run. |
 | Medium | `ai_sdlc_skill_eval.atomic_output`; NFR-002; NFR-008 | An explicitly requested evaluation receipt could resolve outside the owning repository or through an unsafe path. | Evaluation output now uses the shared repository-bounded, symlink-rejecting atomic writer; a path-escape regression passes. |
 | Low | Release and skill documentation examples; DEC-007 | Several fenced examples named TOON but retained non-TOON object syntax, which weakened the hard-cut teaching surface even though source artifact gates passed. | Canonical skill sources and public procedures now show valid TOON mappings and arrays; generated reference pages were rebuilt and the repository absence/canonicality test passes. |
+| High | Tagged `v4.0.0` consumer smoke; DEC-007; DEC-009 | The external installer created an installer-owned non-TOON lock and did not honor the requested structured-list behavior, so repository conformance did not extend to a fresh consumer. | The consumed tag remains immutable. Corrective `v4.0.1` replaces that path with a Harness-owned installer that binds a clean exact revision, rejects links and non-TOON artifacts, stages and verifies tree digests, serializes mutations, rolls back caught failures, and writes only portable TOON provenance. |
 
 ## Requirement Comparison
 
@@ -93,14 +95,17 @@ boundaries before comparing prior validation conclusions.
   examples, fixtures, state, and receipts remain canonical TOON only.
 - AC-011 and AC-012: deterministic and provider-neutral protocol suites remain
   distinct; offline protocol validation does not claim provider certification.
+- NFR-007 and DEC-009: the native project-scoped Codex path passes exact-source,
+  deterministic-lock, differing-content refusal, symlink, concurrent-mutation,
+  injected-failure rollback, installed-digest, and full consumer-workflow tests.
 
 ## Validation Gaps
 
-The broad release receipt, compatibility history without the pending-subject
-allowance, protected CI, remote tag, and tagged installation are intentionally
-owned by final validation and publication. Focused runtime, deterministic
-evaluation, documentation, canonicality, compile, and diff checks pass after
-the resolutions above.
+The 17-command release receipt and its freshness check pass before commit.
+Protected CI, the corrective remote tag, and the fresh tagged installation are
+necessarily owned by publication validation. Focused runtime, native installer,
+deterministic evaluation, documentation, canonicality, compile, and diff checks
+pass after the resolutions above.
 
 ## Residual Risk
 
@@ -110,10 +115,15 @@ the resolutions above.
   operations still depend on host idempotency and durable effect receipts.
 - The major hard cut intentionally requires regeneration of pre-v4 machine
   artifacts instead of compatibility parsing.
+- A process termination that bypasses Python exception handling can leave a
+  staging directory or a partially replaced consumer tree. The installer
+  records no success until all replacements complete; operators must preserve
+  the consumer Git baseline, inspect interrupted state, and rerun only the same
+  reviewed revision.
 
 ## Summary
 
 The final reviewed code satisfies the v4 executable-harness contracts. The
 review found and corrected replay identity, interrupted completion, mutation
-locking, budget-retry, output containment, and teaching-surface defects; no
-unresolved code-review finding remains.
+locking, budget-retry, output containment, teaching-surface defects, and the
+consumer-install boundary; no unresolved code-review finding remains.
