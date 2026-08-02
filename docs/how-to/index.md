@@ -23,8 +23,11 @@ Choose the result you need now. Each guide is task-oriented and assumes basic Gi
 - [**Build a task context pack**](build-context-pack.md) — bound sources and token budget for one task.
 - [**Continue after a specification**](after-specification.md) — move through one ready task, validation, review, and commit.
 - [**Resume a delivery run**](resume-runtime.md) — continue safely from the durable journal and TOON state.
+- [**Operate the scheduler**](operate-scheduler.md) — lease StepCards, recover expiry, and commit terminal runtime evidence.
 - [**Plan a workflow**](plan-workflow.md) — compile skill entrypoints, approvals, conditions, and dependency waves.
 - [**Negotiate a host adapter**](negotiate-host-adapter.md) — select a supported host capability or safe fallback.
+- [**Execute an effect safely**](execute-host-effect.md) — run an allowlisted idempotent driver after negotiation.
+- [**Certify provider execution**](certify-provider-execution.md) — distinguish offline protocol lint from an attested TC-012 receipt.
 - [**Diagnose and plan an upgrade**](diagnose-and-plan-upgrade.md) — inspect health and preview migration without applying.
 - [**Verify a package and local metrics**](verify-package-and-metrics.md) — choose one trust or content-free metrics branch.
 - [**Customize team policy**](customize.md) — layer safe organization and project defaults.

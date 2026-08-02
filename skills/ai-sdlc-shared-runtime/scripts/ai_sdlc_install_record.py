@@ -16,6 +16,7 @@ from ai_sdlc_install import (  # noqa: E402
     INSTALLER_ID,
     LOCK_SCHEMA,
     RECORD_SCHEMA,
+    INSTALL_PROFILES,
     InstallError,
     directory_digest,
 )
@@ -26,12 +27,13 @@ REQUIRED = {
     "revision",
     "installer",
     "agent",
+    "profile",
     "selection",
     "inventory",
     "lock",
     "target",
 }
-LOCK_REQUIRED = {"schema", "revision", "installer", "agent", "selection", "skills", "target"}
+LOCK_REQUIRED = {"schema", "revision", "installer", "agent", "profile", "selection", "skills", "target"}
 LOCK_ENTRY_REQUIRED = {"name", "path", "sha256"}
 SKILL_NAME_RE = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 
@@ -57,7 +59,7 @@ def validate(record_path: Path, skills_root: Path) -> list[str]:
     if not isinstance(value, dict) or set(value) != REQUIRED:
         return [
             "install record must contain exactly schema, revision, installer, "
-            "agent, selection, inventory, lock, target"
+            "agent, profile, selection, inventory, lock, target"
         ]
     errors: list[str] = []
     if value["schema"] != RECORD_SCHEMA:
@@ -66,8 +68,13 @@ def validate(record_path: Path, skills_root: Path) -> list[str]:
         errors.append("install record revision must be a lowercase 40-character Git SHA")
     if value["installer"] != INSTALLER_ID:
         errors.append(f"install record installer must be {INSTALLER_ID}")
-    if value["agent"] != "codex":
-        errors.append("install record agent must be codex")
+    profile = value["profile"]
+    if profile not in INSTALL_PROFILES:
+        errors.append("install record profile is unknown")
+        return errors
+    profile_contract = INSTALL_PROFILES[profile]
+    if value["agent"] != profile_contract["agent"]:
+        errors.append("install record agent must match its profile")
     if value["selection"] not in {"all-skills", "explicit-skills"}:
         errors.append("install record selection is invalid")
     if value["inventory"] != ".ai-sdlc/harness-managed-skills.txt":
@@ -76,8 +83,8 @@ def validate(record_path: Path, skills_root: Path) -> list[str]:
     if value["lock"] != ".ai-sdlc/harness-install-lock.toon":
         errors.append("install record lock must be .ai-sdlc/harness-install-lock.toon")
         return errors
-    if value["target"] != ".agents/skills":
-        errors.append("install record target must be .agents/skills")
+    if value["target"] != profile_contract["target"]:
+        errors.append("install record target must match its profile")
         return errors
     inventory_path = record_path.resolve().parent.parent / value["inventory"]
     try:
@@ -115,10 +122,10 @@ def validate(record_path: Path, skills_root: Path) -> list[str]:
     if not isinstance(lock, dict) or set(lock) != LOCK_REQUIRED:
         errors.append(
             "install lock must contain exactly schema, revision, installer, "
-            "agent, selection, skills, target"
+            "agent, profile, selection, skills, target"
         )
         return errors
-    for field in ("revision", "installer", "agent", "selection", "target"):
+    for field in ("revision", "installer", "agent", "profile", "selection", "target"):
         if lock[field] != value[field]:
             errors.append(f"install lock {field} must match the install record")
     if lock["schema"] != LOCK_SCHEMA:
@@ -137,7 +144,7 @@ def validate(record_path: Path, skills_root: Path) -> list[str]:
             errors.append("install lock contains an invalid skill name")
             continue
         locked_names.append(name)
-        if entry["path"] != f".agents/skills/{name}":
+        if entry["path"] != f"{value['target']}/{name}":
             errors.append(f"install lock path is invalid for {name}")
         if not isinstance(entry["sha256"], str) or not re.fullmatch(r"[0-9a-f]{64}", entry["sha256"]):
             errors.append(f"install lock digest is invalid for {name}")
@@ -157,8 +164,14 @@ def validate(record_path: Path, skills_root: Path) -> list[str]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--record", type=Path, default=Path(".ai-sdlc/harness-install.toon"))
-    parser.add_argument("--skills-root", type=Path, default=Path(".agents/skills"))
+    parser.add_argument("--skills-root", type=Path)
     args = parser.parse_args()
+    if args.skills_root is None:
+        try:
+            record = toon_codec.loads(args.record.read_text(encoding="utf-8-sig"))
+            args.skills_root = args.record.resolve().parent.parent / record["target"]
+        except (OSError, KeyError, TypeError, toon_codec.ToonDecodeError):
+            args.skills_root = Path(".agents/skills")
     errors = validate(args.record, args.skills_root)
     for error in errors:
         print(f"ERROR: {error}")

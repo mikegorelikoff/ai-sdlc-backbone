@@ -37,7 +37,13 @@ description: Core versioned records used for artifacts, handoffs, modules, compa
 | `ai-sdlc-host-adapter/v2` | Declare host identity, harness API range, capabilities, equivalent operation mappings, concurrency, and isolation. |
 | `ai-sdlc-capability-request/v2` | Request execution of one complete StepCard without weakening its operation, side-effect, approval, context, output, evidence, or idempotency semantics. |
 | `ai-sdlc-capability-negotiation/v2` | Explain native mappings, registered equivalent fallbacks, missing requirements, effective limits, compatibility, and preserved StepCard identity. |
+| `ai-sdlc-effect-request/v1` | Bind one allowlisted effect driver to the negotiated operation, StepCard, context, capabilities, approval, arguments, and stable idempotency key. |
+| `ai-sdlc-effect-receipt/v1` | Prove one durable effect outcome and permit exact replay without repeating the effect. |
+| `ai-sdlc-scheduler-state/v1` | Project ready work, leases, attempts, terminal results, revisions, and the scheduler event chain deterministically. |
+| `ai-sdlc-scheduler-dispatch/v1` | Bind one scheduler lease to one isolated StepCard runtime sub-run and context fingerprint. |
 | `ai-sdlc-eval-receipt/v1` | Record deterministic all-skill scenarios or provider-neutral live-protocol checks with a canonical receipt fingerprint. |
+| `ai-sdlc-provider-execution/v1` | Attest provider, host, model, execution identity, scenario version, per-scenario evidence, effect receipts, and recovery proof. |
+| `ai-sdlc-live-eval-receipt/v1` | Validate a provider observation against the pinned protocol and thresholds; unattested execution remains pending. |
 | `ai-sdlc-test-suite-receipt/v1` | Prove that every discovered skill-owned Python test file executed, report explicit status per file, and prevent silent zero-test discovery. |
 | `ai-sdlc-doctor-report/v1` | Report deterministic installation checks, evidence, remediation, and health. |
 | `ai-sdlc-upgrade-inventory/v1` | Describe versioned package files with safe paths, hashes, schemas, and harness API range. |

@@ -17,6 +17,12 @@ Repository validation covers:
 - skill identity, required sections, flow flags, artifact routes, and handoffs;
 - state transitions, TOON encoding, metadata, indexes, configuration, and migration;
 - helper behavior, failure cases, installed-runtime synchronization, and compatibility;
+- deterministic scheduler leases, contention, expiry recovery, stale-worker
+  rejection, and scheduler-to-runtime dispatch;
+- allowlisted idempotent effects, provider receipt anti-forgery states, and
+  Codex/OpenAI TC-012 evidence for the recorded release candidate;
+- project-scoped Codex and Claude Code installation profiles with installed
+  workflow smoke tests;
 - generated documentation inventory, local links, navigation, strict build, and rendered targets;
 - copyable onboarding fixtures, deliberate failure/recovery, and release smoke checks.
 
@@ -37,7 +43,7 @@ cost, developer experience, or business outcomes.
 - Skills depend on the host agent correctly loading and following instructions.
 - Natural-language reasoning remains fallible; deterministic helpers cover only declared mechanics.
 - A passing artifact can contain a poor human decision or weak underlying evidence.
-- The harness cannot observe production deployment, incidents, or customer outcomes unless external systems provide that evidence.
+- The harness cannot observe production deployment, incidents, or customer outcomes unless approved external adapters provide that evidence.
 - Public guides translate execution contracts but do not replace `SKILL.md` authority.
 - Script mutability classification is conservative and cannot grant runtime permission.
 - Package hashes establish integrity against a manifest, not author identity or organizational approval.

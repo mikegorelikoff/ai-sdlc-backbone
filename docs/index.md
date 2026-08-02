@@ -53,11 +53,11 @@ the [quick, full, and expert paths](how-to/choose-flow.md).
 
 ## Five-minute first success
 
-Install the skills into a project for Codex with one command. This path
-requires Git and Python `3.10+`:
+Install the skills with the Codex project profile. This path requires Git and
+Python `3.10+`:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.0.1/install.sh | sh -s -- codex
+curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.1.0/install.sh | sh -s -- codex-project
 ```
 
 Then validate the resulting TOON provenance:
@@ -66,8 +66,9 @@ Then validate the resulting TOON provenance:
 python3 .agents/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py
 ```
 
-The second command must validate all 44 installed skills and their locked
-content digests. Then ask your agent to Explore a request without applying changes:
+Use `claude-code-project` for Claude Code. The second command must validate all
+45 installed skills and their locked content digests. Then ask your agent to
+Explore a request without applying changes:
 
 ```text
 Use ai-sdlc-flow to Explore this request. Show the route, evidence, rigor,

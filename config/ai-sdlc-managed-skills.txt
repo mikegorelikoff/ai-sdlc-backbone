@@ -31,6 +31,7 @@ ai-sdlc-requirements-readiness-review
 ai-sdlc-research
 ai-sdlc-retrospective
 ai-sdlc-runtime
+ai-sdlc-scheduler
 ai-sdlc-sdd
 ai-sdlc-security-testing
 ai-sdlc-shared-runtime

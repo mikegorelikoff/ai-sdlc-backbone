@@ -1,11 +1,13 @@
 config:
   defaults: config/ai-sdlc.defaults.toon
   schema: ai-sdlc-config/v1
-contracts[12]{id,path}:
+contracts[18]{id,path}:
   ai-sdlc-skill-steps/v2,skills/ai-sdlc-shared-runtime/references/skill-steps.schema.toon
   ai-sdlc-step-card/v1,skills/ai-sdlc-shared-runtime/references/step-card.schema.toon
   ai-sdlc-context-pack/v4,skills/ai-sdlc-shared-runtime/references/step-context-pack.schema.toon
   ai-sdlc-eval-receipt/v1,skills/ai-sdlc-shared-runtime/references/eval-receipt.schema.toon
+  ai-sdlc-provider-execution/v1,skills/ai-sdlc-shared-runtime/references/provider-execution.schema.toon
+  ai-sdlc-live-eval-receipt/v1,skills/ai-sdlc-shared-runtime/references/live-eval-receipt.schema.toon
   ai-sdlc-test-suite-receipt/v1,skills/ai-sdlc-shared-runtime/references/test-suite-receipt.schema.toon
   ai-sdlc-run-plan/v2,skills/ai-sdlc-runtime/references/run-plan.schema.toon
   ai-sdlc-run-event/v2,skills/ai-sdlc-runtime/references/run-event.schema.toon
@@ -14,7 +16,11 @@ contracts[12]{id,path}:
   ai-sdlc-workflow-plan/v2,skills/ai-sdlc-workflow/references/workflow-plan.schema.toon
   ai-sdlc-capability-request/v2,skills/ai-sdlc-host-adapter/references/capability-request.schema.toon
   ai-sdlc-capability-negotiation/v2,skills/ai-sdlc-host-adapter/references/capability-negotiation.schema.toon
-harness_api_version: 4.0.0
+  ai-sdlc-effect-request/v1,skills/ai-sdlc-host-adapter/references/effect-request.schema.toon
+  ai-sdlc-effect-receipt/v1,skills/ai-sdlc-host-adapter/references/effect-receipt.schema.toon
+  ai-sdlc-scheduler-state/v1,skills/ai-sdlc-scheduler/references/scheduler-state.schema.toon
+  ai-sdlc-scheduler-dispatch/v1,skills/ai-sdlc-scheduler/references/scheduler-dispatch.schema.toon
+harness_api_version: 4.1.0
 install_update_guide: guides/install-and-update.md
 machine:
   codec: skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_toon.py
@@ -26,9 +32,9 @@ modules:
 python:
   ci[2]: "3.10","3.13"
   min: "3.10"
-release: 4.0.0
+release: 4.1.0
 required_cli_flags[5]: "--quick-flow","--full-flow","--state-check","--begin-state","--complete-state"
-required_skill_names[44]: ai-sdlc-approvals-sandbox,ai-sdlc-architecture,ai-sdlc-ba,ai-sdlc-backlog-decomposition-and-task-planning,ai-sdlc-backlog-requirements-gap-review,ai-sdlc-branching,ai-sdlc-change-set,ai-sdlc-change-impact,ai-sdlc-code-review,ai-sdlc-commit-prep,ai-sdlc-conventional-commit,ai-sdlc-delivery-handoff-review,ai-sdlc-delivery-graph,ai-sdlc-delivery-package-gap-review,ai-sdlc-delivery-spec-synthesis,ai-sdlc-doctor,ai-sdlc-evidence-council,ai-sdlc-goal-capability-and-epic-mapping,ai-sdlc-host-adapter,ai-sdlc-flow,ai-sdlc-package-trust,ai-sdlc-policy,ai-sdlc-prfaq-package-synthesis,ai-sdlc-project-context,ai-sdlc-qa,ai-sdlc-qa-requirements-gap-review,ai-sdlc-qa-traceability-and-readiness-review,ai-sdlc-quality-lenses,ai-sdlc-release-slicing-and-backlog-readiness-review,ai-sdlc-requirements-readiness-review,ai-sdlc-research,ai-sdlc-retrospective,ai-sdlc-runtime,ai-sdlc-sdd,ai-sdlc-security-testing,ai-sdlc-shared-runtime,ai-sdlc-test-case-and-suite-synthesis,ai-sdlc-test-cases,ai-sdlc-test-scope-and-strategy-design,ai-sdlc-user-story-decomposition,ai-sdlc-ux,ai-sdlc-validation,ai-sdlc-workflow,ai-sdlc-working-backwards-discovery
+required_skill_names[45]: ai-sdlc-approvals-sandbox,ai-sdlc-architecture,ai-sdlc-ba,ai-sdlc-backlog-decomposition-and-task-planning,ai-sdlc-backlog-requirements-gap-review,ai-sdlc-branching,ai-sdlc-change-set,ai-sdlc-change-impact,ai-sdlc-code-review,ai-sdlc-commit-prep,ai-sdlc-conventional-commit,ai-sdlc-delivery-handoff-review,ai-sdlc-delivery-graph,ai-sdlc-delivery-package-gap-review,ai-sdlc-delivery-spec-synthesis,ai-sdlc-doctor,ai-sdlc-evidence-council,ai-sdlc-goal-capability-and-epic-mapping,ai-sdlc-host-adapter,ai-sdlc-flow,ai-sdlc-package-trust,ai-sdlc-policy,ai-sdlc-prfaq-package-synthesis,ai-sdlc-project-context,ai-sdlc-qa,ai-sdlc-qa-requirements-gap-review,ai-sdlc-qa-traceability-and-readiness-review,ai-sdlc-quality-lenses,ai-sdlc-release-slicing-and-backlog-readiness-review,ai-sdlc-requirements-readiness-review,ai-sdlc-research,ai-sdlc-retrospective,ai-sdlc-runtime,ai-sdlc-scheduler,ai-sdlc-sdd,ai-sdlc-security-testing,ai-sdlc-shared-runtime,ai-sdlc-test-case-and-suite-synthesis,ai-sdlc-test-cases,ai-sdlc-test-scope-and-strategy-design,ai-sdlc-user-story-decomposition,ai-sdlc-ux,ai-sdlc-validation,ai-sdlc-workflow,ai-sdlc-working-backwards-discovery
 roadmap_allowed_prelude_subjects[1]: "docs(release): close guided onboarding validation"
 roadmap_commit_subjects[18]: "docs: simplify readme and complete community guides","legal: adopt apache-2.0 license","ci: pin remote install smoke test to release commit","docs: update changelog for ci and community fixes","docs: add fast path installation guide","docs: consolidate canonical role model","feat(flow): add guided explore and apply workflow","refactor(skills)!: consolidate guided routing into flow","feat(skills)!: add role-guided progressive disclosure","feat(skills)!: adopt OKF v0.2 artifact bundles","chore(merge): record feature 005 canonical integration","chore(release)!: publish v3.0.0-rc.1","fix(ci): validate complete history and v3 install","chore(release): publish v3.0.0-rc.2","feat(install): add one-line agent installer","docs: unify AI SDLC product-family experience","docs: make one-line install the primary action","chore(release)!: publish v4.0.0"
 roadmap_git_base: v2.1.0
@@ -44,4 +50,4 @@ skill_graph:
   generator: skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_skill_graph.py
   min_nodes: 5
   schema: ai-sdlc-skill-steps/v2
-  skills: 44
+  skills: 45

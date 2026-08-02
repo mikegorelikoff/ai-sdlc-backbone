@@ -212,7 +212,11 @@ def flow_skill_root(root: Path | None = None) -> Path:
     """Resolve the flow package in a checkout or installed skill set."""
     candidates = []
     if root is not None:
-        candidates.extend((root.resolve() / "skills" / "ai-sdlc-flow", root.resolve() / ".agents" / "skills" / "ai-sdlc-flow"))
+        candidates.extend((
+            root.resolve() / "skills" / "ai-sdlc-flow",
+            root.resolve() / ".agents" / "skills" / "ai-sdlc-flow",
+            root.resolve() / ".claude" / "skills" / "ai-sdlc-flow",
+        ))
     candidates.append(Path(__file__).resolve().parents[2] / "ai-sdlc-flow")
     for candidate in candidates:
         if (candidate / "references" / "selector-registry.toon").is_file():
@@ -305,7 +309,12 @@ def classify_intent(intent: str) -> tuple[str, str, str, str, tuple[str, ...]]:
 
 def discover_skills(root: Path) -> tuple[frozenset[str], tuple[str, ...]]:
     packaged = Path(__file__).resolve().parents[2]
-    candidates = (("source", root.resolve() / "skills"), ("project", root.resolve() / ".agents" / "skills"), ("packaged", packaged))
+    candidates = (
+        ("source", root.resolve() / "skills"),
+        ("codex-project", root.resolve() / ".agents" / "skills"),
+        ("claude-code-project", root.resolve() / ".claude" / "skills"),
+        ("packaged", packaged),
+    )
     names: set[str] = set()
     roots: list[str] = []
     seen: set[Path] = set()

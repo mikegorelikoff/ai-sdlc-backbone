@@ -105,7 +105,7 @@ def verify_bounded_install(consumer: Path, installed: Path, expected: set[str]) 
 def install_native(
     source: Path,
     consumer: Path,
-    agent: str | None = None,
+    profile: str | None = None,
     revision: str | None = None,
     *,
     snapshot_source: bool = False,
@@ -142,10 +142,10 @@ def install_native(
         result = run(["git", "-C", str(effective_source), "rev-parse", "--verify", "HEAD"], consumer)
         require(result, "native source revision")
         resolved_revision = result.stdout.strip()
-    if not agent:
-        raise RuntimeError("native installation smoke requires --agent for bounded host scope")
+    if not profile:
+        raise RuntimeError("native installation smoke requires --profile for bounded host scope")
     installer_python = shutil.which("python3.11") or sys.executable
-    command = ["sh", str(effective_source / "install.sh"), agent]
+    command = ["sh", str(effective_source / "install.sh"), profile]
     require(
         run(
             command,
@@ -158,7 +158,9 @@ def install_native(
         ),
         "native harness installation",
     )
-    allowed = {".agents", ".ai-sdlc", ".git"}
+    host_root = ".agents" if profile == "codex-project" else ".claude"
+    skills_target = consumer / host_root / "skills"
+    allowed = {host_root, ".ai-sdlc", ".git"}
     unexpected = sorted(path.name for path in consumer.iterdir() if path.name not in allowed)
     if unexpected:
         raise RuntimeError(
@@ -172,7 +174,7 @@ def install_native(
     if forbidden:
         raise RuntimeError("native installation created non-TOON machine artifacts: " + ", ".join(forbidden))
     validator = (
-        consumer / ".agents" / "skills" / "ai-sdlc-shared-runtime"
+        skills_target / "ai-sdlc-shared-runtime"
         / "scripts" / "ai_sdlc_install_record.py"
     )
     require(run([sys.executable, str(validator)], consumer), "native install record")
@@ -196,7 +198,12 @@ def checkout_revision(repository: str, revision: str, destination: Path) -> None
         raise RuntimeError(f"expected source revision {revision}, found {actual.stdout.strip()}")
 
 
-def verify(consumer: Path, source_checkout: Path | None = None, expected_skill_count: int = 44) -> None:
+def verify(
+    consumer: Path,
+    source_checkout: Path | None = None,
+    expected_skill_count: int = 45,
+    profile: str | None = None,
+) -> None:
     """Execute installed imports, one complete write, and finalization."""
     require(run(["git", "init"], consumer), "flow fixture git init")
     require(run(["git", "checkout", "-B", "dev"], consumer), "flow fixture dev branch")
@@ -219,7 +226,8 @@ def verify(consumer: Path, source_checkout: Path | None = None, expected_skill_c
         ),
         "flow fixture base commit",
     )
-    installed = consumer / ".agents" / "skills"
+    host_root = ".claude" if profile == "claude-code-project" else ".agents"
+    installed = consumer / host_root / "skills"
     installed_skills = [path for path in installed.iterdir() if path.is_dir() and (path / "SKILL.md").is_file()]
     if len(installed_skills) != expected_skill_count:
         raise RuntimeError(f"expected {expected_skill_count} installed skills, found {len(installed_skills)}")
@@ -422,7 +430,7 @@ def main() -> int:
         choices=("emulated", "emulated-selective", "emulated-global", "native", "native-remote"),
         default="emulated",
     )
-    parser.add_argument("--agent", help="Harness agent target for a host-scoped smoke")
+    parser.add_argument("--profile", choices=("codex-project", "claude-code-project"), help="Harness project install profile")
     parser.add_argument("--revision", help="Exact 40-character Git revision for native-remote mode")
     parser.add_argument(
         "--expected-failure",
@@ -458,9 +466,9 @@ def main() -> int:
             if args.mode == "native-remote":
                 source_checkout = temp_root / "harness-source"
                 checkout_revision(source_value, args.revision, source_checkout)
-                install_native(source_checkout, consumer, args.agent, args.revision)
+                install_native(source_checkout, consumer, args.profile, args.revision)
             elif args.mode == "native":
-                install_native(source_path, consumer, args.agent, snapshot_source=True)
+                install_native(source_path, consumer, args.profile, snapshot_source=True)
             elif args.mode == "emulated-selective":
                 selected = {
                     "ai-sdlc-shared-runtime", "ai-sdlc-flow",
@@ -485,7 +493,11 @@ def main() -> int:
             else:
                 install_emulated(source_path, consumer)
             installed_source = source_checkout if args.mode == "native-remote" else source_path
-            verify(consumer, installed_source if installed_source.is_dir() else None)
+            verify(
+                consumer,
+                installed_source if installed_source.is_dir() else None,
+                profile=args.profile if args.mode.startswith("native") else None,
+            )
     except (OSError, RuntimeError) as exc:
         if args.expected_failure and args.expected_failure in str(exc):
             print(f"Known released regression reproduced: {args.expected_failure}")

@@ -13,3 +13,7 @@ concurrency one; it never guesses a host sandbox. A missing step operation or
 required capability makes the result incompatible.
 
 Fixtures describe conformance classes only and make no product-version claims.
+
+Negotiation remains side-effect free. Execution is a separate explicit action
+owned by `effect_driver.py` and the effect-driver contract. Compatibility alone
+is never execution authority.

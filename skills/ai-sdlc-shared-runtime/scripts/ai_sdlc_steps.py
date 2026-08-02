@@ -23,7 +23,7 @@ SELECTION_SCHEMA = "ai-sdlc-skill-step-selection/v2"
 STEP_CARD_SCHEMA = "ai-sdlc-step-card/v1"
 RUN_PLAN_SCHEMA = "ai-sdlc-run-plan/v2"
 INVENTORY_SCHEMA = "ai-sdlc-skill-step-inventory/v2"
-VERSION = "4.0.0"
+VERSION = "4.1.0"
 ROLE_IDS = {
     "business-analyst",
     "product-manager",
@@ -184,6 +184,7 @@ def resolve_skill_root(root: Path, skill: str) -> Path:
     candidates = (
         root.resolve() / "skills" / skill,
         root.resolve() / ".agents" / "skills" / skill,
+        root.resolve() / ".claude" / "skills" / skill,
         packaged / skill,
     )
     for index, candidate in enumerate(candidates):
@@ -915,6 +916,7 @@ def _candidate_names(root: Path) -> set[str]:
     candidates = (
         root.resolve() / "skills",
         root.resolve() / ".agents" / "skills",
+        root.resolve() / ".claude" / "skills",
         packaged,
     )
     names: set[str] = set()
@@ -948,7 +950,7 @@ def _root_from_skills_root(path: Path) -> Path:
     resolved = path.resolve()
     if resolved.name != "skills":
         raise ValueError("STEP_INVALID_ROOT: --skills-root must end in skills")
-    if resolved.parent.name == ".agents":
+    if resolved.parent.name in {".agents", ".claude"}:
         return resolved.parent.parent
     return resolved.parent
 

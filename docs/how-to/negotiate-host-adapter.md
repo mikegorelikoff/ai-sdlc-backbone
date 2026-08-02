@@ -30,7 +30,10 @@ The complete TOON result distinguishes native mappings, registered fallbacks,
 unsupported operations, missing capabilities, and requested versus effective
 limits. Missing concurrency or isolation reduces work to sequential execution;
 it never creates an implicit sandbox. An incompatible result must block host
-handoff rather than silently dropping workflow semantics.
+handoff rather than silently dropping workflow semantics. Negotiation does not
+execute anything; after compatibility passes, use the [effect execution
+guide](execute-host-effect.md) with a registered driver. The core exposes no
+generic command or shell driver.
 
 Success is a zero exit with a negotiation report below `_ai_sdlc/adapters/`.
 If validation names an unknown capability or incompatible API range, correct

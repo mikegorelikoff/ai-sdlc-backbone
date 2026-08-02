@@ -56,7 +56,7 @@ LIVE_SCENARIOS = (
     {
         "id": "recovery",
         "criterion": "recovery",
-        "skill": "ai-sdlc-runtime",
+        "skill": "ai-sdlc-scheduler",
         "phase": "execute",
         "required_types": ("analysis", "context", "action"),
     },
@@ -95,7 +95,7 @@ def root_from_skills_root(skills_root: Path) -> Path:
     resolved = skills_root.resolve()
     if resolved.name != "skills":
         raise ValueError("EVAL_INVALID_ROOT: --skills-root must end in skills")
-    return resolved.parent.parent if resolved.parent.name == ".agents" else resolved.parent
+    return resolved.parent.parent if resolved.parent.name in {".agents", ".claude"} else resolved.parent
 
 
 def skill_names(skills_root: Path, selected: set[str]) -> tuple[str, ...]:
@@ -370,6 +370,7 @@ def live_protocol_receipt(skills_root: Path) -> dict[str, object]:
     failed = sum(item["status"] == "failed" for item in items)
     protocol = {
         "schema": LIVE_PROTOCOL_SCHEMA,
+        "scenario_version": "tc-012/v1",
         "provider_neutral": True,
         "scenarios": items,
         "thresholds": LIVE_THRESHOLDS,

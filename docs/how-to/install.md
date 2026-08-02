@@ -7,23 +7,23 @@ description: Install AI SDLC Harness from an immutable revision with determinist
 
 ## Goal
 
-Install all 44 Harness skills into one consumer repository, bind them to an
+Install all 45 Harness skills into one consumer repository, bind them to an
 exact Git revision, and produce a portable content-addressed TOON record that
 can be verified without a package registry.
 
 ## When to use it
 
-Use the one-line path for a first Codex pilot. Use the pinned path when release
-review, reproducibility, an approved mirror, or audit evidence matters. The v4
-harness-owned deterministic installer replaces the third-party skill installer
-and currently validates only project-scoped Codex installations.
+Use the one-line path for a first Codex or Claude Code pilot. Use the pinned
+path when release review, reproducibility, an approved mirror, or audit evidence
+matters. The harness-owned deterministic installer validates only the explicit
+`codex-project` and `claude-code-project` profiles.
 
 ## Prerequisites
 
 - Git and network access to the reviewed source remote;
 - Python `3.10+`;
-- Codex configured for the consumer repository;
-- permission to add `.agents/skills/` and `.ai-sdlc/`;
+- Codex or Claude Code configured for the consumer repository;
+- permission to add the selected host skill root and `.ai-sdlc/`;
 - a clean or understood consumer working tree.
 
 Check the environment:
@@ -44,22 +44,22 @@ source remote has not passed your trust policy.
 Run this from the consumer repository:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.0.1/install.sh | sh -s -- codex
+curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.1.0/install.sh | sh -s -- codex-project
 ```
 
-The bootstrap script fetches the annotated `v4.0.1` tag into a temporary clean
+Use `claude-code-project` for `.claude/skills`. The bootstrap script fetches the
+annotated `v4.1.0` tag into a temporary clean
 checkout and runs the source-owned installer. It does not invoke npm, a package
 registry, or the external Skills CLI. The installer rejects an unclean source,
 unknown inventory entries, symbolic links, non-TOON machine artifacts,
-unreviewed managed-file differences, digest drift, and any agent target other
-than `codex`.
+unreviewed managed-file differences, digest drift, and undeclared profiles.
 
 ### Inspect and install an immutable release
 
 Use this path when you need to inspect the exact source before execution:
 
 ```bash
-HARNESS_TAG=v4.0.1
+HARNESS_TAG=v4.1.0
 HARNESS_TMP="$(mktemp -d)"
 HARNESS_SRC="$HARNESS_TMP/ai-sdlc-harness"
 git init "$HARNESS_SRC"
@@ -77,7 +77,7 @@ selected skill directories. Then run the exact project-scoped install from the
 consumer repository:
 
 ```bash
-AI_SDLC_SOURCE="$HARNESS_SRC" AI_SDLC_REVISION="$HARNESS_REV" "$HARNESS_SRC/install.sh" codex
+AI_SDLC_SOURCE="$HARNESS_SRC" AI_SDLC_REVISION="$HARNESS_REV" "$HARNESS_SRC/install.sh" codex-project
 ```
 
 The operation stages all managed directories, checks source and staged
@@ -91,14 +91,16 @@ guide instead of overwriting it.
 The native install creates only these Harness-owned roots:
 
 ```text
-.agents/skills/<managed-skill>/
+<profile-target>/skills/<managed-skill>/
 .ai-sdlc/harness-install.toon
 .ai-sdlc/harness-install-lock.toon
 .ai-sdlc/harness-managed-skills.txt
 ```
 
-`harness-install.toon` records the immutable revision, agent, selection,
-target, inventory, lock, and installer identity.
+For `codex-project`, `<profile-target>` is `.agents`; for
+`claude-code-project`, it is `.claude`. `harness-install.toon` records the
+immutable revision, profile, agent, selection, target, inventory, lock, and
+installer identity.
 `harness-install-lock.toon` contains sorted skill names, canonical installed
 paths, and SHA-256 tree digests over relative paths, permission modes, lengths,
 and file bytes. It contains no timestamps or machine-specific absolute paths,
@@ -121,10 +123,10 @@ git status --short
 Expected:
 
 - the validator reports a valid install record;
-- the managed inventory and lock contain 44 skills;
+- the managed inventory and lock contain 45 skills;
 - every locked content digest matches the installed directory;
 - helper usage renders without an import traceback;
-- Git shows only the expected `.agents/` and `.ai-sdlc/` additions.
+- Git shows only the selected host root and `.ai-sdlc/` additions.
 
 After verification, remove only the temporary reviewed checkout:
 
@@ -144,18 +146,18 @@ git commit -m "chore: install AI SDLC harness"
 ## Trust and network boundary
 
 The one-line convenience command executes the remote shell script from the
-immutable `v4.0.1` tag; the script verifies and fetches the same release before
+immutable `v4.1.0` tag; the script verifies and fetches the same release before
 copying skills. Use
 the pinned path when your policy requires review before execution. Set
 `AI_SDLC_SOURCE` to a clean local checkout from an approved mirror and
 `AI_SDLC_REVISION` to its exact HEAD when public GitHub access is unavailable.
 
-The native installer makes no telemetry request. Git, the remote host, Codex,
-and the model provider remain separate network and data boundaries. Do not put
+The native installer makes no telemetry request. Git, the remote host, the
+agent, and the model provider remain separate network and data boundaries. Do not put
 credentials, restricted source, prompts, or model payloads into installation
 evidence.
 
-Global installation is intentionally outside the v4 validated path. Commit the
+Global installation is intentionally outside the validated path. Commit the
 project-scoped install so the repository, not workstation-global state, is the
 reviewed authority.
 

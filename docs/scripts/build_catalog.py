@@ -158,6 +158,10 @@ SKILL_SELECTION_BOUNDARIES: dict[str, tuple[str, ...]] = {
         "Do not use it without an accepted immutable execution plan. Use `ai-sdlc-workflow` or `ai-sdlc-sdd` instead.",
         "Do not use it for a bounded one-off task that needs no declared DAG. Use the normal owning implementation workflow instead.",
     ),
+    "ai-sdlc-scheduler": (
+        "Do not use it without a validated immutable run plan or when one sequential runtime is sufficient. Use `ai-sdlc-runtime` instead.",
+        "Do not use a scheduler lease as external-effect authority. Use `ai-sdlc-host-adapter` negotiation and its registered effect driver instead.",
+    ),
     "ai-sdlc-sdd": (
         "Do not use it while the customer problem or required behavior is still unclear. Use the relevant refinement workflow instead.",
         "Do not use it for review-only work or a trivial non-behavioral edit. Use `ai-sdlc-code-review` or the focused task workflow instead.",
@@ -295,7 +299,7 @@ ROLE_SKILL_GROUPS: dict[str, dict[str, object]] = {
             "ai-sdlc-approvals-sandbox", "ai-sdlc-security-testing",
             "ai-sdlc-change-set", "ai-sdlc-change-impact",
             "ai-sdlc-delivery-graph", "ai-sdlc-evidence-council",
-            "ai-sdlc-quality-lenses", "ai-sdlc-runtime", "ai-sdlc-workflow",
+            "ai-sdlc-quality-lenses", "ai-sdlc-runtime", "ai-sdlc-scheduler", "ai-sdlc-workflow",
             "ai-sdlc-host-adapter", "ai-sdlc-doctor", "ai-sdlc-package-trust",
             "ai-sdlc-policy", "ai-sdlc-shared-runtime", "ai-sdlc-retrospective",
             "ai-sdlc-research", "ai-sdlc-ux", "ai-sdlc-qa",
@@ -339,6 +343,7 @@ TASK_SELECTION_HINTS: dict[str, tuple[str, str, str]] = {
     "ai-sdlc-policy": ("Evaluate an action against layered policy", "Action, resolved policy layers, and provenance", "Allow/deny/waiver owner"),
     "ai-sdlc-retrospective": ("Learn from a completed delivery run", "Complete run evidence and outcomes", "Improvement proposal or policy/change set"),
     "ai-sdlc-host-adapter": ("Verify workflow portability to a host", "Validated workflow capability requirements", "Host approval or safe fallback"),
+    "ai-sdlc-scheduler": ("Coordinate dependency-ready StepCards across workers", "Validated immutable run plan and current context fingerprints", "Runtime worker or recovery owner"),
     "ai-sdlc-doctor": ("Diagnose install or upgrade health", "Installed package and repository state", "Authorized update or support owner"),
     "ai-sdlc-workflow": ("Plan a reusable controlled execution", "Installed skills, entrypoints, dependencies, conditions, and approvals", "Runtime execution"),
     "ai-sdlc-quality-lenses": ("Apply a focused cross-lifecycle review", "Existing authoritative artifact and selected lens", "Artifact owner or accountable gate"),
@@ -373,7 +378,7 @@ def shared_skill_group(skill_id: str) -> tuple[str, str]:
         return "Entry and context", "Supply intent or evidence"
     if skill_id in {"ai-sdlc-change-impact", "ai-sdlc-change-set", "ai-sdlc-delivery-graph", "ai-sdlc-delivery-handoff-review", "ai-sdlc-retrospective", "ai-sdlc-commit-prep", "ai-sdlc-conventional-commit"}:
         return "Handoff and recovery", "Produce, consume, or reopen evidence"
-    if skill_id in {"ai-sdlc-policy", "ai-sdlc-package-trust", "ai-sdlc-approvals-sandbox", "ai-sdlc-host-adapter", "ai-sdlc-doctor", "ai-sdlc-workflow", "ai-sdlc-runtime", "ai-sdlc-shared-runtime"}:
+    if skill_id in {"ai-sdlc-policy", "ai-sdlc-package-trust", "ai-sdlc-approvals-sandbox", "ai-sdlc-host-adapter", "ai-sdlc-doctor", "ai-sdlc-workflow", "ai-sdlc-runtime", "ai-sdlc-scheduler", "ai-sdlc-shared-runtime"}:
         return "Governance and operations", "Consult or apply within role authority"
     if skill_id in {"ai-sdlc-quality-lenses", "ai-sdlc-evidence-council", "ai-sdlc-code-review", "ai-sdlc-security-testing", "ai-sdlc-validation", "ai-sdlc-qa-traceability-and-readiness-review", "ai-sdlc-requirements-readiness-review", "ai-sdlc-qa-requirements-gap-review"}:
         return "Review and assurance", "Contribute risk or review evidence"
@@ -987,7 +992,7 @@ def render_skill_guide(
         "",
         "## Deterministic helpers",
         "",
-        "Paths beginning with `skills/` below are canonical **source-checkout** forms for maintainers and CI. In a consumer repository, normally tell the installed skill to act; for human diagnosis, use the matching project-scoped `.agents/skills/<skill>/...` path reported by your host. The canonical runtime is installed as the sibling `ai-sdlc-shared-runtime` skill.",
+        "Paths beginning with `skills/` below are canonical **source-checkout** forms for maintainers and CI. In a consumer repository, normally tell the installed skill to act; for human diagnosis, use the matching project-scoped `.agents/skills/<skill>/...` or `.claude/skills/<skill>/...` path reported by your profile. The canonical runtime is installed as the sibling `ai-sdlc-shared-runtime` skill.",
         "",
         *helper_lines,
         "",
@@ -1389,7 +1394,7 @@ def render_scripts(records: list[ScriptRecord]) -> str:
         "",
         f"This page documents all {len(records)} Python paths in scope. Scripts are agent internals unless a guide explicitly tells a human to run one. Start with the owning skill and `--help`; a helper never grants filesystem, network, approval, policy, or release authority.",
         "",
-        "Every inventory path is relative to a **harness source checkout**. Consumer repositories normally invoke an installed skill through the agent; direct diagnosis uses the corresponding project-scoped `.agents/skills/<skill>/...` path.",
+        "Every inventory path is relative to a **harness source checkout**. Consumer repositories normally invoke an installed skill through the agent; direct diagnosis uses the corresponding project-scoped `.agents/skills/<skill>/...` or `.claude/skills/<skill>/...` path.",
         "",
         "## How to read the inventory",
         "",

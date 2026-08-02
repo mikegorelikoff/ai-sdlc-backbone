@@ -1,9 +1,9 @@
 schema: ai-sdlc-documentation-coverage/v1
-skill_count: 44
-script_count: 112
+skill_count: 45
+script_count: 117
 documentation_root: docs
 
-skills[44]{skill,source,page,module,package_scripts}:
+skills[45]{skill,source,page,module,package_scripts}:
   ai-sdlc-approvals-sandbox,skills/ai-sdlc-approvals-sandbox/SKILL.md,reference/skills/ai-sdlc-approvals-sandbox.md,core,1
   ai-sdlc-architecture,skills/ai-sdlc-architecture/SKILL.md,reference/skills/ai-sdlc-architecture.md,architecture,1
   ai-sdlc-ba,skills/ai-sdlc-ba/SKILL.md,reference/skills/ai-sdlc-ba.md,core,1
@@ -23,7 +23,7 @@ skills[44]{skill,source,page,module,package_scripts}:
   ai-sdlc-evidence-council,skills/ai-sdlc-evidence-council/SKILL.md,reference/skills/ai-sdlc-evidence-council.md,evidence-council,1
   ai-sdlc-flow,skills/ai-sdlc-flow/SKILL.md,reference/skills/ai-sdlc-flow.md,core,1
   ai-sdlc-goal-capability-and-epic-mapping,skills/ai-sdlc-goal-capability-and-epic-mapping/SKILL.md,reference/skills/ai-sdlc-goal-capability-and-epic-mapping.md,core,1
-  ai-sdlc-host-adapter,skills/ai-sdlc-host-adapter/SKILL.md,reference/skills/ai-sdlc-host-adapter.md,core,1
+  ai-sdlc-host-adapter,skills/ai-sdlc-host-adapter/SKILL.md,reference/skills/ai-sdlc-host-adapter.md,core,2
   ai-sdlc-package-trust,skills/ai-sdlc-package-trust/SKILL.md,reference/skills/ai-sdlc-package-trust.md,core,2
   ai-sdlc-policy,skills/ai-sdlc-policy/SKILL.md,reference/skills/ai-sdlc-policy.md,core,1
   ai-sdlc-prfaq-package-synthesis,skills/ai-sdlc-prfaq-package-synthesis/SKILL.md,reference/skills/ai-sdlc-prfaq-package-synthesis.md,core,1
@@ -37,6 +37,7 @@ skills[44]{skill,source,page,module,package_scripts}:
   ai-sdlc-research,skills/ai-sdlc-research/SKILL.md,reference/skills/ai-sdlc-research.md,research,1
   ai-sdlc-retrospective,skills/ai-sdlc-retrospective/SKILL.md,reference/skills/ai-sdlc-retrospective.md,core,1
   ai-sdlc-runtime,skills/ai-sdlc-runtime/SKILL.md,reference/skills/ai-sdlc-runtime.md,core,1
+  ai-sdlc-scheduler,skills/ai-sdlc-scheduler/SKILL.md,reference/skills/ai-sdlc-scheduler.md,unregistered,2
   ai-sdlc-sdd,skills/ai-sdlc-sdd/SKILL.md,reference/skills/ai-sdlc-sdd.md,core,11
   ai-sdlc-security-testing,skills/ai-sdlc-security-testing/SKILL.md,reference/skills/ai-sdlc-security-testing.md,core,1
   ai-sdlc-shared-runtime,skills/ai-sdlc-shared-runtime/SKILL.md,reference/skills/ai-sdlc-shared-runtime.md,core,0
@@ -49,7 +50,7 @@ skills[44]{skill,source,page,module,package_scripts}:
   ai-sdlc-workflow,skills/ai-sdlc-workflow/SKILL.md,reference/skills/ai-sdlc-workflow.md,core,1
   ai-sdlc-working-backwards-discovery,skills/ai-sdlc-working-backwards-discovery/SKILL.md,reference/skills/ai-sdlc-working-backwards-discovery.md,core,1
 
-scripts[112]{path,owner,classification,documentation}:
+scripts[117]{path,owner,classification,documentation}:
   skills/ai-sdlc-approvals-sandbox/scripts/approval_plan.py,ai-sdlc-approvals-sandbox,skill package helper,reference/scripts.md
   skills/ai-sdlc-architecture/scripts/architecture.py,ai-sdlc-architecture,skill package helper,reference/scripts.md
   skills/ai-sdlc-ba/scripts/ba_context_scaffold.py,ai-sdlc-ba,skill package helper,reference/scripts.md
@@ -74,6 +75,7 @@ scripts[112]{path,owner,classification,documentation}:
   skills/ai-sdlc-flow/scripts/flow.py,ai-sdlc-flow,skill package helper,reference/scripts.md
   skills/ai-sdlc-goal-capability-and-epic-mapping/scripts/goal_capability_map.py,ai-sdlc-goal-capability-and-epic-mapping,skill package helper,reference/scripts.md
   skills/ai-sdlc-host-adapter/scripts/adapter.py,ai-sdlc-host-adapter,skill package helper,reference/scripts.md
+  skills/ai-sdlc-host-adapter/scripts/effect_driver.py,ai-sdlc-host-adapter,skill package helper,reference/scripts.md
   skills/ai-sdlc-package-trust/scripts/metrics.py,ai-sdlc-package-trust,skill package helper,reference/scripts.md
   skills/ai-sdlc-package-trust/scripts/package_trust.py,ai-sdlc-package-trust,skill package helper,reference/scripts.md
   skills/ai-sdlc-policy/scripts/policy.py,ai-sdlc-policy,skill package helper,reference/scripts.md
@@ -90,6 +92,8 @@ scripts[112]{path,owner,classification,documentation}:
   skills/ai-sdlc-research/scripts/research.py,ai-sdlc-research,skill package helper,reference/scripts.md
   skills/ai-sdlc-retrospective/scripts/retrospective.py,ai-sdlc-retrospective,skill package helper,reference/scripts.md
   skills/ai-sdlc-runtime/scripts/runtime.py,ai-sdlc-runtime,skill package helper,reference/scripts.md
+  skills/ai-sdlc-scheduler/scripts/scheduler.py,ai-sdlc-scheduler,skill package helper,reference/scripts.md
+  skills/ai-sdlc-scheduler/scripts/worker.py,ai-sdlc-scheduler,skill package helper,reference/scripts.md
   skills/ai-sdlc-sdd/scripts/analyze_spec.py,ai-sdlc-sdd,skill package helper,reference/scripts.md
   skills/ai-sdlc-sdd/scripts/check_checklist.py,ai-sdlc-sdd,skill package helper,reference/scripts.md
   skills/ai-sdlc-sdd/scripts/check_clarify.py,ai-sdlc-sdd,skill package helper,reference/scripts.md
@@ -116,6 +120,7 @@ scripts[112]{path,owner,classification,documentation}:
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_modules.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_okf.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_paths.py,shared runtime,canonical shared helper,reference/scripts.md
+  skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_provider_eval.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_rigor.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_safe_io.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_skill_eval.py,shared runtime,canonical shared helper,reference/scripts.md
@@ -152,6 +157,7 @@ scripts[112]{path,owner,classification,documentation}:
   skills/ai-sdlc-shared-runtime/tests/test_modules.py,shared runtime,repository validation runner,reference/scripts.md
   skills/ai-sdlc-shared-runtime/tests/test_native_install.py,shared runtime,repository validation runner,reference/scripts.md
   skills/ai-sdlc-shared-runtime/tests/test_okf.py,shared runtime,repository validation runner,reference/scripts.md
+  skills/ai-sdlc-shared-runtime/tests/test_provider_eval.py,shared runtime,repository validation runner,reference/scripts.md
   skills/ai-sdlc-shared-runtime/tests/test_rigor.py,shared runtime,repository validation runner,reference/scripts.md
   skills/ai-sdlc-shared-runtime/tests/test_runtime.py,shared runtime,repository validation runner,reference/scripts.md
   skills/ai-sdlc-shared-runtime/tests/test_safe_io.py,shared runtime,repository validation runner,reference/scripts.md

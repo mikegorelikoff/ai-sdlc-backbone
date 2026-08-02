@@ -22,9 +22,13 @@ if str(_TOON_RUNTIME) not in sys.path:
 import ai_sdlc_toon as toon_codec  # noqa: E402
 
 
-INSTALLER_ID = "ai-sdlc-harness/4.0.1"
-LOCK_SCHEMA = "ai-sdlc-install-lock/v1"
-RECORD_SCHEMA = "ai-sdlc-install-record/v2"
+INSTALLER_ID = "ai-sdlc-harness/4.1.0"
+LOCK_SCHEMA = "ai-sdlc-install-lock/v2"
+RECORD_SCHEMA = "ai-sdlc-install-record/v3"
+INSTALL_PROFILES = {
+    "claude-code-project": {"agent": "claude-code", "target": ".claude/skills"},
+    "codex-project": {"agent": "codex", "target": ".agents/skills"},
+}
 SKILL_NAME_RE = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 REVISION_RE = re.compile(r"[0-9a-f]{40}")
 LEGACY_MACHINE_SUFFIX = "." + "".join(chr(value) for value in (106, 115, 111, 110))
@@ -134,7 +138,7 @@ def directory_digest(directory: Path) -> str:
 
 def _write_stage(path: Path, content: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(content, encoding="utf-8", newline="\n")
+    path.write_text(content, encoding="utf-8")
 
 
 def _restore_path(destination: Path, backup: Path | None) -> None:
@@ -199,7 +203,7 @@ def _install_locked(
     source: Path,
     root: Path,
     revision: str,
-    agent: str,
+    profile: str,
     requested: list[str],
     replace_reviewed: bool,
 ) -> tuple[int, Path, Path]:
@@ -212,8 +216,11 @@ def _install_locked(
         raise InstallError(f"consumer repository directory does not exist: {root}")
     if not REVISION_RE.fullmatch(revision):
         raise InstallError("revision must be an exact lowercase 40-character Git SHA")
-    if agent != "codex":
-        raise InstallError("the v4 native installer currently validates project scope only for agent codex")
+    if profile not in INSTALL_PROFILES:
+        raise InstallError("unknown install profile; expected claude-code-project or codex-project")
+    profile_contract = INSTALL_PROFILES[profile]
+    agent = profile_contract["agent"]
+    target = profile_contract["target"]
     legacy_lock = root / ("skills-lock" + LEGACY_MACHINE_SUFFIX)
     if legacy_lock.exists() or legacy_lock.is_symlink():
         raise InstallError(
@@ -228,10 +235,10 @@ def _install_locked(
     for name in names:
         source_digests[name] = directory_digest(source / "skills" / name)
 
-    agents_root = root / ".agents"
-    skills_root = agents_root / "skills"
+    host_root = root / target.split("/", 1)[0]
+    skills_root = root / target
     metadata_root = root / ".ai-sdlc"
-    validate_managed_directory(root, agents_root)
+    validate_managed_directory(root, host_root)
     validate_managed_directory(root, skills_root)
     validate_managed_directory(root, metadata_root)
     for metadata_name in (
@@ -260,10 +267,10 @@ def _install_locked(
                 )
             changed.append(name)
 
-    ensure_managed_directory(root, agents_root)
+    ensure_managed_directory(root, host_root)
     ensure_managed_directory(root, skills_root)
     ensure_managed_directory(root, metadata_root)
-    stage_root = Path(tempfile.mkdtemp(prefix=".ai-sdlc-install-", dir=agents_root))
+    stage_root = Path(tempfile.mkdtemp(prefix=".ai-sdlc-install-", dir=host_root))
     staged_skills = stage_root / "skills"
     backup_skills = stage_root / "backup-skills"
     staged_metadata = stage_root / "metadata"
@@ -283,28 +290,30 @@ def _install_locked(
         lock = {
             "agent": agent,
             "installer": INSTALLER_ID,
+            "profile": profile,
             "revision": revision,
             "schema": LOCK_SCHEMA,
             "selection": selection,
             "skills": [
                 {
                     "name": name,
-                    "path": f".agents/skills/{name}",
+                    "path": f"{target}/{name}",
                     "sha256": source_digests[name],
                 }
                 for name in names
             ],
-            "target": ".agents/skills",
+            "target": target,
         }
         record = {
             "agent": agent,
             "installer": INSTALLER_ID,
             "inventory": ".ai-sdlc/harness-managed-skills.txt",
             "lock": ".ai-sdlc/harness-install-lock.toon",
+            "profile": profile,
             "revision": revision,
             "schema": RECORD_SCHEMA,
             "selection": selection,
-            "target": ".agents/skills",
+            "target": target,
         }
         _write_stage(staged_metadata / inventory_path.name, "".join(f"{name}\n" for name in names))
         _write_stage(staged_metadata / record_path.name, toon_codec.dumps(record))
@@ -345,7 +354,7 @@ def install(
     source: Path,
     root: Path,
     revision: str,
-    agent: str,
+    profile: str,
     requested: list[str],
     replace_reviewed: bool,
 ) -> tuple[int, Path, Path]:
@@ -356,7 +365,7 @@ def install(
             source=source,
             root=resolved_root,
             revision=revision,
-            agent=agent,
+            profile=profile,
             requested=requested,
             replace_reviewed=replace_reviewed,
         )
@@ -367,7 +376,7 @@ def main() -> int:
     parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--root", type=Path, default=Path.cwd())
     parser.add_argument("--revision", required=True)
-    parser.add_argument("--agent", default="codex")
+    parser.add_argument("--profile", choices=tuple(sorted(INSTALL_PROFILES)), default="codex-project")
     parser.add_argument("--skill", action="append", default=[])
     parser.add_argument("--replace-reviewed", action="store_true")
     args = parser.parse_args()
@@ -376,14 +385,14 @@ def main() -> int:
             source=args.source,
             root=args.root,
             revision=args.revision,
-            agent=args.agent,
+            profile=args.profile,
             requested=args.skill,
             replace_reviewed=args.replace_reviewed,
         )
     except (InstallError, OSError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
-    print(f"Installed {count} AI SDLC Harness skills into .agents/skills")
+    print(f"Installed {count} AI SDLC Harness skills into {INSTALL_PROFILES[args.profile]['target']}")
     print(f"Install record: {record.relative_to(args.root.resolve())}")
     print(f"Deterministic lock: {lock.relative_to(args.root.resolve())}")
     return 0

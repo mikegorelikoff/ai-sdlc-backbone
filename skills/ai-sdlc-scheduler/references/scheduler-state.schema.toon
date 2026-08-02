@@ -1,0 +1,41 @@
+"$defs":
+  hash:
+    pattern: "^[a-f0-9]{64}$"
+    type: string
+"$id": ai-sdlc-scheduler-state/v1
+"$schema": ai-sdlc-toon-contract/v1
+additionalProperties: false
+properties:
+  event_fingerprint:
+    "$ref": #/$defs/hash
+  events:
+    items:
+      type: object
+    type: array
+  fingerprint:
+    "$ref": #/$defs/hash
+  max_parallelism:
+    minimum: 1
+    type: integer
+  plan_fingerprint:
+    "$ref": #/$defs/hash
+  ready:
+    items:
+      type: string
+    type: array
+  revision:
+    minimum: 0
+    type: integer
+  run_id:
+    type: string
+  schema:
+    const: ai-sdlc-scheduler-state/v1
+  status:
+    enum[3]: running,completed,blocked
+  tasks:
+    items:
+      type: object
+    type: array
+required[11]: schema,run_id,plan_fingerprint,max_parallelism,revision,status,ready,tasks,events,event_fingerprint,fingerprint
+title: AI SDLC Scheduler State
+type: object

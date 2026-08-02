@@ -1,12 +1,13 @@
 ---
 name: ai-sdlc-host-adapter
-description: AI SDLC host adapter and capability negotiation workflow. Use when an AI assistant needs to validate a host adapter manifest, map portable workflow operations to host-native operations, negotiate capabilities and limits, select deterministic semantic-preserving fallbacks, or explain why a host cannot run a plan. Supports `--quick-flow` and `--full-flow`.
+description: AI SDLC host adapter negotiation and bounded effect execution workflow. Use when an AI assistant needs to validate a host adapter, map portable StepCard operations, negotiate capabilities, execute a registered workspace or external effect with approval and idempotency, replay an effect receipt, or explain why a host cannot run a plan. Supports `--quick-flow` and `--full-flow`.
 ---
 
 # ai-sdlc-host-adapter: Portable Host Negotiation
 
 > Internal AI SDLC skill, not client-facing by default.
-> Negotiation describes host behavior; it never invokes the host.
+> Negotiate first. Execute only an approved registered driver whose request is
+> bound to that negotiation and whose durable receipt prevents duplicate effects.
 
 ## 0. Skill Card
 
@@ -15,9 +16,10 @@ description: AI SDLC host adapter and capability negotiation workflow. Use when 
 - Supporting audience: Security, QA
 - Audience tags: Dev, Delivery, Architecture, Security
 - SDLC stage: Portable execution handoff
-- Purpose: Preserve workflow semantics across hosts with explicit mappings and safe fallbacks.
-- Output: `_ai_sdlc/adapters/<adapter-id>/negotiation.toon` and its
-  `negotiation.md` human projection
+- Purpose: Preserve workflow semantics across hosts, then execute only bounded
+  negotiated effects with deterministic idempotency.
+- Output: `_ai_sdlc/adapters/<adapter-id>/negotiation.toon`, its human
+  projection, and `_ai_sdlc/effects/<idempotency-key>.toon` after execution
 
 ## Step Selector
 
@@ -42,5 +44,6 @@ step documents are canonical; regenerate this projection after graph changes.
   evidence or critical anchors are missing.
 - Explore is read-only. After Apply, journal every selected owning-skill step,
   including analysis and validation nodes, before advancing the graph.
-- In a source checkout use `skills/<skill>/...`; in a project-scoped install
-  use `.agents/skills/<skill>/...`.
+- In a source checkout use `skills/<skill>/...`; in a Codex project install
+  use `.agents/skills/<skill>/...`, and in a Claude Code project install use
+  `.claude/skills/<skill>/...`.

@@ -43,5 +43,6 @@ step documents are canonical; regenerate this projection after graph changes.
   evidence or critical anchors are missing.
 - Explore is read-only. After Apply, journal every selected owning-skill step,
   including analysis and validation nodes, before advancing the graph.
-- In a source checkout use `skills/<skill>/...`; in a project-scoped install
-  use `.agents/skills/<skill>/...`.
+- In a source checkout use `skills/<skill>/...`; in a Codex project install
+  use `.agents/skills/<skill>/...`, and in a Claude Code project install use
+  `.claude/skills/<skill>/...`.

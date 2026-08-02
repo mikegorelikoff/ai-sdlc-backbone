@@ -71,7 +71,7 @@ class NativeInstallTests(unittest.TestCase):
                 ["git", "-C", str(source), "rev-parse", "HEAD"],
                 text=True,
             ).strip(),
-            "agent": "codex",
+            "profile": "codex-project",
             "requested": ["ai-sdlc-flow", "ai-sdlc-shared-runtime"],
             "replace_reviewed": False,
         }
@@ -89,6 +89,12 @@ class NativeInstallTests(unittest.TestCase):
 
             self.assertEqual(count, 2)
             self.assertEqual(lock.read_bytes(), (second / ".ai-sdlc/harness-install-lock.toon").read_bytes())
+            self.assertEqual(record.read_bytes(), (second / ".ai-sdlc/harness-install.toon").read_bytes())
+            for name in ("ai-sdlc-flow", "ai-sdlc-shared-runtime"):
+                self.assertEqual(
+                    native_install.directory_digest(first / ".agents/skills" / name),
+                    native_install.directory_digest(second / ".agents/skills" / name),
+                )
             self.assertFalse(list(first.rglob("*" + LEGACY_MACHINE_SUFFIX)))
             self.assertEqual(install_record.validate(record, first / ".agents/skills"), [])
 
@@ -136,13 +142,30 @@ class NativeInstallTests(unittest.TestCase):
             with self.assertRaisesRegex(InstallError, "non-TOON machine artifact"):
                 self.run_install(source, root / "consumer")
 
-    def test_unvalidated_agent_is_rejected(self) -> None:
+    def test_both_declared_profiles_are_deterministic_and_valid(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             source = self.source_fixture(root)
+            first = root / "claude-a"
+            second = root / "claude-b"
+            _, record, lock = self.run_install(source, first, profile="claude-code-project")
+            self.run_install(source, second, profile="claude-code-project")
+            self.assertEqual(lock.read_bytes(), (second / ".ai-sdlc/harness-install-lock.toon").read_bytes())
+            self.assertEqual(record.read_bytes(), (second / ".ai-sdlc/harness-install.toon").read_bytes())
+            for name in ("ai-sdlc-flow", "ai-sdlc-shared-runtime"):
+                self.assertEqual(
+                    native_install.directory_digest(first / ".claude/skills" / name),
+                    native_install.directory_digest(second / ".claude/skills" / name),
+                )
+            self.assertEqual(install_record.validate(record, first / ".claude/skills"), [])
+            self.assertTrue((first / ".claude/skills/ai-sdlc-flow/SKILL.md").is_file())
 
-            with self.assertRaisesRegex(InstallError, "currently validates project scope only for agent codex"):
-                self.run_install(source, root / "consumer", agent="claude-code")
+    def test_unknown_profile_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = self.source_fixture(root)
+            with self.assertRaisesRegex(InstallError, "unknown install profile"):
+                self.run_install(source, root / "consumer", profile="unknown-project")
 
     def test_dirty_source_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -161,7 +184,7 @@ class NativeInstallTests(unittest.TestCase):
             environment["AI_SDLC_SOURCE"] = str(consumer / "missing-source")
             environment["AI_SDLC_PYTHON"] = sys.executable
             result = subprocess.run(
-                ["sh", str(ROOT / "install.sh"), "codex"],
+                ["sh", str(ROOT / "install.sh"), "codex-project"],
                 cwd=consumer,
                 env=environment,
                 check=False,

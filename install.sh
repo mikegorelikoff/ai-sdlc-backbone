@@ -4,13 +4,14 @@ set -eu
 
 usage() {
   printf '%s\n' \
-    "Usage: install.sh AGENT" \
+    "Usage: install.sh PROFILE" \
     "" \
     "Install every AI SDLC Harness skill into the current project with TOON-only provenance." \
     "" \
     "Examples:" \
-    "  ./install.sh codex" \
-    "  curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.0.1/install.sh | sh -s -- codex" \
+    "  ./install.sh codex-project" \
+    "  ./install.sh claude-code-project" \
+    "  curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.1.0/install.sh | sh -s -- codex-project" \
     "" \
     "Optional environment overrides:" \
     "  AI_SDLC_SOURCE               Clean local checkout or reviewed Git remote" \
@@ -33,16 +34,28 @@ if [ "$#" -ne 1 ] || [ -z "$1" ]; then
   exit 64
 fi
 
-ai_sdlc_agent=$1
-if [ "$ai_sdlc_agent" != "codex" ]; then
-  printf '%s\n' "AI SDLC Harness v4 validates native project installation only for agent codex." >&2
-  exit 65
-fi
+ai_sdlc_profile=$1
+case "$ai_sdlc_profile" in
+  codex-project|claude-code-project) ;;
+  *)
+    printf '%s\n' "Unknown profile; expected codex-project or claude-code-project." >&2
+    exit 65
+    ;;
+esac
 
 if ! command -v git >/dev/null 2>&1; then
   printf '%s\n' "AI SDLC Harness installer requires Git." >&2
   exit 127
 fi
+
+case "${AI_SDLC_SOURCE:-}" in
+  /*|./*|../*|~/*)
+    if [ ! -d "$AI_SDLC_SOURCE" ]; then
+      printf '%s\n' "AI_SDLC_SOURCE names a local path that does not exist." >&2
+      exit 65
+    fi
+    ;;
+esac
 
 ai_sdlc_python=${AI_SDLC_PYTHON:-python3}
 if ! command -v "$ai_sdlc_python" >/dev/null 2>&1; then
@@ -112,7 +125,7 @@ else
       exit 65
       ;;
   esac
-  ai_sdlc_requested_revision=${AI_SDLC_REVISION:-v4.0.1}
+  ai_sdlc_requested_revision=${AI_SDLC_REVISION:-v4.1.0}
   case "$ai_sdlc_requested_revision" in
     *[!A-Za-z0-9._-]*|"")
       printf '%s\n' "AI_SDLC_REVISION contains unsupported characters." >&2
@@ -152,15 +165,15 @@ else
   fi
 fi
 
-printf 'Installing AI SDLC Harness for agent "%s" from revision "%s"...\n' \
-  "$ai_sdlc_agent" "$ai_sdlc_revision"
+printf 'Installing AI SDLC Harness profile "%s" from revision "%s"...\n' \
+  "$ai_sdlc_profile" "$ai_sdlc_revision"
 
 set -- \
   "$ai_sdlc_source/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install.py" \
   --source "$ai_sdlc_source" \
   --root "$ai_sdlc_target" \
   --revision "$ai_sdlc_revision" \
-  --agent "$ai_sdlc_agent"
+  --profile "$ai_sdlc_profile"
 if [ "${AI_SDLC_INSTALL_REPLACE:-0}" = "1" ]; then
   set -- "$@" --replace-reviewed
 fi

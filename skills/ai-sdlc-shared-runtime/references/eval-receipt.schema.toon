@@ -9,7 +9,7 @@ properties:
     minimum: 0
     type: integer
   harness_version:
-    const: 4.0.0
+    const: 4.1.0
   items:
     items:
       type: object

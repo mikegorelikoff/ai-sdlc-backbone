@@ -184,6 +184,6 @@ properties:
     minItems: 5
     type: array
   version:
-    const: 4.0.0
+    const: 4.1.0
 required[6]: schema,skill,version,entrypoints,budgets,steps
 type: object

@@ -1,6 +1,39 @@
 # Changelog
 
-## Unreleased
+## v4.1.0 - 2026-08-03
+
+### Added
+
+- Added the 45th skill, `ai-sdlc-scheduler`, with deterministic readiness,
+  exclusive leases, optimistic revisions, expiry recovery, stale-worker
+  rejection, and isolated StepCard runtime dispatch.
+- Added allowlisted `workspace.write-text` and `external.toon-post` effect
+  drivers with exact negotiation/context binding, approval enforcement,
+  secret-key rejection, durable receipts, and replay-safe idempotency.
+- Added strict provider execution observations and live receipts. The
+  release-owned Codex/OpenAI TC-012 run records six passing scenarios,
+  thresholds, context economics, recovery evidence, and an actual effect
+  receipt; offline or unattested runs remain pending.
+- Added deterministic `codex-project` and `claude-code-project` native install
+  profiles targeting `.agents/skills` and `.claude/skills` respectively.
+
+### Changed
+
+- Raised the Harness API and every semantic graph manifest to `4.1.0`, with 45
+  skills and 18 protected TOON contracts.
+- Extended source and installed path resolution across both declared host
+  profiles without adding global installation or source-checkout fallbacks.
+- Kept per-step context compilation mandatory across scheduler dispatch and
+  provider evaluation, including fingerprints, budgets, selection reasons,
+  critical-anchor recall, and direct-read fallback.
+
+### Validation
+
+- Passed all 99 skill-owned test files with receipt fingerprint
+  `ed5f433cd6d89af236a23f0e557d216845bd0b60b71849009527fb59602676d4`.
+- Passed both fresh 45-skill native installed workflows through complete SDD
+  gates and commit readiness, plus compatibility, semantic graph, and
+  provider-executed TC-012 validation.
 
 ## v4.0.1 - 2026-07-30
 

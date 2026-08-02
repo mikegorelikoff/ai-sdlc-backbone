@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI SDLC Scheduler"
+  short_description: "Run deterministic durable StepCard scheduling."
+  default_prompt: "Use ai-sdlc-scheduler to plan, claim, recover, replay, and verify durable harness work."

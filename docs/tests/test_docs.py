@@ -124,7 +124,7 @@ class DocumentationValidationTests(unittest.TestCase):
         command = "--skill '*' --agent codex --global --copy -y"
         self.assertNotIn(command, install)
         self.assertNotIn(command, readme)
-        self.assertIn("Global installation is intentionally outside the v4 validated path", install)
+        self.assertIn("Global installation is intentionally outside the validated path", install)
         self.assertIn("project-scoped install", install)
 
     def test_root_documents_reject_broken_link_and_machine_path(self) -> None:
@@ -432,9 +432,9 @@ class DocumentationValidationTests(unittest.TestCase):
         outputs = generated_outputs()
         skills = skill_sources()
         records = [script_record(path) for path in script_sources()]
-        self.assertEqual(len(skills), 44)
-        self.assertEqual(len(records), 112)
-        self.assertEqual(len(SKILL_SELECTION_BOUNDARIES), 44)
+        self.assertEqual(len(skills), 45)
+        self.assertEqual(len(records), 117)
+        self.assertEqual(len(SKILL_SELECTION_BOUNDARIES), 45)
         self.assertEqual(validate_selection_contract(skills), [])
         self.assertEqual(validate_role_skill_groups(skills), [])
         role_page = outputs[CATALOG_DOCS / "reference/skills-by-role.md"]
@@ -459,7 +459,7 @@ class DocumentationValidationTests(unittest.TestCase):
         self.assertTrue(coverage.startswith("schema: ai-sdlc-documentation-coverage/v1\n"))
         self.assertEqual(
             sum(record.classification == "canonical shared helper" for record in records),
-            28,
+            29,
         )
 
     def test_generated_catalog_rejects_missing_sections_and_paths(self) -> None:

@@ -1,0 +1,11 @@
+adapter:
+  id: codex-project
+compatible: true
+fingerprint: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+mapping:
+  host_operation: provider.eval.attest
+required_capabilities[2]: filesystem.read,filesystem.write
+schema: ai-sdlc-capability-negotiation/v2
+side_effect: workspace-write
+step:
+  step_fingerprint: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb

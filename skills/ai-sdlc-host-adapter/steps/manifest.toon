@@ -86,7 +86,7 @@ steps[5]:
     id: execute
     load: on-demand
     max_attempts: 1
-    max_tokens: 512
+    max_tokens: 700
     on_failure: block
     operation: execute-procedure
     outputs[2]: procedure-result,execution-evidence
@@ -148,4 +148,4 @@ steps[5]:
     reason: return a journal-backed owner and next-action handoff
     side_effect: none
     type: handoff
-version: 4.0.0
+version: 4.1.0

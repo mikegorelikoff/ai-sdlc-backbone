@@ -22,7 +22,7 @@ from ai_sdlc_paths import first_existing, internal_dir
 def workspace_root(script_path: Path = Path(__file__)) -> Path:
     """Return the consumer/source repository root for either distribution layout."""
     candidate = script_path.resolve().parents[3]
-    return candidate.parent if candidate.name == ".agents" else candidate
+    return candidate.parent if candidate.name in {".agents", ".claude"} else candidate
 
 
 ROOT = workspace_root()

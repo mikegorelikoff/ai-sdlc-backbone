@@ -7,15 +7,15 @@ description: Human-facing operating guide for ai-sdlc-host-adapter, including in
 
 | Lifecycle position | Primary owner | Supporting roles | Module | Output |
 | --- | --- | --- | --- | --- |
-| Portable execution handoff | Dev, Delivery, Architecture | Security, QA | `core` | `_ai_sdlc/adapters/<adapter-id>/negotiation.toon` and its `negotiation.md` human projection |
+| Portable execution handoff | Dev, Delivery, Architecture | Security, QA | `core` | `_ai_sdlc/adapters/<adapter-id>/negotiation.toon`, its human projection, and `_ai_sdlc/effects/<idempotency-key>.toon` after execution |
 
 ## Why it exists
 
-Preserve workflow semantics across hosts with explicit mappings and safe fallbacks.
+Preserve workflow semantics across hosts, then execute only bounded negotiated effects with deterministic idempotency.
 
 ## Use it when
 
-AI SDLC host adapter and capability negotiation workflow. Use when an AI assistant needs to validate a host adapter manifest, map portable workflow operations to host-native operations, negotiate capabilities and limits, select deterministic semantic-preserving fallbacks, or explain why a host cannot run a plan. Supports `--quick-flow` and `--full-flow`.
+AI SDLC host adapter negotiation and bounded effect execution workflow. Use when an AI assistant needs to validate a host adapter, map portable StepCard operations, negotiate capabilities, execute a registered workspace or external effect with approval and idempotency, replay an effect receipt, or explain why a host cannot run a plan. Supports `--quick-flow` and `--full-flow`.
 
 If the correct entry point is still unclear, use `ai-sdlc-flow` Explore first instead of guessing.
 
@@ -41,7 +41,7 @@ Use ai-sdlc-host-adapter for <target>.
 Choose --quick-flow for bounded assumption-driven progress or --full-flow
 for strict verification only as described below.
 Read the required evidence,
-produce or report `_ai_sdlc/adapters/<adapter-id>/negotiation.toon` and its `negotiation.md` human projection, preserve human approval boundaries,
+produce or report `_ai_sdlc/adapters/<adapter-id>/negotiation.toon`, its human projection, and `_ai_sdlc/effects/<idempotency-key>.toon` after execution, preserve human approval boundaries,
 and return blockers plus a complete ai-sdlc-handoff/v2.
 ```
 
@@ -90,11 +90,12 @@ Resolve the current step with `ai-sdlc-shared-runtime/scripts/ai_sdlc_steps.py`.
 
 ## Deterministic helpers
 
-Paths beginning with `skills/` below are canonical **source-checkout** forms for maintainers and CI. In a consumer repository, normally tell the installed skill to act; for human diagnosis, use the matching project-scoped `.agents/skills/<skill>/...` path reported by your host. The canonical runtime is installed as the sibling `ai-sdlc-shared-runtime` skill.
+Paths beginning with `skills/` below are canonical **source-checkout** forms for maintainers and CI. In a consumer repository, normally tell the installed skill to act; for human diagnosis, use the matching project-scoped `.agents/skills/<skill>/...` or `.claude/skills/<skill>/...` path reported by your profile. The canonical runtime is installed as the sibling `ai-sdlc-shared-runtime` skill.
 
 | Helper | Purpose | Direct starting point | Repository effect |
 | --- | --- | --- | --- |
 | [`adapter.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-host-adapter/scripts/adapter.py) | Validate v2 host adapters and negotiate one canonical StepCard. | `python3 skills/ai-sdlc-host-adapter/scripts/adapter.py --help` | May write only through an explicit mutation mode; start with `--help`, check, preview, or emit. |
+| [`effect_driver.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-host-adapter/scripts/effect_driver.py) | Execute allowlisted host effects with durable idempotent TOON receipts. | `python3 skills/ai-sdlc-host-adapter/scripts/effect_driver.py --help` | May write only through an explicit mutation mode; start with `--help`, check, preview, or emit. |
 
 The owning agent normally runs these helpers. A human uses the direct starting point for diagnosis or reproduction after inspecting `--help` and repository policy.
 
@@ -103,6 +104,7 @@ The owning agent normally runs these helpers. A human uses the direct starting p
 ```bash
 python3 skills/ai-sdlc-host-adapter/scripts/adapter.py . --adapter adapter.toon --validate
 python3 skills/ai-sdlc-host-adapter/scripts/adapter.py . --adapter adapter.toon --negotiate --request request.toon --write
+python3 skills/ai-sdlc-host-adapter/scripts/effect_driver.py . --negotiation _ai_sdlc/adapters/host/negotiation.toon --request effect-request.toon
 ```
 
 ## Success criteria
@@ -112,11 +114,17 @@ operation, derived and missing capabilities, side effect, gates, outputs,
 idempotency scope, requested and effective limits, fallbacks, compatibility,
 reasons, and deterministic fingerprints.
 
+An execution receipt additionally records the registered driver, adapter,
+native operation, side-effect class, request fingerprint, idempotency key,
+outcome, bounded evidence, and receipt fingerprint without credentials.
+
 Quality gate:
 
 - Pass only when the StepCard operation has an equivalent mapping and every
   derived capability is declared by the adapter.
 - Fail closed when host behavior would change workflow semantics.
+- For execution, pass only when the receipt belongs to the exact request and an
+  identical replay does not invoke the effect again.
 
 ## Blockers and recovery
 
@@ -160,6 +168,7 @@ The downstream consumer rechecks artifacts and freshness; it does not trust a pr
 ```bash
 python3 skills/ai-sdlc-host-adapter/scripts/adapter.py . --adapter adapter.toon --validate
 python3 skills/ai-sdlc-host-adapter/scripts/adapter.py . --adapter adapter.toon --negotiate --request request.toon --write
+python3 skills/ai-sdlc-host-adapter/scripts/effect_driver.py . --negotiation _ai_sdlc/adapters/host/negotiation.toon --request effect-request.toon
 ```
 
 ## Source contract

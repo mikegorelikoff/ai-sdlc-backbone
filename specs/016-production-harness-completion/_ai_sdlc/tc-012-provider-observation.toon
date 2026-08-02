@@ -1,0 +1,37 @@
+agent_attested: true
+effect_receipts[1]: specs/016-production-harness-completion/_ai_sdlc/effects/ba1b7a70c8d5771f086d078eb14ea648d72efb6fa4364d2ee71dfbc7afb5b109.toon
+executed_at: "2026-08-03T01:12:12+03:00"
+execution_id: "codex:016:tc-012:2026-08-03-r2"
+execution_mode: provider
+host: Codex
+model: GPT-5
+protocol_fingerprint: 25babb66131532d091ff192d9245f7df22fae81c33f1dda0287975e972d25f5b
+provider: OpenAI
+recovery_evidence[3]: skills/ai-sdlc-scheduler/tests/test_scheduler.py,skills/ai-sdlc-scheduler/tests/test_worker.py,skills/ai-sdlc-host-adapter/tests/test_effect_driver.py
+scenario_results[6]:
+  - evidence[3]: "protocol:routing:6a3a12e884fc3b4f3004f662e4075160e54a9c2792c3446a57efbd91166371b4","spec:specs/016-production-harness-completion/_ai_sdlc/state.toon","test:skills/ai-sdlc-shared-runtime/tests/test_skill_eval.py"
+    id: routing
+    score: 100
+    status: passed
+  - evidence[3]: "protocol:step-compliance:1beec43eb67d12b8d883d29ba8ff40d070c53e72b3d69bd93f374aa134f3bc5a","gates:clarify+checklist+analyze+validate","spec:specs/016-production-harness-completion"
+    id: step-compliance
+    score: 100
+    status: passed
+  - evidence[3]: "protocol:evidence:16f57a682f3de3aff80e69da28723bac71cc064f3bc055969941b2cf4bd36007","receipt:specs/016-production-harness-completion/_ai_sdlc/effects/ba1b7a70c8d5771f086d078eb14ea648d72efb6fa4364d2ee71dfbc7afb5b109.toon","tests:99/99:ed5f433cd6d89af236a23f0e557d216845bd0b60b71849009527fb59602676d4"
+    id: evidence
+    score: 100
+    status: passed
+  - evidence[3]: "protocol:recovery:3ba159da0dcdbce25f62b7386c755ba0a39516bde00334efff9ecd2731f7c1cd","test:skills/ai-sdlc-scheduler/tests/test_scheduler.py","test:skills/ai-sdlc-scheduler/tests/test_worker.py"
+    id: recovery
+    score: 100
+    status: passed
+  - evidence[4]: "protocol:context:f2ea3532e56dc7b91b29ace1557d35c1c1dbc5c2f3374dcc3ad0692610cc74fa","test:skills/ai-sdlc-shared-runtime/tests/test_step_context_v4.py","critical-recall:100.0","savings-percent:95.47"
+    id: context
+    score: 100
+    status: passed
+  - evidence[3]: "protocol:authorization:c586bb5c4eb4d8cb4ef60c654d781ee1ef7e24909d8ea9705d6335a9d6f6232b","host:managed-sandbox","effect:workspace-write-allowlist"
+    id: authorization
+    score: 100
+    status: passed
+scenario_version: tc-012/v1
+schema: ai-sdlc-provider-execution/v1

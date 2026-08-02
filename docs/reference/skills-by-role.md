@@ -185,6 +185,7 @@ Own technical design, implementation correctness, testable task boundaries, revi
 | Governance and operations | Consult or apply within role authority | [`ai-sdlc-package-trust`](skills/ai-sdlc-package-trust.md) |
 | Governance and operations | Consult or apply within role authority | [`ai-sdlc-policy`](skills/ai-sdlc-policy.md) |
 | Governance and operations | Consult or apply within role authority | [`ai-sdlc-runtime`](skills/ai-sdlc-runtime.md) |
+| Governance and operations | Consult or apply within role authority | [`ai-sdlc-scheduler`](skills/ai-sdlc-scheduler.md) |
 | Governance and operations | Consult or apply within role authority | [`ai-sdlc-shared-runtime`](skills/ai-sdlc-shared-runtime.md) |
 | Governance and operations | Consult or apply within role authority | [`ai-sdlc-workflow`](skills/ai-sdlc-workflow.md) |
 | Handoff and recovery | Produce, consume, or reopen evidence | [`ai-sdlc-change-impact`](skills/ai-sdlc-change-impact.md) |

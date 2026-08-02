@@ -113,7 +113,7 @@ Resolve the current step with `ai-sdlc-shared-runtime/scripts/ai_sdlc_steps.py`.
 
 ## Deterministic helpers
 
-Paths beginning with `skills/` below are canonical **source-checkout** forms for maintainers and CI. In a consumer repository, normally tell the installed skill to act; for human diagnosis, use the matching project-scoped `.agents/skills/<skill>/...` path reported by your host. The canonical runtime is installed as the sibling `ai-sdlc-shared-runtime` skill.
+Paths beginning with `skills/` below are canonical **source-checkout** forms for maintainers and CI. In a consumer repository, normally tell the installed skill to act; for human diagnosis, use the matching project-scoped `.agents/skills/<skill>/...` or `.claude/skills/<skill>/...` path reported by your profile. The canonical runtime is installed as the sibling `ai-sdlc-shared-runtime` skill.
 
 | Helper | Purpose | Direct starting point | Repository effect |
 | --- | --- | --- | --- |

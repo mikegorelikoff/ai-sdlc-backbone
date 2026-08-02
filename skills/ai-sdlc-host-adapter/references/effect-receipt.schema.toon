@@ -1,0 +1,31 @@
+"$defs":
+  hash:
+    pattern: "^[a-f0-9]{64}$"
+    type: string
+"$id": ai-sdlc-effect-receipt/v1
+"$schema": ai-sdlc-toon-contract/v1
+additionalProperties: false
+properties:
+  adapter_id:
+    type: string
+  driver:
+    enum[2]: workspace.write-text,external.toon-post
+  evidence:
+    type: object
+  fingerprint:
+    "$ref": #/$defs/hash
+  idempotency_key:
+    "$ref": #/$defs/hash
+  operation:
+    type: string
+  outcome:
+    const: succeeded
+  request_fingerprint:
+    "$ref": #/$defs/hash
+  schema:
+    const: ai-sdlc-effect-receipt/v1
+  side_effect:
+    enum[4]: none,workspace-write,external-write,destructive
+required[10]: schema,driver,adapter_id,operation,side_effect,idempotency_key,request_fingerprint,outcome,evidence,fingerprint
+title: AI SDLC Effect Receipt
+type: object
