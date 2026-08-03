@@ -58,6 +58,11 @@ approve the card.
 Request: add a health endpoint to this service.
 ```
 
+For repeated local repository retrieval, a reviewed checkout can add the
+optional deterministic graph-enhanced RAG capability with
+`./install.sh codex-project --module context-cache`. Its portable contracts
+remain TOON-only; its disposable SQLite index is never repository authority.
+
 ## Product workflow
 
 ```text

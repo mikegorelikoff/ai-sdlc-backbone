@@ -16,7 +16,8 @@ machine-data representation.
 - Feature state and machine plan locations.
 - Configuration schema and protected gate semantics.
 - Module manifest schema and the `>=4.0.0,<5.0.0` harness API range.
-- Exactly 44 semantic graphs with at least five nodes each.
+- Exactly 46 semantic graphs with at least five nodes each, including additive
+  scheduler and optional context-cache capabilities introduced after v4.0.1.
 - Canonical TOON codec path and `.toon` extension.
 - StepCard, per-step context, run, workflow, adapter, and evaluation contract
   identities and canonical bytes.

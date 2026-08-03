@@ -7,6 +7,27 @@ description: Record the AI SDLC Harness documentation architecture, URL, governa
 
 Execution date: 2026-07-27
 
+## Optional local context cache
+
+On 2026-08-03, the documentation added an opt-in local context-cache path for
+repeated repository retrieval. The cache is explicitly an optimization rather
+than authority: canonical repository sources, accepted decisions, and human
+approvals remain controlling. The portable boundary stays TOON-only, while the
+SQLite FTS5 database is disposable project-local state excluded from Git.
+
+The public install path remains the 45-skill baseline. Users deliberately add
+the 46th cache skill with `--module context-cache`, build the index through a
+separate authorized command, verify source hashes before reuse, and fall back
+to direct reads whenever freshness or context economics fail.
+
+Primary research and full-flow refinement define the first release as
+graph-enhanced RAG rather than full GraphRAG: it combines deterministic FTS5
+seeds with bounded repository relations, while LLM-extracted entities,
+community summaries, embeddings, and global search remain deferred. A packed
+result must include the owning step document, retain every critical anchor,
+and save at least 15 percent; deterministic TOON golden benchmarks guard these
+claims and direct reading remains the safe successful fallback.
+
 ## Previous model
 
 The site exposed six product-specific tabs and placed the complete learning

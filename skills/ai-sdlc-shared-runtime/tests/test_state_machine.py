@@ -146,6 +146,32 @@ class StateMachineTests(unittest.TestCase):
                 [],
             )
 
+    def test_full_completion_accepts_review_lifecycle_under_okf_draft(self) -> None:
+        """Portable OKF draft must not hide finalized producer lifecycle state."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            state = sm.initial_state("demo-feature", "refinement", "discovery")
+            relative = Path("specs-refiniment/demo-feature/discovery.md")
+            artifact = root / relative
+            artifact.parent.mkdir(parents=True)
+            artifact.write_text(
+                '---\ntype: "ai-sdlc.discovery"\nstatus: "draft"\n'
+                'artifact_metadata:\n  schema: "ai-sdlc-artifact-metadata/v1"\n'
+                '  status: "review"\n---\n# Discovery\n\n'
+                'Reviewed customer problem and decision evidence.\n',
+                encoding="utf-8",
+            )
+            self.assertEqual(
+                sm.completion_artifact_errors(
+                    state,
+                    "ai-sdlc-working-backwards-discovery",
+                    relative.as_posix(),
+                    "full",
+                    root,
+                ),
+                [],
+            )
+
     def test_cli_init_and_status(self) -> None:
         """The CLI should create a state file and print TOON status."""
         with tempfile.TemporaryDirectory(dir=ROOT) as temp_dir:

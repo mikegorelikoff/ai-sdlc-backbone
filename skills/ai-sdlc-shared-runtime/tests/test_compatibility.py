@@ -46,7 +46,7 @@ class CompatibilityTests(unittest.TestCase):
         self.assertIn("protected_routes", result.stdout)
         self.assertIn("machine_extension: .toon", result.stdout)
         self.assertIn("skill_graph_schema: ai-sdlc-skill-steps/v2", result.stdout)
-        self.assertIn("contracts: 18", result.stdout)
+        self.assertIn("contracts: 22", result.stdout)
         expected = len(list((ROOT / "skills").glob("*/SKILL.md")))
         self.assertIn(f"skills: {expected}", result.stdout)
 

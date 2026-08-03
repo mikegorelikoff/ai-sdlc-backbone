@@ -84,6 +84,10 @@ SKILL_SELECTION_BOUNDARIES: dict[str, tuple[str, ...]] = {
     "ai-sdlc-conventional-commit": (
         "Do not use it to stage files or prove scope and readiness. Use `ai-sdlc-commit-prep` instead.",
     ),
+    "ai-sdlc-context-cache": (
+        "Do not use cached retrieval as repository, product, approval, or instruction authority. Use current canonical sources and accountable human gates instead.",
+        "Do not use it for a one-off narrow read when building an index costs more than direct context. Use `ai-sdlc-project-context` or direct reads instead.",
+    ),
     "ai-sdlc-delivery-graph": (
         "Do not use it to invent missing requirements or delivery artifacts. Use the owning producer skill instead, then rebuild the graph.",
     ),
@@ -296,6 +300,7 @@ ROLE_SKILL_GROUPS: dict[str, dict[str, object]] = {
         ),
         "shared": (
             "ai-sdlc-conventional-commit", "ai-sdlc-architecture",
+            "ai-sdlc-context-cache",
             "ai-sdlc-approvals-sandbox", "ai-sdlc-security-testing",
             "ai-sdlc-change-set", "ai-sdlc-change-impact",
             "ai-sdlc-delivery-graph", "ai-sdlc-evidence-council",
@@ -374,7 +379,7 @@ def start_relationship(role: str, skill_id: str) -> str:
 
 def shared_skill_group(skill_id: str) -> tuple[str, str]:
     """Return a compact discovery group and relationship for a shared skill."""
-    if skill_id in {"ai-sdlc-flow", "ai-sdlc-project-context", "ai-sdlc-research", "ai-sdlc-working-backwards-discovery"}:
+    if skill_id in {"ai-sdlc-flow", "ai-sdlc-project-context", "ai-sdlc-context-cache", "ai-sdlc-research", "ai-sdlc-working-backwards-discovery"}:
         return "Entry and context", "Supply intent or evidence"
     if skill_id in {"ai-sdlc-change-impact", "ai-sdlc-change-set", "ai-sdlc-delivery-graph", "ai-sdlc-delivery-handoff-review", "ai-sdlc-retrospective", "ai-sdlc-commit-prep", "ai-sdlc-conventional-commit"}:
         return "Handoff and recovery", "Produce, consume, or reopen evidence"

@@ -85,10 +85,31 @@ def read_inventory(source: Path) -> list[str]:
     return names
 
 
-def selected_inventory(published: list[str], requested: list[str]) -> tuple[list[str], str]:
+def read_opt_in_inventory(source: Path, published: list[str]) -> list[str]:
+    """Read additive skills excluded from the default install selection."""
+    path = source / "config" / "ai-sdlc-opt-in-skills.txt"
+    if not path.exists():
+        return []
+    if path.is_symlink() or not path.is_file():
+        raise InstallError("opt-in skill inventory must be a regular file")
+    try:
+        names = path.read_text(encoding="utf-8").splitlines()
+    except OSError as exc:
+        raise InstallError(f"cannot read opt-in skill inventory: {exc}") from exc
+    if names != sorted(set(names)):
+        raise InstallError("opt-in skill inventory must contain unique sorted names")
+    unknown = sorted(set(names) - set(published))
+    if unknown:
+        raise InstallError("opt-in inventory contains unpublished skills: " + ", ".join(unknown))
+    return names
+
+
+def selected_inventory(
+    published: list[str], requested: list[str], opt_in: list[str] | None = None,
+) -> tuple[list[str], str]:
     """Resolve an all-skills or explicit deterministic selection."""
     if not requested:
-        return published, "all-skills"
+        return sorted(set(published) - set(opt_in or [])), "all-skills"
     names = sorted(set(requested))
     unknown = sorted(set(names) - set(published))
     if unknown:
@@ -96,6 +117,49 @@ def selected_inventory(published: list[str], requested: list[str]) -> tuple[list
     if "ai-sdlc-shared-runtime" not in names:
         raise InstallError("explicit selection must include ai-sdlc-shared-runtime")
     return names, "explicit-skills"
+
+
+def module_skills(source: Path, requested: list[str]) -> tuple[list[str], str]:
+    """Resolve explicitly requested optional modules without changing defaults."""
+    if not requested:
+        return [], "all-skills"
+    module_ids = sorted(set(requested))
+    if len(module_ids) != len(requested):
+        raise InstallError("requested modules must be unique")
+    names: set[str] = set()
+    for module_id in module_ids:
+        if not SKILL_NAME_RE.fullmatch(module_id):
+            raise InstallError(f"invalid module id: {module_id}")
+        manifest = source / "modules" / module_id / "module.toon"
+        if manifest.is_symlink() or not manifest.is_file():
+            raise InstallError(f"requested module is unavailable: {module_id}")
+        try:
+            value = toon_codec.loads(manifest.read_text(encoding="utf-8"))
+        except (OSError, toon_codec.ToonDecodeError) as exc:
+            raise InstallError(f"cannot read module {module_id}: {exc}") from exc
+        if (
+            not isinstance(value, dict)
+            or value.get("schema") != "ai-sdlc-module/v1"
+            or value.get("id") != module_id
+            or value.get("kind") != "optional"
+        ):
+            raise InstallError(f"requested module contract is invalid: {module_id}")
+        skills = value.get("skills")
+        if not isinstance(skills, list) or not skills:
+            raise InstallError(f"requested module has no skills: {module_id}")
+        for item in skills:
+            if not isinstance(item, dict) or set(item) != {"name", "path"}:
+                raise InstallError(f"requested module skill is invalid: {module_id}")
+            name, relative = item["name"], item["path"]
+            if not isinstance(name, str) or not SKILL_NAME_RE.fullmatch(name):
+                raise InstallError(f"requested module skill name is invalid: {module_id}")
+            if relative != f"skills/{name}":
+                raise InstallError(f"requested module skill path is invalid: {module_id}")
+            skill_root = source / relative
+            if skill_root.is_symlink() or not (skill_root / "SKILL.md").is_file():
+                raise InstallError(f"requested module skill is missing: {name}")
+            names.add(name)
+    return sorted(names), "modules:" + ",".join(module_ids)
 
 
 def regular_files(directory: Path) -> list[Path]:
@@ -206,6 +270,7 @@ def _install_locked(
     profile: str,
     requested: list[str],
     replace_reviewed: bool,
+    modules: list[str] | None = None,
 ) -> tuple[int, Path, Path]:
     """Stage, verify, and transactionally apply one project-scoped installation."""
     source = source.resolve()
@@ -229,7 +294,14 @@ def _install_locked(
         )
     verify_source_identity(source, revision)
     published = read_inventory(source)
-    names, selection = selected_inventory(published, requested)
+    opt_in = read_opt_in_inventory(source, published)
+    if requested and modules:
+        raise InstallError("--skill and --module selections cannot be combined")
+    names, selection = selected_inventory(published, requested, opt_in)
+    extra, module_selection = module_skills(source, modules or [])
+    if extra:
+        names = sorted(set(names) | set(extra))
+        selection = module_selection
 
     source_digests: dict[str, str] = {}
     for name in names:
@@ -357,6 +429,7 @@ def install(
     profile: str,
     requested: list[str],
     replace_reviewed: bool,
+    modules: list[str] | None = None,
 ) -> tuple[int, Path, Path]:
     """Serialize, stage, verify, and apply one project-scoped installation."""
     resolved_root = root.resolve()
@@ -368,6 +441,7 @@ def install(
             profile=profile,
             requested=requested,
             replace_reviewed=replace_reviewed,
+            modules=modules,
         )
 
 
@@ -378,6 +452,7 @@ def main() -> int:
     parser.add_argument("--revision", required=True)
     parser.add_argument("--profile", choices=tuple(sorted(INSTALL_PROFILES)), default="codex-project")
     parser.add_argument("--skill", action="append", default=[])
+    parser.add_argument("--module", action="append", default=[])
     parser.add_argument("--replace-reviewed", action="store_true")
     args = parser.parse_args()
     try:
@@ -388,6 +463,7 @@ def main() -> int:
             profile=args.profile,
             requested=args.skill,
             replace_reviewed=args.replace_reviewed,
+            modules=args.module,
         )
     except (InstallError, OSError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)

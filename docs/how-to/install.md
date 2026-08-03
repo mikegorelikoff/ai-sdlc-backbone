@@ -86,6 +86,21 @@ rollback backups. Existing unrelated skills are left untouched. An existing
 managed directory with different content is a hard stop; follow the update
 guide instead of overwriting it.
 
+### Add the optional local context cache
+
+The default profile remains the existing 45-skill installation. Add the local
+graph-enhanced RAG capability explicitly when repeated repository retrieval is
+worth maintaining disposable local state:
+
+```bash
+AI_SDLC_SOURCE="$HARNESS_SRC" AI_SDLC_REVISION="$HARNESS_REV" "$HARNESS_SRC/install.sh" codex-project --module context-cache
+```
+
+This selection installs the 45-skill baseline plus
+`ai-sdlc-context-cache`. Its install record uses
+`selection: modules:context-cache`; the database itself is created only by a
+later authorized `build` command and is never part of the install lock.
+
 ### Understand the installed artifacts
 
 The native install creates only these Harness-owned roots:
@@ -127,6 +142,9 @@ Expected:
 - every locked content digest matches the installed directory;
 - helper usage renders without an import traceback;
 - Git shows only the selected host root and `.ai-sdlc/` additions.
+
+For a `context-cache` module install, expect 46 locked skills. The default
+profile still expects 45.
 
 After verification, remove only the temporary reviewed checkout:
 

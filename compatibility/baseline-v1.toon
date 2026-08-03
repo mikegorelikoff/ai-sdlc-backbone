@@ -1,7 +1,7 @@
 config:
   defaults: config/ai-sdlc.defaults.toon
   schema: ai-sdlc-config/v1
-contracts[18]{id,path}:
+contracts[22]{id,path}:
   ai-sdlc-skill-steps/v2,skills/ai-sdlc-shared-runtime/references/skill-steps.schema.toon
   ai-sdlc-step-card/v1,skills/ai-sdlc-shared-runtime/references/step-card.schema.toon
   ai-sdlc-context-pack/v4,skills/ai-sdlc-shared-runtime/references/step-context-pack.schema.toon
@@ -20,6 +20,10 @@ contracts[18]{id,path}:
   ai-sdlc-effect-receipt/v1,skills/ai-sdlc-host-adapter/references/effect-receipt.schema.toon
   ai-sdlc-scheduler-state/v1,skills/ai-sdlc-scheduler/references/scheduler-state.schema.toon
   ai-sdlc-scheduler-dispatch/v1,skills/ai-sdlc-scheduler/references/scheduler-dispatch.schema.toon
+  ai-sdlc-context-cache-receipt/v1,skills/ai-sdlc-context-cache/references/context-cache.schema.toon
+  ai-sdlc-context-query/v1,skills/ai-sdlc-context-cache/references/context-query.schema.toon
+  ai-sdlc-context-cache-benchmark-cases/v1,skills/ai-sdlc-context-cache/references/context-benchmark-cases.schema.toon
+  ai-sdlc-context-cache-benchmark/v1,skills/ai-sdlc-context-cache/references/context-benchmark.schema.toon
 harness_api_version: 4.1.0
 install_update_guide: guides/install-and-update.md
 machine:
@@ -27,7 +31,7 @@ machine:
   extension: .toon
   schema: ai-sdlc-toon-contract/v1
 modules:
-  ids[5]: architecture,core,evidence-council,research,ux
+  ids[6]: architecture,context-cache,core,evidence-council,research,ux
   schema: ai-sdlc-module/v1
 python:
   ci[2]: "3.10","3.13"
@@ -50,4 +54,4 @@ skill_graph:
   generator: skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_skill_graph.py
   min_nodes: 5
   schema: ai-sdlc-skill-steps/v2
-  skills: 45
+  skills: 46

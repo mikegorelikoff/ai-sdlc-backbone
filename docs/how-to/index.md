@@ -21,6 +21,7 @@ Choose the result you need now. Each guide is task-oriented and assumes basic Gi
 - [**Build project context**](project-context.md) — capture evidence without invention.
 - [**Use external specifications**](external-specifications.md) — snapshot reviewed Markdown from another repository with provenance and drift checks.
 - [**Build a task context pack**](build-context-pack.md) — bound sources and token budget for one task.
+- [**Use the local context cache**](use-local-context-cache.md) — query deterministic local graph-enhanced RAG evidence across repeated tasks.
 - [**Continue after a specification**](after-specification.md) — move through one ready task, validation, review, and commit.
 - [**Resume a delivery run**](resume-runtime.md) — continue safely from the durable journal and TOON state.
 - [**Operate the scheduler**](operate-scheduler.md) — lease StepCards, recover expiry, and commit terminal runtime evidence.

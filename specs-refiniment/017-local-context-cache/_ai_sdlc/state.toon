@@ -1,0 +1,37 @@
+feature: 017-local-context-cache
+workspace: refinement
+current_stage: delivery_handoff
+active_skill:
+flow_mode: full
+updated_at: 2026-08-03
+decision_log: specs-refiniment/017-local-context-cache/decision-log.md
+
+stages[26]{id,skill,status,workspace,artifacts,decision_ref}:
+  discovery,ai-sdlc-working-backwards-discovery,done,refinement,specs-refiniment/017-local-context-cache/discovery.md,
+  prfaq,ai-sdlc-prfaq-package-synthesis,done,refinement,specs-refiniment/017-local-context-cache/prfaq.md,
+  delivery_package_gap_review,ai-sdlc-delivery-package-gap-review,done,refinement,specs-refiniment/017-local-context-cache/delivery-gap-review.md,
+  requirements_readiness,ai-sdlc-requirements-readiness-review,done,refinement,specs-refiniment/017-local-context-cache/requirements-readiness.md,
+  goal_epic_mapping,ai-sdlc-goal-capability-and-epic-mapping,done,refinement,specs-refiniment/017-local-context-cache/goal-capability-map.md,
+  backlog_gap_review,ai-sdlc-backlog-requirements-gap-review,done,refinement,specs-refiniment/017-local-context-cache/backlog-gap-review.md,
+  backlog_decomposition,ai-sdlc-backlog-decomposition-and-task-planning,done,refinement,specs-refiniment/017-local-context-cache/backlog.md,
+  story_decomposition,ai-sdlc-user-story-decomposition,done,refinement,specs-refiniment/017-local-context-cache/user-stories.md,
+  release_slicing,ai-sdlc-release-slicing-and-backlog-readiness-review,done,refinement,specs-refiniment/017-local-context-cache/release-slicing.md,
+  ba_context,ai-sdlc-ba,done,refinement,specs-refiniment/017-local-context-cache/business-context.md,
+  delivery_spec,ai-sdlc-delivery-spec-synthesis,done,refinement,specs-refiniment/017-local-context-cache/delivery-spec.md,
+  qa_plan,ai-sdlc-qa,done,refinement,specs-refiniment/017-local-context-cache/qa.md,
+  qa_gap_review,ai-sdlc-qa-requirements-gap-review,done,refinement,specs-refiniment/017-local-context-cache/qa-gap-review.md,
+  test_strategy,ai-sdlc-test-scope-and-strategy-design,done,refinement,specs-refiniment/017-local-context-cache/qa-strategy.md,
+  test_cases,ai-sdlc-test-cases,done,refinement,specs-refiniment/017-local-context-cache/test-cases.md,
+  test_suite,ai-sdlc-test-case-and-suite-synthesis,done,refinement,specs-refiniment/017-local-context-cache/test-suite.md,
+  qa_traceability,ai-sdlc-qa-traceability-and-readiness-review,done,refinement,specs-refiniment/017-local-context-cache/qa-readiness.md,
+  delivery_handoff,ai-sdlc-delivery-handoff-review,done,refinement,specs-refiniment/017-local-context-cache/delivery-handoff-review.md,
+  branching,ai-sdlc-branching,not_started,implementation,branch-plan.md,
+  sdd,ai-sdlc-sdd,not_started,implementation,specs/017-local-context-cache,
+  validation,ai-sdlc-validation,not_started,implementation,validation.md,
+  code_review,ai-sdlc-code-review,not_started,implementation,code-review.md,
+  security_testing,ai-sdlc-security-testing,not_started,implementation,security-review.md,
+  commit_prep,ai-sdlc-commit-prep,not_started,implementation,commit-readiness.md,
+  conventional_commit,ai-sdlc-conventional-commit,not_started,implementation,commit-message.md,
+  approvals_sandbox,ai-sdlc-approvals-sandbox,not_applicable,utility,approval-plan.md,
+
+skips[0]{stage,reason,decision_ref,flow_mode}:

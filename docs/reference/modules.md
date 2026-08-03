@@ -19,6 +19,18 @@ description: Installed capability modules, compatibility ranges, dependencies, a
 
     [Open manifest →](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/modules/architecture/module.toon)
 
+-   **Context Cache** · `optional` · `v4.1.0`
+
+    Optional local deterministic SQLite FTS5 and graph-enhanced RAG context cache.
+
+    **Harness API:** ≥ 4.0.0 and < 5.0.0
+
+    **Requires:** core
+
+    **Skills:** ai-sdlc-context-cache
+
+    [Open manifest →](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/modules/context-cache/module.toon)
+
 -   **Core** · `core` · `v4.0.0`
 
     Core AI SDLC lifecycle, control-plane, and delivery skills.

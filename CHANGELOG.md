@@ -1,5 +1,30 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Added the opt-in `context-cache` module and `ai-sdlc-context-cache` skill for
+  deterministic local SQLite FTS5 and graph-enhanced RAG, incremental refresh,
+  freshness verification, and context-pack/v4 assembly.
+- Added `--module context-cache` to both project-scoped native installer
+  profiles without changing the default 45-skill installation.
+- Added TOON golden benchmark cases and receipts comparing lexical,
+  graph-enhanced, packed, and direct-read behavior with path recall, anchor
+  recall, savings, and stable fingerprints.
+
+### Security and context engineering
+
+- Kept repository files authoritative, labeled retrieved content as untrusted
+  evidence, excluded secret-like and unsafe sources before indexing, confined
+  cache mutation and purge, and returned direct reads for missing, stale,
+  corrupt, incompatible, or uneconomic cache state.
+- Kept every portable machine input and output canonical TOON; SQLite is only
+  disposable local binary state and no alternate machine format was added.
+- Required every cache-backed pack to begin with its manifest-resolved owning
+  step document, retain 100 percent of declared critical anchors, and achieve
+  at least 15 percent net savings or fall back explicitly to direct reading.
+
 ## v4.1.1 - 2026-08-03
 
 ### Fixed

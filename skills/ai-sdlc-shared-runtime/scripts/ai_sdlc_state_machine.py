@@ -341,8 +341,8 @@ def completion_artifact_errors(
         label = path.relative_to(root).as_posix()
         if 'schema: "ai-sdlc-artifact-metadata/v1"' not in text:
             return [f"completion artifact lacks canonical metadata: {label}"]
-        status_match = re.search(r'^\s*status:\s*["\']?([^"\'\n]+)', text, re.MULTILINE)
-        if not status_match or status_match.group(1).strip() not in finalized_statuses:
+        status_matches = re.findall(r'^\s*status:\s*["\']?([^"\'\n]+)', text, re.MULTILINE)
+        if not any(status.strip() in finalized_statuses for status in status_matches):
             return [f"completion artifact is not finalized for review: {label}"]
         body = text.split("---", 2)[-1].strip() if text.startswith("---") else text.strip()
         if len(body) < 40 or not re.search(r"(?m)^#\s+\S", body):

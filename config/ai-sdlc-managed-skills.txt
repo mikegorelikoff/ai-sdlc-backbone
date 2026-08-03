@@ -8,6 +8,7 @@ ai-sdlc-change-impact
 ai-sdlc-change-set
 ai-sdlc-code-review
 ai-sdlc-commit-prep
+ai-sdlc-context-cache
 ai-sdlc-conventional-commit
 ai-sdlc-delivery-graph
 ai-sdlc-delivery-handoff-review

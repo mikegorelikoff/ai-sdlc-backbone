@@ -1,0 +1,23 @@
+"$id": ai-sdlc-context-cache-receipt/v1
+"$schema": ai-sdlc-toon-contract/v1
+additionalProperties: false
+properties:
+  cache_fingerprint:
+    type: string
+  command:
+    enum[4]: build,inspect,verify,purge
+  counts:
+    type: object
+  fresh:
+    type: boolean
+  reason:
+    type: string
+  repository_fingerprint:
+    type: string
+  schema:
+    const: ai-sdlc-context-cache-receipt/v1
+  status:
+    enum[4]: ready,stale,missing,removed
+required[8]: schema,command,status,reason,fresh,cache_fingerprint,repository_fingerprint,counts
+title: AI SDLC context cache receipt
+type: object

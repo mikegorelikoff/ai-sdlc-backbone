@@ -178,6 +178,7 @@ Own technical design, implementation correctness, testable task boundaries, revi
 
 | Group | Role relationship | Skill |
 | --- | --- | --- |
+| Entry and context | Supply intent or evidence | [`ai-sdlc-context-cache`](skills/ai-sdlc-context-cache.md) |
 | Entry and context | Supply intent or evidence | [`ai-sdlc-research`](skills/ai-sdlc-research.md) |
 | Governance and operations | Consult or apply within role authority | [`ai-sdlc-approvals-sandbox`](skills/ai-sdlc-approvals-sandbox.md) |
 | Governance and operations | Consult or apply within role authority | [`ai-sdlc-doctor`](skills/ai-sdlc-doctor.md) |

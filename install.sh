@@ -4,13 +4,14 @@ set -eu
 
 usage() {
   printf '%s\n' \
-    "Usage: install.sh PROFILE" \
+    "Usage: install.sh PROFILE [--module MODULE]" \
     "" \
     "Install every AI SDLC Harness skill into the current project with TOON-only provenance." \
     "" \
     "Examples:" \
     "  ./install.sh codex-project" \
     "  ./install.sh claude-code-project" \
+    "  ./install.sh codex-project --module context-cache" \
     "  curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.1.1/install.sh | sh -s -- codex-project" \
     "" \
     "Optional environment overrides:" \
@@ -29,12 +30,13 @@ case "${1-}" in
     ;;
 esac
 
-if [ "$#" -ne 1 ] || [ -z "$1" ]; then
+if [ "$#" -lt 1 ] || [ -z "$1" ]; then
   usage >&2
   exit 64
 fi
 
 ai_sdlc_profile=$1
+shift
 case "$ai_sdlc_profile" in
   codex-project|claude-code-project) ;;
   *)
@@ -42,6 +44,30 @@ case "$ai_sdlc_profile" in
     exit 65
     ;;
 esac
+
+ai_sdlc_modules=
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --module)
+      if [ "$#" -lt 2 ] || [ -z "$2" ]; then
+        printf '%s\n' "--module requires a module id." >&2
+        exit 64
+      fi
+      case "$2" in
+        *[!a-z0-9-]*|-*|*--*|*-)
+          printf '%s\n' "Module ids use lowercase letters, digits, and single hyphens." >&2
+          exit 65
+          ;;
+      esac
+      ai_sdlc_modules="$ai_sdlc_modules $2"
+      shift 2
+      ;;
+    *)
+      printf '%s\n' "Unknown installer option: $1" >&2
+      exit 64
+      ;;
+  esac
+done
 
 if ! command -v git >/dev/null 2>&1; then
   printf '%s\n' "AI SDLC Harness installer requires Git." >&2
@@ -177,4 +203,7 @@ set -- \
 if [ "${AI_SDLC_INSTALL_REPLACE:-0}" = "1" ]; then
   set -- "$@" --replace-reviewed
 fi
+for ai_sdlc_module in $ai_sdlc_modules; do
+  set -- "$@" --module "$ai_sdlc_module"
+done
 "$ai_sdlc_python" -B "$@"

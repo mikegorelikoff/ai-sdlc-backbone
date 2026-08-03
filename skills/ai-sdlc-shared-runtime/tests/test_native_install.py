@@ -45,6 +45,23 @@ class NativeInstallTests(unittest.TestCase):
                 "schema: ai-sdlc-steps/v2\n",
                 encoding="utf-8",
             )
+        cache_skill = source / "skills/ai-sdlc-context-cache"
+        cache_skill.mkdir(parents=True)
+        (cache_skill / "SKILL.md").write_text(
+            "---\nname: ai-sdlc-context-cache\ndescription: fixture\n---\n",
+            encoding="utf-8",
+        )
+        module = source / "modules/context-cache"
+        module.mkdir(parents=True)
+        (module / "module.toon").write_text(
+            "description: fixture\n"
+            "harness_api:\n  max_exclusive: 5.0.0\n  min: 4.0.0\n"
+            "id: context-cache\nkind: optional\nrequires[1]: core\n"
+            "schema: ai-sdlc-module/v1\n"
+            "skills[1]{name,path}:\n  ai-sdlc-context-cache,skills/ai-sdlc-context-cache\n"
+            "version: 4.1.0\n",
+            encoding="utf-8",
+        )
         subprocess.run(["git", "init", str(source)], check=True, stdout=subprocess.DEVNULL)
         subprocess.run(["git", "-C", str(source), "add", "."], check=True)
         subprocess.run(
@@ -166,6 +183,42 @@ class NativeInstallTests(unittest.TestCase):
             source = self.source_fixture(root)
             with self.assertRaisesRegex(InstallError, "unknown install profile"):
                 self.run_install(source, root / "consumer", profile="unknown-project")
+
+    def test_optional_module_adds_skill_without_changing_default_inventory(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = self.source_fixture(root)
+            default_consumer = root / "default-consumer"
+            module_consumer = root / "module-consumer"
+            default_count, _, _ = self.run_install(source, default_consumer)
+            module_count, record, _ = self.run_install(
+                source,
+                module_consumer,
+                requested=[],
+                modules=["context-cache"],
+            )
+            self.assertEqual(default_count, 2)
+            self.assertEqual(module_count, 3)
+            self.assertFalse(
+                (default_consumer / ".agents/skills/ai-sdlc-context-cache").exists()
+            )
+            self.assertTrue(
+                (module_consumer / ".agents/skills/ai-sdlc-context-cache/SKILL.md").is_file()
+            )
+            installed = native_install.toon_codec.loads(record.read_text(encoding="utf-8"))
+            self.assertEqual(installed["selection"], "modules:context-cache")
+
+    def test_unknown_optional_module_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = self.source_fixture(root)
+            with self.assertRaisesRegex(InstallError, "module is unavailable"):
+                self.run_install(
+                    source,
+                    root / "consumer",
+                    requested=[],
+                    modules=["missing-module"],
+                )
 
     def test_dirty_source_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

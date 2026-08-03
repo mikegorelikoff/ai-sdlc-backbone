@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI SDLC Context Cache"
+  short_description: "Build deterministic local RAG context packs."
+  default_prompt: "Use $ai-sdlc-context-cache to build or query a safe local repository context cache."

@@ -1,0 +1,53 @@
+commands[17]:
+  - argv[2]: python3,skills/ai-sdlc-context-cache/tests/test_context_cache.py
+    id: context-cache-tests
+    trace_ids[13]: TC-001,TC-002,TC-003,TC-004,TC-005,TC-006,TC-007,TC-008,TC-009,TC-010,TC-011,TC-012,TC-013
+  - argv[9]: python3,"-m",unittest,discover,"-s",skills/ai-sdlc-shared-runtime/tests,"-p","test*.py","-v"
+    id: shared-runtime-tests
+    trace_ids[5]: AC-001,AC-002,AC-010,AC-012,TC-012
+  - argv[7]: python3,skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_skill_graph.py,"--check","--skills-root",skills,"--format",toon
+    id: semantic-graph-contract
+    trace_ids[4]: AC-008,AC-009,TC-008,TC-009
+  - argv[9]: python3,skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_compatibility.py,"--root",.,"--baseline",compatibility/baseline-v1.toon,"--skip-git-audit","--format",toon
+    id: compatibility-contract
+    trace_ids[4]: AC-009,AC-010,TC-009,TC-010
+  - argv[9]: python3,skills/ai-sdlc-shared-runtime/tests/install_smoke.py,"--mode",native,"--source",.,"--profile",codex-project,"--full-flow"
+    id: native-codex-install
+    trace_ids[3]: AC-010,TC-010,NFR-006
+  - argv[9]: python3,skills/ai-sdlc-shared-runtime/tests/install_smoke.py,"--mode",native,"--source",.,"--profile",claude-code-project,"--full-flow"
+    id: native-claude-install
+    trace_ids[3]: AC-010,TC-010,NFR-006
+  - argv[8]: python3,skills/ai-sdlc-shared-runtime/scripts/refinement_status.py,"--feature",017-local-context-cache,"--gate",full,"--format",toon
+    id: refinement-full-gate
+    trace_ids[3]: AC-011,AC-012,TC-012
+  - argv[4]: python3,skills/ai-sdlc-sdd/scripts/check_clarify.py,specs/017-local-context-cache,"--full-flow"
+    id: sdd-clarify
+    trace_ids[4]: AC-011,AC-012,TC-011,TC-012
+  - argv[4]: python3,skills/ai-sdlc-sdd/scripts/check_checklist.py,specs/017-local-context-cache,"--full-flow"
+    id: sdd-checklist
+    trace_ids[4]: AC-011,AC-012,TC-011,TC-012
+  - argv[5]: python3,skills/ai-sdlc-sdd/scripts/plan_links.py,specs/017-local-context-cache,"--check","--full-flow"
+    id: sdd-plan-links
+    trace_ids[4]: AC-011,AC-012,TC-011,TC-012
+  - argv[4]: python3,skills/ai-sdlc-sdd/scripts/analyze_spec.py,specs/017-local-context-cache,"--full-flow"
+    id: sdd-analysis
+    trace_ids[4]: AC-011,AC-012,TC-011,TC-012
+  - argv[4]: python3,skills/ai-sdlc-sdd/scripts/validate_spec.py,specs/017-local-context-cache,"--full-flow"
+    id: sdd-validation
+    trace_ids[4]: AC-011,AC-012,TC-011,TC-012
+  - argv[3]: python3,docs/scripts/build_catalog.py,"--check"
+    id: documentation-catalog
+    trace_ids[3]: AC-009,AC-012,TC-012
+  - argv[2]: python3,docs/scripts/validate_docs.py
+    id: documentation-contract
+    trace_ids[3]: AC-009,AC-012,TC-012
+  - argv[9]: python3,"-m",unittest,discover,"-s",docs/tests,"-p","test_*.py","-v"
+    id: documentation-tests
+    trace_ids[3]: AC-009,AC-012,TC-012
+  - argv[2]: python3,docs/scripts/validate_rendered.py
+    id: rendered-documentation-links
+    trace_ids[3]: AC-009,AC-012,TC-012
+  - argv[3]: git,diff,"--check"
+    id: diff-hygiene
+    trace_ids[3]: AC-012,TC-012,NFR-003
+schema: ai-sdlc-validation-command-plan/v1

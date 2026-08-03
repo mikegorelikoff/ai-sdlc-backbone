@@ -73,6 +73,22 @@ byte-identical TOON.
 the named files directly. It is a first-class deterministic decision, not an
 eval failure and not permission to broaden the search.
 
+## Cache retrieval without caching authority
+
+The optional local context cache can reduce repeated discovery and range reads
+across related tasks. It indexes safe repository text with SQLite FTS5,
+retrieves lexical candidates, expands bounded typed relations, and emits the
+same v4 context-pack boundary. This is context engineering only when retrieval
+preserves source identity, authority, freshness, omissions, budgets, and an
+explained fallback.
+
+The database is never authority and never a hidden long-term memory. Before a
+cache hit is used, the current source hash must match. Retrieved imperative text
+remains evidence, relevance cannot grant permission, and missing, stale,
+corrupt, incompatible, or uneconomic results return exact direct reads. Keep
+the index disposable, local, secret-safe, and excluded from Git. See
+[Use the local context cache](../how-to/use-local-context-cache.md).
+
 ## Use a stable prompt contract
 
 For delivery tasks, a compact prompt usually needs these sections:

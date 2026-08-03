@@ -46,6 +46,14 @@ curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.1
 curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.1.1/install.sh | sh -s -- claude-code-project
 ```
 
+The additive `context-cache` module is opt-in and makes the installed set 46
+skills. It uses the same two project-scoped host profiles and requires local
+Python SQLite FTS5 support:
+
+```bash
+./install.sh codex-project --module context-cache
+```
+
 The project also receives:
 
 ```text

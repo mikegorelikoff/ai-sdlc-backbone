@@ -1,9 +1,9 @@
 schema: ai-sdlc-documentation-coverage/v1
-skill_count: 45
-script_count: 117
+skill_count: 46
+script_count: 118
 documentation_root: docs
 
-skills[45]{skill,source,page,module,package_scripts}:
+skills[46]{skill,source,page,module,package_scripts}:
   ai-sdlc-approvals-sandbox,skills/ai-sdlc-approvals-sandbox/SKILL.md,reference/skills/ai-sdlc-approvals-sandbox.md,core,1
   ai-sdlc-architecture,skills/ai-sdlc-architecture/SKILL.md,reference/skills/ai-sdlc-architecture.md,architecture,1
   ai-sdlc-ba,skills/ai-sdlc-ba/SKILL.md,reference/skills/ai-sdlc-ba.md,core,1
@@ -14,6 +14,7 @@ skills[45]{skill,source,page,module,package_scripts}:
   ai-sdlc-change-set,skills/ai-sdlc-change-set/SKILL.md,reference/skills/ai-sdlc-change-set.md,core,4
   ai-sdlc-code-review,skills/ai-sdlc-code-review/SKILL.md,reference/skills/ai-sdlc-code-review.md,core,1
   ai-sdlc-commit-prep,skills/ai-sdlc-commit-prep/SKILL.md,reference/skills/ai-sdlc-commit-prep.md,core,1
+  ai-sdlc-context-cache,skills/ai-sdlc-context-cache/SKILL.md,reference/skills/ai-sdlc-context-cache.md,context-cache,1
   ai-sdlc-conventional-commit,skills/ai-sdlc-conventional-commit/SKILL.md,reference/skills/ai-sdlc-conventional-commit.md,core,1
   ai-sdlc-delivery-graph,skills/ai-sdlc-delivery-graph/SKILL.md,reference/skills/ai-sdlc-delivery-graph.md,core,2
   ai-sdlc-delivery-handoff-review,skills/ai-sdlc-delivery-handoff-review/SKILL.md,reference/skills/ai-sdlc-delivery-handoff-review.md,core,1
@@ -50,7 +51,7 @@ skills[45]{skill,source,page,module,package_scripts}:
   ai-sdlc-workflow,skills/ai-sdlc-workflow/SKILL.md,reference/skills/ai-sdlc-workflow.md,core,1
   ai-sdlc-working-backwards-discovery,skills/ai-sdlc-working-backwards-discovery/SKILL.md,reference/skills/ai-sdlc-working-backwards-discovery.md,core,1
 
-scripts[117]{path,owner,classification,documentation}:
+scripts[118]{path,owner,classification,documentation}:
   skills/ai-sdlc-approvals-sandbox/scripts/approval_plan.py,ai-sdlc-approvals-sandbox,skill package helper,reference/scripts.md
   skills/ai-sdlc-architecture/scripts/architecture.py,ai-sdlc-architecture,skill package helper,reference/scripts.md
   skills/ai-sdlc-ba/scripts/ba_context_scaffold.py,ai-sdlc-ba,skill package helper,reference/scripts.md
@@ -64,6 +65,7 @@ scripts[117]{path,owner,classification,documentation}:
   skills/ai-sdlc-change-set/scripts/spec_delta.py,ai-sdlc-change-set,skill package helper,reference/scripts.md
   skills/ai-sdlc-code-review/scripts/review_readiness.py,ai-sdlc-code-review,skill package helper,reference/scripts.md
   skills/ai-sdlc-commit-prep/scripts/check_commit_ready.py,ai-sdlc-commit-prep,skill package helper,reference/scripts.md
+  skills/ai-sdlc-context-cache/scripts/context_cache.py,ai-sdlc-context-cache,skill package helper,reference/scripts.md
   skills/ai-sdlc-conventional-commit/scripts/validate_commit_msg.py,ai-sdlc-conventional-commit,skill package helper,reference/scripts.md
   skills/ai-sdlc-delivery-graph/scripts/delivery_graph.py,ai-sdlc-delivery-graph,skill package helper,reference/scripts.md
   skills/ai-sdlc-delivery-graph/scripts/evidence_ledger.py,ai-sdlc-delivery-graph,skill package helper,reference/scripts.md

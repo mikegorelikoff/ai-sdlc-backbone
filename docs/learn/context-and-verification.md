@@ -252,6 +252,12 @@ Prompt engineering defines the task and expected result. Context engineering sel
 
 Retrieval finds content. It does not confer authority. A search result ranked first may be obsolete. A vector match may retrieve a malicious example. Establish source identity, scope, and freshness after retrieval.
 
+A local graph-enhanced RAG cache changes retrieval cost, not this rule. Accept a
+cached range only when it still maps to the current source hash and exact lines,
+its graph expansion is bounded and explained, and the selected set improves
+context economics. Otherwise use direct reads. The cache database is a
+rebuildable projection, not durable product memory or an approval record.
+
 ### Evidence and approval
 
 Evidence supports a decision. Approval is an act by the authorised owner. A complete evidence table can make approval easier and more accountable, but it does not approve itself.

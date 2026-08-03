@@ -1,0 +1,87 @@
+feature_root: specs-refiniment/017-local-context-cache
+findings[7]:
+  - confidence: high
+    id: RF-001
+    limitations: FTS5 behavior still depends on the SQLite build shipped by the host; capability verification is required before use.
+    source_ids[3]: SRC-001,SRC-002,SRC-011
+    statement: The portable baseline should use SQLite FTS5 with the content tables and full-text index updated atomically in the same transaction and verified for consistency.
+    trace_targets[4]: FR-001,FR-003,NFR-002,DEC-001
+  - confidence: medium
+    id: RF-002
+    limitations: Embedding and reranking gains are corpus-dependent and are not proven for this repository until the golden-query evaluation is executed.
+    source_ids[3]: SRC-001,SRC-007,SRC-011
+    statement: Lexical retrieval is the deterministic offline baseline because it handles exact identifiers well; document and heading context should be attached to chunks while embeddings remain a future optional adapter.
+    trace_targets[4]: FR-002,FR-004,NFR-001,DEC-002
+  - confidence: high
+    id: RF-003
+    limitations: A typed repository-relation graph cannot answer corpus-wide thematic questions in the same way as an LLM-extracted entity and community graph.
+    source_ids[4]: SRC-003,SRC-004,SRC-005,SRC-011
+    statement: The first release is graph-enhanced RAG with deterministic bounded relation expansion and must not claim parity with Microsoft GraphRAG; provider-backed entity extraction and community summaries are deferred.
+    trace_targets[4]: FR-005,NFR-003,DEC-003,OQ-003
+  - confidence: high
+    id: RF-004
+    limitations: The 15 percent savings threshold is a harness policy and must be validated on representative repository tasks.
+    source_ids[3]: SRC-006,SRC-007,SRC-010
+    statement: "Context engineering requires the smallest high-signal context that preserves the owning StepCard, mandatory evidence, critical anchors, authority labels, source hashes, and a stable fingerprint; insufficient packs must fall back to direct reading."
+    trace_targets[5]: FR-006,FR-007,NFR-004,AC-006,DEC-004
+  - confidence: high
+    id: RF-005
+    limitations: Deterministic filtering and authority labels reduce impact but cannot perfectly detect every malicious instruction embedded in repository content.
+    source_ids[3]: SRC-008,SRC-009,SRC-011
+    statement: "Retrieved repository text is untrusted evidence rather than executable instruction; the cache must preserve instruction hierarchy and cannot authorize tools, writes, or external actions."
+    trace_targets[4]: FR-008,NFR-005,AC-008,DEC-005
+  - confidence: high
+    id: RF-006
+    limitations: Git object identity covers tracked content; untracked files require direct content hashes and explicit discovery rules.
+    source_ids[3]: SRC-010,SRC-012,SRC-011
+    statement: "Incremental indexing should use repository-relative paths and content fingerprints, replace changed chunks and edges transactionally, remove stale entries, and reject symlinks, binary files, secrets, generated output, and oversized files."
+    trace_targets[4]: FR-003,FR-009,NFR-006,DEC-006
+  - confidence: medium
+    id: RF-007
+    limitations: Token savings are estimates and do not guarantee answer quality; live-agent evaluation remains a separate optional tier.
+    source_ids[4]: SRC-005,SRC-006,SRC-007,SRC-011
+    statement: "Release claims require a deterministic evaluation harness comparing direct read, lexical retrieval, and graph expansion on golden queries using mandatory-anchor recall, recall at k, estimated token savings, latency, and stable receipt fingerprints."
+    trace_targets[5]: FR-010,NFR-007,AC-010,DEC-007,OQ-001
+flow_mode: full
+open_questions[3]{id,next_action,owner,question}:
+  OQ-001,Approve deterministic release thresholds in DEC-007 and encode them in the benchmark command and QA readiness gate.,Maintainers and QA,Which mandatory-anchor recall and token-savings thresholds gate the first release?
+  OQ-002,Define a provider-neutral embedding adapter only after lexical and graph-enhanced baselines are measured.,Architecture,Which optional local embedding runtime should be supported first?
+  OQ-003,Assess an opt-in provider-backed entity and community pipeline after the portable local release.,Product and Architecture,Should a later module implement full GraphRAG global search?
+questions[7]:
+  - id: RQ-001
+    question: Which local storage and lexical retrieval primitives are portable and deterministic enough for the harness?
+    trace_targets[4]: FR-001,FR-002,NFR-001,DEC-001
+  - id: RQ-002
+    question: Which graph semantics add useful repository topology without an LLM indexing dependency?
+    trace_targets[3]: FR-005,NFR-003,DEC-003
+  - id: RQ-003
+    question: How must retrieval integrate with the existing context-pack v4 contract?
+    trace_targets[4]: FR-006,FR-007,AC-006,DEC-004
+  - id: RQ-004
+    question: Which context-engineering measurements prove that the cache saves tokens without dropping critical instructions?
+    trace_targets[4]: FR-010,NFR-004,NFR-007,DEC-007
+  - id: RQ-005
+    question: Which security boundaries apply to locally retrieved repository content?
+    trace_targets[4]: FR-008,NFR-005,AC-008,DEC-005
+  - id: RQ-006
+    question: How should incremental indexing detect changes and recover from stale or corrupt state?
+    trace_targets[4]: FR-003,FR-009,NFR-002,DEC-006
+  - id: RQ-007
+    question: Which GraphRAG capabilities belong in the first local release and which must be deferred?
+    trace_targets[3]: FR-005,DEC-003,OQ-003
+schema: ai-sdlc-research/v1
+scope: mixed
+sources[12]{accessed_at,credibility,id,locator,notes,title,type}:
+  2026-08-03,Canonical SQLite documentation.,SRC-001,"https://www.sqlite.org/fts5.html","Defines FTS5 full-text queries, ranking, and index consistency considerations.",SQLite FTS5 Extension,official-documentation
+  2026-08-03,Canonical SQLite transaction documentation.,SRC-002,"https://www.sqlite.org/lang_transaction.html",Defines explicit transactions and atomic commit behavior needed for synchronized index updates.,SQLite Transactions,official-documentation
+  2026-08-03,Primary research publication.,SRC-003,"https://arxiv.org/abs/2404.16130",Defines GraphRAG as an LLM-extracted entity graph with community summaries for global questions.,From Local to Global GraphRAG research paper,research-paper
+  2026-08-03,Official Microsoft GraphRAG documentation.,SRC-004,"https://microsoft.github.io/graphrag/query/overview/",Distinguishes local graph plus text search from resource-intensive global community-report search.,GraphRAG Query Engine Overview,official-documentation
+  2026-08-03,Official Microsoft GraphRAG documentation.,SRC-005,"https://microsoft.github.io/graphrag/index/methods/",Documents standard and fast graph indexing tradeoffs and LLM-dependent extraction costs.,GraphRAG Indexing Methods,official-documentation
+  2026-08-03,Primary engineering guidance from an agent platform provider.,SRC-006,"https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents",Treats context as a finite attention budget and recommends selecting the smallest high-signal token set.,Effective context engineering for AI agents,engineering-research
+  2026-08-03,Primary engineering evaluation from an agent platform provider.,SRC-007,"https://www.anthropic.com/engineering/contextual-retrieval",Shows exact-term value from BM25 and retrieval gains from attaching document-specific context to chunks.,Introducing Contextual Retrieval,engineering-experiment
+  2026-08-03,Industry security standard.,SRC-008,"https://genai.owasp.org/llmrisk/llm01-prompt-injection/",States that RAG does not fully mitigate indirect prompt injection from external content.,OWASP Prompt Injection Risk,security-standard
+  2026-08-03,Primary security engineering guidance.,SRC-009,"https://openai.com/index/designing-agents-to-resist-prompt-injection/",Recommends constraining capability impact and preserving authority boundaries when agents consume untrusted content.,Designing AI agents to resist prompt injection,engineering-security
+  2026-08-03,Canonical Git documentation.,SRC-010,"https://git-scm.com/docs/gitdatamodel.html",Defines immutable content-addressed objects suitable as tracked-content change evidence.,Git Data Model,official-documentation
+  2026-08-03,Direct repository inspection and deterministic prototype tests.,SRC-011,skills/ai-sdlc-context-cache,"Shows the current SQLite schema, discovery filters, chunking, relation edges, retrieval, context packing, and known mandatory-anchor gap.",Current local context cache prototype,internal-evidence
+  2026-08-03,Canonical Git documentation.,SRC-012,"https://git-scm.com/docs/git-diff.html",Defines path status and object identifiers useful for incremental changed-file detection.,Git diff documentation,official-documentation
+topic: Deterministic local graph-enhanced retrieval and context engineering for AI SDLC Harness

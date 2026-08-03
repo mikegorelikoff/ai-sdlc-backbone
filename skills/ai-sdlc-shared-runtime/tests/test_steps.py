@@ -205,8 +205,8 @@ def fixture(
 class StepManifestTests(unittest.TestCase):
     def test_every_installable_skill_has_a_valid_linked_manifest(self) -> None:
         skill_docs = sorted((ROOT / "skills").glob("*/SKILL.md"))
-        self.assertEqual(len(skill_docs), 45)
-        self.assertEqual(len(manifests()), 45)
+        self.assertEqual(len(skill_docs), 46)
+        self.assertEqual(len(manifests()), 46)
         for skill_doc in skill_docs:
             with self.subTest(skill=skill_doc.parent.name):
                 skill_root, manifest = STEPS.load_manifest(
