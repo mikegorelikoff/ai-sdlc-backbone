@@ -16,7 +16,30 @@ description: Build and query an optional deterministic local repository context 
 - SDLC stage: Cross-feature context engineering and retrieval
 - Purpose: Reuse fresh bounded repository evidence without changing authority.
 - Output: disposable SQLite state plus canonical TOON receipts and context packs
-- Runtime: Python standard library and SQLite FTS5; no network calls
+- Runtime: lexical mode uses the Python standard library and SQLite FTS5;
+  optional AST graph mode uses the hash-locked Tree-sitter wheels in
+  `references/parser-lock.toon`; no runtime network calls
+
+## Whole-codebase AST graph
+
+- Every safe eligible repository file is represented by authoritative-hash
+  document/chunk evidence or an explicit exclusion. The heterogeneous graph
+  adds file, chunk, qualified symbol, occurrence, call, and trace-hub nodes.
+- Selected AST languages are TypeScript, Python, JavaScript, Java, C#, PHP,
+  Shell, C++, Go, Rust, Kotlin, and Swift. Kotlin and Swift use the same
+  completeness gate as every other language.
+- `graph-preflight` verifies the exact runtime and all twelve grammar versions.
+  `build --require-graph` rejects a missing grammar, native parser crash,
+  timeout, real parse error, source drift, or bound breach.
+- Each file parse runs in a bounded network-denied subprocess. A native parser
+  fault becomes `graph_complete: false` and `direct_read`; it cannot crash the
+  owning harness process.
+- `graph-stats` emits deterministic TOON coverage, node/edge distributions,
+  fan-out, freshness, and graph/repository fingerprints. Trace IDs use hubs,
+  never pairwise cliques.
+- Portable policies, locks, receipts, expected fixtures, and audit evidence are
+  TOON only. The SQLite database is local disposable state, not a portable
+  contract.
 
 ## Automatic StepCard Runtime
 
@@ -33,6 +56,17 @@ description: Build and query an optional deterministic local repository context 
 - Persist only aggregate operation/outcome/reason counts and token economics.
   Use `observe` and `reset-observations`; never store queries, prompts, retrieved
   content, credentials, identity, or wall-clock values in deterministic output.
+- Graph-backed packs are accepted only when the graph is complete and fresh,
+  all owning-step anchors remain present, traversal stays bounded, and the
+  configured savings gate passes. Production graph validation uses 25 percent.
+
+Install only from a pre-populated verified wheelhouse, then prove offline
+availability:
+
+```bash
+python3.11 skills/ai-sdlc-context-cache/scripts/install_graph_runtime.py --lock skills/ai-sdlc-context-cache/references/parser-lock.toon --wheelhouse /path/to/wheelhouse
+python3.11 skills/ai-sdlc-context-cache/tests/install_graph_smoke.py --lock skills/ai-sdlc-context-cache/references/parser-lock.toon --wheelhouse /path/to/wheelhouse --offline --format toon
+```
 
 ## Step Selector
 

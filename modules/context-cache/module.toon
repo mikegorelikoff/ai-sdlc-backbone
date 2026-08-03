@@ -1,4 +1,4 @@
-description: Optional local deterministic SQLite FTS5 and graph-enhanced RAG context cache.
+description: Optional local deterministic SQLite FTS5 and twelve-language Tree-sitter AST graph RAG context cache.
 harness_api:
   max_exclusive: 5.0.0
   min: 4.0.0

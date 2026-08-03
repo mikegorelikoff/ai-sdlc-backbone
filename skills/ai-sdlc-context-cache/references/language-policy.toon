@@ -1,0 +1,29 @@
+schema: ai-sdlc-code-graph-language-policy/v1
+selected_languages[12]{language,grammar,suffixes}:
+  typescript,typescript,.ts/.tsx
+  python,python,.py
+  javascript,javascript,.js/.jsx
+  java,java,.java
+  csharp,csharp,.cs
+  php,php,.php
+  shell,bash,.sh
+  cpp,cpp,.c/.cc/.cpp/.cxx/.h/.hh/.hpp/.hxx
+  go,go,.go
+  rust,rust,.rs
+  kotlin,kotlin,.kt/.kts
+  swift,swift,.swift
+limits:
+  max_ast_nodes_per_file: 200000
+  max_ast_depth: 512
+  max_symbols_per_file: 20000
+  max_occurrences_per_file: 100000
+  max_edges_per_kind: 250000
+  max_total_edges: 1000000
+  trace_hub_members: 2048
+completeness:
+  selected_language_parse_required: true
+  heuristic_ast_fallback_allowed: false
+  missing_grammar_strategy: direct_read
+  parse_error_strategy: direct_read
+portable_format: toon
+runtime_network: denied

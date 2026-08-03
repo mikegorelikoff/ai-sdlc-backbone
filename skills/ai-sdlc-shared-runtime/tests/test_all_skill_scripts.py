@@ -363,12 +363,13 @@ class ScriptContractTests(unittest.TestCase):
                 required_sections=["Acceptance Criteria"], keywords=["validation"], root=cwd,
             )
             self.assertIn("schema: ai-sdlc-context/v3", output)
-            self.assertIn("interaction{enabled,status,preferred_name", output)
+            self.assertIn("interaction[1]{enabled,status,preferred_name", output)
             self.assertIn("AC-001", output)
             self.assertIn("AC-030", output)
             self.assertIn("next_reads[", output)
             self.assertLessEqual(estimate_tokens(output), 700)
             self.assertEqual(toon_row(('значение, кавычки "точно"',)), '"значение, кавычки ""точно"""')
+            self.assertEqual(toon_row(("", "value", "")), '\"\",value,\"\"')
 
     def test_context_pack_reports_semantic_required_section_gaps(self) -> None:
         """TOON analysis must not report zero gaps for structurally incomplete input."""

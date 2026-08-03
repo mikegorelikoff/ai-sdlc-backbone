@@ -21,7 +21,7 @@ description: Installed capability modules, compatibility ranges, dependencies, a
 
 -   **Context Cache** · `optional` · `v4.1.0`
 
-    Optional local deterministic SQLite FTS5 and graph-enhanced RAG context cache.
+    Optional local deterministic SQLite FTS5 and twelve-language Tree-sitter AST graph RAG context cache.
 
     **Harness API:** ≥ 4.0.0 and < 5.0.0
 

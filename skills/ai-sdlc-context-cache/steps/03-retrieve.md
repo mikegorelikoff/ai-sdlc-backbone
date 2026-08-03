@@ -24,8 +24,8 @@ fixed.
 Build explicitly, then request one bounded pack:
 
 ```bash
-python3 skills/ai-sdlc-context-cache/scripts/context_cache.py build --root .
-python3 skills/ai-sdlc-context-cache/scripts/context_cache.py pack --root . --query "context freshness" --skill ai-sdlc-validation --step-id execute --budget-tokens 4000
+python3 skills/ai-sdlc-context-cache/scripts/context_cache.py build --root . --require-graph
+python3 skills/ai-sdlc-context-cache/scripts/context_cache.py pack --root . --query "context freshness" --skill ai-sdlc-validation --step-id execute --budget-tokens 4000 --min-savings-percent 25 --require-graph
 ```
 
 ## Exit

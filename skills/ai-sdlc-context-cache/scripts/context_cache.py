@@ -24,6 +24,9 @@ from typing import Any, Iterable
 SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
 if str(SHARED) not in sys.path:
     sys.path.insert(0, str(SHARED))
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
 
 from ai_sdlc_step_context import (  # noqa: E402
     SCHEMA as PACK_SCHEMA,
@@ -34,8 +37,13 @@ from ai_sdlc_step_context import (  # noqa: E402
 from ai_sdlc_steps import load_manifest  # noqa: E402
 from ai_sdlc_toon import decode_toon, encode_toon  # noqa: E402
 
+if sys.version_info >= (3, 10):
+    import code_graph as CODE_GRAPH  # noqa: E402
+else:  # graph mode is optional; Python 3.9 retains lexical/direct behavior
+    CODE_GRAPH = None
 
-DB_SCHEMA = "ai-sdlc-context-cache/v1"
+
+DB_SCHEMA = "ai-sdlc-context-cache/v2"
 RECEIPT_SCHEMA = "ai-sdlc-context-cache-receipt/v1"
 QUERY_SCHEMA = "ai-sdlc-context-query/v1"
 ERROR_SCHEMA = "ai-sdlc-context-cache-error/v1"
@@ -51,8 +59,9 @@ CHUNK_LINES = 60
 CHUNK_OVERLAP = 8
 MAX_QUERY_TERMS = 32
 TEXT_SUFFIXES = {
-    ".c", ".cc", ".cpp", ".cs", ".go", ".java", ".js", ".jsx", ".kt",
-    ".md", ".php", ".py", ".rb", ".rs", ".sh", ".sql", ".swift",
+    ".c", ".cc", ".cpp", ".cxx", ".h", ".hh", ".hpp", ".hxx", ".cs",
+    ".go", ".java", ".js", ".jsx", ".kt", ".kts", ".md", ".php", ".py",
+    ".rb", ".rs", ".sh", ".sql", ".swift",
     ".toml", ".toon", ".ts", ".tsx", ".txt", ".yaml", ".yml",
 }
 TEXT_NAMES = {"AGENTS.md", "CLAUDE.md", "GEMINI.md", "Makefile"}
@@ -259,7 +268,7 @@ def safe_relative(relative: str) -> bool:
     )
 
 
-def discover(root: Path) -> list[str]:
+def discovery_inventory(root: Path) -> tuple[list[str], list[str]]:
     root = root.resolve()
     result = subprocess.run(
         ["git", "ls-files", "-co", "--exclude-standard"],
@@ -277,7 +286,32 @@ def discover(root: Path) -> list[str]:
             for path in root.rglob("*")
             if path.is_file()
         ]
-    return sorted({item for item in candidates if safe_relative(item)})[:MAX_FILES]
+    safe: list[str] = []
+    excluded: list[str] = []
+    for item in sorted(set(candidates)):
+        path = PurePosixPath(item)
+        if safe_relative(item):
+            safe.append(item)
+        elif not item or path.is_absolute() or ".." in path.parts or "\\" in item:
+            excluded.append(f"{item}:unsafe-path")
+        elif item.startswith(".ai-sdlc/cache/"):
+            # Derived cache files are operational state, not repository-source
+            # candidates, and must not perturb corpus accounting or fingerprints.
+            continue
+        elif set(path.parts) & IGNORED_PARTS:
+            excluded.append(f"{item}:ignored-tree")
+        elif SECRET_NAME.search(item):
+            excluded.append(f"{item}:secret-like-path")
+        else:
+            excluded.append(f"{item}:unsupported-text-type")
+    if len(safe) > MAX_FILES:
+        excluded.extend(f"{item}:file-limit" for item in safe[MAX_FILES:])
+        safe = safe[:MAX_FILES]
+    return safe, excluded
+
+
+def discover(root: Path) -> list[str]:
+    return discovery_inventory(root)[0]
 
 
 def read_source(root: Path, relative: str) -> tuple[str | None, str | None, str]:
@@ -431,7 +465,7 @@ def set_metadata(connection: sqlite3.Connection, key: str, value: str) -> None:
 
 
 def semantic_rows(connection: sqlite3.Connection) -> dict[str, object]:
-    return {
+    rows: dict[str, object] = {
         "documents": [list(row) for row in connection.execute(
             "SELECT path, sha256, byte_size, line_count, authority FROM documents ORDER BY path"
         )],
@@ -442,6 +476,28 @@ def semantic_rows(connection: sqlite3.Connection) -> dict[str, object]:
             "SELECT source_chunk, target_chunk, kind, label FROM edges ORDER BY source_chunk, target_chunk, kind, label"
         )],
     }
+    if CODE_GRAPH is not None and connection.execute(
+        "SELECT 1 FROM sqlite_master WHERE type='table' AND name='graph_nodes'"
+    ).fetchone():
+        rows["code_files"] = [list(row) for row in connection.execute(
+            "SELECT id, path, language, source_sha256, ast_status, root_type, node_count, reason FROM code_files ORDER BY path"
+        )]
+        rows["symbols"] = [list(row) for row in connection.execute(
+            "SELECT id, path, language, kind, name, qualified_name, start_byte, end_byte, start_line, end_line FROM symbols ORDER BY path, start_byte, id"
+        )]
+        rows["occurrences"] = [list(row) for row in connection.execute(
+            "SELECT id, path, symbol_id, role, name, container, start_byte, end_byte, start_line, end_line FROM occurrences ORDER BY path, start_byte, id"
+        )]
+        rows["graph_nodes"] = [list(row) for row in connection.execute(
+            "SELECT id, kind, path, label FROM graph_nodes ORDER BY kind, path, label, id"
+        )]
+        rows["graph_edges"] = [list(row) for row in connection.execute(
+            "SELECT source_id, target_id, kind, label, evidence_path FROM graph_edges ORDER BY source_id, target_id, kind, label, evidence_path"
+        )]
+        rows["language_coverage"] = [list(row) for row in connection.execute(
+            "SELECT language, files, parsed, errors, grammar_status FROM language_coverage ORDER BY language"
+        )]
+    return rows
 
 
 def config_fingerprint() -> str:
@@ -452,6 +508,7 @@ def config_fingerprint() -> str:
             "db_schema": DB_SCHEMA,
             "max_file_bytes": MAX_FILE_BYTES,
             "text_suffixes": sorted(TEXT_SUFFIXES),
+            "graph_schema": CODE_GRAPH.GRAPH_SCHEMA if CODE_GRAPH is not None else "unavailable-python",
         }
     )
 
@@ -483,12 +540,13 @@ def rebuild_edges(connection: sqlite3.Connection) -> None:
         for left, right in zip(items, items[1:]):
             edges.add((left["id"], right["id"], "same-document", path))
             edges.add((right["id"], left["id"], "same-document", path))
+    # Keep only a bounded compatibility chain here. The heterogeneous graph uses
+    # one explicit hub per trace and never emits the former pairwise clique.
     for trace, ids in sorted(by_trace.items()):
         ordered = sorted(set(ids))[:64]
-        for source in ordered:
-            for target in ordered:
-                if source != target:
-                    edges.add((source, target, "trace-id", trace))
+        for left, right in zip(ordered, ordered[1:]):
+            edges.add((left, right, "trace-id", trace))
+            edges.add((right, left, "trace-id", trace))
     known_paths = set(path_first)
     for row in rows:
         targets: set[tuple[str, str]] = set()
@@ -511,7 +569,12 @@ def rebuild_edges(connection: sqlite3.Connection) -> None:
     )
 
 
-def build(root: Path, cache: Path, rebuild: bool = False) -> dict[str, object]:
+def build(
+    root: Path,
+    cache: Path,
+    rebuild: bool = False,
+    require_graph: bool = False,
+) -> dict[str, object]:
     root = root.resolve()
     cache.parent.mkdir(parents=True, exist_ok=True)
     if cache.parent.is_symlink():
@@ -535,9 +598,9 @@ def build(root: Path, cache: Path, rebuild: bool = False) -> dict[str, object]:
                 str(row[0]): str(row[1])
                 for row in connection.execute("SELECT path, sha256 FROM documents ORDER BY path")
             }
-            discovered = discover(root)
+            discovered, discovery_excluded = discovery_inventory(root)
             accepted: dict[str, tuple[str, str]] = {}
-            excluded: list[str] = []
+            excluded: list[str] = list(discovery_excluded)
             for relative in discovered:
                 text, error, source_hash = read_source(root, relative)
                 if error or text is None:
@@ -584,6 +647,24 @@ def build(root: Path, cache: Path, rebuild: bool = False) -> dict[str, object]:
                             (item["id"], item["content"], item["heading"], item["path"], trace_text),
                         )
                 rebuild_edges(connection)
+                if CODE_GRAPH is None:
+                    graph_summary: dict[str, object] = {
+                        "graph_complete": False,
+                        "reason": "python-3.10-required",
+                        "selected_files": 0,
+                        "parsed_files": 0,
+                        "nodes": 0,
+                        "edges": 0,
+                        "symbols": 0,
+                        "occurrences": 0,
+                        "coverage": [],
+                        "errors": ["python-3.10-required"],
+                    }
+                else:
+                    graph_summary = CODE_GRAPH.rebuild(connection, accepted, excluded)
+                if require_graph and not graph_summary["graph_complete"]:
+                    first_error = next(iter(graph_summary.get("errors", [])), "graph-incomplete")
+                    raise CacheError(f"graph-incomplete:{first_error}")
                 logical = semantic_rows(connection)
                 cache_fingerprint = digest(logical)
                 repository_fingerprint = digest(logical["documents"])
@@ -591,6 +672,9 @@ def build(root: Path, cache: Path, rebuild: bool = False) -> dict[str, object]:
                 set_metadata(connection, "config_fingerprint", config_fingerprint())
                 set_metadata(connection, "cache_fingerprint", cache_fingerprint)
                 set_metadata(connection, "repository_fingerprint", repository_fingerprint)
+                set_metadata(connection, "graph_complete", "true" if graph_summary["graph_complete"] else "false")
+                set_metadata(connection, "graph_selected_files", str(graph_summary["selected_files"]))
+                set_metadata(connection, "graph_fingerprint", digest({key: logical.get(key, []) for key in ("code_files", "symbols", "occurrences", "graph_nodes", "graph_edges", "language_coverage")}))
             connection.execute("PRAGMA optimize")
         finally:
             connection.close()
@@ -621,8 +705,16 @@ def build(root: Path, cache: Path, rebuild: bool = False) -> dict[str, object]:
             "changed": len(changed),
             "discovered": len(discovered),
             "excluded": len(excluded),
+            "total_candidates": len(discovered) + len(discovery_excluded),
             "removed": len(removed),
             "unchanged": len(unchanged),
+            "graph_complete": int(bool(graph_summary["graph_complete"])),
+            "graph_nodes": int(graph_summary["nodes"]),
+            "graph_edges": int(graph_summary["edges"]),
+            "symbols": int(graph_summary["symbols"]),
+            "occurrences": int(graph_summary["occurrences"]),
+            "selected_language_files": int(graph_summary["selected_files"]),
+            "parsed_language_files": int(graph_summary["parsed_files"]),
         },
     )
 
@@ -633,6 +725,7 @@ def warm(
     *,
     lock_timeout_ms: int = 1500,
     retries: int = 1,
+    require_graph: bool = False,
 ) -> dict[str, object]:
     """Serialize automatic warmers and publish only source-checked candidates."""
     if not 50 <= lock_timeout_ms <= 30_000:
@@ -663,7 +756,8 @@ def warm(
             for attempt in range(retries + 1):
                 try:
                     output = build(
-                        root, cache, rebuild=force_rebuild or attempt > 0
+                        root, cache, rebuild=force_rebuild or attempt > 0,
+                        require_graph=require_graph,
                     )
                     verified = inspect(root, cache, "warm")
                     if verified["fresh"]:
@@ -698,11 +792,19 @@ def open_cache(cache: Path) -> sqlite3.Connection:
 def inspect_counts(cache: Path) -> dict[str, int]:
     connection = open_cache(cache)
     try:
-        return {
+        counts = {
             "chunks": int(connection.execute("SELECT COUNT(*) FROM chunks").fetchone()[0]),
             "documents": int(connection.execute("SELECT COUNT(*) FROM documents").fetchone()[0]),
             "edges": int(connection.execute("SELECT COUNT(*) FROM edges").fetchone()[0]),
         }
+        if connection.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='graph_nodes'").fetchone():
+            counts.update({
+                "graph_nodes": int(connection.execute("SELECT COUNT(*) FROM graph_nodes").fetchone()[0]),
+                "graph_edges": int(connection.execute("SELECT COUNT(*) FROM graph_edges").fetchone()[0]),
+                "symbols": int(connection.execute("SELECT COUNT(*) FROM symbols").fetchone()[0]),
+                "occurrences": int(connection.execute("SELECT COUNT(*) FROM occurrences").fetchone()[0]),
+            })
+        return counts
     finally:
         connection.close()
 
@@ -779,6 +881,55 @@ def inspect(root: Path, cache: Path, command: str = "inspect") -> dict[str, obje
         connection.close()
 
 
+def graph_preflight(root: Path) -> dict[str, object]:
+    selected = sorted({
+        CODE_GRAPH.language_for_path(path)
+        for path in discover(root)
+        if CODE_GRAPH is not None and CODE_GRAPH.language_for_path(path)
+    })
+    if CODE_GRAPH is None:
+        return {
+            "schema": "ai-sdlc-code-graph-preflight/v1",
+            "status": "unavailable",
+            "complete": False,
+            "reason": "python-3.10-required",
+            "languages": [],
+            "runtime_network": "denied",
+        }
+    output = CODE_GRAPH.preflight()
+    output["selected_languages"] = selected
+    return output
+
+
+def graph_stats(root: Path, cache: Path) -> dict[str, object]:
+    connection = open_cache(cache)
+    try:
+        fresh, stale, _paths = freshness(root, connection)
+        current = metadata(connection)
+        if CODE_GRAPH is None or not connection.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='graph_nodes'"
+        ).fetchone():
+            return {
+                "schema": "ai-sdlc-code-graph-stats/v1",
+                "status": "unavailable",
+                "graph_complete": False,
+                "fresh": fresh,
+                "reason": "graph-runtime-unavailable",
+                "stale": stale,
+            }
+        output = CODE_GRAPH.stats(connection)
+        output.update({
+            "status": "ready" if fresh and output["graph_complete"] else "incomplete",
+            "fresh": fresh,
+            "stale": stale,
+            "graph_fingerprint": current.get("graph_fingerprint", ""),
+            "repository_fingerprint": current.get("repository_fingerprint", ""),
+        })
+        return output
+    finally:
+        connection.close()
+
+
 def row_for(connection: sqlite3.Connection, chunk_id: str) -> dict[str, Any]:
     row = connection.execute(
         "SELECT id, path, start_line, end_line, source_sha256, estimated_tokens, heading, trace_ids, content FROM chunks WHERE id=?",
@@ -807,6 +958,74 @@ def lexical_candidates(connection: sqlite3.Connection, terms: list[str], cap: in
         raise CacheError(f"FTS5 query failed: {exc}") from exc
 
 
+def symbol_candidates(connection: sqlite3.Connection, terms: list[str], cap: int) -> list[str]:
+    if not connection.execute(
+        "SELECT 1 FROM sqlite_master WHERE type='table' AND name='symbols'"
+    ).fetchone():
+        return []
+    paths: list[tuple[str, int]] = []
+    for name, qualified, path, start_line in connection.execute(
+        "SELECT name, qualified_name, path, start_line FROM symbols ORDER BY path, start_line, id"
+    ):
+        haystack = f"{name} {qualified}".lower().replace("_", "-")
+        if any(term in haystack for term in terms):
+            paths.append((str(path), int(start_line)))
+    result: list[str] = []
+    for path, line in paths:
+        row = connection.execute(
+            "SELECT id FROM chunks WHERE path=? AND start_line<=? AND end_line>=? "
+            "ORDER BY start_line, id LIMIT 1",
+            (path, line, line),
+        ).fetchone()
+        if row is not None and str(row[0]) not in result:
+            result.append(str(row[0]))
+        if len(result) >= cap:
+            break
+    return result
+
+
+def typed_graph_neighbors(
+    connection: sqlite3.Connection,
+    source_chunk: str,
+    cap: int,
+) -> list[tuple[str, str, str]]:
+    if cap <= 0 or not connection.execute(
+        "SELECT 1 FROM sqlite_master WHERE type='table' AND name='graph_edges'"
+    ).fetchone():
+        return []
+    first = connection.execute(
+        "SELECT source_id, target_id, kind, label FROM graph_edges "
+        "WHERE source_id=? OR target_id=? ORDER BY kind, label, source_id, target_id LIMIT ?",
+        (source_chunk, source_chunk, cap),
+    ).fetchall()
+    candidates: set[tuple[str, str, str]] = set()
+    for left, right, kind, label in first:
+        pivot = str(right if str(left) == source_chunk else left)
+        second = connection.execute(
+            "SELECT source_id, target_id, kind, label FROM graph_edges "
+            "WHERE source_id=? OR target_id=? ORDER BY kind, label, source_id, target_id LIMIT ?",
+            (pivot, pivot, cap),
+        ).fetchall()
+        for left2, right2, kind2, label2 in second:
+            node_id = str(right2 if str(left2) == pivot else left2)
+            if node_id == source_chunk:
+                continue
+            if connection.execute("SELECT 1 FROM chunks WHERE id=?", (node_id,)).fetchone():
+                chunk_id = node_id
+            else:
+                node = connection.execute("SELECT path FROM graph_nodes WHERE id=?", (node_id,)).fetchone()
+                if node is None or not node[0]:
+                    continue
+                chunk = connection.execute("SELECT id FROM chunks WHERE path=? ORDER BY ordinal, id LIMIT 1", (node[0],)).fetchone()
+                if chunk is None:
+                    continue
+                chunk_id = str(chunk[0])
+            candidates.add((chunk_id, f"{kind}>{kind2}", f"{label}|{label2}"[:160]))
+            if len(candidates) >= cap:
+                break
+    return sorted(candidates)[:cap]
+
+
 def score_row(row: dict[str, Any], terms: list[str]) -> tuple[int, list[str]]:
     content = row["content"].lower()
     heading = row["heading"].lower()
@@ -826,6 +1045,7 @@ def query(
     limit: int,
     graph_depth: int,
     graph_limit: int,
+    require_graph: bool = False,
 ) -> dict[str, object]:
     if not 1 <= limit <= 100:
         raise CacheError("limit must be between 1 and 100")
@@ -845,7 +1065,20 @@ def query(
                 query_text, terms, "direct_read", "; ".join(stale[:16]), False,
                 current["cache_fingerprint"], [], indexed_paths[:limit], stale,
             )
-        seed_ids = lexical_candidates(connection, terms, max(limit * 8, 64))
+        graph_is_required = require_graph or (
+            CODE_GRAPH is not None
+            and int(current.get("graph_selected_files", "0")) > 0
+        )
+        if graph_is_required and current.get("graph_complete") != "true":
+            return query_receipt(
+                query_text, terms, "direct_read", "graph-incomplete", True,
+                current["cache_fingerprint"], [], indexed_paths[:limit], [],
+            )
+        seed_cap = max(limit * 8, 64)
+        seed_ids = sorted(set(
+            lexical_candidates(connection, terms, seed_cap)
+            + symbol_candidates(connection, terms, seed_cap)
+        ))
         rows: dict[str, dict[str, Any]] = {}
         best: dict[str, tuple[int, int, list[dict[str, str]]]] = {}
         queue: deque[tuple[str, int, list[dict[str, str]]]] = deque()
@@ -868,8 +1101,9 @@ def query(
                 "SELECT target_chunk, kind, label FROM edges WHERE source_chunk=? ORDER BY kind, label, target_chunk",
                 (source,),
             ).fetchall()
+            neighbors.extend(typed_graph_neighbors(connection, source, graph_limit - expanded))
             for target, kind, label in neighbors:
-                if kind not in EDGE_KINDS or expanded >= graph_limit:
+                if (kind not in EDGE_KINDS and ">" not in str(kind)) or expanded >= graph_limit:
                     continue
                 expanded += 1
                 next_path = path_edges + [{"kind": str(kind), "label": str(label), "from": source}]
@@ -1016,10 +1250,14 @@ def pack(
     graph_depth: int,
     graph_limit: int,
     min_savings_percent: float = 15.0,
+    require_graph: bool = False,
 ) -> dict[str, object]:
     if budget_tokens < 64:
         raise CacheError("budget tokens must be at least 64")
-    result = query(root, cache, query_text, limit, graph_depth, graph_limit)
+    result = query(
+        root, cache, query_text, limit, graph_depth, graph_limit,
+        require_graph=require_graph,
+    )
     candidates = list(result["results"])
     step_range, critical = mandatory_step_range(
         root, skill, step_id, list(result.get("terms", []))
@@ -1271,7 +1509,7 @@ def parser() -> argparse.ArgumentParser:
     commands = cli.add_subparsers(dest="command", required=True)
     for name in (
         "build", "warm", "query", "pack", "benchmark", "inspect", "verify",
-        "observe", "reset-observations", "purge",
+        "observe", "reset-observations", "purge", "graph-preflight", "graph-stats",
     ):
         child = commands.add_parser(name)
         child.add_argument("--root", type=Path, default=Path.cwd())
@@ -1281,6 +1519,7 @@ def parser() -> argparse.ArgumentParser:
             child.add_argument("--limit", type=int, default=12)
             child.add_argument("--graph-depth", type=int, default=1)
             child.add_argument("--graph-limit", type=int, default=64)
+            child.add_argument("--require-graph", action="store_true")
         if name == "pack":
             child.add_argument("--skill", required=True)
             child.add_argument("--step-id", required=True)
@@ -1289,6 +1528,7 @@ def parser() -> argparse.ArgumentParser:
         if name == "warm":
             child.add_argument("--lock-timeout-ms", type=int, default=1500)
             child.add_argument("--retries", type=int, default=1)
+            child.add_argument("--require-graph", action="store_true")
         if name == "benchmark":
             child.add_argument("--cases", type=Path, required=True)
             child.add_argument("--limit", type=int, default=12)
@@ -1296,6 +1536,7 @@ def parser() -> argparse.ArgumentParser:
             child.add_argument("--graph-limit", type=int, default=64)
         if name == "build":
             child.add_argument("--rebuild", action="store_true")
+            child.add_argument("--require-graph", action="store_true")
     return cli
 
 
@@ -1308,23 +1549,27 @@ def main() -> int:
         root = resolve_root(args.root)
         cache = resolve_cache(root, args.cache)
         if args.command == "build":
-            output = build(root, cache, args.rebuild)
+            output = build(root, cache, args.rebuild, require_graph=args.require_graph)
         elif args.command == "warm":
             output = warm(
                 root, cache, lock_timeout_ms=args.lock_timeout_ms,
-                retries=args.retries,
+                retries=args.retries, require_graph=args.require_graph,
             )
             record_observation(
                 root, operation="warm", outcome="ready",
                 reason=str(output.get("status", "ready")),
             )
         elif args.command == "query":
-            output = query(root, cache, args.query, args.limit, args.graph_depth, args.graph_limit)
+            output = query(
+                root, cache, args.query, args.limit, args.graph_depth,
+                args.graph_limit, require_graph=args.require_graph,
+            )
         elif args.command == "pack":
             output = pack(
                 root, cache, args.query, args.skill, args.step_id, args.budget_tokens,
                 args.limit, args.graph_depth, args.graph_limit,
                 args.min_savings_percent,
+                require_graph=args.require_graph,
             )
             record_observation(
                 root,
@@ -1344,6 +1589,12 @@ def main() -> int:
             )
         elif args.command in {"inspect", "verify"}:
             output = inspect(root, cache, args.command)
+        elif args.command == "graph-preflight":
+            output = graph_preflight(root)
+            if not output.get("complete"):
+                raise CacheError("graph-parser-preflight-incomplete")
+        elif args.command == "graph-stats":
+            output = graph_stats(root, cache)
         elif args.command == "observe":
             output = observations(root)
         elif args.command == "reset-observations":

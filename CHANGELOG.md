@@ -12,6 +12,12 @@
 - Added TOON golden benchmark cases and receipts comparing lexical,
   graph-enhanced, packed, and direct-read behavior with path recall, anchor
   recall, savings, and stable fingerprints.
+- Added deterministic read-through cache integration at the StepCard context
+  boundary with one-writer coordination, aggregate observations, and safe
+  direct-read recovery.
+- Added a complete offline Tree-sitter AST graph for TypeScript, Python,
+  JavaScript, Java, C#, PHP, Shell, C++, Go, Rust, Kotlin, and Swift, including
+  typed symbol, call, import, path, adjacency, and specification-trace edges.
 
 ### Security and context engineering
 
@@ -24,6 +30,10 @@
 - Required every cache-backed pack to begin with its manifest-resolved owning
   step document, retain 100 percent of declared critical anchors, and achieve
   at least 15 percent net savings or fall back explicitly to direct reading.
+- Isolated native parsers in time-bounded child processes with a minimal
+  environment and denied network, pinned every runtime wheel by exact version
+  and SHA-256, and made incomplete or failed AST parsing incapable of claiming
+  graph completeness.
 
 ## v4.1.1 - 2026-08-03
 

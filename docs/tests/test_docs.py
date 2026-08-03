@@ -441,7 +441,7 @@ class DocumentationValidationTests(unittest.TestCase):
         skills = skill_sources()
         records = [script_record(path) for path in script_sources()]
         self.assertEqual(len(skills), 46)
-        self.assertEqual(len(records), 118)
+        self.assertEqual(len(records), 120)
         self.assertEqual(len(SKILL_SELECTION_BOUNDARIES), 46)
         self.assertEqual(validate_selection_contract(skills), [])
         self.assertEqual(validate_role_skill_groups(skills), [])

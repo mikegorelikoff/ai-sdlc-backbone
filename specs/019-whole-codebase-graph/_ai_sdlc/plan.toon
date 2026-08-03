@@ -1,0 +1,37 @@
+feature: 019-whole-codebase-graph
+workspace: implementation
+flow_mode: full
+updated_at: 2026-08-04
+source_artifacts[6]{artifact,path}:
+  requirements,requirements.md
+  design,design.md
+  test_cases,test-cases.md
+  qa,qa.md
+  tasks,tasks.md
+  decisions,decision-log.md
+trace[8]{acceptance_id,test_cases,tasks}:
+  AC-001,TC-003/TC-004/TC-024,T002/T007/T008/T010
+  AC-002,TC-001/TC-005/TC-007,T001/T003/T007/T008
+  AC-003,TC-002/TC-006/TC-008,T001/T003/T007/T008/T010
+  AC-004,TC-009/TC-020,T004/T005/T007/T008
+  AC-005,TC-011/TC-012,T004/T007/T008/T010
+  AC-006,TC-010/TC-013/TC-014,T004/T005/T007/T008
+  AC-007,TC-015/TC-016/TC-017/TC-018,T006/T007/T008/T010
+  AC-008,TC-001/TC-018/TC-019/TC-021/TC-022/TC-023/TC-024,T001/T006/T007/T008/T009/T010
+tasks[10]{id,status,refs,tests,depends_on,artifact,decision_ref}:
+  T001,done,FR-002/NFR-002/NFR-005/NFR-007/AC-002/AC-003/AC-008/TC-001/TC-002/TC-008/TC-023/DEC-006,TC-001/TC-002/TC-005/TC-006/TC-007/TC-008/TC-018/TC-019/TC-021/TC-022/TC-023/TC-024,none,parser-lock.toon; language-policy.toon; offline setup/preflight code; and target contract.,TBD
+  T002,done,FR-001/AC-001/TC-003/TC-004/TC-024,TC-003/TC-004/TC-024,T001,reconciled file inventory and exclusion facts.,TBD
+  T003,done,FR-002/FR-004/AC-002/AC-003/TC-005/TC-006/TC-007/TC-008,TC-001/TC-002/TC-005/TC-006/TC-007/TC-008,T001/T002,canonical AST symbol; occurrence; import; and provable-call facts.,TBD
+  T004,done,FR-003/FR-004/FR-005/AC-004/AC-005/AC-006/TC-009/TC-010/TC-011/TC-012,TC-009/TC-010/TC-011/TC-012/TC-013/TC-014/TC-020,T003,verified bounded heterogeneous graph projection.,TBD
+  T005,done,FR-006/FR-008/AC-004/AC-006/TC-013/TC-014/TC-020,TC-009/TC-010/TC-013/TC-014/TC-020,T004,fresh deterministic lifecycle and TOON diagnostics.,TBD
+  T006,done,FR-007/FR-008/AC-007/AC-008/TC-015/TC-016/TC-017/TC-018/TC-019,TC-001/TC-015/TC-016/TC-017/TC-018/TC-019/TC-021/TC-022/TC-023/TC-024,T005,deterministic economical graph retrieval with direct-read fallback.,TBD
+  T007,done,AC-001/AC-002/AC-003/AC-004/AC-005/AC-006/AC-007/AC-008/TC-001/TC-002/TC-003/TC-004/TC-005/TC-006/TC-007/TC-008/TC-009/TC-010/TC-011/TC-012/TC-013/TC-014/TC-015/TC-016/TC-017/TC-018/TC-019/TC-020/TC-023/TC-024,TC-001/TC-002/TC-003/TC-004/TC-005/TC-006/TC-007/TC-008/TC-009/TC-010/TC-011/TC-012/TC-013/TC-014/TC-015/TC-016/TC-017/TC-018/TC-019/TC-020/TC-021/TC-022/TC-023/TC-024,T001/T002/T003/T004/T005/T006,focused deterministic test suites and TOON fixture manifests.,TBD
+  T008,done,AC-001/AC-002/AC-003/AC-004/AC-005/AC-006/AC-007/AC-008/TC-021/TC-022/DEC-007,TC-001/TC-002/TC-003/TC-004/TC-005/TC-006/TC-007/TC-008/TC-009/TC-010/TC-011/TC-012/TC-013/TC-014/TC-015/TC-016/TC-017/TC-018/TC-019/TC-020/TC-021/TC-022/TC-023/TC-024,T007,deterministic audit evidence with production_ready gate and token economics.,TBD
+  T009,done,AC-008/TC-021/TC-022/TC-023/TC-024/DEC-007,TC-001/TC-018/TC-019/TC-021/TC-022/TC-023/TC-024,T008,validation.md; security-review.md; code-review.md; and zero unresolved release blockers.,TBD
+  T010,done,FR-001/FR-002/FR-005/FR-006/FR-007/FR-008/AC-001/AC-003/AC-005/AC-007/AC-008/TC-001/TC-019/TC-020/TC-023/TC-024/DEC-006/DEC-007,TC-001/TC-002/TC-003/TC-004/TC-006/TC-008/TC-011/TC-012/TC-015/TC-016/TC-017/TC-018/TC-019/TC-021/TC-022/TC-023/TC-024,T001/T005/T006/T007,current skill contract; operator guide; parser provenance guidance; and generated references.,TBD
+validation_sequence[5]{step,command}:
+  1,check_refinement_context.py --full-flow
+  2,check_clarify.py --full-flow
+  3,check_checklist.py --full-flow
+  4,plan_links.py --check --full-flow
+  5,analyze_spec.py --full-flow && validate_spec.py --full-flow

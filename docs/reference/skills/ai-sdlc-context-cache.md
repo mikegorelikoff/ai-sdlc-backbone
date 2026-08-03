@@ -89,7 +89,9 @@ Paths beginning with `skills/` below are canonical **source-checkout** forms for
 
 | Helper | Purpose | Direct starting point | Repository effect |
 | --- | --- | --- | --- |
+| [`code_graph.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-context-cache/scripts/code_graph.py) | Deterministic Tree-sitter code graph primitives for the local context cache. | `Imported helper; use the owning skill rather than invoking it directly.` | Read-only/reporting by default; inspect `--help` and the owning skill before direct use. |
 | [`context_cache.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-context-cache/scripts/context_cache.py) | Build and query a deterministic local repository context cache. | `python3 skills/ai-sdlc-context-cache/scripts/context_cache.py --help` | May write only through an explicit mutation mode; start with `--help`, check, preview, or emit. |
+| [`install_graph_runtime.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-context-cache/scripts/install_graph_runtime.py) | Verify and install the offline hash-locked AST graph runtime. | `python3 skills/ai-sdlc-context-cache/scripts/install_graph_runtime.py --help` | Read-only/reporting by default; inspect `--help` and the owning skill before direct use. |
 
 The owning agent normally runs these helpers. A human uses the direct starting point for diagnosis or reproduction after inspecting `--help` and repository policy.
 
@@ -143,8 +145,8 @@ The downstream consumer rechecks artifacts and freshness; it does not trust a pr
 Build explicitly, then request one bounded pack:
 
 ```bash
-python3 skills/ai-sdlc-context-cache/scripts/context_cache.py build --root .
-python3 skills/ai-sdlc-context-cache/scripts/context_cache.py pack --root . --query "context freshness" --skill ai-sdlc-validation --step-id execute --budget-tokens 4000
+python3 skills/ai-sdlc-context-cache/scripts/context_cache.py build --root . --require-graph
+python3 skills/ai-sdlc-context-cache/scripts/context_cache.py pack --root . --query "context freshness" --skill ai-sdlc-validation --step-id execute --budget-tokens 4000 --min-savings-percent 25 --require-graph
 ```
 
 ## Source contract
