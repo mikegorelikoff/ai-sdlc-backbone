@@ -16,9 +16,19 @@ approvals remain controlling. The portable boundary stays TOON-only, while the
 SQLite FTS5 database is disposable project-local state excluded from Git.
 
 The public install path remains the 45-skill baseline. Users deliberately add
-the 46th cache skill with `--module context-cache`, build the index through a
-separate authorized command, verify source hashes before reuse, and fall back
-to direct reads whenever freshness or context economics fail.
+the 46th cache skill with `--module context-cache`; that project-scoped install
+is the opt-in for bounded automatic StepCard warming and reuse. A separate
+rollback-journal control database serializes warmers, while source verification,
+strict TOON policy, manifest-budget clamping, v4 validation, and direct-read
+fallback keep the cache from becoming authority or an availability dependency.
+Standalone build, query, verify, benchmark, observe, reset, and purge commands
+remain available for reproducible operation and support.
+
+Only low-cardinality aggregate operation outcomes and token economics persist
+in the control database. Query text, prompts, retrieved content, credentials,
+identity, and wall-clock values are excluded. The accepted index remains in
+rollback-journal mode; unconditional WAL is deferred because the researched
+host runtime falls within an upstream WAL-reset corruption advisory range.
 
 Primary research and full-flow refinement define the first release as
 graph-enhanced RAG rather than full GraphRAG: it combines deterministic FTS5

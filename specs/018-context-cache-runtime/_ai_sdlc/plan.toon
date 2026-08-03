@@ -1,0 +1,35 @@
+feature: 018-context-cache-runtime
+workspace: implementation
+flow_mode: full
+updated_at: 2026-08-03
+source_artifacts[6]{artifact,path}:
+  requirements,requirements.md
+  design,design.md
+  test_cases,test-cases.md
+  qa,qa.md
+  tasks,tasks.md
+  decisions,decision-log.md
+trace[8]{acceptance_id,test_cases,tasks}:
+  AC-001,TC-001/TC-010,T001/T006/T007
+  AC-002,TC-002/TC-003/TC-011,T002/T005/T007
+  AC-003,TC-004,T003/T006/T007/T008
+  AC-004,TC-005/TC-010,T001/T006/T007
+  AC-005,TC-006/TC-012,T004/T005/T007/T008
+  AC-006,TC-007/TC-011,T001/T006/T007/T008
+  AC-007,TC-008/TC-012,T005/T007
+  AC-008,TC-003/TC-009,T002/T005/T007
+tasks[8]{id,status,refs,tests,depends_on,artifact,decision_ref}:
+  T001,done,FR-001/FR-004/FR-007/AC-001/AC-004/AC-006/TC-001/TC-005/TC-007/TC-010/DEC-002,TC-001/TC-005/TC-007/TC-010/TC-011,none,Shared runtime integration with validated pack or direct fallback.,TBD
+  T002,done,FR-002/FR-008/AC-002/AC-008/TC-002/TC-003/TC-011/DEC-003,TC-002/TC-003/TC-009/TC-011,T001,Convergent fresh cache lifecycle.,TBD
+  T003,done,FR-003/AC-003/TC-004/DEC-004,TC-004,T001,Deterministic governed policy resolution.,TBD
+  T004,done,FR-005/FR-006/AC-005/TC-006/TC-012/DEC-005,TC-006/TC-012,T002,Bounded local operational evidence.,TBD
+  T005,done,AC-002/AC-005/AC-007/AC-008/TC-002/TC-003/TC-006/TC-008/TC-009/TC-011/TC-012,TC-002/TC-003/TC-006/TC-008/TC-009/TC-011/TC-012,T002/T004,Context-cache focused automated suite.,TBD
+  T006,done,AC-001/AC-003/AC-004/AC-006/TC-001/TC-004/TC-005/TC-007/TC-010,TC-001/TC-004/TC-005/TC-007/TC-010/TC-011,T001/T003,Runtime integration automated suite.,TBD
+  T007,done,AC-001/AC-002/AC-003/AC-004/AC-005/AC-006/AC-007/AC-008/TC-001/TC-002/TC-003/TC-004/TC-005/TC-006/TC-007/TC-008/TC-009/TC-010/TC-011/TC-012/DEC-007,TC-001/TC-002/TC-003/TC-004/TC-005/TC-006/TC-007/TC-008/TC-009/TC-010/TC-011/TC-012,T005/T006,validation.md; security-review.md; and code-review.md.,TBD
+  T008,done,FR-003/FR-005/FR-006/FR-007/AC-003/AC-005/AC-006/TC-004/TC-006/TC-007/TC-012/DEC-003/DEC-004/DEC-005/DEC-006/DEC-007,TC-004/TC-006/TC-007/TC-011/TC-012,T003/T004/T005/T006,Cache skill contract and public operating guide.,TBD
+validation_sequence[5]{step,command}:
+  1,check_refinement_context.py --full-flow
+  2,check_clarify.py --full-flow
+  3,check_checklist.py --full-flow
+  4,plan_links.py --check --full-flow
+  5,analyze_spec.py --full-flow && validate_spec.py --full-flow

@@ -1,0 +1,112 @@
+commands[10]:
+  - argv[3]: python3,skills/ai-sdlc-context-cache/tests/test_context_cache.py,"-v"
+    duration_ms: 1744
+    exit_code: 0
+    id: context-cache-tests
+    output_limited: false
+    stderr_bytes: 1049
+    stderr_sha256: 1f9d625aa81a3388818d1502002160e62245e60bcffce36a6d96bdd92fadcbb7
+    stdout_bytes: 0
+    stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    trace_ids[8]: TC-002,TC-003,TC-005,TC-006,TC-008,TC-009,TC-011,TC-012
+  - argv[3]: python3,skills/ai-sdlc-shared-runtime/tests/test_steps.py,"-v"
+    duration_ms: 2447
+    exit_code: 0
+    id: stepcard-focused-tests
+    output_limited: false
+    stderr_bytes: 1761
+    stderr_sha256: 5010c8d60c8b8c64617f968a591e88919afeb2e1b6e311d9229589fe348aaa39
+    stdout_bytes: 0
+    stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    trace_ids[5]: TC-001,TC-004,TC-005,TC-007,TC-010
+  - argv[9]: python3,"-m",unittest,discover,"-s",skills/ai-sdlc-shared-runtime/tests,"-p",test*.py,"-v"
+    duration_ms: 116795
+    exit_code: 0
+    id: shared-runtime-regression
+    output_limited: false
+    stderr_bytes: 21432
+    stderr_sha256: bcf854fef2d631feb0bbd728263d4293b5693e204b10515b91f5cb235e75888c
+    stdout_bytes: 0
+    stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    trace_ids[9]: AC-001,AC-002,AC-003,AC-004,AC-005,AC-006,AC-007,AC-008,TC-010
+  - argv[8]: python3,skills/ai-sdlc-shared-runtime/scripts/refinement_status.py,"--feature",018-context-cache-runtime,"--gate",full,"--format",toon
+    duration_ms: 180
+    exit_code: 0
+    id: refinement-full-gate
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 317
+    stdout_sha256: a16e5e3b7b6ef80fcf4d3a61caa9e2f92cf264ad43dadd2d3c6e45186eaa3082
+    trace_ids[3]: AC-001,AC-008,TC-012
+  - argv[5]: python3,skills/ai-sdlc-sdd/scripts/plan_links.py,specs/018-context-cache-runtime,"--check","--full-flow"
+    duration_ms: 132
+    exit_code: 0
+    id: sdd-plan-links
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 221
+    stdout_sha256: 8bd112566523587f4ad9453547527b8820b3d10403ec7b1cf5739984593900c6
+    trace_ids[4]: AC-001,AC-008,TC-001,TC-012
+  - argv[4]: python3,skills/ai-sdlc-sdd/scripts/validate_spec.py,specs/018-context-cache-runtime,"--full-flow"
+    duration_ms: 138
+    exit_code: 0
+    id: sdd-validation
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 51
+    stdout_sha256: ec94f9670c997b84119ba174046df0d9e97862e8194e66520faea16acf580a9d
+    trace_ids[4]: AC-001,AC-008,TC-001,TC-012
+  - argv[3]: python3,docs/scripts/build_catalog.py,"--check"
+    duration_ms: 838
+    exit_code: 0
+    id: documentation-catalog
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 49
+    stdout_sha256: 9ea9fc728e281e374223d39aa575913b6e64a53ba3a1475ec0bfb8bec4467f18
+    trace_ids[3]: AC-005,AC-006,TC-012
+  - argv[2]: python3,docs/scripts/validate_docs.py
+    duration_ms: 2254
+    exit_code: 0
+    id: documentation-contract
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 109
+    stdout_sha256: 052579684d057bb34d77d158cd37813cd83e8c228d50341158aec39acb6f8850
+    trace_ids[3]: AC-005,AC-006,TC-012
+  - argv[9]: python3,"-m",unittest,discover,"-s",docs/tests,"-p",test_*.py,"-v"
+    duration_ms: 8626
+    exit_code: 0
+    id: documentation-tests
+    output_limited: false
+    stderr_bytes: 4425
+    stderr_sha256: 1f87ff1ef05a16c06a1bc62eddd7e481590c8fb0fba9abab8978c0a9c4b1beee
+    stdout_bytes: 0
+    stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    trace_ids[3]: AC-005,AC-006,TC-012
+  - argv[3]: git,diff,"--check"
+    duration_ms: 20
+    exit_code: 0
+    id: diff-hygiene
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 0
+    stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    trace_ids[3]: AC-007,AC-008,TC-012
+environment:
+  platform: macOS-26.3.1-arm64-arm-64bit
+  python: 3.9.6
+evidence_trust: local-structural-not-authenticated
+executed_at: "2026-08-03T19:11:41.692236Z"
+plan_path: specs/018-context-cache-runtime/_ai_sdlc/validation-plan.toon
+plan_sha256: bd22a888daf07a8f6824285cf766a64eae718deb65e900299d8f473fc81bb8a3
+receipt_fingerprint: e1ec8dc42ad0817d07c07be7fbcc4e0fb81cc59605a89f117632138ef126141a
+revision: ef678517f326e7c9bb3e6a5dd9f266cb56658b28
+schema: ai-sdlc-validation-receipt/v1
+workspace_fingerprint: de72dff24c34a7a5bfe3053eb2d7fc4e5413ad450e94071960da059dceab6710

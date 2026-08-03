@@ -2,17 +2,17 @@
 okf_version: "0.2"
 ---
 
-# 017-local-context-cache
+# 018-context-cache-runtime
 
 Progressive index for this OKF knowledge bundle.
 
 ## Concepts
 
-- [Branch Plan](branch-plan.md) — ai-sdlc.branch-plan · draft
+- [Branch Plan](branch-plan.md) — ai-sdlc.branch-plan · stable
 - [Code Review](code-review.md) — ai-sdlc.code-review · stable
 - [Commit Message](commit-message.md) — ai-sdlc.commit-message · stable
 - [Commit Readiness](commit-readiness.md) — ai-sdlc.commit-readiness · stable
-- [Decision Log](decision-log.md) — ai-sdlc.decision-log · draft
+- [Decision Log](decision-log.md) — ai-sdlc.decision-log · stable
 - [Design](design.md) — ai-sdlc.design · stable
 - [Implementation Plan](plan.md) — ai-sdlc.implementation-plan · draft
 - [QA Plan](qa.md) — ai-sdlc.qa-plan · stable

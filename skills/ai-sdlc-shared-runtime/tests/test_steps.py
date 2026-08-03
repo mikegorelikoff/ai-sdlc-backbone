@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import sys
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
@@ -298,6 +299,74 @@ class StepManifestTests(unittest.TestCase):
     def test_role_and_action_filters_are_optional_constraints(self) -> None:
         selection = STEPS.select_steps(ROOT, "ai-sdlc-sdd", "execute")
         self.assertEqual(len(selection.selected), 1)
+
+    def test_context_cache_policy_is_exact_and_clamped_to_manifest(self) -> None:
+        cache_root = ROOT / "skills/ai-sdlc-context-cache"
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / ".ai-sdlc").mkdir()
+            policy = {
+                "schema": STEPS.CACHE_POLICY_SCHEMA,
+                "defaults": {"budget_tokens": 9000, "limit": 8},
+                "overrides": [
+                    {
+                        "skill": "ai-sdlc-ba",
+                        "step_id": "execute",
+                        "budget_tokens": 7000,
+                        "graph_depth": 2,
+                    }
+                ],
+            }
+            path = root / ".ai-sdlc/context-cache-policy.toon"
+            path.write_text(toon_codec.dumps(policy), encoding="utf-8")
+            settings = STEPS._cache_settings(
+                root, cache_root, "ai-sdlc-ba", "execute", 1200, 15.0
+            )
+            self.assertEqual(settings["budget_tokens"], 1200)
+            self.assertEqual(settings["limit"], 8)
+            self.assertEqual(settings["graph_depth"], 2)
+
+            policy["defaults"]["unknown"] = True
+            path.write_text(toon_codec.dumps(policy), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "CACHE_POLICY_INVALID"):
+                STEPS._cache_settings(
+                    root, cache_root, "ai-sdlc-ba", "execute", 1200, 15.0
+                )
+
+    def test_project_installed_cache_is_used_by_normal_stepcard_compilation(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            fixture(root)
+            installed = root / ".agents/skills"
+            installed.mkdir(parents=True)
+            for name in ("ai-sdlc-context-cache", "ai-sdlc-shared-runtime"):
+                shutil.copytree(ROOT / "skills" / name, installed / name)
+            evidence = root / "docs"
+            evidence.mkdir()
+            for index in range(6):
+                evidence.joinpath(f"evidence-{index}.md").write_text(
+                    ("fixture deterministic execution evidence\n" * 80),
+                    encoding="utf-8",
+                )
+            selection = STEPS.select_steps(
+                root,
+                "ai-sdlc-fixture",
+                "execute",
+                role="software-engineer",
+                goal="fixture deterministic execution evidence",
+            )
+            self.assertEqual(selection.step_cards[0]["context"]["strategy"], "packed")
+            self.assertTrue((root / ".ai-sdlc/cache/context-cache.sqlite3").is_file())
+
+    def test_context_cache_install_below_symlinked_parent_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp, tempfile.TemporaryDirectory() as outside:
+            root = Path(temp)
+            external = Path(outside) / ".agents"
+            installed = external / "skills/ai-sdlc-context-cache"
+            installed.parent.mkdir(parents=True)
+            shutil.copytree(ROOT / "skills/ai-sdlc-context-cache", installed)
+            (root / ".agents").symlink_to(external, target_is_directory=True)
+            self.assertIsNone(STEPS._context_cache_root(root))
 
     def test_run_plan_tasks_are_context_complete_step_card_projections(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

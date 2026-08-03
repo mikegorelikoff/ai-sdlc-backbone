@@ -18,6 +18,22 @@ description: Build and query an optional deterministic local repository context 
 - Output: disposable SQLite state plus canonical TOON receipts and context packs
 - Runtime: Python standard library and SQLite FTS5; no network calls
 
+## Automatic StepCard Runtime
+
+- Installation is the opt-in: when this skill exists in a project-scoped
+  Harness install, shared StepCard compilation performs bounded warm-and-pack.
+- A separate rollback-journal control database serializes warmers with
+  `BEGIN IMMEDIATE`; accepted indexes are source-checked and atomically replaced.
+- Resolve strict TOON policy from `references/runtime-policy.toon`, then an
+  optional `.ai-sdlc/context-cache-policy.toon`; exact skill/step overrides can
+  only narrow the owning manifest budget and runtime bounds.
+- Validate every cached result as `ai-sdlc-context-pack/v4`. On absence,
+  contention, drift, corruption, timeout, invalid policy, poor economics, or
+  validation failure, compile authoritative direct-read context.
+- Persist only aggregate operation/outcome/reason counts and token economics.
+  Use `observe` and `reset-observations`; never store queries, prompts, retrieved
+  content, credentials, identity, or wall-clock values in deterministic output.
+
 ## Step Selector
 
 This table is generated from `steps/manifest.toon`. The manifest and linked

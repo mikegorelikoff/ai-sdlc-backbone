@@ -35,11 +35,30 @@ Use `claude-code-project` for `.claude/skills/`.
 
 ## Procedure
 
+After the optional module is installed, normal Harness StepCard compilation
+automatically warms and uses a valid economical cache pack. No background
+daemon runs. If the module is absent, policy is invalid, a timeout occurs,
+sources drift, the index is corrupt, anchors are incomplete, or savings are too
+low, the runtime uses the existing direct-read compiler.
+
+The built-in strict policy is
+`.agents/skills/ai-sdlc-context-cache/references/runtime-policy.toon`. A project
+may add `.ai-sdlc/context-cache-policy.toon` with the same schema and exact
+`skill` plus `step_id` overrides. Values are always clamped to the owning step
+manifest; unknown fields fail safely. Portable policy is TOON only.
+
 Build the local projection explicitly:
 
 ```bash
 python3 .agents/skills/ai-sdlc-context-cache/scripts/context_cache.py \
   build --root .
+```
+
+For the concurrency-safe operation used by StepCards, run:
+
+```bash
+python3 .agents/skills/ai-sdlc-context-cache/scripts/context_cache.py \
+  warm --root . --lock-timeout-ms 1500 --retries 1
 ```
 
 Query explained lexical and relation-aware evidence:
@@ -106,11 +125,21 @@ lexical and graph-enhanced recall, mandatory-anchor recall, savings, and stable
 fingerprints. Wall-clock latency stays in a separate observational tier so the
 deterministic receipt remains byte-identical.
 
+Inspect or reset privacy-safe aggregate outcomes and token economics:
+
+```bash
+python3 .agents/skills/ai-sdlc-context-cache/scripts/context_cache.py observe --root .
+python3 .agents/skills/ai-sdlc-context-cache/scripts/context_cache.py reset-observations --root .
+```
+
+These operations never expose query text, prompts, retrieved content,
+credentials, user identity, or wall-clock values.
+
 ## Troubleshooting
 
 | Symptom | Safe response |
 | --- | --- |
-| Cache is missing | Run the explicit `build` command or use direct reads. Query never rebuilds silently. |
+| Cache is missing | Normal StepCard compilation performs bounded `warm`; standalone `query` never rebuilds silently. |
 | Cache is stale | Inspect changed paths, rebuild, and verify again. Do not use stale results as sufficient context. |
 | FTS5 is unavailable | Use an organization-approved Python build with FTS5 or continue with direct reads. |
 | Query returns `direct_read` | Read the named paths and reasons; narrow or clarify the query before rebuilding. |

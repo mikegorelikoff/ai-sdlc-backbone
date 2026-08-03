@@ -62,6 +62,94 @@ class ContextCacheTests(unittest.TestCase):
             self.assertEqual(query_a["strategy"], "cached")
             self.assertTrue(any(item["distance"] > 0 for item in query_a["results"]))
 
+    def test_concurrent_warmers_converge_and_observations_are_aggregate_only(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = self.repository(directory)
+            cache = CACHE.resolve_cache(root, None)
+            processes = [
+                subprocess.Popen(
+                    [
+                        sys.executable,
+                        str(SCRIPT),
+                        "warm",
+                        "--root",
+                        str(root),
+                        "--lock-timeout-ms",
+                        "5000",
+                        "--retries",
+                        "1",
+                    ],
+                    text=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                )
+                for _ in range(4)
+            ]
+            from ai_sdlc_toon import decode_toon
+
+            receipts = []
+            for process in processes:
+                stdout, stderr = process.communicate(timeout=15)
+                self.assertEqual(process.returncode, 0, stderr)
+                receipts.append(decode_toon(stdout))
+            self.assertEqual(
+                len({item["cache_fingerprint"] for item in receipts}), 1
+            )
+            self.assertTrue(CACHE.inspect(root, cache)["fresh"])
+
+            CACHE.record_observation(
+                root,
+                operation="pack",
+                outcome="cached",
+                reason="packed",
+                raw_tokens=100,
+                packed_tokens=60,
+            )
+            observed = CACHE.observations(root)
+            self.assertEqual(observed["schema"], CACHE.OBSERVATION_SCHEMA)
+            rendered = CACHE.canonical(observed)
+            for forbidden in ("query", "prompt", "content", "credential", "identity"):
+                self.assertNotIn(forbidden, rendered.lower())
+            self.assertEqual(CACHE.observations(root, reset=True)["status"], "reset")
+            self.assertEqual(CACHE.observations(root)["rows"], [])
+
+    def test_source_change_during_build_never_publishes_candidate(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = self.repository(directory)
+            cache = CACHE.resolve_cache(root, None)
+            source = root / "src/runtime.py"
+            original_read_source = CACHE.read_source
+            mutated = False
+
+            def read_and_mutate(project_root: Path, relative: str):
+                nonlocal mutated
+                collected = original_read_source(project_root, relative)
+                if relative == "src/runtime.py" and not mutated:
+                    mutated = True
+                    source.write_text(
+                        source.read_text(encoding="utf-8") + "\n# changed during build\n",
+                        encoding="utf-8",
+                    )
+                return collected
+
+            CACHE.read_source = read_and_mutate
+            try:
+                with self.assertRaisesRegex(CACHE.CacheError, "source snapshot changed"):
+                    CACHE.build(root, cache)
+            finally:
+                CACHE.read_source = original_read_source
+            self.assertFalse(cache.exists())
+
+    def test_warm_rebuilds_corrupt_state_safely(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = self.repository(directory)
+            cache = CACHE.resolve_cache(root, None)
+            cache.parent.mkdir(parents=True)
+            cache.write_bytes(b"not sqlite")
+            receipt = CACHE.warm(root, cache, lock_timeout_ms=1000, retries=1)
+            self.assertTrue(receipt["fresh"])
+            self.assertTrue(CACHE.inspect(root, cache)["fresh"])
+
     def test_incremental_change_removes_stale_rows(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = self.repository(directory)
@@ -200,6 +288,22 @@ class ContextCacheTests(unittest.TestCase):
             self.assertTrue((root / "src/runtime.py").is_file())
             with self.assertRaisesRegex(CACHE.CacheError, "escapes"):
                 CACHE.resolve_cache(root, root.parent / "outside.sqlite3")
+
+            safe_cache_dir = root / "safe-cache"
+            safe_cache_dir.mkdir()
+            (root / "linked-cache").symlink_to(
+                safe_cache_dir, target_is_directory=True
+            )
+            with self.assertRaisesRegex(CACHE.CacheError, "symbolic links"):
+                CACHE.resolve_cache(root, Path("linked-cache/cache.sqlite3"))
+
+            linked_root = root.parent / "linked-root"
+            linked_root.symlink_to(root, target_is_directory=True)
+            try:
+                with self.assertRaisesRegex(CACHE.CacheError, "symbolic link"):
+                    CACHE.resolve_root(linked_root)
+            finally:
+                linked_root.unlink()
 
     def test_cli_stdout_is_toon_for_success_and_failure(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

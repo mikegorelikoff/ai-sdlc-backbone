@@ -13,6 +13,7 @@ import sqlite3
 import subprocess
 import sys
 import tempfile
+import time
 import unicodedata
 from collections import defaultdict, deque
 from dataclasses import asdict
@@ -40,7 +41,10 @@ QUERY_SCHEMA = "ai-sdlc-context-query/v1"
 ERROR_SCHEMA = "ai-sdlc-context-cache-error/v1"
 BENCHMARK_CASES_SCHEMA = "ai-sdlc-context-cache-benchmark-cases/v1"
 BENCHMARK_SCHEMA = "ai-sdlc-context-cache-benchmark/v1"
+CONTROL_SCHEMA = "ai-sdlc-context-cache-control/v1"
+OBSERVATION_SCHEMA = "ai-sdlc-context-cache-observations/v1"
 DEFAULT_CACHE = ".ai-sdlc/cache/context-cache.sqlite3"
+DEFAULT_CONTROL = ".ai-sdlc/cache/context-cache-control.sqlite3"
 MAX_FILE_BYTES = 262_144
 MAX_FILES = 20_000
 CHUNK_LINES = 60
@@ -96,8 +100,10 @@ def digest(value: object) -> str:
 
 
 def resolve_root(value: Path) -> Path:
+    if value.is_symlink():
+        raise CacheError("repository root must not be a symbolic link")
     root = value.resolve()
-    if not root.is_dir() or root.is_symlink():
+    if not root.is_dir():
         raise CacheError("repository root must be a regular directory")
     return root
 
@@ -109,8 +115,15 @@ def resolve_cache(root: Path, value: Path | None) -> Path:
         candidate = root / candidate
     if candidate.suffix != ".sqlite3":
         raise CacheError("cache path must end with .sqlite3")
-    if candidate.is_symlink():
-        raise CacheError("cache path must not be a symbolic link")
+    try:
+        relative = candidate.relative_to(root)
+    except ValueError as exc:
+        raise CacheError("cache path escapes the repository root") from exc
+    cursor = root
+    for part in relative.parts:
+        cursor = cursor / part
+        if cursor.is_symlink():
+            raise CacheError("cache path must not contain symbolic links")
     resolved = candidate.resolve(strict=False)
     try:
         resolved.relative_to(root)
@@ -119,6 +132,117 @@ def resolve_cache(root: Path, value: Path | None) -> Path:
     if resolved == root:
         raise CacheError("cache path must not be the repository root")
     return resolved
+
+
+def resolve_control(root: Path, value: Path | None = None) -> Path:
+    """Resolve the project-local coordination database without path escape."""
+    return resolve_cache(root, value or Path(DEFAULT_CONTROL))
+
+
+def initialize_control(connection: sqlite3.Connection) -> None:
+    connection.execute("PRAGMA foreign_keys=ON")
+    connection.execute("PRAGMA journal_mode=DELETE")
+    connection.executescript(
+        """
+        CREATE TABLE IF NOT EXISTS control_metadata (
+            key TEXT PRIMARY KEY,
+            value TEXT NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS observations (
+            operation TEXT NOT NULL,
+            outcome TEXT NOT NULL,
+            reason TEXT NOT NULL,
+            count INTEGER NOT NULL,
+            raw_tokens INTEGER NOT NULL,
+            packed_tokens INTEGER NOT NULL,
+            saved_tokens INTEGER NOT NULL,
+            PRIMARY KEY(operation, outcome, reason)
+        );
+        """
+    )
+    connection.execute(
+        "INSERT INTO control_metadata(key, value) VALUES('schema', ?) "
+        "ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+        (CONTROL_SCHEMA,),
+    )
+
+
+def record_observation(
+    root: Path,
+    *,
+    operation: str,
+    outcome: str,
+    reason: str,
+    raw_tokens: int = 0,
+    packed_tokens: int = 0,
+) -> None:
+    """Persist only bounded, low-cardinality aggregate runtime economics."""
+    allowed_operations = {"warm", "pack", "fallback"}
+    allowed_outcomes = {"ready", "cached", "direct_read", "error"}
+    if operation not in allowed_operations or outcome not in allowed_outcomes:
+        raise CacheError("observation dimensions are not allowlisted")
+    reason = re.sub(r"[^a-z0-9_-]+", "-", reason.lower()).strip("-")[:64]
+    if not reason:
+        reason = "unspecified"
+    raw_tokens = max(0, int(raw_tokens))
+    packed_tokens = max(0, int(packed_tokens))
+    control = resolve_control(root)
+    control.parent.mkdir(parents=True, exist_ok=True)
+    connection = sqlite3.connect(control, timeout=1.0)
+    try:
+        initialize_control(connection)
+        with connection:
+            connection.execute(
+                """
+                INSERT INTO observations(
+                    operation, outcome, reason, count, raw_tokens,
+                    packed_tokens, saved_tokens
+                ) VALUES(?, ?, ?, 1, ?, ?, ?)
+                ON CONFLICT(operation, outcome, reason) DO UPDATE SET
+                    count=count+1,
+                    raw_tokens=raw_tokens+excluded.raw_tokens,
+                    packed_tokens=packed_tokens+excluded.packed_tokens,
+                    saved_tokens=saved_tokens+excluded.saved_tokens
+                """,
+                (
+                    operation,
+                    outcome,
+                    reason,
+                    raw_tokens,
+                    packed_tokens,
+                    max(0, raw_tokens - packed_tokens),
+                ),
+            )
+    finally:
+        connection.close()
+
+
+def observations(root: Path, reset: bool = False) -> dict[str, object]:
+    control = resolve_control(root)
+    if not control.exists():
+        rows: list[list[object]] = []
+    else:
+        connection = sqlite3.connect(control, timeout=1.0)
+        try:
+            initialize_control(connection)
+            rows = [
+                list(row)
+                for row in connection.execute(
+                    "SELECT operation, outcome, reason, count, raw_tokens, "
+                    "packed_tokens, saved_tokens FROM observations "
+                    "ORDER BY operation, outcome, reason"
+                )
+            ]
+            if reset:
+                with connection:
+                    connection.execute("DELETE FROM observations")
+        finally:
+            connection.close()
+    return {
+        "schema": OBSERVATION_SCHEMA,
+        "status": "reset" if reset else "ready",
+        "rows": rows,
+    }
 
 
 def safe_relative(relative: str) -> bool:
@@ -470,6 +594,16 @@ def build(root: Path, cache: Path, rebuild: bool = False) -> dict[str, object]:
             connection.execute("PRAGMA optimize")
         finally:
             connection.close()
+        candidate = open_cache(temporary)
+        try:
+            candidate_fresh, candidate_stale, _ = freshness(root, candidate)
+        finally:
+            candidate.close()
+        if not candidate_fresh:
+            raise CacheError(
+                "source snapshot changed during build: "
+                + "; ".join(candidate_stale[:16])
+            )
         os.replace(temporary, cache)
     finally:
         if temporary.exists():
@@ -491,6 +625,60 @@ def build(root: Path, cache: Path, rebuild: bool = False) -> dict[str, object]:
             "unchanged": len(unchanged),
         },
     )
+
+
+def warm(
+    root: Path,
+    cache: Path,
+    *,
+    lock_timeout_ms: int = 1500,
+    retries: int = 1,
+) -> dict[str, object]:
+    """Serialize automatic warmers and publish only source-checked candidates."""
+    if not 50 <= lock_timeout_ms <= 30_000:
+        raise CacheError("lock timeout must be between 50 and 30000 ms")
+    if retries not in {0, 1}:
+        raise CacheError("warm retries must be zero or one")
+    control = resolve_control(root)
+    control.parent.mkdir(parents=True, exist_ok=True)
+    connection = sqlite3.connect(control, timeout=lock_timeout_ms / 1000.0)
+    try:
+        initialize_control(connection)
+        connection.commit()
+        try:
+            connection.execute("BEGIN IMMEDIATE")
+        except sqlite3.OperationalError as exc:
+            raise CacheError("warm-lock-timeout") from exc
+        try:
+            force_rebuild = False
+            if cache.is_file():
+                try:
+                    current = inspect(root, cache, "warm")
+                    if current["fresh"]:
+                        connection.commit()
+                        return current
+                except (CacheError, sqlite3.Error):
+                    force_rebuild = True
+            last_error = ""
+            for attempt in range(retries + 1):
+                try:
+                    output = build(
+                        root, cache, rebuild=force_rebuild or attempt > 0
+                    )
+                    verified = inspect(root, cache, "warm")
+                    if verified["fresh"]:
+                        connection.commit()
+                        return output
+                    last_error = str(verified["reason"])
+                except (CacheError, sqlite3.Error) as exc:
+                    last_error = str(exc)
+                    force_rebuild = True
+            raise CacheError(f"warm-source-drift: {last_error[:400]}")
+        except Exception:
+            connection.rollback()
+            raise
+    finally:
+        connection.close()
 
 
 def open_cache(cache: Path) -> sqlite3.Connection:
@@ -827,6 +1015,7 @@ def pack(
     limit: int,
     graph_depth: int,
     graph_limit: int,
+    min_savings_percent: float = 15.0,
 ) -> dict[str, object]:
     if budget_tokens < 64:
         raise CacheError("budget tokens must be at least 64")
@@ -875,13 +1064,17 @@ def pack(
     savings = round(((raw - used) / raw * 100.0) if raw else 0.0, 2)
     within_budget = used <= budget_tokens
     cache_usable = result["strategy"] == "cached" and len(selected) > 1
-    economic = savings >= 15.0 and within_budget
+    if not 0.0 <= min_savings_percent <= 100.0:
+        raise CacheError("minimum savings percent must be between 0 and 100")
+    economic = savings >= min_savings_percent and within_budget
     sufficient = not missing and bool(mandatory_content)
     strategy = "packed" if cache_usable and economic and sufficient else "direct_read"
     direct_paths = [] if strategy == "packed" else [str(item["path"]) for item in selected]
     reason_parts = [str(result["reason"])]
-    if savings < 15.0:
-        reason_parts.append(f"net savings {savings:.2f}% are below 15.00%")
+    if savings < min_savings_percent:
+        reason_parts.append(
+            f"net savings {savings:.2f}% are below {min_savings_percent:.2f}%"
+        )
     if len(selected) == 1:
         reason_parts.append("no cache range fits the context budget")
     if missing:
@@ -1076,7 +1269,10 @@ def parser() -> argparse.ArgumentParser:
     cli.add_argument("--assumption")
     cli.add_argument("--state-workspace", choices=("refinement", "implementation"))
     commands = cli.add_subparsers(dest="command", required=True)
-    for name in ("build", "query", "pack", "benchmark", "inspect", "verify", "purge"):
+    for name in (
+        "build", "warm", "query", "pack", "benchmark", "inspect", "verify",
+        "observe", "reset-observations", "purge",
+    ):
         child = commands.add_parser(name)
         child.add_argument("--root", type=Path, default=Path.cwd())
         child.add_argument("--cache", type=Path)
@@ -1089,6 +1285,10 @@ def parser() -> argparse.ArgumentParser:
             child.add_argument("--skill", required=True)
             child.add_argument("--step-id", required=True)
             child.add_argument("--budget-tokens", type=int, default=4000)
+            child.add_argument("--min-savings-percent", type=float, default=15.0)
+        if name == "warm":
+            child.add_argument("--lock-timeout-ms", type=int, default=1500)
+            child.add_argument("--retries", type=int, default=1)
         if name == "benchmark":
             child.add_argument("--cases", type=Path, required=True)
             child.add_argument("--limit", type=int, default=12)
@@ -1109,12 +1309,33 @@ def main() -> int:
         cache = resolve_cache(root, args.cache)
         if args.command == "build":
             output = build(root, cache, args.rebuild)
+        elif args.command == "warm":
+            output = warm(
+                root, cache, lock_timeout_ms=args.lock_timeout_ms,
+                retries=args.retries,
+            )
+            record_observation(
+                root, operation="warm", outcome="ready",
+                reason=str(output.get("status", "ready")),
+            )
         elif args.command == "query":
             output = query(root, cache, args.query, args.limit, args.graph_depth, args.graph_limit)
         elif args.command == "pack":
             output = pack(
                 root, cache, args.query, args.skill, args.step_id, args.budget_tokens,
                 args.limit, args.graph_depth, args.graph_limit,
+                args.min_savings_percent,
+            )
+            record_observation(
+                root,
+                operation="pack",
+                outcome=(
+                    "cached" if output.get("strategy") == "packed"
+                    else "direct_read"
+                ),
+                reason=str(output.get("strategy", "direct_read")),
+                raw_tokens=int(output.get("raw_tokens", 0)),
+                packed_tokens=int(output.get("packed_tokens", 0)),
             )
         elif args.command == "benchmark":
             output = benchmark(
@@ -1123,11 +1344,23 @@ def main() -> int:
             )
         elif args.command in {"inspect", "verify"}:
             output = inspect(root, cache, args.command)
+        elif args.command == "observe":
+            output = observations(root)
+        elif args.command == "reset-observations":
+            output = observations(root, reset=True)
         elif args.command == "purge":
             output = purge(root, cache)
         else:
             raise CacheError("unknown command")
     except (CacheError, OSError, sqlite3.Error, ValueError) as exc:
+        try:
+            if "root" in locals():
+                record_observation(
+                    root, operation="fallback", outcome="error",
+                    reason=type(exc).__name__,
+                )
+        except (CacheError, OSError, sqlite3.Error, ValueError):
+            pass
         print(encode_toon(error_receipt(args.command, str(exc))), end="")
         print(f"context-cache: {str(exc)[:500]}", file=sys.stderr)
         return 1

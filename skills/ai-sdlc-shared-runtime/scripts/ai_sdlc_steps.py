@@ -6,6 +6,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import re
+import subprocess
+import sys
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Iterable
@@ -85,6 +87,12 @@ CONTEXT_SELECTORS = {
     "repository-instructions",
     "feature-traces",
     "changed-path-topology",
+}
+CACHE_POLICY_SCHEMA = "ai-sdlc-context-cache-runtime-policy/v1"
+CACHE_POLICY_FIELDS = {"schema", "defaults", "overrides"}
+CACHE_SETTING_FIELDS = {
+    "enabled", "budget_tokens", "limit", "graph_depth", "graph_limit",
+    "lock_timeout_ms", "process_timeout_ms", "min_savings_percent",
 }
 
 
@@ -586,6 +594,200 @@ def _condition_matches(step: dict[str, object], role: str, action: str) -> bool:
     )
 
 
+def _context_cache_root(root: Path) -> Path | None:
+    # A source checkout contains every optional module for development, which is
+    # not user opt-in. Automatic activation is limited to project installs.
+    root = root.resolve()
+
+    def safe_project_path(path: Path, *, directory: bool = False) -> bool:
+        try:
+            relative = path.relative_to(root)
+        except ValueError:
+            return False
+        cursor = root
+        for part in relative.parts:
+            cursor = cursor / part
+            if cursor.is_symlink():
+                return False
+        try:
+            resolved = path.resolve(strict=True)
+            resolved.relative_to(root)
+        except (OSError, ValueError):
+            return False
+        return resolved.is_dir() if directory else resolved.is_file()
+
+    for base in (".agents/skills", ".claude/skills"):
+        candidate = root / base / "ai-sdlc-context-cache"
+        script = candidate / "scripts/context_cache.py"
+        policy = candidate / "references/runtime-policy.toon"
+        if (
+            safe_project_path(candidate, directory=True)
+            and safe_project_path(script)
+            and safe_project_path(policy)
+        ):
+            return candidate.resolve()
+    return None
+
+
+def _cache_settings(
+    root: Path,
+    cache_root: Path,
+    skill: str,
+    step_id: str,
+    manifest_budget: int,
+    manifest_savings: float,
+) -> dict[str, object]:
+    paths = [cache_root / "references/runtime-policy.toon"]
+    root_resolved = root.resolve()
+    override = root_resolved / ".ai-sdlc/context-cache-policy.toon"
+    if override.exists():
+        cursor = root_resolved
+        try:
+            relative = override.relative_to(root_resolved)
+            for part in relative.parts:
+                cursor = cursor / part
+                if cursor.is_symlink():
+                    raise ValueError("CACHE_POLICY_INVALID: project policy is unsafe")
+            override.resolve(strict=True).relative_to(root_resolved)
+        except (OSError, ValueError) as exc:
+            raise ValueError("CACHE_POLICY_INVALID: project policy is unsafe") from exc
+        if not override.is_file():
+            raise ValueError("CACHE_POLICY_INVALID: project policy is unsafe")
+        paths.append(override)
+    merged: dict[str, object] = {}
+    for path in paths:
+        value = decode_toon(path.read_text(encoding="utf-8"))
+        if not isinstance(value, dict) or set(value) != CACHE_POLICY_FIELDS:
+            raise ValueError("CACHE_POLICY_INVALID: top-level fields are invalid")
+        if value.get("schema") != CACHE_POLICY_SCHEMA:
+            raise ValueError("CACHE_POLICY_INVALID: schema is invalid")
+        defaults = value.get("defaults")
+        overrides = value.get("overrides")
+        if not isinstance(defaults, dict) or not set(defaults) <= CACHE_SETTING_FIELDS:
+            raise ValueError("CACHE_POLICY_INVALID: defaults are invalid")
+        if not isinstance(overrides, list):
+            raise ValueError("CACHE_POLICY_INVALID: overrides must be an array")
+        for key, item in defaults.items():
+            if key == "enabled":
+                valid = isinstance(item, bool)
+            elif key == "min_savings_percent":
+                valid = isinstance(item, (int, float)) and not isinstance(item, bool)
+            else:
+                valid = isinstance(item, int) and not isinstance(item, bool)
+            if not valid:
+                raise ValueError(f"CACHE_POLICY_INVALID: {key} has invalid type")
+        merged.update(defaults)
+        for item in overrides:
+            if (
+                not isinstance(item, dict)
+                or not {"skill", "step_id"} <= set(item)
+                or not set(item) <= CACHE_SETTING_FIELDS | {"skill", "step_id"}
+            ):
+                raise ValueError("CACHE_POLICY_INVALID: override fields are invalid")
+            if not all(isinstance(item[key], str) and item[key] for key in ("skill", "step_id")):
+                raise ValueError("CACHE_POLICY_INVALID: override identity is invalid")
+            for key, field_value in item.items():
+                if key in {"skill", "step_id"}:
+                    continue
+                if key == "enabled":
+                    valid = isinstance(field_value, bool)
+                elif key == "min_savings_percent":
+                    valid = isinstance(field_value, (int, float)) and not isinstance(field_value, bool)
+                else:
+                    valid = isinstance(field_value, int) and not isinstance(field_value, bool)
+                if not valid:
+                    raise ValueError(f"CACHE_POLICY_INVALID: {key} has invalid type")
+            if item["skill"] == skill and item["step_id"] == step_id:
+                merged.update({k: v for k, v in item.items() if k not in {"skill", "step_id"}})
+    settings = {
+        "enabled": bool(merged.get("enabled", True)),
+        "budget_tokens": min(manifest_budget, int(merged.get("budget_tokens", manifest_budget))),
+        "limit": int(merged.get("limit", 12)),
+        "graph_depth": int(merged.get("graph_depth", 1)),
+        "graph_limit": int(merged.get("graph_limit", 64)),
+        "lock_timeout_ms": int(merged.get("lock_timeout_ms", 1500)),
+        "process_timeout_ms": int(merged.get("process_timeout_ms", 8000)),
+        "min_savings_percent": max(manifest_savings, float(merged.get("min_savings_percent", manifest_savings))),
+    }
+    if not 64 <= settings["budget_tokens"] <= manifest_budget:
+        raise ValueError("CACHE_POLICY_INVALID: budget is outside manifest bounds")
+    if not 1 <= settings["limit"] <= 100 or not 0 <= settings["graph_depth"] <= 4:
+        raise ValueError("CACHE_POLICY_INVALID: retrieval bounds are invalid")
+    if not 1 <= settings["graph_limit"] <= 500:
+        raise ValueError("CACHE_POLICY_INVALID: graph limit is invalid")
+    if not 50 <= settings["lock_timeout_ms"] <= 30_000:
+        raise ValueError("CACHE_POLICY_INVALID: lock timeout is invalid")
+    if not 250 <= settings["process_timeout_ms"] <= 60_000:
+        raise ValueError("CACHE_POLICY_INVALID: process timeout is invalid")
+    if not 0 <= settings["min_savings_percent"] <= 100:
+        raise ValueError("CACHE_POLICY_INVALID: savings threshold is invalid")
+    return settings
+
+
+def _cached_context(
+    *,
+    root: Path,
+    cache_root: Path,
+    skill: str,
+    step: dict[str, object],
+    explicit_paths: Iterable[str],
+    goal: str,
+    trace_ids: Iterable[str],
+) -> StepContextPack | None:
+    contract = step["context"]
+    settings = _cache_settings(
+        root, cache_root, skill, str(step["id"]),
+        int(contract["budget_tokens"]), float(contract["min_savings_percent"]),
+    )
+    if not settings["enabled"]:
+        return None
+    script = cache_root / "scripts/context_cache.py"
+    timeout = settings["process_timeout_ms"] / 1000.0
+    warm_command = [
+        sys.executable, str(script), "warm", "--root", str(root),
+        "--lock-timeout-ms", str(settings["lock_timeout_ms"]), "--retries", "1",
+    ]
+    warmed = subprocess.run(
+        warm_command, check=False, text=True, stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL, timeout=timeout,
+    )
+    if warmed.returncode != 0:
+        return None
+    query = " ".join(
+        value for value in (
+            goal, skill, str(step["id"]), str(step["reason"]),
+            " ".join(sorted({str(value) for value in trace_ids if str(value)})),
+            " ".join(sorted({str(value) for value in explicit_paths if str(value)})),
+        ) if value
+    )
+    packed = subprocess.run(
+        [
+            sys.executable, str(script), "pack", "--root", str(root),
+            "--query", query, "--skill", skill, "--step-id", str(step["id"]),
+            "--budget-tokens", str(settings["budget_tokens"]),
+            "--limit", str(settings["limit"]),
+            "--graph-depth", str(settings["graph_depth"]),
+            "--graph-limit", str(settings["graph_limit"]),
+            "--min-savings-percent", str(settings["min_savings_percent"]),
+        ],
+        check=False, text=True, stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL, timeout=timeout,
+    )
+    if packed.returncode != 0:
+        return None
+    value = decode_toon(packed.stdout)
+    validated = validate_step_context_pack(
+        value, expected_skill=skill, expected_step_id=str(step["id"]),
+        require_sufficient=True,
+    )
+    if validated["strategy"] != "packed":
+        return None
+    selected_paths = {str(item["path"]) for item in validated["selected"]}
+    if any(str(path) not in selected_paths for path in explicit_paths):
+        return None
+    return StepContextPack(**validated)
+
+
 def _build_card(
     *,
     root: Path,
@@ -597,15 +799,26 @@ def _build_card(
     goal: str,
     trace_ids: Iterable[str],
 ) -> StepCard:
-    context: StepContextPack = compile_step_context(
-        root=root,
-        skill_root=skill_root,
-        skill=skill,
-        step=step,
-        explicit_paths=explicit_paths,
-        goal=goal,
-        trace_ids=trace_ids,
-    )
+    context: StepContextPack | None = None
+    cache_root = _context_cache_root(root)
+    if cache_root is not None:
+        try:
+            context = _cached_context(
+                root=root, cache_root=cache_root, skill=skill, step=step,
+                explicit_paths=explicit_paths, goal=goal, trace_ids=trace_ids,
+            )
+        except (OSError, subprocess.SubprocessError, ToonDecodeError, ValueError):
+            context = None
+    if context is None:
+        context = compile_step_context(
+            root=root,
+            skill_root=skill_root,
+            skill=skill,
+            step=step,
+            explicit_paths=explicit_paths,
+            goal=goal,
+            trace_ids=trace_ids,
+        )
     path = _contained_file(skill_root, str(step["path"]))
     step_fingerprint = _digest(
         {
