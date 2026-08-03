@@ -127,6 +127,14 @@ class DocumentationValidationTests(unittest.TestCase):
         self.assertIn("Global installation is intentionally outside the validated path", install)
         self.assertIn("project-scoped install", install)
 
+    def test_pages_workflow_uses_supported_native_install_profile(self) -> None:
+        workflow = (DOCS_ROOT.parent / ".github/workflows/pages.yml").read_text(encoding="utf-8")
+        self.assertIn(
+            "install_smoke.py --mode native --source . --profile codex-project",
+            workflow,
+        )
+        self.assertNotIn("install_smoke.py --mode native --source . --agent", workflow)
+
     def test_root_documents_reject_broken_link_and_machine_path(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

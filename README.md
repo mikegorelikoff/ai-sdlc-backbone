@@ -29,7 +29,7 @@ From the project that will use the Harness, install every skill with one
 explicit project profile:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.1.0/install.sh | sh -s -- codex-project
+curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.1.1/install.sh | sh -s -- codex-project
 ```
 
 Then verify the project-scoped installation:
@@ -117,7 +117,7 @@ vulnerabilities privately through [SECURITY.md](SECURITY.md).
 
 ## Project status
 
-The current stable release is `v4.1.0` with Harness API `4.1.0`. It adds a
+The current stable release is `v4.1.1` with Harness API `4.1.0`. It includes a
 durable scheduler, idempotent effect drivers, provider-executed TC-012 evidence,
 two validated project install profiles, and stronger per-step context
 engineering to the v4 TOON-only execution model. Review

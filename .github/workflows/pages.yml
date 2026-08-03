@@ -67,7 +67,7 @@ jobs:
       - name: Report Learn page token counts
         run: python3 docs/scripts/learning_tokens.py --config mkdocs.yml --encoding o200k_base --minimum 6000 --maximum 8000
       - name: Smoke test checked-out candidate installation
-        run: python3 skills/ai-sdlc-shared-runtime/tests/install_smoke.py --mode native --source . --agent codex
+        run: python3 skills/ai-sdlc-shared-runtime/tests/install_smoke.py --mode native --source . --profile codex-project
       - name: Run documentation tests
         run: python3 -m unittest discover -s docs/tests -v
       - name: Build documentation

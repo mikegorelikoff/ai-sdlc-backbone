@@ -11,7 +11,7 @@ usage() {
     "Examples:" \
     "  ./install.sh codex-project" \
     "  ./install.sh claude-code-project" \
-    "  curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.1.0/install.sh | sh -s -- codex-project" \
+    "  curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.1.1/install.sh | sh -s -- codex-project" \
     "" \
     "Optional environment overrides:" \
     "  AI_SDLC_SOURCE               Clean local checkout or reviewed Git remote" \
@@ -125,7 +125,7 @@ else
       exit 65
       ;;
   esac
-  ai_sdlc_requested_revision=${AI_SDLC_REVISION:-v4.1.0}
+  ai_sdlc_requested_revision=${AI_SDLC_REVISION:-v4.1.1}
   case "$ai_sdlc_requested_revision" in
     *[!A-Za-z0-9._-]*|"")
       printf '%s\n' "AI_SDLC_REVISION contains unsupported characters." >&2

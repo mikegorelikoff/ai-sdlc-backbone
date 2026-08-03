@@ -1,5 +1,20 @@
 # Changelog
 
+## v4.1.1 - 2026-08-03
+
+### Fixed
+
+- Updated the Pages checked-out candidate smoke to use the supported
+  `codex-project` install profile after the removed legacy `--agent` flag
+  caused the v4.1.0 documentation workflow to fail before build.
+- Added a documentation regression that keeps workflow invocations aligned
+  with the native installer CLI.
+
+### Validation
+
+- Re-ran the complete repository validation and both main workflows; release
+  API and semantic skill contracts remain `4.1.0`.
+
 ## v4.1.0 - 2026-08-03
 
 ### Added

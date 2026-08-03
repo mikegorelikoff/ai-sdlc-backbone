@@ -1,6 +1,6 @@
 commands[18]:
   - argv[6]: python3,skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_test_suite.py,"--root",.,"--format",toon
-    duration_ms: 79674
+    duration_ms: 97206
     exit_code: 0
     id: complete-per-file-suite
     output_limited: false
@@ -10,7 +10,7 @@ commands[18]:
     stdout_sha256: dd045ee353ed5e059002d59a14c55d50c2ddc42e7eccc1814140ea237504408e
     trace_ids[10]: TC-001,TC-002,TC-003,TC-004,TC-005,TC-006,TC-007,TC-008,TC-009,TC-010
   - argv[7]: python3,skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_skill_graph.py,"--check","--skills-root",skills,"--format",toon
-    duration_ms: 183
+    duration_ms: 236
     exit_code: 0
     id: semantic-graph-contract
     output_limited: false
@@ -20,7 +20,7 @@ commands[18]:
     stdout_sha256: d3cf0ba95378243777bc279d17466414f376b1170ad30438b26efcc128911e65
     trace_ids[3]: AC-001,AC-004,NFR-002
   - argv[8]: python3,skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_skill_eval.py,"--mode",deterministic,"--skills-root",skills,"--format",toon
-    duration_ms: 38639
+    duration_ms: 50777
     exit_code: 0
     id: deterministic-evaluation
     output_limited: false
@@ -30,7 +30,7 @@ commands[18]:
     stdout_sha256: 117e9f44b0a28378e66f7e914edc7272b866880b9946f8fa55aac77069085a81
     trace_ids[4]: AC-004,AC-005,NFR-002,TC-004
   - argv[8]: python3,skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_skill_eval.py,"--mode",live-protocol,"--skills-root",skills,"--format",toon
-    duration_ms: 1917
+    duration_ms: 2499
     exit_code: 0
     id: live-protocol
     output_limited: false
@@ -40,7 +40,7 @@ commands[18]:
     stdout_sha256: cebaf77b1a2ba63b6904eccb4b0a8e004f46ef6df968cb38c26a354fc3b5e700
     trace_ids[3]: AC-006,AC-007,TC-006
   - argv[10]: python3,skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_provider_eval.py,"--protocol",specs/016-production-harness-completion/_ai_sdlc/tc-012-live-protocol.toon,"--observations",specs/016-production-harness-completion/_ai_sdlc/tc-012-provider-observation.toon,"--root",.,"--format",toon
-    duration_ms: 70
+    duration_ms: 75
     exit_code: 0
     id: provider-execution-receipt
     output_limited: false
@@ -50,17 +50,17 @@ commands[18]:
     stdout_sha256: a42028037858d24e849cbf7d1bbc86f4410ffe9f9167a76c7e7425ec0095c8f5
     trace_ids[4]: AC-006,AC-007,TC-006,TC-007
   - argv[9]: python3,skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_compatibility.py,"--root",.,"--baseline",compatibility/baseline-v1.toon,"--skip-git-audit","--format",toon
-    duration_ms: 232
+    duration_ms: 343
     exit_code: 0
     id: compatibility-contract
     output_limited: false
     stderr_bytes: 0
     stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
     stdout_bytes: 1687
-    stdout_sha256: b8a4e6c5d608590c608ecfee641d4db86224661f79d915eacf515f1e415ee851
+    stdout_sha256: d3649caf50f9cd6e31f74b8415e25fd0b6e05669003071fcf186f78d247caa51
     trace_ids[3]: AC-009,AC-010,TC-009
   - argv[9]: python3,skills/ai-sdlc-shared-runtime/tests/install_smoke.py,"--mode",native,"--source",.,"--profile",codex-project,"--quick-flow"
-    duration_ms: 6499
+    duration_ms: 7964
     exit_code: 0
     id: native-codex-install
     output_limited: false
@@ -70,7 +70,7 @@ commands[18]:
     stdout_sha256: fdb83cd1cd009c4cf965ed4b0c543da5d47fcd41dff43cc86f760f05d299d27b
     trace_ids[3]: AC-008,TC-008,NFR-005
   - argv[9]: python3,skills/ai-sdlc-shared-runtime/tests/install_smoke.py,"--mode",native,"--source",.,"--profile",claude-code-project,"--quick-flow"
-    duration_ms: 6457
+    duration_ms: 7942
     exit_code: 0
     id: native-claude-code-install
     output_limited: false
@@ -80,7 +80,7 @@ commands[18]:
     stdout_sha256: fdb83cd1cd009c4cf965ed4b0c543da5d47fcd41dff43cc86f760f05d299d27b
     trace_ids[3]: AC-008,TC-008,NFR-005
   - argv[4]: python3,skills/ai-sdlc-sdd/scripts/check_clarify.py,specs/016-production-harness-completion,"--quick-flow"
-    duration_ms: 76
+    duration_ms: 77
     exit_code: 0
     id: sdd-clarify
     output_limited: false
@@ -90,7 +90,7 @@ commands[18]:
     stdout_sha256: c187d8f9e69f1faba3730446ff76abbbe292f8663b7cd672bc462a1bd277e926
     trace_ids[10]: AC-001,AC-002,AC-003,AC-004,AC-005,AC-006,AC-007,AC-008,AC-009,AC-010
   - argv[4]: python3,skills/ai-sdlc-sdd/scripts/check_checklist.py,specs/016-production-harness-completion,"--quick-flow"
-    duration_ms: 72
+    duration_ms: 74
     exit_code: 0
     id: sdd-checklist
     output_limited: false
@@ -100,7 +100,7 @@ commands[18]:
     stdout_sha256: cf44ed8ed44a7e249ac59b769c0f979c30cef8329ff9619fc6d8587379af8d8d
     trace_ids[10]: AC-001,AC-002,AC-003,AC-004,AC-005,AC-006,AC-007,AC-008,AC-009,AC-010
   - argv[4]: python3,skills/ai-sdlc-sdd/scripts/analyze_spec.py,specs/016-production-harness-completion,"--quick-flow"
-    duration_ms: 77
+    duration_ms: 74
     exit_code: 0
     id: sdd-analysis
     output_limited: false
@@ -110,7 +110,7 @@ commands[18]:
     stdout_sha256: 866af8c7efa28243ff998587a8706289aa1b0efc054668b333aa45253f5b6285
     trace_ids[10]: AC-001,AC-002,AC-003,AC-004,AC-005,AC-006,AC-007,AC-008,AC-009,AC-010
   - argv[4]: python3,skills/ai-sdlc-sdd/scripts/validate_spec.py,specs/016-production-harness-completion,"--quick-flow"
-    duration_ms: 73
+    duration_ms: 77
     exit_code: 0
     id: sdd-validation
     output_limited: false
@@ -120,7 +120,7 @@ commands[18]:
     stdout_sha256: 56f50a78acda2ca6cc96d797d1f9f8206293b085c918395a6e223010e9b7918a
     trace_ids[10]: AC-001,AC-002,AC-003,AC-004,AC-005,AC-006,AC-007,AC-008,AC-009,AC-010
   - argv[5]: python3,skills/ai-sdlc-sdd/scripts/plan_links.py,specs/016-production-harness-completion,"--check","--quick-flow"
-    duration_ms: 73
+    duration_ms: 77
     exit_code: 0
     id: sdd-plan-links
     output_limited: false
@@ -130,7 +130,7 @@ commands[18]:
     stdout_sha256: c7f3bdab85c0eaefd98fbd5601e9b2251bb686a839bb8fcaba63275ea2bd4e48
     trace_ids[10]: AC-001,AC-002,AC-003,AC-004,AC-005,AC-006,AC-007,AC-008,AC-009,AC-010
   - argv[3]: python3,docs/scripts/build_catalog.py,"--check"
-    duration_ms: 608
+    duration_ms: 778
     exit_code: 0
     id: documentation-catalog
     output_limited: false
@@ -140,7 +140,7 @@ commands[18]:
     stdout_sha256: cb701f0714298efd115fba0788363f2fafb521587f7eba2e4b942fa5b6cc5b07
     trace_ids[2]: AC-009,AC-010
   - argv[2]: python3,docs/scripts/validate_docs.py
-    duration_ms: 1679
+    duration_ms: 2076
     exit_code: 0
     id: documentation-contract
     output_limited: false
@@ -150,17 +150,17 @@ commands[18]:
     stdout_sha256: 44ba1b03c35f0836456d87dbf73d1aad3fa7f7afcef5f09a053f09267ab3b3eb
     trace_ids[2]: AC-009,AC-010
   - argv[9]: python3,"-m",unittest,discover,"-s",docs/tests,"-p",test_*.py,"-v"
-    duration_ms: 6346
+    duration_ms: 7844
     exit_code: 0
     id: documentation-tests
     output_limited: false
-    stderr_bytes: 4319
-    stderr_sha256: 2f62cc7022884873feff1e3e47bfd7b85b9a8d4f67fd34dd16001025be9bce92
+    stderr_bytes: 4425
+    stderr_sha256: 5a54ea42033faa9470f7f15639c57423864873765b35d8fc6653db8297ec014b
     stdout_bytes: 0
     stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
     trace_ids[2]: AC-009,AC-010
   - argv[2]: python3,docs/scripts/validate_rendered.py
-    duration_ms: 943
+    duration_ms: 1211
     exit_code: 0
     id: rendered-documentation-links
     output_limited: false
@@ -170,7 +170,7 @@ commands[18]:
     stdout_sha256: 1720fae38fd2ca35856443c69e64c385976666567d239650adc732a459f95c8e
     trace_ids[1]: AC-010
   - argv[3]: git,diff,"--check"
-    duration_ms: 23
+    duration_ms: 20
     exit_code: 0
     id: diff-hygiene
     output_limited: false
@@ -183,10 +183,10 @@ environment:
   platform: macOS-26.3.1-arm64-arm-64bit
   python: 3.9.6
 evidence_trust: local-structural-not-authenticated
-executed_at: "2026-08-02T22:50:00.204632Z"
+executed_at: "2026-08-03T04:47:47.178049Z"
 plan_path: specs/016-production-harness-completion/_ai_sdlc/validation-plan.toon
 plan_sha256: 8fb62593fb034ac8318f07e0e20f0de7e58f35bf4209dd03cb15a09f65ca2859
-receipt_fingerprint: 11644aeb77f212c9d89c8d1cc938d60cc7d428fc186a97f4fe65b7d03db469c9
-revision: f890f5e89e71f3deaaa5e7f966815f72d6014475
+receipt_fingerprint: 0180c1928d2c71360318826bf318d7ec2b916e01396a983bab99a6f38f700b7e
+revision: d76928af159313c3bb41622c622778107b5cd1ff
 schema: ai-sdlc-validation-receipt/v1
-workspace_fingerprint: f15703b3214dbb75c912811ea3a426ccaf624a7061581c571bb36d0e43d2db10
+workspace_fingerprint: 5dde9d43ed76c5b7ba8c492a9bedf11df61c6e91ac7427b268b25b2e9a20ea68
