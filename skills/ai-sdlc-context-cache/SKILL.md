@@ -1,6 +1,6 @@
 ---
 name: ai-sdlc-context-cache
-description: Build and query an optional deterministic local repository context cache using SQLite FTS5, bounded lexical RAG, typed graph-enhanced expansion, freshness checks, golden benchmarks, and TOON-only context-pack output. Use when an AI assistant repeatedly searches a repository, needs token-bounded evidence retrieval, wants local offline RAG with repository relations, must inspect or refresh cached context, or needs an ai-sdlc-context-pack/v4 without making the cache authoritative.
+description: Build, query, and visualize an optional deterministic local repository context cache using SQLite FTS5, bounded lexical RAG, typed graph-enhanced expansion, freshness checks, golden benchmarks, a standalone offline HTML graph explorer, and TOON-only context-pack output. Use when an AI assistant repeatedly searches a repository, needs token-bounded evidence retrieval, wants local offline RAG with repository relations, must inspect or refresh cached context, wants to explore nodes, relations, and opt-in source code visually, or needs an ai-sdlc-context-pack/v4 without making the cache authoritative.
 ---
 
 # ai-sdlc-context-cache: Local Deterministic Retrieval
@@ -15,7 +15,8 @@ description: Build and query an optional deterministic local repository context 
 - Supporting audience: QA, BA, Delivery
 - SDLC stage: Cross-feature context engineering and retrieval
 - Purpose: Reuse fresh bounded repository evidence without changing authority.
-- Output: disposable SQLite state plus canonical TOON receipts and context packs
+- Output: disposable SQLite state, a disposable self-contained HTML graph view,
+  plus canonical TOON receipts and context packs
 - Runtime: lexical mode uses the Python standard library and SQLite FTS5;
   optional AST graph mode uses the hash-locked Tree-sitter wheels in
   `references/parser-lock.toon`; no runtime network calls
@@ -40,6 +41,24 @@ description: Build and query an optional deterministic local repository context 
 - Portable policies, locks, receipts, expected fixtures, and audit evidence are
   TOON only. The SQLite database is local disposable state, not a portable
   contract.
+
+## Offline graph explorer
+
+- `visualize` renders the complete accepted graph as a deterministic,
+  self-contained HTML file at `.ai-sdlc/cache/context-graph.html` by default.
+- Click a node to inspect its metadata and every direct incoming or outgoing
+  relation. Double-click or select a relation to focus the connected node.
+- Source bodies are excluded by default. Add `--include-source` only when the
+  local HTML may contain repository source; the viewer then shows the indexed
+  line range with safe DOM-based syntax highlighting and source-drift status.
+- The command reads an existing complete cache and never builds or repairs it.
+  A stale graph may be rendered for diagnosis, but the receipt and source view
+  mark it non-authoritative. The HTML makes no network requests.
+
+```bash
+python3 skills/ai-sdlc-context-cache/scripts/context_cache.py \
+  visualize --root . --include-source
+```
 
 ## Automatic StepCard Runtime
 

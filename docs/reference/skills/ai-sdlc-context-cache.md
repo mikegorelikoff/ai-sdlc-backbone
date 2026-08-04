@@ -7,7 +7,7 @@ description: Human-facing operating guide for ai-sdlc-context-cache, including i
 
 | Lifecycle position | Primary owner | Supporting roles | Module | Output |
 | --- | --- | --- | --- | --- |
-| Cross-feature context engineering and retrieval | Dev | QA, BA, Delivery | `context-cache` | disposable SQLite state plus canonical TOON receipts and context packs |
+| Cross-feature context engineering and retrieval | Dev | QA, BA, Delivery | `context-cache` | disposable SQLite state, a disposable self-contained HTML graph view, plus canonical TOON receipts and context packs |
 
 ## Why it exists
 
@@ -15,7 +15,7 @@ Reuse fresh bounded repository evidence without changing authority.
 
 ## Use it when
 
-Build and query an optional deterministic local repository context cache using SQLite FTS5, bounded lexical RAG, typed graph-enhanced expansion, freshness checks, golden benchmarks, and TOON-only context-pack output. Use when an AI assistant repeatedly searches a repository, needs token-bounded evidence retrieval, wants local offline RAG with repository relations, must inspect or refresh cached context, or needs an ai-sdlc-context-pack/v4 without making the cache authoritative.
+Build, query, and visualize an optional deterministic local repository context cache using SQLite FTS5, bounded lexical RAG, typed graph-enhanced expansion, freshness checks, golden benchmarks, a standalone offline HTML graph explorer, and TOON-only context-pack output. Use when an AI assistant repeatedly searches a repository, needs token-bounded evidence retrieval, wants local offline RAG with repository relations, must inspect or refresh cached context, wants to explore nodes, relations, and opt-in source code visually, or needs an ai-sdlc-context-pack/v4 without making the cache authoritative.
 
 If the correct entry point is still unclear, use `ai-sdlc-flow` Explore first instead of guessing.
 
@@ -43,7 +43,7 @@ Use ai-sdlc-context-cache for <target>.
 Choose --quick-flow for bounded assumption-driven progress or --full-flow
 for strict verification only as described below.
 Read the required evidence,
-produce or report disposable SQLite state plus canonical TOON receipts and context packs, preserve human approval boundaries,
+produce or report disposable SQLite state, a disposable self-contained HTML graph view, plus canonical TOON receipts and context packs, preserve human approval boundaries,
 and return blockers plus a complete ai-sdlc-handoff/v2.
 ```
 
@@ -90,7 +90,8 @@ Paths beginning with `skills/` below are canonical **source-checkout** forms for
 | Helper | Purpose | Direct starting point | Repository effect |
 | --- | --- | --- | --- |
 | [`code_graph.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-context-cache/scripts/code_graph.py) | Deterministic Tree-sitter code graph primitives for the local context cache. | `Imported helper; use the owning skill rather than invoking it directly.` | Read-only/reporting by default; inspect `--help` and the owning skill before direct use. |
-| [`context_cache.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-context-cache/scripts/context_cache.py) | Build and query a deterministic local repository context cache. | `python3 skills/ai-sdlc-context-cache/scripts/context_cache.py --help` | May write only through an explicit mutation mode; start with `--help`, check, preview, or emit. |
+| [`context_cache.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-context-cache/scripts/context_cache.py) | Build, query, and visualize a deterministic local repository context cache. | `python3 skills/ai-sdlc-context-cache/scripts/context_cache.py --help` | May write only through an explicit mutation mode; start with `--help`, check, preview, or emit. |
+| [`graph_viewer.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-context-cache/scripts/graph_viewer.py) | Render the complete AI SDLC context-cache graph as a standalone HTML file. | `python3 skills/ai-sdlc-context-cache/scripts/graph_viewer.py --help` | May write only through an explicit mutation mode; start with `--help`, check, preview, or emit. |
 | [`install_graph_runtime.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-context-cache/scripts/install_graph_runtime.py) | Verify and install the offline hash-locked AST graph runtime. | `python3 skills/ai-sdlc-context-cache/scripts/install_graph_runtime.py --help` | Read-only/reporting by default; inspect `--help` and the owning skill before direct use. |
 
 The owning agent normally runs these helpers. A human uses the direct starting point for diagnosis or reproduction after inspecting `--help` and repository policy.
@@ -101,7 +102,7 @@ The owning agent normally runs these helpers. A human uses the direct starting p
 
 ## Success criteria
 
-A successful result produces disposable SQLite state plus canonical TOON receipts and context packs and satisfies every output rule and blocker check below.
+A successful result produces disposable SQLite state, a disposable self-contained HTML graph view, plus canonical TOON receipts and context packs and satisfies every output rule and blocker check below.
 
 ## Blockers and recovery
 

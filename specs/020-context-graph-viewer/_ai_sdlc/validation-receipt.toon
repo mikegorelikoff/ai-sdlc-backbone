@@ -1,0 +1,82 @@
+commands[7]:
+  - argv[4]: python3,"-m",unittest,skills.ai-sdlc-context-cache.tests.test_context_cache_viewer
+    duration_ms: 611
+    exit_code: 0
+    id: viewer-focused-tests
+    output_limited: false
+    stderr_bytes: 102
+    stderr_sha256: c9ebc34d746b0ca5713747639ccfe743c5e3c09fc731eac730f8b489ef34ed69
+    stdout_bytes: 0
+    stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    trace_ids[5]: AC-003,AC-004,AC-005,TC-003,TC-004
+  - argv[3]: python3,docs/scripts/build_catalog.py,"--check"
+    duration_ms: 882
+    exit_code: 0
+    id: documentation-catalog
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 49
+    stdout_sha256: afd1a69bebbe94f08eb80d4ed2087241ea370b1ff8a74e2009a84674a8235a38
+    trace_ids[2]: AC-008,TC-010
+  - argv[2]: python3,docs/scripts/validate_docs.py
+    duration_ms: 2309
+    exit_code: 0
+    id: documentation-contract
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 109
+    stdout_sha256: c922a85432f133d179a9251dc9b63873c946773e49125c704e499a14958b0434
+    trace_ids[2]: AC-008,TC-010
+  - argv[9]: python3,"-m",unittest,discover,"-s",docs/tests,"-p",test_*.py,"-v"
+    duration_ms: 8809
+    exit_code: 0
+    id: documentation-tests
+    output_limited: false
+    stderr_bytes: 4425
+    stderr_sha256: 5b54f9cc3aa755dfb62569c217a8a9e377ab130cbc68fe88237c04660879c20a
+    stdout_bytes: 0
+    stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    trace_ids[2]: AC-008,TC-010
+  - argv[5]: python3,skills/ai-sdlc-sdd/scripts/plan_links.py,specs/020-context-graph-viewer,"--check","--quick-flow"
+    duration_ms: 132
+    exit_code: 0
+    id: sdd-plan-links
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 219
+    stdout_sha256: f90ceabcc1c048f210c9e127c89c626ce806c4a15717df18e18d261a22f8bb50
+    trace_ids[2]: AC-008,TC-010
+  - argv[4]: python3,skills/ai-sdlc-sdd/scripts/validate_spec.py,specs/020-context-graph-viewer,"--quick-flow"
+    duration_ms: 73
+    exit_code: 0
+    id: sdd-validation
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 50
+    stdout_sha256: 32c8e8548d6230120b549316a34ddf7407b6b656a7bbbe215029e33163328a1c
+    trace_ids[2]: AC-008,TC-010
+  - argv[3]: git,diff,"--check"
+    duration_ms: 38
+    exit_code: 0
+    id: diff-hygiene
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 0
+    stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    trace_ids[2]: AC-008,TC-010
+environment:
+  platform: macOS-26.3.1-arm64-arm-64bit
+  python: 3.9.6
+evidence_trust: local-structural-not-authenticated
+executed_at: "2026-08-04T11:26:45.867784Z"
+plan_path: specs/020-context-graph-viewer/_ai_sdlc/validation-plan.toon
+plan_sha256: 1076fa18c878f7001ba688272e11cd4edcc8c77e54bb66b00175807d3c335d38
+receipt_fingerprint: a2f1a050fcc372c5a9f6ca509f8502e2eca331a2024dd876a436802f34a15d64
+revision: b02b9850f0adde42558f58d636b2128e5d9fc5e3
+schema: ai-sdlc-validation-receipt/v1
+workspace_fingerprint: 58210a1ed167e25ca9e2b9e0e20671df20ccc586609de9fdcbd4f0055d188a1b

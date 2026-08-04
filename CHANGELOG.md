@@ -1,5 +1,35 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Added a reusable `context_cache.py visualize` command that renders the
+  complete accepted context graph as a deterministic self-contained HTML
+  explorer with search, layer controls, full direct relations, and node focus.
+- Added opt-in source embedding with safe syntax highlighting, indexed line
+  ranges, and source-drift indicators; source bodies remain excluded by default.
+- Changed node inspection from a persistent side drawer to a centered,
+  accessible modal with keyboard focus management, backdrop dismissal, and
+  relation navigation inside the dialog; layer filters and view settings now
+  remain in a persistent top control bar outside the modal, below a cohesive
+  compact Linear-inspired header for product identity, primary search, counts,
+  and status. Decorative badge and pill treatments were removed in favor of
+  restrained rectangular controls and plain semantic indicators.
+- Restructured the node modal around one selected-node header and three focused
+  panes: row-based properties plus direct context, compact relation navigation,
+  and indexed source. Unrelated global graph statistics no longer compete with
+  node inspection.
+
+### Security and validation
+
+- Confined graph HTML outputs to the selected project cache directory, rejected
+  symlink traversal, escaped embedded data, applied an offline content-security
+  policy, and kept stale views explicitly non-authoritative.
+- Added focused viewer coverage for determinism, complete relations, source
+  opt-in and escaping, drift, output confinement, incomplete graphs, TOON
+  receipts, and embedded JavaScript syntax.
+
 ## v4.2.2 - 2026-08-04
 
 ### Fixed

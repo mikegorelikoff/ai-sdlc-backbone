@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build and query a deterministic local repository context cache."""
+"""Build, query, and visualize a deterministic local repository context cache."""
 
 from __future__ import annotations
 
@@ -36,6 +36,7 @@ from ai_sdlc_step_context import (  # noqa: E402
 )
 from ai_sdlc_steps import load_manifest  # noqa: E402
 from ai_sdlc_toon import decode_toon, encode_toon  # noqa: E402
+import graph_viewer as GRAPH_VIEWER  # noqa: E402
 
 if sys.version_info >= (3, 10):
     import code_graph as CODE_GRAPH  # noqa: E402
@@ -53,6 +54,7 @@ CONTROL_SCHEMA = "ai-sdlc-context-cache-control/v1"
 OBSERVATION_SCHEMA = "ai-sdlc-context-cache-observations/v1"
 DEFAULT_CACHE = ".ai-sdlc/cache/context-cache.sqlite3"
 DEFAULT_CONTROL = ".ai-sdlc/cache/context-cache-control.sqlite3"
+DEFAULT_VIEW = ".ai-sdlc/cache/context-graph.html"
 MAX_FILE_BYTES = 262_144
 MAX_FILES = 20_000
 CHUNK_LINES = 60
@@ -146,6 +148,34 @@ def resolve_cache(root: Path, value: Path | None) -> Path:
 def resolve_control(root: Path, value: Path | None = None) -> Path:
     """Resolve the project-local coordination database without path escape."""
     return resolve_cache(root, value or Path(DEFAULT_CONTROL))
+
+
+def resolve_view(root: Path, cache: Path, value: Path | None) -> Path:
+    """Resolve a disposable HTML output inside the selected cache directory."""
+    root = root.resolve()
+    cache_directory = cache.parent.resolve()
+    candidate = value or Path(DEFAULT_VIEW)
+    if not candidate.is_absolute():
+        candidate = root / candidate
+    if candidate.suffix.lower() != ".html":
+        raise CacheError("visualization output path must end with .html")
+    try:
+        relative = candidate.relative_to(cache_directory)
+    except ValueError as exc:
+        raise CacheError("visualization output must stay inside the cache directory") from exc
+    cursor = cache_directory
+    for part in relative.parts:
+        cursor = cursor / part
+        if cursor.is_symlink():
+            raise CacheError("visualization output path must not contain symbolic links")
+    resolved = candidate.resolve(strict=False)
+    try:
+        resolved.relative_to(cache_directory)
+    except ValueError as exc:
+        raise CacheError("visualization output must stay inside the cache directory") from exc
+    if resolved.exists() and not resolved.is_file():
+        raise CacheError("visualization output target must be a regular file")
+    return resolved
 
 
 def initialize_control(connection: sqlite3.Connection) -> None:
@@ -778,10 +808,13 @@ def warm(
 def open_cache(cache: Path) -> sqlite3.Connection:
     if not cache.is_file() or cache.is_symlink():
         raise CacheError("context cache is missing")
+    connection: sqlite3.Connection | None = None
     try:
-        connection = sqlite3.connect(f"file:{cache}?mode=ro", uri=True)
+        connection = sqlite3.connect(f"{cache.resolve().as_uri()}?mode=ro", uri=True)
         current = metadata(connection)
     except sqlite3.Error as exc:
+        if connection is not None:
+            connection.close()
         raise CacheError(f"context cache is corrupt or unreadable: {exc}") from exc
     if current.get("schema") != DB_SCHEMA or current.get("config_fingerprint") != config_fingerprint():
         connection.close()
@@ -928,6 +961,57 @@ def graph_stats(root: Path, cache: Path) -> dict[str, object]:
         return output
     finally:
         connection.close()
+
+
+def visualize(
+    root: Path,
+    cache: Path,
+    output_value: Path | None = None,
+    *,
+    include_source: bool = False,
+) -> dict[str, object]:
+    """Render a local offline graph explorer without mutating the cache."""
+    root = root.resolve()
+    connection = open_cache(cache)
+    try:
+        current = metadata(connection)
+        required_tables = {"graph_nodes", "graph_edges"}
+        available_tables = {
+            str(row[0])
+            for row in connection.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
+            )
+        }
+        if not required_tables.issubset(available_tables):
+            raise CacheError("context cache has no complete graph to visualize")
+        if current.get("graph_complete") != "true":
+            raise CacheError("context cache graph is incomplete")
+        fresh, stale, _paths = freshness(root, connection)
+        graph_fingerprint = current.get("graph_fingerprint", "")
+        repository_fingerprint = current.get("repository_fingerprint", "")
+    finally:
+        connection.close()
+    output = resolve_view(root, cache, output_value)
+    rendered = GRAPH_VIEWER.render(
+        root, cache, output, include_source=include_source
+    )
+    semantic: dict[str, object] = {
+        "schema": GRAPH_VIEWER.VIEW_SCHEMA,
+        "command": "visualize",
+        "status": "ready" if fresh else "stale",
+        "reason": (
+            "all indexed source hashes match"
+            if fresh else "source drift detected; viewer is a non-authoritative snapshot"
+        ),
+        "fresh": fresh,
+        "stale": len(stale),
+        "graph_fingerprint": graph_fingerprint,
+        "repository_fingerprint": repository_fingerprint,
+        "output": output.relative_to(root).as_posix(),
+        **{key: value for key, value in rendered.items() if key != "schema"},
+    }
+    semantic["fingerprint"] = digest(semantic)
+    return semantic
 
 
 def row_for(connection: sqlite3.Connection, chunk_id: str) -> dict[str, Any]:
@@ -1510,6 +1594,7 @@ def parser() -> argparse.ArgumentParser:
     for name in (
         "build", "warm", "query", "pack", "benchmark", "inspect", "verify",
         "observe", "reset-observations", "purge", "graph-preflight", "graph-stats",
+        "visualize",
     ):
         child = commands.add_parser(name)
         child.add_argument("--root", type=Path, default=Path.cwd())
@@ -1537,6 +1622,9 @@ def parser() -> argparse.ArgumentParser:
         if name == "build":
             child.add_argument("--rebuild", action="store_true")
             child.add_argument("--require-graph", action="store_true")
+        if name == "visualize":
+            child.add_argument("--output", type=Path)
+            child.add_argument("--include-source", action="store_true")
     return cli
 
 
@@ -1595,6 +1683,10 @@ def main() -> int:
                 raise CacheError("graph-parser-preflight-incomplete")
         elif args.command == "graph-stats":
             output = graph_stats(root, cache)
+        elif args.command == "visualize":
+            output = visualize(
+                root, cache, args.output, include_source=args.include_source
+            )
         elif args.command == "observe":
             output = observations(root)
         elif args.command == "reset-observations":

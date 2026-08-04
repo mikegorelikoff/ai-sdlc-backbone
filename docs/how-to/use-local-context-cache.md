@@ -96,6 +96,29 @@ python3 .agents/skills/ai-sdlc-context-cache/scripts/context_cache.py \
   --budget-tokens 4000
 ```
 
+Create a standalone Obsidian-like view of the complete graph:
+
+```bash
+python3 .agents/skills/ai-sdlc-context-cache/scripts/context_cache.py \
+  visualize --root . --include-source
+```
+
+Open `.ai-sdlc/cache/context-graph.html` locally. Search paths and symbols,
+click a node to open the centered inspector modal and see every direct incoming
+and outgoing relation, follow a relation to its connected node, and use the
+Source tab for highlighted code and exact indexed line ranges. Close the modal
+with its button, `Escape`, or a backdrop click; the graph selection remains.
+Layer filters, connection visibility, fit, and zoom stay in the top control bar
+and never occupy the modal. Omit `--include-source` when the HTML must contain
+graph metadata only; source bodies are opt-in because the output is a portable
+local file. An explicit `--output` must remain an `.html` file inside the
+selected cache directory.
+
+`visualize` reads an existing complete graph and never builds or repairs the
+cache. It may render stale state for diagnosis, but the TOON receipt and source
+badges mark drift explicitly. The HTML is self-contained and makes no network
+request.
+
 The cache uses stable chunks, FTS5 candidate selection, deterministic integer
 ranking, and bounded typed-edge expansion. It makes no network or model call.
 The SQLite file is internal disposable state; all portable output is canonical
@@ -157,6 +180,8 @@ credentials, user identity, or wall-clock values.
 | --- | --- |
 | Cache is missing | Normal StepCard compilation performs bounded `warm`; standalone `query` never rebuilds silently. |
 | Cache is stale | Inspect changed paths, rebuild, and verify again. Do not use stale results as sufficient context. |
+| `visualize` reports an incomplete graph | Run graph preflight, then rebuild with `--require-graph`; the viewer never repairs state implicitly. |
+| Source is unavailable in the HTML | Regenerate with `visualize --include-source`; review the local file's handling because it will contain repository source bodies. |
 | FTS5 is unavailable | Use an organization-approved Python build with FTS5 or continue with direct reads. |
 | Query returns `direct_read` | Read the named paths and reasons; narrow or clarify the query before rebuilding. |
 | Savings are below the threshold | Prefer direct reads for this task. The cache is an optimization, not a required gate. |

@@ -166,3 +166,31 @@ in TOON, verifies exact wheel filenames and SHA-256 values, installs only the
 verified bytes with network-disabled pip, and runs the twelve-grammar offline
 preflight before repository tests. The Harness API and context-cache module
 version remain unchanged.
+
+## Local context graph explorer
+
+On 2026-08-04, the optional context-cache module gained a reusable `visualize`
+command for human exploration of its complete accepted graph. The command
+creates one deterministic self-contained HTML file inside the project cache,
+with repository search, layer controls, full direct incoming and outgoing
+relations, node-to-node navigation, and an optional highlighted source view.
+
+The viewer is a disposable read-only projection, not a new authority or
+portable machine contract. It never warms or repairs the cache, may display
+stale state only with explicit drift labels, makes no network request, and
+excludes source bodies unless `--include-source` is supplied. Existing public
+paths, canonical documentation ownership, Harness API, module version, and
+TOON-only portable contracts remain unchanged.
+
+Node inspection uses a centered accessible modal rather than a persistent
+drawer so the complete graph remains the primary workspace. The modal preserves
+selection while closed, supports relation navigation in place, manages keyboard
+focus, and dismisses through Close, `Escape`, or a backdrop click. Layer
+filters, connection visibility, fit, and zoom remain in a persistent top
+control bar so graph settings are available without opening the inspector. The
+viewer uses a compact Linear-inspired neutral shell: controls are rectangular,
+tabs use a simple active underline, and status or relation metadata is presented
+without decorative badges or pills. The inspector uses one selected-node header
+and three task-specific panes: Details contains row-based properties and direct
+context, Relations lists compact navigable edges, and Source owns code and
+freshness. Global graph statistics stay outside node inspection.

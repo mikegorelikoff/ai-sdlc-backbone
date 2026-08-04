@@ -67,6 +67,28 @@ context. Keep
 wall-clock latency in a separate observational tier so deterministic receipts
 remain byte-identical across repeated runs.
 
+## Visualization
+
+`visualize` is a read-only projection of an already accepted complete graph. It
+does not warm, build, repair, or validate authority. Its default output is the
+project-local `.ai-sdlc/cache/context-graph.html`; any explicit output must be
+an `.html` file inside the selected cache directory and must not traverse a
+symlink.
+
+The standalone HTML contains the complete node and edge sets, a deterministic
+static layout, search, layer controls, direct incoming and outgoing relations,
+and an inspector. Repository source bodies are absent unless the caller opts in
+with `--include-source`. When source is included, the renderer confines reads
+to current regular files below the repository root, compares each file with its
+indexed SHA-256, escapes script boundaries, and builds highlighted code with DOM
+text nodes instead of interpreting source as markup. The viewer has a restrictive
+content-security policy and no network dependency.
+
+Rendering stale state is allowed for diagnosis because the output is explicitly
+non-authoritative. The canonical TOON receipt must identify freshness, graph and
+repository fingerprints, output path, source inclusion, counts, content hash,
+and stale source-file count.
+
 ## Security
 
 Do not follow symlinks, leave the repository root, make network calls, load
