@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v4.3.0 - 2026-08-04
 
 ### Added
 
@@ -29,6 +29,12 @@
 - Added focused viewer coverage for determinism, complete relations, source
   opt-in and escaping, drift, output confinement, incomplete graphs, TOON
   receipts, and embedded JavaScript syntax.
+- Passed the Harness API `4.1.0` compatibility gate from `v2.1.0`, all shared
+  script contracts, every per-skill test file, native project installation,
+  strict documentation builds online and offline, and rendered-site validation.
+- Advanced the optional context-cache module to `4.3.0`; existing cache
+  authority, installation profiles, portable contracts, and direct-read
+  fallback remain compatible. Rollback remains the immutable `v4.2.2` tag.
 
 ## v4.2.2 - 2026-08-04
 

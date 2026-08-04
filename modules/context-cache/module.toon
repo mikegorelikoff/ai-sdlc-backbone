@@ -1,4 +1,4 @@
-description: Optional local deterministic SQLite FTS5 and twelve-language Tree-sitter AST graph RAG context cache.
+description: Optional local deterministic SQLite FTS5 and twelve-language Tree-sitter AST graph RAG context cache with an offline graph explorer.
 harness_api:
   max_exclusive: 5.0.0
   min: 4.0.0
@@ -8,4 +8,4 @@ requires[1]: core
 schema: ai-sdlc-module/v1
 skills[1]{name,path}:
   ai-sdlc-context-cache,skills/ai-sdlc-context-cache
-version: 4.2.0
+version: 4.3.0

@@ -44,11 +44,11 @@ source remote has not passed your trust policy.
 Run this from the consumer repository:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.2.2/install.sh | sh -s -- codex-project
+curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.3.0/install.sh | sh -s -- codex-project
 ```
 
 Use `claude-code-project` for `.claude/skills`. The bootstrap script fetches the
-annotated `v4.2.2` tag into a temporary clean
+annotated `v4.3.0` tag into a temporary clean
 checkout and runs the source-owned installer. It does not invoke npm, a package
 registry, or the external Skills CLI. The installer rejects an unclean source,
 unknown inventory entries, symbolic links, non-TOON machine artifacts,
@@ -59,7 +59,7 @@ unreviewed managed-file differences, digest drift, and undeclared profiles.
 Use this path when you need to inspect the exact source before execution:
 
 ```bash
-HARNESS_TAG=v4.2.2
+HARNESS_TAG=v4.3.0
 HARNESS_TMP="$(mktemp -d)"
 HARNESS_SRC="$HARNESS_TMP/ai-sdlc-harness"
 git init "$HARNESS_SRC"
@@ -164,7 +164,7 @@ git commit -m "chore: install AI SDLC harness"
 ## Trust and network boundary
 
 The one-line convenience command executes the remote shell script from the
-immutable `v4.2.2` tag; the script verifies and fetches the same release before
+immutable `v4.3.0` tag; the script verifies and fetches the same release before
 copying skills. Use
 the pinned path when your policy requires review before execution. Set
 `AI_SDLC_SOURCE` to a clean local checkout from an approved mirror and

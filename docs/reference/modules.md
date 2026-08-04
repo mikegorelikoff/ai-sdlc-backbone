@@ -19,9 +19,9 @@ description: Installed capability modules, compatibility ranges, dependencies, a
 
     [Open manifest →](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/modules/architecture/module.toon)
 
--   **Context Cache** · `optional` · `v4.2.0`
+-   **Context Cache** · `optional` · `v4.3.0`
 
-    Optional local deterministic SQLite FTS5 and twelve-language Tree-sitter AST graph RAG context cache.
+    Optional local deterministic SQLite FTS5 and twelve-language Tree-sitter AST graph RAG context cache with an offline graph explorer.
 
     **Harness API:** ≥ 4.0.0 and < 5.0.0
 

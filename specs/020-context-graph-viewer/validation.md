@@ -29,6 +29,8 @@ artifact_metadata:
     - "DEC-004"
     - "DEC-005"
     - "DEC-006"
+    - "DEC-007"
+    - "T006"
     - "TC-003"
     - "TC-004"
   related_artifacts:
@@ -43,6 +45,7 @@ artifact_metadata:
     - "documentation validation and 47 documentation tests: passed"
     - "SDD clarify, checklist, structure, analyze, and plan-link gates: passed"
     - "full 121857-node Linear-inspired HTML render, concise-modal shell check, and embedded JavaScript parse: passed"
+    - "v4.3.0 compatibility, native installation, all-skill, documentation, online and offline strict build gates: passed"
   metatags:
     - "ai-sdlc"
     - "implementation"
@@ -73,6 +76,14 @@ traceability.
   context; Relations exposes every direct edge as a keyboard-reachable target.
 - PASS: documentation catalog check, documentation validator, and 47 tests.
 - PASS: SDD clarify, checklist, structural, analyze, plan-link, and diff checks.
+- PASS: the `v4.3.0` candidate preserves Harness API `4.1.0`, advances the
+  optional context-cache module to `4.3.0`, and passes the exact compatibility
+  gate against `v2.1.0` with the pending release commit explicitly allowed.
+- PASS: all 29 shared script-contract tests, every per-skill test file, the
+  native project installation smoke, and 35 Python 3.11 context-cache tests.
+- PASS: strict documentation builds passed with the hash-locked dependencies
+  online and then offline; rendered validation resolved all 5,555 local targets
+  across 207 HTML pages.
 
 ## Residual Risk
 

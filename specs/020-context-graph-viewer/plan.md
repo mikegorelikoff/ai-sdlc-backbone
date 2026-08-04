@@ -9,7 +9,7 @@ tags:
 status: "draft"
 generated:
   by: "process:ai-sdlc"
-  at: "2026-08-04T11:21:23Z"
+  at: "2026-08-04T11:43:08Z"
 artifact_metadata:
   schema: "ai-sdlc-artifact-metadata/v1"
   feature: "020-context-graph-viewer"
@@ -54,14 +54,14 @@ artifact_metadata:
 - Decision log: `decision-log.md`
 
 ## Cross-Artifact Trace Map
-- AC-001: requirements.md -> test-cases.md (TC-001, TC-010) -> tasks.md (T002, T004, T005) -> qa.md -> decision-log.md
+- AC-001: requirements.md -> test-cases.md (TC-001, TC-010) -> tasks.md (T002, T004, T005, T006) -> qa.md -> decision-log.md
 - AC-002: requirements.md -> test-cases.md (TC-002) -> tasks.md (T001, T004) -> qa.md -> decision-log.md
 - AC-003: requirements.md -> test-cases.md (TC-003) -> tasks.md (T001, T003, T004) -> qa.md -> decision-log.md
 - AC-004: requirements.md -> test-cases.md (TC-004) -> tasks.md (T003, T004) -> qa.md -> decision-log.md
 - AC-005: requirements.md -> test-cases.md (TC-005, TC-006) -> tasks.md (T001, T003, T004) -> qa.md -> decision-log.md
 - AC-006: requirements.md -> test-cases.md (TC-007, TC-008, TC-009) -> tasks.md (T002, T004) -> qa.md -> decision-log.md
 - AC-007: requirements.md -> test-cases.md (TC-007) -> tasks.md (T001, T004) -> qa.md -> decision-log.md
-- AC-008: requirements.md -> test-cases.md (TC-010) -> tasks.md (T005) -> qa.md -> decision-log.md
+- AC-008: requirements.md -> test-cases.md (TC-010) -> tasks.md (T005, T006) -> qa.md -> decision-log.md
 
 ## Task Execution Plan
 - [x] T001: Add deterministic graph_viewer.py with safe read-only extraction, layout, source opt-in, atomic output, and receipt data.; refs: FR-002, FR-003, FR-005, FR-007, FR-008, AC-002, AC-003, AC-005, AC-007, TC-001, TC-002, TC-003, TC-005, TC-006, TC-007; output: packaged standard-library renderer helper.
@@ -69,6 +69,7 @@ artifact_metadata:
 - [x] T003: Deliver a cohesive Linear-inspired responsive application header, persistent top toolbar with restrained rectangular filters and view controls, and a concise responsive modal with one selected-node header, underline Details/Relations/Source navigation, row-based Properties, direct context metrics, compact relation navigation, keyboard controls, focus behavior, and safe offline syntax highlighting.; refs: FR-003, FR-004, FR-005, NFR-003, NFR-004, AC-003, AC-004, AC-005, TC-003, TC-004, TC-006, DEC-002, DEC-003, DEC-004, DEC-005, DEC-006; output: compact neutral header, accessible top graph controls, and structured centered modal interaction runtime inside the self-contained HTML application.
 - [x] T004: Add deterministic unit and CLI tests for rendering, counts, source opt-in, escaping, failures, and packaging.; refs: AC-001, AC-002, AC-003, AC-004, AC-005, AC-006, AC-007, TC-001, TC-002, TC-003, TC-004, TC-005, TC-006, TC-007, TC-008, TC-009, TC-010; output: test_context_cache_viewer.py and focused validation evidence.
 - [x] T005: Document visualize in the skill and guide, refresh generated references, decision log, changelog, and spec indexes.; refs: AC-001, AC-008, TC-010; output: verified reusable command documentation and current catalogs.
+- [x] T006: Prepare the additive v4.3.0 release candidate with Harness API 4.1.0, context-cache module 4.3.0, immutable install references, compatibility metadata, generated catalogs, and release validation.; refs: AC-001, AC-008, TC-010, DEC-007; output: validated v4.3.0 release metadata ready for an annotated tag and publication.
 
 ## Task Dependencies
 - T001: depends on none
@@ -76,6 +77,7 @@ artifact_metadata:
 - T003: depends on T001
 - T004: depends on T001, T002, T003
 - T005: depends on T002, T004
+- T006: depends on T005
 
 ## Validation Sequence
 - 1. `python3 skills/ai-sdlc-sdd/scripts/check_clarify.py <spec-dir> --full-flow`

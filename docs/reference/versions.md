@@ -7,7 +7,8 @@ description: Release, harness API, compatibility, and migration support matrix.
 
 | Release | Harness API | Status | Migration |
 | --- | --- | --- | --- |
-| [`v4.2.2`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v4.2.2) | `4.1.0` | Current stable release; verifies and installs hash-locked Linux AST runtimes before the complete Python 3.10 and 3.13 CI matrix | No API migration; use this correction for every new or updated installation |
+| [`v4.3.0`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v4.3.0) | `4.1.0` | Current stable release; adds the reusable self-contained context graph explorer with complete relations, structured node inspection, and opt-in highlighted source | No API migration; update when local graph exploration is useful |
+| [`v4.2.2`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v4.2.2) | `4.1.0` | Previous corrective release; verifies and installs hash-locked Linux AST runtimes before the complete Python 3.10 and 3.13 CI matrix | Update to `v4.3.0` for the offline graph explorer |
 | [`v4.2.1`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v4.2.1) | `4.1.0` | Superseded corrective release; optional module installation works, but graph-required tests run without their pinned runtime in protected CI | Update immediately to `v4.2.2`; do not move or rewrite the original tag |
 | [`v4.2.0`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v4.2.0) | `4.1.0` | Superseded feature release; optional module installation succeeds, but its installed record validator rejects the canonical module selection | Update immediately to `v4.2.1`; do not move or rewrite the original tag |
 | [`v4.1.1`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v4.1.1) | `4.1.0` | Previous corrective release; aligns Pages publication with the native project installer | Update to `v4.2.0` for context-cache and AST graph capabilities |

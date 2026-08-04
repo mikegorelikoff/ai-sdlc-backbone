@@ -179,7 +179,7 @@ The viewer is a disposable read-only projection, not a new authority or
 portable machine contract. It never warms or repairs the cache, may display
 stale state only with explicit drift labels, makes no network request, and
 excludes source bodies unless `--include-source` is supplied. Existing public
-paths, canonical documentation ownership, Harness API, module version, and
+paths, canonical documentation ownership, Harness API, module API range, and
 TOON-only portable contracts remain unchanged.
 
 Node inspection uses a centered accessible modal rather than a persistent
@@ -194,3 +194,12 @@ without decorative badges or pills. The inspector uses one selected-node header
 and three task-specific panes: Details contains row-based properties and direct
 context, Relations lists compact navigable edges, and Source owns code and
 freshness. Global graph statistics stay outside node inspection.
+
+## Context graph explorer release
+
+On 2026-08-04, additive release `v4.3.0` publishes the local context graph
+explorer and advances the optional context-cache module to `4.3.0`. Harness API
+remains `4.1.0`: existing commands, schemas, installation profiles, artifact
+authority, and direct-read fallback are unchanged. The release is a minor
+version because it adds an opt-in user-facing capability without requiring a
+migration. The immutable `v4.2.2` release is the rollback point.

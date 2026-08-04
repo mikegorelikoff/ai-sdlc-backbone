@@ -16,6 +16,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 SCRIPT = ROOT / "skills/ai-sdlc-context-cache/scripts/context_cache.py"
+VIEWER = ROOT / "skills/ai-sdlc-context-cache/scripts/graph_viewer.py"
 SPEC = importlib.util.spec_from_file_location("ai_sdlc_context_cache_viewer", SCRIPT)
 assert SPEC is not None and SPEC.loader is not None
 CACHE = importlib.util.module_from_spec(SPEC)
@@ -206,6 +207,16 @@ class ContextCacheViewerTests(unittest.TestCase):
                 CACHE.visualize(root, cache)
 
     def test_cli_emits_toon_receipt_and_embedded_javascript_compiles(self) -> None:
+        helper_help = subprocess.run(
+            [sys.executable, str(VIEWER), "--help"],
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+        self.assertEqual(helper_help.returncode, 0, helper_help.stderr)
+        self.assertIn("--state-check", helper_help.stdout)
+        self.assertIn("--quick-flow", helper_help.stdout)
         with tempfile.TemporaryDirectory() as directory:
             root, _cache = self.repository(directory)
             result = subprocess.run(

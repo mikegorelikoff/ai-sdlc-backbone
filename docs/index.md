@@ -57,7 +57,7 @@ Install the skills with the Codex project profile. This path requires Git and
 Python `3.10+`:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.2.2/install.sh | sh -s -- codex-project
+curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.3.0/install.sh | sh -s -- codex-project
 ```
 
 Then validate the resulting TOON provenance:

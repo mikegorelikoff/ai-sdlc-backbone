@@ -785,6 +785,17 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description="Imported helper; use context_cache.py visualize."
     )
+    parser.add_argument("--quick-flow", action="store_true")
+    parser.add_argument("--full-flow", action="store_true")
+    parser.add_argument("--feature")
+    parser.add_argument("--state-check", action="store_true")
+    parser.add_argument("--begin-state", action="store_true")
+    parser.add_argument("--complete-state", action="store_true")
+    parser.add_argument("--decision-ref")
+    parser.add_argument("--assumption")
+    parser.add_argument(
+        "--state-workspace", choices=("refinement", "implementation")
+    )
     parser.parse_args()
     print("Use context_cache.py visualize to generate a graph viewer.")
     return 0

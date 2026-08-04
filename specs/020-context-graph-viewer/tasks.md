@@ -9,7 +9,7 @@ tags:
 status: "draft"
 generated:
   by: "process:ai-sdlc"
-  at: "2026-08-04T11:21:04Z"
+  at: "2026-08-04T11:42:41Z"
 artifact_metadata:
   schema: "ai-sdlc-artifact-metadata/v1"
   feature: "020-context-graph-viewer"
@@ -38,6 +38,7 @@ artifact_metadata:
     - "DEC-004"
     - "DEC-005"
     - "DEC-006"
+    - "DEC-007"
     - "NFR-003"
     - "NFR-004"
     - "TC-001"
@@ -97,4 +98,8 @@ Depends on: T001, T002, T003
 Output: verified reusable command documentation and current catalogs.
 Refs: AC-001, AC-008, TC-010
 Depends on: T002, T004
+- [x] T006. Prepare the additive v4.3.0 release candidate with Harness API 4.1.0, context-cache module 4.3.0, immutable install references, compatibility metadata, generated catalogs, and release validation.
+Output: validated v4.3.0 release metadata ready for an annotated tag and publication.
+Refs: AC-001, AC-008, TC-010, DEC-007
+Depends on: T005
 
