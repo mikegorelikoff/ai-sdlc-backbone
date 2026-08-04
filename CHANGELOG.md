@@ -15,6 +15,10 @@
 ### Validation
 
 - Verified both Linux wheelhouses against their selected TOON locks.
+- Passed protected `skills-ci` run `30898588466` on Ubuntu with CPython 3.10
+  and 3.13, including offline twelve-grammar preflight and all test stages.
+- Passed protected `docs-pages` run `30898588231` and published the updated
+  operating guide.
 - Preserved Harness API `4.1.0`, context-cache module `4.2.0`, authoritative
   source files, disposable SQLite state, and TOON-only portable contracts.
 

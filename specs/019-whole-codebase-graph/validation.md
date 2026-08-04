@@ -23,7 +23,7 @@ artifact_metadata:
   status: "validated"
   owner: "Harness Maintainers"
   created_at: "2026-08-03"
-  updated_at: "2026-08-03"
+  updated_at: "2026-08-04"
   trace_ids:
     - "AC-001"
     - "AC-002"
@@ -68,6 +68,7 @@ artifact_metadata:
     - "178 shared-runtime tests passed"
     - "47 documentation tests passed"
     - "two-run full-corpus graph audit passed"
+    - "protected skills-ci run 30898588466 passed on Python 3.10 and 3.13"
   metatags:
     - "ai-sdlc"
     - "implementation"
@@ -98,6 +99,8 @@ completeness, freshness, safety, recall, or economics cannot be proven.
 | Documentation validation and tests | passed: 206 pages and 47 tests | generated catalog, public contracts, navigation, links, and executable help |
 | Full refinement and SDD gates | passed | 18-stage upstream package, implementation traceability, plan links, and status |
 | `git diff --check` | passed | patch whitespace and conflict-marker hygiene |
+| Protected `skills-ci` run `30898588466` | passed: Python 3.10 in 3m22s; Python 3.13 in 4m13s | exact Linux locks, verified offline install, twelve-grammar preflight, shared runtime, repository contracts, compatibility, and per-skill tests |
+| Protected `docs-pages` run `30898588231` | passed | strict documentation build and published Pages deployment |
 
 ## Production Evidence
 
@@ -119,8 +122,8 @@ authority through graph proximity.
 
 ## Residual Risk
 
-The checked wheel hashes and ABI smoke are for the declared CPython 3.11 macOS
-arm64 target available in this environment. Other declared targets require the
-same offline lock verification in protected CI. Independent security testing
-and code review completed with no unresolved finding; protected remote CI is
-the remaining environment-specific confirmation after push.
+No unresolved release blocker remains. The declared CPython 3.11 macOS arm64
+runtime passed local offline smoke, and protected Ubuntu x86_64 jobs passed the
+equivalent hash-locked CPython 3.10 and 3.13 runtime, twelve-grammar preflight,
+and full regression suites. Other operating-system and architecture targets
+remain unsupported until they receive equivalent TOON locks and evidence.

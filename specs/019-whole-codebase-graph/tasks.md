@@ -134,7 +134,7 @@ Depends on: T001, T005, T006, T007
 Output: target-specific Linux TOON locks and offline installer/preflight gates.
 Refs: AC-008, TC-001, TC-023, DEC-008
 Depends on: T001, T007, T009
-- [ ] T012. Prove both protected Linux CI targets and publish the immutable corrective release.
-Output: green Python 3.10 and 3.13 jobs, completed validation evidence, tag v4.2.2, and published release.
+- [x] T012. Prove both protected Linux CI targets and prepare the immutable corrective release.
+Output: green Python 3.10 and 3.13 jobs, completed validation evidence, and v4.2.2 release metadata.
 Refs: AC-008, TC-001, TC-023, DEC-008
 Depends on: T011

@@ -9,7 +9,7 @@ tags:
 status: "draft"
 generated:
   by: "process:ai-sdlc"
-  at: "2026-08-04T09:35:19Z"
+  at: "2026-08-04T10:03:29Z"
 artifact_metadata:
   schema: "ai-sdlc-artifact-metadata/v1"
   feature: "019-whole-codebase-graph"
@@ -75,7 +75,7 @@ artifact_metadata:
 - [x] T009: Run full validation, security testing, code review, compatibility, docs, install, and diff gates.; refs: AC-008, TC-021, TC-022, TC-023, TC-024, DEC-007; output: validation.md, security-review.md, code-review.md, and zero unresolved release blockers.
 - [x] T010: Document graph setup, supported targets/languages, Kotlin/Swift parity, commands, schema, bounds, diagnostics, fallback, purge, privacy, offline operation, and production criteria; refresh generated catalogs.; refs: FR-001, FR-002, FR-005, FR-006, FR-007, FR-008, AC-001, AC-003, AC-005, AC-007, AC-008, TC-001, TC-019, TC-020, TC-023, TC-024, DEC-006, DEC-007; output: current skill contract, operator guide, parser provenance guidance, and generated references.
 - [x] T011: Provision and verify the complete pinned graph runtime before protected Python 3.10 and 3.13 CI tests.; refs: AC-008, TC-001, TC-023, DEC-008; output: target-specific Linux TOON locks and offline installer/preflight gates.
-- [ ] T012: Prove both protected Linux CI targets and publish the immutable corrective release.; refs: AC-008, TC-001, TC-023, DEC-008; output: green Python 3.10 and 3.13 jobs, completed validation evidence, tag v4.2.2, and published release.
+- [x] T012: Prove both protected Linux CI targets and prepare the immutable corrective release.; refs: AC-008, TC-001, TC-023, DEC-008; output: green Python 3.10 and 3.13 jobs, completed validation evidence, and v4.2.2 release metadata.
 
 ## Task Dependencies
 - T001: depends on none

@@ -30,7 +30,7 @@ tasks[12]{id,status,refs,tests,depends_on,artifact,decision_ref}:
   T009,done,AC-008/TC-021/TC-022/TC-023/TC-024/DEC-007,TC-001/TC-018/TC-019/TC-021/TC-022/TC-023/TC-024,T008,validation.md; security-review.md; code-review.md; and zero unresolved release blockers.,TBD
   T010,done,FR-001/FR-002/FR-005/FR-006/FR-007/FR-008/AC-001/AC-003/AC-005/AC-007/AC-008/TC-001/TC-019/TC-020/TC-023/TC-024/DEC-006/DEC-007,TC-001/TC-002/TC-003/TC-004/TC-006/TC-008/TC-011/TC-012/TC-015/TC-016/TC-017/TC-018/TC-019/TC-021/TC-022/TC-023/TC-024,T001/T005/T006/T007,current skill contract; operator guide; parser provenance guidance; and generated references.,TBD
   T011,done,AC-008/TC-001/TC-023/DEC-008,TC-001/TC-018/TC-019/TC-021/TC-022/TC-023/TC-024,T001/T007/T009,target-specific Linux TOON locks and offline installer/preflight gates.,DEC-008
-  T012,pending,AC-008/TC-001/TC-023/DEC-008,TC-001/TC-018/TC-019/TC-021/TC-022/TC-023/TC-024,T011,green Python 3.10 and 3.13 jobs; completed validation evidence; tag v4.2.2; and published release.,DEC-008
+  T012,done,AC-008/TC-001/TC-023/DEC-008,TC-001/TC-018/TC-019/TC-021/TC-022/TC-023/TC-024,T011,green Python 3.10 and 3.13 jobs; completed validation evidence; and v4.2.2 release metadata.,DEC-008
 validation_sequence[5]{step,command}:
   1,check_refinement_context.py --full-flow
   2,check_clarify.py --full-flow
