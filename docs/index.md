@@ -57,7 +57,7 @@ Install the skills with the Codex project profile. This path requires Git and
 Python `3.10+`:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.3.1/install.sh | sh -s -- codex-project
+curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.4.0/install.sh | sh -s -- codex-project
 ```
 
 Then validate the resulting TOON provenance:
@@ -66,8 +66,9 @@ Then validate the resulting TOON provenance:
 python3 .agents/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py
 ```
 
-Use `claude-code-project` for Claude Code. The second command must validate all
-45 installed skills and their locked content digests. Then ask your agent to
+Use `claude-code-project` for Claude Code. Windows and compatible custom agent
+roots use the [cross-platform installation path](how-to/install.md). The second
+command must validate all 45 installed skills and their locked content digests. Then ask your agent to
 Explore a request without applying changes:
 
 ```text

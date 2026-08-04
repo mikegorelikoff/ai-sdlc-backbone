@@ -16,13 +16,13 @@ from pathlib import Path
 
 _SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
 sys.path.insert(0, str(_SHARED))
-from ai_sdlc_paths import first_existing, internal_dir
+from ai_sdlc_paths import first_existing, internal_dir, repository_root_from_skills_root
 
 
 def workspace_root(script_path: Path = Path(__file__)) -> Path:
     """Return the consumer/source repository root for either distribution layout."""
-    candidate = script_path.resolve().parents[3]
-    return candidate.parent if candidate.name in {".agents", ".claude"} else candidate
+    skills_root = script_path.resolve().parents[2]
+    return repository_root_from_skills_root(skills_root)
 
 
 ROOT = workspace_root()

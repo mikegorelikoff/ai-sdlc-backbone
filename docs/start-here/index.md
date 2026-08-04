@@ -20,6 +20,16 @@ recommended default is a project-scoped install followed by a read-only
 You do not need to understand every skill before starting. The flow entry point
 selects the owning path and shows the planned writes before Apply.
 
+From the project you want to evaluate, run the primary Codex install action:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.4.0/install.sh | sh -s -- codex-project
+```
+
+Keep verification as the next separate step in the [install guide](../how-to/install.md).
+That guide also provides native Windows, Claude Code, and configurable
+Agent Skills-compatible host commands.
+
 ## Choose a next path
 
 - New to AI-assisted delivery: follow the [learning path](../start.md).

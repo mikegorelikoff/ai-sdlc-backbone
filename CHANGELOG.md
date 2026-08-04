@@ -1,5 +1,27 @@
 # Changelog
 
+## v4.4.0 - 2026-08-04
+
+### Added
+
+- Added a standard-library `install.py` bootstrap for native Windows, macOS,
+  and Linux installation from an immutable tag, SHA, local checkout, or
+  reviewed remote.
+- Added `agent-project --skills-root <relative-path>` for any project host that
+  consumes Agent Skills-style `SKILL.md` packages, while preserving the fixed
+  Codex and Claude Code profiles.
+- Added a native Windows/macOS/Linux CI matrix for configurable and named
+  profiles, optional modules, deterministic records, and portable locking.
+
+### Security and compatibility
+
+- Rejected absolute, drive-qualified, parent-traversing, Git/metadata-overlap,
+  Windows-reserved, and symlink-escaping custom targets before mutation.
+- Added `msvcrt` one-byte mutation locks on Windows and retained `fcntl` locks
+  on POSIX without changing TOON record or lock schemas.
+- Preserved Harness API `4.1.0`, all existing installed paths, module selection,
+  collision review, transactional rollback, and immutable source verification.
+
 ## v4.3.1 - 2026-08-04
 
 ### Fixed

@@ -14,8 +14,7 @@ page before installation or rollout.
 | --- | --- | --- |
 | Git | Current supported release | Resolve immutable source, branch, diff, and preserve evidence |
 | Python | `>=3.10` | Run the native installer and deterministic helpers |
-| Codex | Project-scoped host | Discover `.agents/skills/` and execute the validated pilot path |
-| Claude Code | Project-scoped host | Discover `.claude/skills/` and execute the same installed harness contracts |
+| Agent host | Project-scoped host | Discover its configured Agent Skills directory containing `SKILL.md` packages |
 | Network | Git remote during first install | Fetch the reviewed Harness tag; an approved local mirror may replace it |
 
 The native installer does not require Node.js, npm, a package registry, or a
@@ -25,13 +24,15 @@ third-party skill installer.
 
 | Environment | Evidence | Status |
 | --- | --- | --- |
-| Ubuntu 24.04, Python 3.10 and 3.13 | Repository workflow and native installed-layout smoke | Configured; support depends on the published workflow result |
+| Ubuntu 24.04, Python 3.10 and 3.13 | Repository workflow, portable installer matrix, and native installed-layout smoke | Configured; support depends on the published workflow result |
+| macOS 15, Python 3.10 | Portable Python bootstrap, custom profile, named-profile regression, records, modules, and locks | Configured; support depends on the published workflow result |
+| Windows 2025, Python 3.10 | Native Python bootstrap, custom profile, records, modules, and `msvcrt` locking | Configured; support depends on the published workflow result |
 | macOS, POSIX shell, Python 3.11 | v4 source gates, deterministic evaluations, docs build, and native installation smoke | v4 mechanically validated locally |
 | Codex on macOS, project `.agents/skills/` | v4.1 installed-layout smoke and provider-executed TC-012 on 2026-08-03 | Validated |
 | Claude Code profile on macOS, project `.claude/skills/` | v4.1 installed-layout smoke through complete SDD and commit readiness on 2026-08-03 | Package and discovery path validated; model execution is not certified by the Codex receipt |
-| Windows Subsystem for Linux | POSIX-compatible documented route; no recorded v4 candidate run | Candidate |
-| Native PowerShell | No native v4 installer run recorded | Not yet supported |
-| Other agent hosts or global scope | Portable skill contents only; no native installer conformance run | Not yet supported |
+| Windows Subsystem for Linux | POSIX shell or portable Python bootstrap | Supported by the Linux-compatible package path; workflow result remains release evidence |
+| Other Agent Skills-compatible project hosts | `agent-project --skills-root` installs and validates package placement at a safe relative root | Portable package contract; host discovery and model execution are not certified |
+| Global or home-directory scope | No installer path; repository containment rejects it | Not supported |
 
 “Mechanically validated” means the exact deterministic workflow passed. It is
 not a promise about every provider, model, operating-system release, or agent
@@ -42,8 +43,14 @@ host.
 The supported profiles install all 45 skills into the host's project directory:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.3.1/install.sh | sh -s -- codex-project
-curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.3.1/install.sh | sh -s -- claude-code-project
+curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.4.0/install.sh | sh -s -- codex-project
+curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.4.0/install.sh | sh -s -- claude-code-project
+```
+
+Native PowerShell and configurable compatible-host roots use `install.py`:
+
+```powershell
+irm https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.4.0/install.py | py -3 - agent-project --skills-root .agent/skills
 ```
 
 The additive `context-cache` module is opt-in and makes the installed set 46
@@ -73,7 +80,7 @@ global state cannot replace it.
 
 ## Release support
 
-Consumer instructions resolve annotated tag `v4.3.1` to an exact commit. Local
+Consumer instructions resolve annotated tag `v4.4.0` to an exact commit. Local
 deterministic, documentation, and installed-layout gates pass before
 publication. Protected remote CI and a fresh tagged remote installation are
 post-publication signals and must be reported separately.

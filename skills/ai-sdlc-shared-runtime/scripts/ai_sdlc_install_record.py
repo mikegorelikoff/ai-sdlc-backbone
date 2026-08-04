@@ -19,6 +19,7 @@ from ai_sdlc_install import (  # noqa: E402
     INSTALL_PROFILES,
     InstallError,
     directory_digest,
+    resolve_profile,
 )
 
 
@@ -98,8 +99,19 @@ def validate(record_path: Path, skills_root: Path) -> list[str]:
     if profile not in INSTALL_PROFILES:
         errors.append("install record profile is unknown")
         return errors
-    profile_contract = INSTALL_PROFILES[profile]
-    if value["agent"] != profile_contract["agent"]:
+    target = value["target"]
+    if not isinstance(target, str):
+        errors.append("install record target must be a string")
+        return errors
+    try:
+        expected_agent, expected_target = resolve_profile(
+            profile,
+            target if INSTALL_PROFILES[profile]["target"] is None else None,
+        )
+    except InstallError as exc:
+        errors.append(f"install record target is invalid: {exc}")
+        return errors
+    if value["agent"] != expected_agent:
         errors.append("install record agent must match its profile")
     selection = value["selection"]
     selected_modules = module_selection_ids(selection)
@@ -111,7 +123,7 @@ def validate(record_path: Path, skills_root: Path) -> list[str]:
     if value["lock"] != ".ai-sdlc/harness-install-lock.toon":
         errors.append("install record lock must be .ai-sdlc/harness-install-lock.toon")
         return errors
-    if value["target"] != profile_contract["target"]:
+    if target != expected_target:
         errors.append("install record target must match its profile")
         return errors
     inventory_path = record_path.resolve().parent.parent / value["inventory"]

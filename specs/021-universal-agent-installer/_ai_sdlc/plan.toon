@@ -1,0 +1,34 @@
+feature: 021-universal-agent-installer
+workspace: implementation
+flow_mode: quick
+updated_at: 2026-08-04
+source_artifacts[6]{artifact,path}:
+  requirements,requirements.md
+  design,design.md
+  test_cases,test-cases.md
+  qa,qa.md
+  tasks,tasks.md
+  decisions,decision-log.md
+trace[8]{acceptance_id,test_cases,tasks}:
+  AC-001,TC-001,T002
+  AC-002,TC-002,T001
+  AC-003,TC-002,T001/T003
+  AC-004,TC-003,T001
+  AC-005,TC-004,T001
+  AC-006,TC-005,T002
+  AC-007,TC-006,T005/T007
+  AC-008,TC-007,T006/T007
+tasks[7]{id,status,refs,tests,depends_on,artifact,decision_ref}:
+  T001,done,FR-002/FR-004/FR-005/FR-006/AC-002/AC-003/AC-004/AC-005,TC-002/TC-003/TC-004,none,cross-platform installer runtime.,TBD
+  T002,done,FR-001/FR-003/FR-007/AC-001/AC-006,TC-001/TC-005,none,portable and compatible entrypoints.,TBD
+  T003,done,FR-006/NFR-002/AC-003,TC-002,none,named and generic record validation.,TBD
+  T004,done,FR-009/TC-001/TC-002/TC-003/TC-004/TC-005,none,none,deterministic installer coverage.,TBD
+  T005,done,FR-009/TC-006/AC-007,TC-006,none,platform and release evidence.,TBD
+  T006,done,FR-008/NFR-006/TC-007/AC-008,TC-007,none,accurate portable installation contract.,TBD
+  T007,pending,A-003/AC-007/AC-008,TC-006/TC-007,none,immutable verified release.,TBD
+validation_sequence[5]{step,command}:
+  1,check_refinement_context.py --full-flow
+  2,check_clarify.py --full-flow
+  3,check_checklist.py --full-flow
+  4,plan_links.py --check --full-flow
+  5,analyze_spec.py --full-flow && validate_spec.py --full-flow

@@ -4,11 +4,11 @@
 from __future__ import annotations
 
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
-from unittest import mock
 from unittest import mock
 from pathlib import Path
 
@@ -178,6 +178,150 @@ class NativeInstallTests(unittest.TestCase):
             self.assertEqual(install_record.validate(record, first / ".claude/skills"), [])
             self.assertTrue((first / ".claude/skills/ai-sdlc-flow/SKILL.md").is_file())
 
+    def test_agent_project_custom_root_is_deterministic_and_valid(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = self.source_fixture(root)
+            first = root / "agent-a"
+            second = root / "agent-b"
+            _, record, lock = self.run_install(
+                source,
+                first,
+                profile="agent-project",
+                skills_root=".agent\\skills",
+            )
+            self.run_install(
+                source,
+                second,
+                profile="agent-project",
+                skills_root=".agent/skills",
+            )
+            self.assertEqual(lock.read_bytes(), (second / ".ai-sdlc/harness-install-lock.toon").read_bytes())
+            self.assertEqual(record.read_bytes(), (second / ".ai-sdlc/harness-install.toon").read_bytes())
+            payload = native_install.toon_codec.loads(record.read_text(encoding="utf-8"))
+            self.assertEqual(payload["agent"], "agent-skills")
+            self.assertEqual(payload["target"], ".agent/skills")
+            self.assertEqual(install_record.validate(record, first / ".agent/skills"), [])
+
+    def test_agent_project_requires_safe_custom_root(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = self.source_fixture(root)
+            with self.assertRaisesRegex(InstallError, "requires --skills-root"):
+                self.run_install(source, root / "missing", profile="agent-project")
+            unsafe = (
+                "/tmp/skills", "C:\\agent\\skills", "../skills", ".git/skills",
+                ".GIT/skills", ".ai-sdlc/skills", ".AI-SDLC/skills", "agent//skills",
+                "agent/../skills", "NUL/skills",
+            )
+            for index, target in enumerate(unsafe):
+                with self.subTest(target=target), self.assertRaises(InstallError):
+                    self.run_install(
+                        source,
+                        root / f"unsafe-{index}",
+                        profile="agent-project",
+                        skills_root=target,
+                    )
+
+    def test_named_profile_rejects_custom_root(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = self.source_fixture(root)
+            with self.assertRaisesRegex(InstallError, "only with agent-project"):
+                self.run_install(source, root / "consumer", skills_root=".agent/skills")
+
+    def test_python_bootstrap_installs_custom_profile_and_module(self) -> None:
+        if sys.version_info < (3, 10):
+            self.skipTest("portable bootstrap requires Python 3.10+")
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = self.source_fixture(root)
+            scripts = source / "skills/ai-sdlc-shared-runtime/scripts"
+            scripts.mkdir()
+            for name in ("ai_sdlc_install.py", "ai_sdlc_toon.py"):
+                shutil.copy2(SCRIPTS / name, scripts / name)
+            shutil.copy2(ROOT / "install.py", source / "install.py")
+            subprocess.run(["git", "-C", str(source), "add", "."], check=True)
+            subprocess.run(
+                [
+                    "git", "-C", str(source),
+                    "-c", "user.name=Fixture",
+                    "-c", "user.email=fixture@example.invalid",
+                    "-c", "commit.gpgsign=false",
+                    "commit", "-m", "add portable bootstrap",
+                ],
+                check=True,
+                stdout=subprocess.DEVNULL,
+            )
+            revision = subprocess.check_output(
+                ["git", "-C", str(source), "rev-parse", "HEAD"], text=True,
+            ).strip()
+            consumer = root / "consumer"
+            consumer.mkdir()
+            subprocess.run(["git", "init", str(consumer)], check=True, stdout=subprocess.DEVNULL)
+            environment = os.environ.copy()
+            environment.update({"AI_SDLC_SOURCE": str(source), "AI_SDLC_REVISION": revision})
+            result = subprocess.run(
+                [
+                    sys.executable, str(ROOT / "install.py"),
+                    "agent-project", "--skills-root", ".agent/skills",
+                    "--module", "context-cache",
+                ],
+                cwd=consumer,
+                env=environment,
+                check=False,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertTrue(
+                (consumer / ".agent/skills/ai-sdlc-context-cache/SKILL.md").is_file()
+            )
+            payload = native_install.toon_codec.loads(
+                (consumer / ".ai-sdlc/harness-install.toon").read_text(encoding="utf-8")
+            )
+            self.assertEqual(payload["profile"], "agent-project")
+            self.assertEqual(payload["target"], ".agent/skills")
+            self.assertEqual(payload["selection"], "modules:context-cache")
+
+    def test_bootstraps_reject_credential_bearing_remote_without_echo(self) -> None:
+        if sys.version_info < (3, 10):
+            self.skipTest("portable bootstraps require Python 3.10+")
+        marker = "install-secret-marker"
+        remote = f"https://{marker}@example.invalid/repository.git"
+        with tempfile.TemporaryDirectory() as temp:
+            consumer = Path(temp)
+            subprocess.run(["git", "init", str(consumer)], check=True, stdout=subprocess.DEVNULL)
+            environment = os.environ.copy()
+            environment["AI_SDLC_SOURCE"] = remote
+            result = subprocess.run(
+                [sys.executable, str(ROOT / "install.py"), "codex-project"],
+                cwd=consumer,
+                env=environment,
+                check=False,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            self.assertEqual(result.returncode, 65)
+            self.assertNotIn(marker, result.stdout + result.stderr)
+            self.assertIn("configure Git credentials externally", result.stderr)
+            if shutil.which("sh") is not None:
+                environment["AI_SDLC_PYTHON"] = sys.executable
+                result = subprocess.run(
+                    ["sh", str(ROOT / "install.sh"), "codex-project"],
+                    cwd=consumer,
+                    env=environment,
+                    check=False,
+                    text=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                )
+                self.assertEqual(result.returncode, 65)
+                self.assertNotIn(marker, result.stdout + result.stderr)
+                self.assertIn("configure Git credentials externally", result.stderr)
+
     def test_unknown_profile_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
@@ -247,6 +391,8 @@ class NativeInstallTests(unittest.TestCase):
                 self.run_install(source, root / "consumer")
 
     def test_missing_local_source_path_fails_without_remote_fallback(self) -> None:
+        if shutil.which("sh") is None:
+            self.skipTest("POSIX shell bootstrap is unavailable")
         with tempfile.TemporaryDirectory() as temp:
             consumer = Path(temp)
             subprocess.run(["git", "init", str(consumer)], check=True, stdout=subprocess.DEVNULL)
@@ -277,6 +423,8 @@ class NativeInstallTests(unittest.TestCase):
                 self.run_install(source, consumer)
 
     def test_linked_managed_root_is_rejected(self) -> None:
+        if os.name == "nt":
+            self.skipTest("Windows CI does not guarantee unprivileged symlink creation")
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             source = self.source_fixture(root)
@@ -288,6 +436,50 @@ class NativeInstallTests(unittest.TestCase):
 
             with self.assertRaisesRegex(InstallError, "must not be a symbolic link"):
                 self.run_install(source, consumer)
+
+    def test_linked_custom_target_ancestor_is_rejected(self) -> None:
+        if os.name == "nt":
+            self.skipTest("Windows CI does not guarantee unprivileged symlink creation")
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = self.source_fixture(root)
+            consumer = root / "consumer"
+            outside = root / "outside"
+            consumer.mkdir()
+            outside.mkdir()
+            (consumer / ".agent").symlink_to(outside, target_is_directory=True)
+            with self.assertRaisesRegex(InstallError, "must not be a symbolic link"):
+                self.run_install(
+                    source,
+                    consumer,
+                    profile="agent-project",
+                    skills_root=".agent/skills",
+                )
+
+    def test_windows_lock_adapter_is_used_without_fcntl(self) -> None:
+        class FakeMsvcrt:
+            LK_NBLCK = 1
+            LK_UNLCK = 2
+
+            def __init__(self) -> None:
+                self.operations: list[int] = []
+
+            def locking(self, _fileno: int, operation: int, length: int) -> None:
+                self.operations.append(operation)
+                if length != 1:
+                    raise AssertionError("Windows lock must cover one byte")
+
+        with tempfile.TemporaryDirectory() as temp:
+            consumer = Path(temp)
+            subprocess.run(["git", "init", str(consumer)], check=True, stdout=subprocess.DEVNULL)
+            fake = FakeMsvcrt()
+            with (
+                mock.patch.object(native_install, "fcntl", None),
+                mock.patch.object(native_install, "msvcrt", fake),
+                consumer_mutation_lock(consumer),
+            ):
+                pass
+            self.assertEqual(fake.operations, [fake.LK_NBLCK, fake.LK_UNLCK])
 
     def test_concurrent_mutation_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

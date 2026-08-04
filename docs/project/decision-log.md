@@ -212,3 +212,20 @@ remains immutable. Corrective `v4.3.1` uses a deterministic browser-native
 literal encoder, compacts the router without removing behavior, keeps Harness
 API `4.1.0` and context-cache `4.3.0`, and makes the complete shared-runtime
 discovery suite a pre-tag gate.
+
+## Cross-platform and agent-neutral project installation
+
+On 2026-08-04, additive release `v4.4.0` makes the existing deterministic
+project installer native across Windows, macOS, and Linux. A standard-library
+Python bootstrap performs the same immutable source resolution as the POSIX
+shell entrypoint, and the mutation lock selects `msvcrt` on Windows or `fcntl`
+on POSIX.
+
+The release adds `agent-project --skills-root <relative-path>` instead of
+guessing vendor directories. The custom root is normalized into a portable
+repository-relative path and rejected when it is absolute, drive-qualified,
+parent-traversing, Windows-reserved, metadata-overlapping, or symlink-escaping.
+Codex and Claude Code retain their fixed targets and installed records remain
+schema-compatible. The generic profile proves Agent Skills package placement
+and installed-runtime integrity; named host discovery or model execution
+remains a separate conformance claim.

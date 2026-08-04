@@ -109,6 +109,7 @@ def install_native(
     revision: str | None = None,
     *,
     snapshot_source: bool = False,
+    skills_root: str | None = None,
 ) -> None:
     """Install a local checkout through the harness-owned deterministic installer."""
     require(run(["git", "init"], consumer), "consumer git init")
@@ -146,6 +147,8 @@ def install_native(
         raise RuntimeError("native installation smoke requires --profile for bounded host scope")
     installer_python = shutil.which("python3.11") or sys.executable
     command = ["sh", str(effective_source / "install.sh"), profile]
+    if skills_root is not None:
+        command.extend(("--skills-root", skills_root))
     require(
         run(
             command,
@@ -158,8 +161,9 @@ def install_native(
         ),
         "native harness installation",
     )
-    host_root = ".agents" if profile == "codex-project" else ".claude"
-    skills_target = consumer / host_root / "skills"
+    target = skills_root or (".agents/skills" if profile == "codex-project" else ".claude/skills")
+    host_root = target.replace("\\", "/").split("/", 1)[0]
+    skills_target = consumer.joinpath(*target.replace("\\", "/").split("/"))
     allowed = {host_root, ".ai-sdlc", ".git"}
     unexpected = sorted(path.name for path in consumer.iterdir() if path.name not in allowed)
     if unexpected:
@@ -203,6 +207,7 @@ def verify(
     source_checkout: Path | None = None,
     expected_skill_count: int = 46,
     profile: str | None = None,
+    skills_root: str | None = None,
 ) -> None:
     """Execute installed imports, one complete write, and finalization."""
     require(run(["git", "init"], consumer), "flow fixture git init")
@@ -226,8 +231,8 @@ def verify(
         ),
         "flow fixture base commit",
     )
-    host_root = ".claude" if profile == "claude-code-project" else ".agents"
-    installed = consumer / host_root / "skills"
+    target = skills_root or (".claude/skills" if profile == "claude-code-project" else ".agents/skills")
+    installed = consumer.joinpath(*target.replace("\\", "/").split("/"))
     installed_skills = [path for path in installed.iterdir() if path.is_dir() and (path / "SKILL.md").is_file()]
     if len(installed_skills) != expected_skill_count:
         raise RuntimeError(f"expected {expected_skill_count} installed skills, found {len(installed_skills)}")
@@ -430,7 +435,12 @@ def main() -> int:
         choices=("emulated", "emulated-selective", "emulated-global", "native", "native-remote"),
         default="emulated",
     )
-    parser.add_argument("--profile", choices=("codex-project", "claude-code-project"), help="Harness project install profile")
+    parser.add_argument(
+        "--profile",
+        choices=("agent-project", "codex-project", "claude-code-project"),
+        help="Harness project install profile",
+    )
+    parser.add_argument("--skills-root", help="Project-relative skills root for agent-project")
     parser.add_argument("--revision", help="Exact 40-character Git revision for native-remote mode")
     parser.add_argument(
         "--expected-failure",
@@ -466,9 +476,15 @@ def main() -> int:
             if args.mode == "native-remote":
                 source_checkout = temp_root / "harness-source"
                 checkout_revision(source_value, args.revision, source_checkout)
-                install_native(source_checkout, consumer, args.profile, args.revision)
+                install_native(
+                    source_checkout, consumer, args.profile, args.revision,
+                    skills_root=args.skills_root,
+                )
             elif args.mode == "native":
-                install_native(source_path, consumer, args.profile, snapshot_source=True)
+                install_native(
+                    source_path, consumer, args.profile,
+                    snapshot_source=True, skills_root=args.skills_root,
+                )
             elif args.mode == "emulated-selective":
                 selected = {
                     "ai-sdlc-shared-runtime", "ai-sdlc-flow",
@@ -499,6 +515,7 @@ def main() -> int:
                 installed_source if installed_source.is_dir() else None,
                 expected_skill_count=expected_skill_count,
                 profile=args.profile if args.mode.startswith("native") else None,
+                skills_root=args.skills_root if args.mode.startswith("native") else None,
             )
     except (OSError, RuntimeError) as exc:
         if args.expected_failure and args.expected_failure in str(exc):

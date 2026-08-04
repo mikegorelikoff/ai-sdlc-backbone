@@ -14,8 +14,9 @@ content.
 ## When to use it
 
 Use this procedure for a same-revision repair or an upgrade to a reviewed
-release. A **Consumer repository** contains the installed `.agents/skills`
-tree. A **Source checkout** contains this Harness repository and maintainer
+release. A **Consumer repository** contains the project skills root recorded in
+`.ai-sdlc/harness-install.toon` (for example `.agents/skills`). A **Source checkout**
+contains this Harness repository and maintainer
 paths such as `skills/ai-sdlc-shared-runtime`. Keep those execution contexts
 separate.
 
@@ -46,7 +47,7 @@ failure is evidence to resolve, not a reason to discard the edit.
 ### Resolve the exact target
 
 ```bash
-TARGET_TAG=v4.0.1
+TARGET_TAG=v4.4.0
 TARGET_TMP="$(mktemp -d)"
 TARGET_SRC="$TARGET_TMP/ai-sdlc-harness"
 git init "$TARGET_SRC"
@@ -80,7 +81,7 @@ environment flag below is the human-reviewed replacement authority:
 AI_SDLC_SOURCE="$TARGET_SRC" \
 AI_SDLC_REVISION="$TARGET_REV" \
 AI_SDLC_INSTALL_REPLACE=1 \
-"$TARGET_SRC/install.sh" codex
+"$TARGET_SRC/install.sh" codex-project
 ```
 
 The native installer stages and hashes all target skills before applying

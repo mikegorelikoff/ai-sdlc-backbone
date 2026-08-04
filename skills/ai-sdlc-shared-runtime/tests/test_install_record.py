@@ -21,8 +21,12 @@ from ai_sdlc_install import INSTALLER_ID, LOCK_SCHEMA, RECORD_SCHEMA, directory_
 
 class InstallRecordTests(unittest.TestCase):
     def fixture(self, root: Path, *, selection: str = "explicit-skills", profile: str = "codex-project") -> tuple[Path, Path]:
-        agent = "codex" if profile == "codex-project" else "claude-code"
-        target = ".agents/skills" if profile == "codex-project" else ".claude/skills"
+        contracts = {
+            "agent-project": ("agent-skills", ".agent/skills"),
+            "claude-code-project": ("claude-code", ".claude/skills"),
+            "codex-project": ("codex", ".agents/skills"),
+        }
+        agent, target = contracts[profile]
         skills = root / target
         names = ["ai-sdlc-flow", "ai-sdlc-shared-runtime"]
         for name in names:
@@ -59,6 +63,11 @@ class InstallRecordTests(unittest.TestCase):
     def test_claude_code_profile_record_is_valid(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             record, skills = self.fixture(Path(temp), profile="claude-code-project")
+            self.assertEqual(install_record.validate(record, skills), [])
+
+    def test_agent_project_record_is_valid(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            record, skills = self.fixture(Path(temp), profile="agent-project")
             self.assertEqual(install_record.validate(record, skills), [])
 
     def test_unrelated_installed_skill_is_allowed(self) -> None:

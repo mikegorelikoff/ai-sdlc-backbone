@@ -29,7 +29,7 @@ From the project that will use the Harness, install every skill with one
 explicit project profile:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.3.1/install.sh | sh -s -- codex-project
+curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.4.0/install.sh | sh -s -- codex-project
 ```
 
 Then verify the project-scoped installation:
@@ -38,8 +38,11 @@ Then verify the project-scoped installation:
 python3 .agents/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py
 ```
 
-Use `claude-code-project` instead to install into `.claude/skills`. Prerequisites
-are Git, Python `3.10+`, and either validated host. The harness-owned
+Use `claude-code-project` for `.claude/skills`. Native Windows and another
+Agent Skills-compatible host use the cross-platform Python bootstrap and
+`agent-project --skills-root <project-path>` documented in the
+[install guide](docs/how-to/install.md). Prerequisites are Git and Python
+`3.10+`. The harness-owned
 deterministic installer writes only the project-scoped skill inventory,
 portable TOON install record, and content-addressed TOON lock. Review remote
 scripts before running them.
@@ -122,11 +125,10 @@ vulnerabilities privately through [SECURITY.md](SECURITY.md).
 
 ## Project status
 
-The current stable release is `v4.3.1` with Harness API `4.1.0`. It adds a
-reusable offline explorer for the optional deterministic local context cache,
-including complete graph relations, structured node inspection, and opt-in
-highlighted source, while preserving TOON-only portable contracts and
-authoritative direct-read fallback. Review
+The current stable release is `v4.4.0` with Harness API `4.1.0`. It adds a
+cross-platform Python bootstrap, portable Windows/POSIX mutation locking, and
+a safe configurable project skills root for Agent Skills-compatible hosts,
+while preserving the named Codex and Claude Code profiles. Review
 [compatibility](docs/reference/compatibility.md), [limitations](docs/explanation/maturity-limitations.md),
 and the [4.0 migration guide](docs/how-to/migrate-4.0.md) before adoption.
 

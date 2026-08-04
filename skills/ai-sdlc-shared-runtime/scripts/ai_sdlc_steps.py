@@ -17,6 +17,7 @@ from ai_sdlc_step_context import (
     compile_step_context,
     validate_step_context_pack,
 )
+from ai_sdlc_paths import repository_root_from_skills_root
 from ai_sdlc_toon import ToonDecodeError, decode_toon, encode_toon
 
 
@@ -616,8 +617,14 @@ def _context_cache_root(root: Path) -> Path | None:
             return False
         return resolved.is_dir() if directory else resolved.is_file()
 
-    for base in (".agents/skills", ".claude/skills"):
-        candidate = root / base / "ai-sdlc-context-cache"
+    packaged = Path(__file__).resolve().parents[2]
+    candidates = [
+        root / ".agents/skills/ai-sdlc-context-cache",
+        root / ".claude/skills/ai-sdlc-context-cache",
+    ]
+    if packaged.resolve() != (root / "skills").resolve():
+        candidates.append(packaged / "ai-sdlc-context-cache")
+    for candidate in candidates:
         script = candidate / "scripts/context_cache.py"
         policy = candidate / "references/runtime-policy.toon"
         if (
@@ -1160,12 +1167,10 @@ def validate_all(root: Path) -> tuple[tuple[str, ...], int]:
 
 
 def _root_from_skills_root(path: Path) -> Path:
-    resolved = path.resolve()
-    if resolved.name != "skills":
-        raise ValueError("STEP_INVALID_ROOT: --skills-root must end in skills")
-    if resolved.parent.name in {".agents", ".claude"}:
-        return resolved.parent.parent
-    return resolved.parent
+    try:
+        return repository_root_from_skills_root(path)
+    except ValueError as exc:
+        raise ValueError(f"STEP_INVALID_ROOT: {exc}") from exc
 
 
 def main() -> int:

@@ -16,6 +16,7 @@ if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
 import ai_sdlc_steps as steps_runtime  # noqa: E402
+from ai_sdlc_paths import repository_root_from_skills_root  # noqa: E402
 from ai_sdlc_safe_io import atomic_write_text, bounded_path  # noqa: E402
 from ai_sdlc_step_context import validate_step_context_pack  # noqa: E402
 from ai_sdlc_toon import encode_toon  # noqa: E402
@@ -92,10 +93,10 @@ def digest(value: object) -> str:
 
 def root_from_skills_root(skills_root: Path) -> Path:
     """Resolve a source or project-scoped skills directory."""
-    resolved = skills_root.resolve()
-    if resolved.name != "skills":
-        raise ValueError("EVAL_INVALID_ROOT: --skills-root must end in skills")
-    return resolved.parent.parent if resolved.parent.name in {".agents", ".claude"} else resolved.parent
+    try:
+        return repository_root_from_skills_root(skills_root)
+    except ValueError as exc:
+        raise ValueError(f"EVAL_INVALID_ROOT: {exc}") from exc
 
 
 def skill_names(skills_root: Path, selected: set[str]) -> tuple[str, ...]:

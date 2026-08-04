@@ -16,20 +16,16 @@ from pathlib import Path
 _SHARED = Path(__file__).resolve().parents[2] / "ai-sdlc-shared-runtime" / "scripts"
 sys.path.insert(0, str(_SHARED))
 from ai_sdlc_state_machine import add_state_arguments, run_state_action
+from ai_sdlc_paths import repository_root_from_skills_root
 from ai_sdlc_validation_receipt import validate_receipt
 
 def workspace_root(script_path: Path = Path(__file__)) -> Path:
     """Return the consumer/source repository root for either distribution layout."""
-    candidate = script_path.resolve().parents[3]
-    return candidate.parent if candidate.name in {".agents", ".claude"} else candidate
+    return repository_root_from_skills_root(script_path.resolve().parents[2])
 
 
 ROOT = workspace_root()
-SKILLS_ROOT = ROOT / "skills"
-if not SKILLS_ROOT.is_dir():
-    SKILLS_ROOT = ROOT / ".agents" / "skills"
-if not SKILLS_ROOT.is_dir():
-    SKILLS_ROOT = ROOT / ".claude" / "skills"
+SKILLS_ROOT = Path(__file__).resolve().parents[2]
 SDD_SCRIPTS = SKILLS_ROOT / "ai-sdlc-sdd" / "scripts"
 CHECK_CLARIFY = SDD_SCRIPTS / "check_clarify.py"
 CHECK_CHECKLIST = SDD_SCRIPTS / "check_checklist.py"

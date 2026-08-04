@@ -17,8 +17,14 @@ import tempfile
 import textwrap
 from pathlib import Path
 
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
 
-ROOT = Path(__file__).resolve().parents[3]
+from ai_sdlc_paths import repository_root_from_skills_root
+
+
+ROOT = repository_root_from_skills_root(Path(__file__).resolve().parents[2])
 README = ROOT / "README.md"
 
 

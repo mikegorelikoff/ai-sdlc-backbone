@@ -1,0 +1,152 @@
+commands[14]:
+  - argv[9]: python3,"-m",unittest,discover,"-s",skills/ai-sdlc-shared-runtime/tests,"-p",test_native_install.py,"-v"
+    duration_ms: 3678
+    exit_code: 0
+    id: portable-installer-tests
+    output_limited: false
+    stderr_bytes: 2109
+    stderr_sha256: 6d1a023a74a8dc4d3f93ce0c5fe72e502e7809858a4a11ab57e3e68be4b7b053
+    stdout_bytes: 0
+    stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    trace_ids[5]: AC-001,AC-002,AC-004,AC-005,TC-004
+  - argv[9]: python3,"-m",unittest,discover,"-s",skills/ai-sdlc-shared-runtime/tests,"-p",test*.py,"-v"
+    duration_ms: 184618
+    exit_code: 0
+    id: shared-runtime-regression
+    output_limited: false
+    stderr_bytes: 22315
+    stderr_sha256: ade30203c1bc27e7ea8cf395e30c57ee6f145984264af22f350ec20f1f5f44fe
+    stdout_bytes: 0
+    stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    trace_ids[3]: AC-001,AC-006,TC-001
+  - argv[10]: python3,skills/ai-sdlc-shared-runtime/tests/install_smoke.py,"--mode",native,"--source",.,"--profile",agent-project,"--skills-root",.agent/skills
+    duration_ms: 13833
+    exit_code: 0
+    id: custom-profile-installed-smoke
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 108
+    stdout_sha256: fdb83cd1cd009c4cf965ed4b0c543da5d47fcd41dff43cc86f760f05d299d27b
+    trace_ids[4]: AC-002,AC-003,AC-006,TC-002
+  - argv[8]: python3,skills/ai-sdlc-shared-runtime/tests/install_smoke.py,"--mode",native,"--source",.,"--profile",codex-project
+    duration_ms: 12008
+    exit_code: 0
+    id: codex-profile-installed-smoke
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 108
+    stdout_sha256: fdb83cd1cd009c4cf965ed4b0c543da5d47fcd41dff43cc86f760f05d299d27b
+    trace_ids[2]: AC-001,TC-001
+  - argv[8]: python3,skills/ai-sdlc-shared-runtime/tests/install_smoke.py,"--mode",native,"--source",.,"--profile",claude-code-project
+    duration_ms: 12135
+    exit_code: 0
+    id: claude-profile-installed-smoke
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 108
+    stdout_sha256: fdb83cd1cd009c4cf965ed4b0c543da5d47fcd41dff43cc86f760f05d299d27b
+    trace_ids[2]: AC-001,TC-001
+  - argv[3]: python3,docs/scripts/build_catalog.py,"--check"
+    duration_ms: 934
+    exit_code: 0
+    id: documentation-catalog
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 49
+    stdout_sha256: afd1a69bebbe94f08eb80d4ed2087241ea370b1ff8a74e2009a84674a8235a38
+    trace_ids[2]: AC-008,TC-007
+  - argv[2]: python3,docs/scripts/validate_docs.py
+    duration_ms: 2527
+    exit_code: 0
+    id: documentation-contract
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 109
+    stdout_sha256: c922a85432f133d179a9251dc9b63873c946773e49125c704e499a14958b0434
+    trace_ids[2]: AC-008,TC-007
+  - argv[7]: python3,"-m",unittest,discover,"-s",docs/tests,"-v"
+    duration_ms: 8899
+    exit_code: 0
+    id: documentation-tests
+    output_limited: false
+    stderr_bytes: 4425
+    stderr_sha256: 706b8fdcffb5eb77e163bceaf64c8aa29e48e02e6138b5ae62d5d65af8e941f6
+    stdout_bytes: 0
+    stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    trace_ids[2]: AC-008,TC-007
+  - argv[3]: python3,docs/scripts/validate_rendered.py,site
+    duration_ms: 1267
+    exit_code: 0
+    id: rendered-documentation
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 56
+    stdout_sha256: 413e15713d4977760b3bf1d12447de92ba780e7770a66fa9171ad737711ae9c0
+    trace_ids[2]: AC-008,TC-007
+  - argv[6]: python3,skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_skill_graph.py,"--skills-root",skills,"--check","--quick-flow"
+    duration_ms: 291
+    exit_code: 0
+    id: generated-skill-graph
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 2822
+    stdout_sha256: c67b901cf79051f16a873160a89e863a046395b60c7e4be731feb9a2d424dbca
+    trace_ids[2]: AC-003,TC-002
+  - argv[5]: python3,skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_compatibility.py,"--skip-git-audit","--format",toon
+    duration_ms: 339
+    exit_code: 0
+    id: compatibility
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 1687
+    stdout_sha256: f39d9c972c4bc32599dc68f6cc47b1806abe346259d595181bd1eba8be9f809d
+    trace_ids[3]: AC-001,AC-007,TC-006
+  - argv[5]: python3,skills/ai-sdlc-sdd/scripts/plan_links.py,specs/021-universal-agent-installer,"--check","--quick-flow"
+    duration_ms: 131
+    exit_code: 0
+    id: sdd-plan-links
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 229
+    stdout_sha256: a77a243577e6b4ade9fc97d930653d4d2b4c9cb44744e75a2e295a1ecd814bd2
+    trace_ids[2]: AC-007,TC-006
+  - argv[4]: python3,skills/ai-sdlc-sdd/scripts/validate_spec.py,specs/021-universal-agent-installer,"--quick-flow"
+    duration_ms: 77
+    exit_code: 0
+    id: sdd-validation
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 55
+    stdout_sha256: cf2567125264e1957a6eccd0cb11ba99762661b9a63e72207a300e9763d752c4
+    trace_ids[2]: AC-007,TC-006
+  - argv[3]: git,diff,"--check"
+    duration_ms: 20
+    exit_code: 0
+    id: diff-hygiene
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 0
+    stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    trace_ids[2]: AC-007,TC-006
+environment:
+  platform: macOS-26.3.1-arm64-arm-64bit
+  python: 3.9.6
+evidence_trust: local-structural-not-authenticated
+executed_at: "2026-08-04T15:34:20.669080Z"
+plan_path: specs/021-universal-agent-installer/_ai_sdlc/validation-plan.toon
+plan_sha256: 719abd499dcae7b21c1d657934348a15c49e60c7495c96d1bc18d87c276c193e
+receipt_fingerprint: 9886bde9c40b079c0e12411be44c3d2324d48d28e60c46919eb2cd6c0cbd58f1
+revision: 8358ab73f959e0de91d755533ddfcb08dbc13562
+schema: ai-sdlc-validation-receipt/v1
+workspace_fingerprint: 3b86853bfca813b394f6c58d90e540e105a86e693bbd3a450c4a9880fb8c3880

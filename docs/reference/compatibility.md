@@ -5,7 +5,7 @@ description: Public surfaces protected across additive harness releases and the 
 
 ## Protected surfaces
 
-The published `v4.3.1` source implements Harness API `4.1.0`. It preserves the
+The published `v4.4.0` source implements Harness API `4.1.0`. It preserves the
 hard contract cut from the `3.0.0-rc.2` line: all 46 skills use executable
 `ai-sdlc-skill-steps/v2` graphs, and canonical TOON is the sole structured
 machine-data representation.
@@ -22,6 +22,8 @@ machine-data representation.
 - StepCard, per-step context, run, workflow, adapter, and evaluation contract
   identities and canonical bytes.
 - Required compatibility baseline inventory.
+- Existing `codex-project` and `claude-code-project` targets, plus the additive
+  safe `agent-project --skills-root` package-placement profile.
 
 ## Additive evolution
 

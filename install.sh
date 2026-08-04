@@ -4,19 +4,20 @@ set -eu
 
 usage() {
   printf '%s\n' \
-    "Usage: install.sh PROFILE [--module MODULE]" \
+    "Usage: install.sh PROFILE [--skills-root PATH] [--module MODULE]" \
     "" \
     "Install every AI SDLC Harness skill into the current project with TOON-only provenance." \
     "" \
     "Examples:" \
     "  ./install.sh codex-project" \
     "  ./install.sh claude-code-project" \
+    "  ./install.sh agent-project --skills-root .agent/skills" \
     "  ./install.sh codex-project --module context-cache" \
-    "  curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.3.1/install.sh | sh -s -- codex-project" \
+    "  curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.4.0/install.sh | sh -s -- codex-project" \
     "" \
     "Optional environment overrides:" \
     "  AI_SDLC_SOURCE               Clean local checkout or reviewed Git remote" \
-    "  AI_SDLC_REVISION             Exact commit or tag (remote default: v4.3.1)" \
+    "  AI_SDLC_REVISION             Exact commit or tag (remote default: v4.4.0)" \
     "  AI_SDLC_PYTHON               Python 3.10+ executable (default: python3)" \
     "  AI_SDLC_INSTALL_REPLACE      Set to 1 only after reviewing managed differences"
 }
@@ -38,16 +39,25 @@ fi
 ai_sdlc_profile=$1
 shift
 case "$ai_sdlc_profile" in
-  codex-project|claude-code-project) ;;
+  agent-project|codex-project|claude-code-project) ;;
   *)
-    printf '%s\n' "Unknown profile; expected codex-project or claude-code-project." >&2
+    printf '%s\n' "Unknown profile; expected agent-project, codex-project, or claude-code-project." >&2
     exit 65
     ;;
 esac
 
 ai_sdlc_modules=
+ai_sdlc_skills_root=
 while [ "$#" -gt 0 ]; do
   case "$1" in
+    --skills-root)
+      if [ "$#" -lt 2 ] || [ -z "$2" ]; then
+        printf '%s\n' "--skills-root requires a project-relative directory." >&2
+        exit 64
+      fi
+      ai_sdlc_skills_root=$2
+      shift 2
+      ;;
     --module)
       if [ "$#" -lt 2 ] || [ -z "$2" ]; then
         printf '%s\n' "--module requires a module id." >&2
@@ -68,6 +78,15 @@ while [ "$#" -gt 0 ]; do
       ;;
   esac
 done
+
+if [ "$ai_sdlc_profile" = "agent-project" ] && [ -z "$ai_sdlc_skills_root" ]; then
+  printf '%s\n' "agent-project requires --skills-root." >&2
+  exit 64
+fi
+if [ "$ai_sdlc_profile" != "agent-project" ] && [ -n "$ai_sdlc_skills_root" ]; then
+  printf '%s\n' "--skills-root is supported only with agent-project." >&2
+  exit 64
+fi
 
 if ! command -v git >/dev/null 2>&1; then
   printf '%s\n' "AI SDLC Harness installer requires Git." >&2
@@ -136,6 +155,14 @@ if [ -n "$ai_sdlc_local" ]; then
 else
   ai_sdlc_locator=${AI_SDLC_SOURCE:-https://github.com/mikegorelikoff/ai-sdlc-harness.git}
   case "$ai_sdlc_locator" in
+    *[[:space:]]*)
+      printf '%s\n' "AI_SDLC_SOURCE remote contains unsupported whitespace or control characters." >&2
+      exit 65
+      ;;
+    http://*@*|https://*@*|git://*@*)
+      printf '%s\n' "Credential-bearing remote URLs are not supported; configure Git credentials externally." >&2
+      exit 65
+      ;;
     /*|./*|../*|~/*)
       printf '%s\n' "AI_SDLC_SOURCE names a local path that does not exist." >&2
       exit 65
@@ -144,6 +171,12 @@ else
       ai_sdlc_remote=$ai_sdlc_locator
       ;;
     */*)
+      case "$ai_sdlc_locator" in
+        *[!A-Za-z0-9._/-]*|*/*/*)
+          printf '%s\n' "AI_SDLC_SOURCE shorthand must be GitHub owner/repository." >&2
+          exit 65
+          ;;
+      esac
       ai_sdlc_remote="https://github.com/$ai_sdlc_locator.git"
       ;;
     *)
@@ -151,7 +184,7 @@ else
       exit 65
       ;;
   esac
-  ai_sdlc_requested_revision=${AI_SDLC_REVISION:-v4.3.1}
+  ai_sdlc_requested_revision=${AI_SDLC_REVISION:-v4.4.0}
   case "$ai_sdlc_requested_revision" in
     *[!A-Za-z0-9._-]*|"")
       printf '%s\n' "AI_SDLC_REVISION contains unsupported characters." >&2
@@ -202,6 +235,9 @@ set -- \
   --profile "$ai_sdlc_profile"
 if [ "${AI_SDLC_INSTALL_REPLACE:-0}" = "1" ]; then
   set -- "$@" --replace-reviewed
+fi
+if [ -n "$ai_sdlc_skills_root" ]; then
+  set -- "$@" --skills-root "$ai_sdlc_skills_root"
 fi
 for ai_sdlc_module in $ai_sdlc_modules; do
   set -- "$@" --module "$ai_sdlc_module"

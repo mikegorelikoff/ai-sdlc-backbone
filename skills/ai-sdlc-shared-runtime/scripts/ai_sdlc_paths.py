@@ -11,6 +11,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Iterator
 from ai_sdlc_safe_io import atomic_write_text as bounded_atomic_write_text, bounded_path, ensure_directory
+from ai_sdlc_toon import ToonDecodeError, decode_toon
 
 try:  # pragma: no cover - platform-specific import
     import fcntl
@@ -24,6 +25,35 @@ except ImportError:  # pragma: no cover
 
 INTERNAL_DIR = "_ai_sdlc"
 INDEX_TOON = "specs-index.toon"
+
+
+def repository_root_from_skills_root(skills_root: Path) -> Path:
+    """Resolve a source, named-profile, or recorded custom project skills root."""
+    resolved = skills_root.resolve()
+    for candidate in resolved.parents:
+        record_path = candidate / ".ai-sdlc/harness-install.toon"
+        if record_path.is_symlink() or not record_path.is_file():
+            continue
+        try:
+            record = decode_toon(record_path.read_text(encoding="utf-8-sig"))
+            target = record.get("target") if isinstance(record, dict) else None
+            if not isinstance(target, str) or not target:
+                continue
+            parts = target.split("/")
+            if any(part in {"", ".", ".."} for part in parts):
+                continue
+            recorded = candidate.joinpath(*parts).resolve()
+        except (OSError, ToonDecodeError):
+            continue
+        if recorded == resolved:
+            return candidate
+    if resolved.name != "skills":
+        raise ValueError(
+            "custom skills root must match .ai-sdlc/harness-install.toon"
+        )
+    if resolved.parent.name in {".agents", ".claude"}:
+        return resolved.parent.parent
+    return resolved.parent
 
 
 def workspace_base(workspace: str) -> str:

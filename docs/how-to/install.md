@@ -7,22 +7,24 @@ description: Install AI SDLC Harness from an immutable revision with determinist
 
 ## Goal
 
-Install all 45 Harness skills into one consumer repository, bind them to an
-exact Git revision, and produce a portable content-addressed TOON record that
-can be verified without a package registry.
+Install all 45 Harness skills into one consumer repository on Windows, macOS,
+or Linux, bind them to an exact Git revision, and produce a portable
+content-addressed TOON record that can be verified without a package registry.
 
 ## When to use it
 
-Use the one-line path for a first Codex or Claude Code pilot. Use the pinned
-path when release review, reproducibility, an approved mirror, or audit evidence
-matters. The harness-owned deterministic installer validates only the explicit
-`codex-project` and `claude-code-project` profiles.
+Use the one-line path for a first Codex or Claude Code pilot. Use
+`agent-project` when another host consumes Agent Skills-style directories with
+`SKILL.md` and you know its project skills root. Use the pinned path when
+release review, reproducibility, an approved mirror, or audit evidence matters.
+The harness-owned deterministic installer remains the single installation
+authority behind both bootstrap entrypoints.
 
 ## Prerequisites
 
 - Git and network access to the reviewed source remote;
 - Python `3.10+`;
-- Codex or Claude Code configured for the consumer repository;
+- an agent host configured for the consumer repository;
 - permission to add the selected host skill root and `.ai-sdlc/`;
 - a clean or understood consumer working tree.
 
@@ -44,22 +46,45 @@ source remote has not passed your trust policy.
 Run this from the consumer repository:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.3.1/install.sh | sh -s -- codex-project
+curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.4.0/install.sh | sh -s -- codex-project
 ```
 
 Use `claude-code-project` for `.claude/skills`. The bootstrap script fetches the
-annotated `v4.3.1` tag into a temporary clean
+annotated `v4.4.0` tag into a temporary clean
 checkout and runs the source-owned installer. It does not invoke npm, a package
 registry, or the external Skills CLI. The installer rejects an unclean source,
 unknown inventory entries, symbolic links, non-TOON machine artifacts,
 unreviewed managed-file differences, digest drift, and undeclared profiles.
+
+### Cross-platform Python and custom agent roots
+
+The Python bootstrap owns the native Windows path and is also available on
+macOS and Linux. In PowerShell, Codex users can run:
+
+```powershell
+irm https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.4.0/install.py | py -3 - codex-project
+```
+
+For another Agent Skills-compatible host, supply its repository-local skills
+directory explicitly:
+
+```powershell
+irm https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.4.0/install.py | py -3 - agent-project --skills-root .agent/skills
+```
+
+The equivalent reviewed-checkout command on every platform is
+`python install.py agent-project --skills-root .agent/skills`. Replace
+`.agent/skills` with the path documented by your host. This profile certifies
+portable package placement, provenance, and installed runtime checks; it does
+not claim that every proprietary agent format or model execution has been
+certified. Review the remote Python script before piping it to an interpreter.
 
 ### Inspect and install an immutable release
 
 Use this path when you need to inspect the exact source before execution:
 
 ```bash
-HARNESS_TAG=v4.3.1
+HARNESS_TAG=v4.4.0
 HARNESS_TMP="$(mktemp -d)"
 HARNESS_SRC="$HARNESS_TMP/ai-sdlc-harness"
 git init "$HARNESS_SRC"
@@ -72,7 +97,7 @@ git -C "$HARNESS_SRC" status --short
 git -C "$HARNESS_SRC" diff --check
 ```
 
-Review `install.sh`, the managed inventory, the native installer, and the
+Review `install.py`, `install.sh`, the managed inventory, the native installer, and the
 selected skill directories. Then run the exact project-scoped install from the
 consumer repository:
 
@@ -106,14 +131,15 @@ later authorized `build` command and is never part of the install lock.
 The native install creates only these Harness-owned roots:
 
 ```text
-<profile-target>/skills/<managed-skill>/
+<skills-root>/<managed-skill>/
 .ai-sdlc/harness-install.toon
 .ai-sdlc/harness-install-lock.toon
 .ai-sdlc/harness-managed-skills.txt
 ```
 
-For `codex-project`, `<profile-target>` is `.agents`; for
-`claude-code-project`, it is `.claude`. `harness-install.toon` records the
+For `codex-project`, `<skills-root>` is `.agents/skills`; for
+`claude-code-project`, it is `.claude/skills`; for `agent-project`, it is the
+normalized `--skills-root`. `harness-install.toon` records the
 immutable revision, profile, agent, selection, target, inventory, lock, and
 installer identity.
 `harness-install-lock.toon` contains sorted skill names, canonical installed
@@ -163,9 +189,9 @@ git commit -m "chore: install AI SDLC harness"
 
 ## Trust and network boundary
 
-The one-line convenience command executes the remote shell script from the
-immutable `v4.3.1` tag; the script verifies and fetches the same release before
-copying skills. Use
+The convenience commands execute the remote shell or Python bootstrap from the
+immutable `v4.4.0` tag; each bootstrap verifies and fetches the same release
+before copying skills. Use
 the pinned path when your policy requires review before execution. Set
 `AI_SDLC_SOURCE` to a clean local checkout from an approved mirror and
 `AI_SDLC_REVISION` to its exact HEAD when public GitHub access is unavailable.
@@ -190,6 +216,8 @@ reviewed authority.
 | `non-TOON machine artifact` | Stop and inspect the named source file; the v4 installer will not copy it. |
 | `installed skill digest differs` | Treat the installation as modified or corrupt; compare with the accepted revision before repair. |
 | Python is too old | Install an organization-approved Python 3.10+ runtime or set `AI_SDLC_PYTHON` to one. |
+| `agent-project requires --skills-root` | Supply the host's repository-relative Agent Skills directory; do not use a home/global path. |
+| `--skills-root` is unsafe | Use a normal project-relative directory with no drive, parent traversal, `.git`, `.ai-sdlc`, symlink ancestor, or Windows-reserved segment. |
 | Git fetch fails | Check approved proxy, DNS, TLS, credentials, or mirror access; do not substitute an unreviewed download. |
 
 ## Next step

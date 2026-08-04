@@ -16,6 +16,7 @@ if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
 import ai_sdlc_steps as steps_runtime  # noqa: E402
+from ai_sdlc_paths import repository_root_from_skills_root  # noqa: E402
 from ai_sdlc_toon import ToonDecodeError, decode_toon, encode_toon  # noqa: E402
 
 
@@ -97,9 +98,9 @@ def generate_router(skill_root: Path, manifest: dict[str, Any]) -> str:
             "  evidence or critical anchors are missing.",
             "- Explore is read-only. After Apply, journal every selected owning-skill step,",
             "  including analysis and validation nodes, before advancing the graph.",
-            "- In a source checkout use `skills/<skill>/...`; in a Codex project install",
-            "  use `.agents/skills/<skill>/...`, and in a Claude Code project install use",
-            "  `.claude/skills/<skill>/...`.",
+            "- In source use `skills/<skill>/...`; use `.agents/skills/<skill>/...` for",
+            "  Codex, `.claude/skills/<skill>/...` for Claude Code, or the project skills",
+            "  root recorded in `.ai-sdlc/harness-install.toon` for `agent-project`.",
             "",
         ]
     )
@@ -130,10 +131,7 @@ def skill_roots(skills_root: Path, selected: set[str]) -> list[Path]:
 
 def root_from_skills_root(skills_root: Path) -> Path:
     """Map source and project-scoped skill layouts to their owning root."""
-    resolved = skills_root.resolve()
-    if resolved.name != "skills":
-        raise ValueError("--skills-root must end in skills")
-    return resolved.parent.parent if resolved.parent.name in {".agents", ".claude"} else resolved.parent
+    return repository_root_from_skills_root(skills_root)
 
 
 def main() -> int:

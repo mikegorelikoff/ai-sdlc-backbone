@@ -6,7 +6,6 @@ from __future__ import annotations
 import argparse
 from collections.abc import Iterator
 from contextlib import contextmanager
-import fcntl
 import hashlib
 import os
 import re
@@ -14,7 +13,16 @@ import shutil
 import subprocess
 import sys
 import tempfile
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
+
+try:  # pragma: no cover - platform-specific import
+    import fcntl
+except ImportError:  # pragma: no cover - Windows
+    fcntl = None  # type: ignore[assignment]
+try:  # pragma: no cover - platform-specific import
+    import msvcrt
+except ImportError:  # pragma: no cover - POSIX
+    msvcrt = None  # type: ignore[assignment]
 
 _TOON_RUNTIME = Path(__file__).resolve().parent
 if str(_TOON_RUNTIME) not in sys.path:
@@ -26,16 +34,62 @@ INSTALLER_ID = "ai-sdlc-harness/4.1.0"
 LOCK_SCHEMA = "ai-sdlc-install-lock/v2"
 RECORD_SCHEMA = "ai-sdlc-install-record/v3"
 INSTALL_PROFILES = {
+    "agent-project": {"agent": "agent-skills", "target": None},
     "claude-code-project": {"agent": "claude-code", "target": ".claude/skills"},
     "codex-project": {"agent": "codex", "target": ".agents/skills"},
 }
 SKILL_NAME_RE = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 REVISION_RE = re.compile(r"[0-9a-f]{40}")
 LEGACY_MACHINE_SUFFIX = "." + "".join(chr(value) for value in (106, 115, 111, 110))
+WINDOWS_RESERVED_NAMES = {
+    "CON", "PRN", "AUX", "NUL",
+    *(f"COM{value}" for value in range(1, 10)),
+    *(f"LPT{value}" for value in range(1, 10)),
+}
 
 
 class InstallError(RuntimeError):
     """Raised when a deterministic installation precondition fails."""
+
+
+def normalize_skills_root(value: str) -> str:
+    """Return one portable repository-relative skills root or fail closed."""
+    if not value or not value.strip() or "\x00" in value:
+        raise InstallError("--skills-root must name a non-empty project-relative directory")
+    windows = PureWindowsPath(value)
+    normalized_input = value.replace("\\", "/")
+    posix = PurePosixPath(normalized_input)
+    if windows.is_absolute() or windows.drive or posix.is_absolute():
+        raise InstallError("--skills-root must be project-relative, not absolute or drive-qualified")
+    raw_parts = normalized_input.split("/")
+    if any(part in {"", ".", ".."} for part in raw_parts):
+        raise InstallError("--skills-root must not contain empty, current, or parent path segments")
+    if any(part.casefold() in {".git", ".ai-sdlc"} for part in raw_parts):
+        raise InstallError("--skills-root must not overlap .git or .ai-sdlc")
+    if any(re.search(r'[<>:"|?*]', part) for part in raw_parts):
+        raise InstallError("--skills-root contains characters that are not portable across platforms")
+    for part in raw_parts:
+        if part.endswith((" ", ".")) or part.split(".", 1)[0].upper() in WINDOWS_RESERVED_NAMES:
+            raise InstallError("--skills-root contains a Windows-reserved path segment")
+    return "/".join(raw_parts)
+
+
+def resolve_profile(profile: str, skills_root: str | None) -> tuple[str, str]:
+    """Resolve a named or configurable project profile."""
+    if profile not in INSTALL_PROFILES:
+        expected = ", ".join(sorted(INSTALL_PROFILES))
+        raise InstallError(f"unknown install profile; expected one of: {expected}")
+    contract = INSTALL_PROFILES[profile]
+    configured = contract["target"]
+    if configured is None:
+        if skills_root is None:
+            raise InstallError("agent-project requires --skills-root")
+        target = normalize_skills_root(skills_root)
+    else:
+        if skills_root is not None:
+            raise InstallError("--skills-root is supported only with agent-project")
+        target = str(configured)
+    return str(contract["agent"]), target
 
 
 def _run_git(source: Path, *arguments: str) -> subprocess.CompletedProcess[str]:
@@ -216,15 +270,24 @@ def _restore_path(destination: Path, backup: Path | None) -> None:
 
 def validate_managed_directory(root: Path, path: Path) -> None:
     """Validate one repository-contained directory without following a link."""
-    if path.is_symlink():
-        raise InstallError(f"managed directory must not be a symbolic link: {path}")
-    if path.exists() and not path.is_dir():
-        raise InstallError(f"managed path is not a directory: {path}")
-    if path.exists():
+    root = root.resolve()
+    try:
+        relative = Path(os.path.abspath(path)).relative_to(root)
+    except ValueError as exc:
+        raise InstallError(f"managed directory escapes the consumer repository: {path}") from exc
+    current = root
+    for part in relative.parts:
+        current = current / part
+        if current.is_symlink():
+            raise InstallError(f"managed directory must not be a symbolic link: {current}")
+        if current.exists() and not current.is_dir():
+            raise InstallError(f"managed path is not a directory: {current}")
+        if not current.exists():
+            continue
         try:
-            path.resolve().relative_to(root)
+            current.resolve().relative_to(root)
         except ValueError as exc:
-            raise InstallError(f"managed directory escapes the consumer repository: {path}") from exc
+            raise InstallError(f"managed directory escapes the consumer repository: {current}") from exc
 
 
 def ensure_managed_directory(root: Path, path: Path) -> None:
@@ -249,15 +312,32 @@ def consumer_mutation_lock(root: Path) -> Iterator[None]:
         lock_path = root / lock_path
     lock_path.parent.mkdir(parents=True, exist_ok=True)
     handle = lock_path.open("a+b")
+    acquired = False
     try:
+        if msvcrt is not None:
+            handle.seek(0, os.SEEK_END)
+            if handle.tell() == 0:
+                handle.write(b"0")
+                handle.flush()
         try:
-            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError as exc:
+            if fcntl is not None:
+                fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            elif msvcrt is not None:  # pragma: no cover - Windows only
+                handle.seek(0)
+                msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+            else:  # pragma: no cover - unsupported Python platform
+                raise InstallError("no supported file-lock implementation is available")
+            acquired = True
+        except (BlockingIOError, OSError) as exc:
             raise InstallError("another Harness installation is already mutating this repository") from exc
         yield
     finally:
         try:
-            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+            if acquired and fcntl is not None:
+                fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+            elif acquired and msvcrt is not None:  # pragma: no cover - Windows only
+                handle.seek(0)
+                msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
         finally:
             handle.close()
 
@@ -271,6 +351,7 @@ def _install_locked(
     requested: list[str],
     replace_reviewed: bool,
     modules: list[str] | None = None,
+    skills_root: str | None = None,
 ) -> tuple[int, Path, Path]:
     """Stage, verify, and transactionally apply one project-scoped installation."""
     source = source.resolve()
@@ -281,11 +362,7 @@ def _install_locked(
         raise InstallError(f"consumer repository directory does not exist: {root}")
     if not REVISION_RE.fullmatch(revision):
         raise InstallError("revision must be an exact lowercase 40-character Git SHA")
-    if profile not in INSTALL_PROFILES:
-        raise InstallError("unknown install profile; expected claude-code-project or codex-project")
-    profile_contract = INSTALL_PROFILES[profile]
-    agent = profile_contract["agent"]
-    target = profile_contract["target"]
+    agent, target = resolve_profile(profile, skills_root)
     legacy_lock = root / ("skills-lock" + LEGACY_MACHINE_SUFFIX)
     if legacy_lock.exists() or legacy_lock.is_symlink():
         raise InstallError(
@@ -308,10 +385,10 @@ def _install_locked(
         source_digests[name] = directory_digest(source / "skills" / name)
 
     host_root = root / target.split("/", 1)[0]
-    skills_root = root / target
+    destination_root = root.joinpath(*target.split("/"))
     metadata_root = root / ".ai-sdlc"
     validate_managed_directory(root, host_root)
-    validate_managed_directory(root, skills_root)
+    validate_managed_directory(root, destination_root)
     validate_managed_directory(root, metadata_root)
     for metadata_name in (
         "harness-managed-skills.txt",
@@ -324,7 +401,7 @@ def _install_locked(
 
     changed: list[str] = []
     for name in names:
-        destination = skills_root / name
+        destination = destination_root / name
         if destination.is_symlink():
             raise InstallError(f"managed destination must not be a symbolic link: {destination}")
         if not destination.exists():
@@ -340,7 +417,7 @@ def _install_locked(
             changed.append(name)
 
     ensure_managed_directory(root, host_root)
-    ensure_managed_directory(root, skills_root)
+    ensure_managed_directory(root, destination_root)
     ensure_managed_directory(root, metadata_root)
     stage_root = Path(tempfile.mkdtemp(prefix=".ai-sdlc-install-", dir=host_root))
     staged_skills = stage_root / "skills"
@@ -392,7 +469,7 @@ def _install_locked(
         _write_stage(staged_metadata / lock_path.name, toon_codec.dumps(lock))
 
         for name in changed:
-            destination = skills_root / name
+            destination = destination_root / name
             backup: Path | None = None
             if destination.exists():
                 backup = backup_skills / name
@@ -430,6 +507,7 @@ def install(
     requested: list[str],
     replace_reviewed: bool,
     modules: list[str] | None = None,
+    skills_root: str | None = None,
 ) -> tuple[int, Path, Path]:
     """Serialize, stage, verify, and apply one project-scoped installation."""
     resolved_root = root.resolve()
@@ -442,6 +520,7 @@ def install(
             requested=requested,
             replace_reviewed=replace_reviewed,
             modules=modules,
+            skills_root=skills_root,
         )
 
 
@@ -451,6 +530,7 @@ def main() -> int:
     parser.add_argument("--root", type=Path, default=Path.cwd())
     parser.add_argument("--revision", required=True)
     parser.add_argument("--profile", choices=tuple(sorted(INSTALL_PROFILES)), default="codex-project")
+    parser.add_argument("--skills-root", help="Project-relative skills directory; required for agent-project")
     parser.add_argument("--skill", action="append", default=[])
     parser.add_argument("--module", action="append", default=[])
     parser.add_argument("--replace-reviewed", action="store_true")
@@ -464,11 +544,13 @@ def main() -> int:
             requested=args.skill,
             replace_reviewed=args.replace_reviewed,
             modules=args.module,
+            skills_root=args.skills_root,
         )
     except (InstallError, OSError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
-    print(f"Installed {count} AI SDLC Harness skills into {INSTALL_PROFILES[args.profile]['target']}")
+    _, target = resolve_profile(args.profile, args.skills_root)
+    print(f"Installed {count} AI SDLC Harness skills into {target}")
     print(f"Install record: {record.relative_to(args.root.resolve())}")
     print(f"Deterministic lock: {lock.relative_to(args.root.resolve())}")
     return 0
