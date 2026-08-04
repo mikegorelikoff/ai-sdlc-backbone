@@ -9,7 +9,7 @@ tags:
 status: "draft"
 generated:
   by: "process:ai-sdlc"
-  at: "2026-08-04T11:21:03Z"
+  at: "2026-08-04T11:51:12Z"
 artifact_metadata:
   schema: "ai-sdlc-artifact-metadata/v1"
   feature: "020-context-graph-viewer"
@@ -60,13 +60,13 @@ CLI parser and dispatch; viewer request validation; read-only graph extractor; d
 Command: context_cache.py visualize --root ROOT [--cache CACHE] [--output OUTPUT] [--include-source]. Default output resolves to ROOT/.ai-sdlc/cache/context-graph.html. Success receipt schema is ai-sdlc-context-graph-view/v1. Errors reuse the existing stable ai-sdlc-context-cache-error/v1 envelope.
 
 ## Data Model
-Compact node rows contain id, kind, path, label, x, y, start line, and end line. Edge rows contain source index, target index, kind, label, and evidence path. Optional source rows map repository path to text and current-hash-match boolean. All ordering is canonical and every dynamic string is JSON encoded with less-than escaped.
+Compact node rows contain id, kind, path, label, x, y, start line, and end line. Edge rows contain source index, target index, kind, label, and evidence path. Optional source rows map repository path to text and current-hash-match boolean. All ordering is canonical and every dynamic string uses deterministic browser-native literal encoding with less-than escaped.
 
 ## Error Handling
 Reject absent or incompatible cache, missing graph tables, incomplete graph, output escape, symlink boundary, non-file overwrite target, and read or atomic-write failures. Never rebuild implicitly. Preserve an existing target until a complete temporary artifact is fsynced and atomically replaced.
 
 ## Security Considerations
-Open SQLite read-only. Confine output to the cache directory. Reject symlinks. Do not include source by default. When enabled, include only currently indexed repository-contained regular non-symlink files. Escape JSON script boundaries and build code tokens with text nodes, never source-derived innerHTML. Use a restrictive local Content-Security-Policy with no network sources.
+Open SQLite read-only. Confine output to the cache directory. Reject symlinks. Do not include source by default. When enabled, include only currently indexed repository-contained regular non-symlink files. Escape embedded script boundaries and build code tokens with text nodes, never source-derived innerHTML. Use a restrictive local Content-Security-Policy with no network sources.
 
 ## Observability
 Return node, edge, path, source-file, stale-source, byte counts, include_source, fresh, graph fingerprint, repository fingerprint, output path, and content SHA-256 in canonical TOON. Do not record queries, code, labels, identity, or wall-clock time.

@@ -9,7 +9,7 @@ tags:
 status: "draft"
 generated:
   by: "process:ai-sdlc"
-  at: "2026-08-04T11:42:41Z"
+  at: "2026-08-04T11:57:17Z"
 artifact_metadata:
   schema: "ai-sdlc-artifact-metadata/v1"
   feature: "020-context-graph-viewer"
@@ -39,6 +39,7 @@ artifact_metadata:
     - "DEC-005"
     - "DEC-006"
     - "DEC-007"
+    - "DEC-008"
     - "NFR-003"
     - "NFR-004"
     - "TC-001"
@@ -102,4 +103,8 @@ Depends on: T002, T004
 Output: validated v4.3.0 release metadata ready for an annotated tag and publication.
 Refs: AC-001, AC-008, TC-010, DEC-007
 Depends on: T005
+- [x] T007. Correct the protected-CI machine-boundary and router-budget failures, publish immutable v4.3.1 metadata, and validate the complete shared-runtime suite before tagging.
+Output: compatible v4.3.1 corrective candidate with browser-native embedded data and a compliant context-cache router.
+Refs: AC-002, AC-007, AC-008, TC-002, TC-007, TC-010, DEC-008
+Depends on: T006
 

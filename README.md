@@ -29,7 +29,7 @@ From the project that will use the Harness, install every skill with one
 explicit project profile:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.3.0/install.sh | sh -s -- codex-project
+curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.3.1/install.sh | sh -s -- codex-project
 ```
 
 Then verify the project-scoped installation:
@@ -122,7 +122,7 @@ vulnerabilities privately through [SECURITY.md](SECURITY.md).
 
 ## Project status
 
-The current stable release is `v4.3.0` with Harness API `4.1.0`. It adds a
+The current stable release is `v4.3.1` with Harness API `4.1.0`. It adds a
 reusable offline explorer for the optional deterministic local context cache,
 including complete graph relations, structured node inspection, and opt-in
 highlighted source, while preserving TOON-only portable contracts and

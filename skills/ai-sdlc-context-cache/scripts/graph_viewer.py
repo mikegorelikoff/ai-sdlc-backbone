@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import json
 import math
 import os
 import sqlite3
@@ -23,13 +22,47 @@ def stable_phase(value: str) -> float:
     return int.from_bytes(raw[:4], "big") / 2**32 * math.tau
 
 
-def safe_json(value: object) -> str:
-    return (
-        json.dumps(value, ensure_ascii=False, separators=(",", ":"))
-        .replace("<", "\\u003c")
-        .replace("\u2028", "\\u2028")
-        .replace("\u2029", "\\u2029")
-    )
+def safe_script_data(value: object) -> str:
+    """Encode deterministic browser-native data without a portable sidecar."""
+    if value is None:
+        return "null"
+    if value is True:
+        return "true"
+    if value is False:
+        return "false"
+    if isinstance(value, str):
+        encoded = ['"']
+        for character in value:
+            codepoint = ord(character)
+            if character == '"':
+                encoded.append('\\"')
+            elif character == "\\":
+                encoded.append("\\\\")
+            elif character == "<":
+                encoded.append("\\u003c")
+            elif codepoint < 0x20 or codepoint in (0x2028, 0x2029):
+                encoded.append(f"\\u{codepoint:04x}")
+            else:
+                encoded.append(character)
+        encoded.append('"')
+        return "".join(encoded)
+    if isinstance(value, int):
+        return str(value)
+    if isinstance(value, float):
+        if not math.isfinite(value):
+            raise ValueError("non-finite browser data is unsupported")
+        return repr(value)
+    if isinstance(value, (list, tuple)):
+        return "[" + ",".join(safe_script_data(item) for item in value) + "]"
+    if isinstance(value, dict):
+        if not all(isinstance(key, str) for key in value):
+            raise TypeError("browser data keys must be strings")
+        items = sorted(value.items())
+        return "{" + ",".join(
+            safe_script_data(key) + ":" + safe_script_data(item)
+            for key, item in items
+        ) + "}"
+    raise TypeError(f"unsupported browser data type: {type(value).__name__}")
 
 
 def load_graph(database: Path, root: Path, include_source: bool = False) -> tuple[
@@ -744,12 +777,12 @@ def render(
         database, root, include_source=include_source
     )
     html = (
-        HTML.replace("{{NODES}}", safe_json(nodes))
-        .replace("{{EDGES}}", safe_json(edges))
-        .replace("{{NODE_COUNTS}}", safe_json(node_counts))
-        .replace("{{EDGE_COUNTS}}", safe_json(edge_counts))
-        .replace("{{ROOTS}}", safe_json(root_labels))
-        .replace("{{SOURCES}}", safe_json(sources))
+        HTML.replace("{{NODES}}", safe_script_data(nodes))
+        .replace("{{EDGES}}", safe_script_data(edges))
+        .replace("{{NODE_COUNTS}}", safe_script_data(node_counts))
+        .replace("{{EDGE_COUNTS}}", safe_script_data(edge_counts))
+        .replace("{{ROOTS}}", safe_script_data(root_labels))
+        .replace("{{SOURCES}}", safe_script_data(sources))
         .replace("{{EDGE_TOTAL}}", f"{len(edges):,}")
     )
     data = html.encode("utf-8")

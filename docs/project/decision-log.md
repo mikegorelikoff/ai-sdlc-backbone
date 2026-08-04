@@ -203,3 +203,12 @@ remains `4.1.0`: existing commands, schemas, installation profiles, artifact
 authority, and direct-read fallback are unchanged. The release is a minor
 version because it adds an opt-in user-facing capability without requiring a
 migration. The immutable `v4.2.2` release is the rollback point.
+
+Protected `skills-ci` for immutable `v4.3.0` then found two repository-wide
+contracts absent from the focused viewer plan: the TOON-only audit rejected an
+alternate machine-encoding token in source and design, and the context-cache
+router exceeded its strict physical-line budget by one line. The published tag
+remains immutable. Corrective `v4.3.1` uses a deterministic browser-native
+literal encoder, compacts the router without removing behavior, keeps Harness
+API `4.1.0` and context-cache `4.3.0`, and makes the complete shared-runtime
+discovery suite a pre-tag gate.

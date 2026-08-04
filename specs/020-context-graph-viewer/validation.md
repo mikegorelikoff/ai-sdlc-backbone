@@ -30,7 +30,9 @@ artifact_metadata:
     - "DEC-005"
     - "DEC-006"
     - "DEC-007"
+    - "DEC-008"
     - "T006"
+    - "T007"
     - "TC-003"
     - "TC-004"
   related_artifacts:
@@ -44,8 +46,8 @@ artifact_metadata:
     - "focused viewer tests: passed on Python 3.9 and Python 3.11"
     - "documentation validation and 47 documentation tests: passed"
     - "SDD clarify, checklist, structure, analyze, and plan-link gates: passed"
-    - "full 121857-node Linear-inspired HTML render, concise-modal shell check, and embedded JavaScript parse: passed"
-    - "v4.3.0 compatibility, native installation, all-skill, documentation, online and offline strict build gates: passed"
+    - "full 122024-node Linear-inspired HTML render, concise-modal shell check, and embedded JavaScript parse: passed"
+    - "v4.3.1 compatibility, native installation, complete shared-runtime discovery, documentation, and offline strict build gates: passed"
   metatags:
     - "ai-sdlc"
     - "implementation"
@@ -66,7 +68,7 @@ traceability.
 ## Results
 
 - PASS: focused viewer tests on Python 3.9 and Python 3.11.
-- PASS: the fresh full cache rendered 121,857 nodes and 33,694 edges; embedded
+- PASS: the fresh full cache rendered 122,024 nodes and 33,730 edges; embedded
   JavaScript parsed successfully, the concise modal contract is present, and
   legacy badge classes are absent from the generated UI shell.
 - PASS: graph filters, connection visibility, fit, and zoom are outside the
@@ -76,11 +78,18 @@ traceability.
   context; Relations exposes every direct edge as a keyboard-reachable target.
 - PASS: documentation catalog check, documentation validator, and 47 tests.
 - PASS: SDD clarify, checklist, structural, analyze, plan-link, and diff checks.
-- PASS: the `v4.3.0` candidate preserves Harness API `4.1.0`, advances the
+- PASS: the corrective `v4.3.1` candidate preserves Harness API `4.1.0` and
+  context-cache module `4.3.0`; its deterministic browser-native literal
+  encoder preserves the self-contained artifact without violating the
+  TOON-only portable boundary.
+- PASS: the original `v4.3.0` candidate preserved Harness API `4.1.0`, advanced the
   optional context-cache module to `4.3.0`, and passes the exact compatibility
   gate against `v2.1.0` with the pending release commit explicitly allowed.
 - PASS: all 29 shared script-contract tests, every per-skill test file, the
   native project installation smoke, and 35 Python 3.11 context-cache tests.
+- PASS: the complete 178-test shared-runtime discovery suite, including the
+  exact repository machine-boundary and router-budget checks that failed in
+  protected `v4.3.0` CI.
 - PASS: strict documentation builds passed with the hash-locked dependencies
   online and then offline; rendered validation resolved all 5,555 local targets
   across 207 HTML pages.

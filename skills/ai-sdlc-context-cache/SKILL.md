@@ -15,11 +15,8 @@ description: Build, query, and visualize an optional deterministic local reposit
 - Supporting audience: QA, BA, Delivery
 - SDLC stage: Cross-feature context engineering and retrieval
 - Purpose: Reuse fresh bounded repository evidence without changing authority.
-- Output: disposable SQLite state, a disposable self-contained HTML graph view,
-  plus canonical TOON receipts and context packs
-- Runtime: lexical mode uses the Python standard library and SQLite FTS5;
-  optional AST graph mode uses the hash-locked Tree-sitter wheels in
-  `references/parser-lock.toon`; no runtime network calls
+- Output: disposable SQLite state and HTML graph view, plus canonical TOON receipts and context packs
+- Runtime: Python standard library and SQLite FTS5, plus hash-locked Tree-sitter wheels for optional AST graph mode; no runtime network calls
 
 ## Whole-codebase AST graph
 

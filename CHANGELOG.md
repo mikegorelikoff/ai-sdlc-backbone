@@ -1,5 +1,25 @@
 # Changelog
 
+## v4.3.1 - 2026-08-04
+
+### Fixed
+
+- Replaced the viewer's alternate machine-encoding dependency with a
+  deterministic browser-native script literal encoder while preserving
+  boundary escaping, stable bytes, and the TOON-only portable contract.
+- Returned the `ai-sdlc-context-cache` router below the strict 120-line budget
+  without removing its graph explorer or progressive-disclosure contracts.
+- Added the complete shared-runtime discovery suite to corrective release
+  evidence so the Python 3.10 and 3.13 protected gates are reproduced locally.
+
+### Validation
+
+- Passed all 178 shared-runtime discovery tests, including every per-skill test
+  file, the TOON-only repository audit, and the strict router budget.
+- Passed all 35 Python 3.11 context-cache tests, native project installation,
+  Harness API `4.1.0` compatibility, documentation validation, offline strict
+  build, and all 5,555 rendered local targets across 207 pages.
+
 ## v4.3.0 - 2026-08-04
 
 ### Added

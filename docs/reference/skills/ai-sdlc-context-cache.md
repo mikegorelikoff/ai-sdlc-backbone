@@ -7,7 +7,7 @@ description: Human-facing operating guide for ai-sdlc-context-cache, including i
 
 | Lifecycle position | Primary owner | Supporting roles | Module | Output |
 | --- | --- | --- | --- | --- |
-| Cross-feature context engineering and retrieval | Dev | QA, BA, Delivery | `context-cache` | disposable SQLite state, a disposable self-contained HTML graph view, plus canonical TOON receipts and context packs |
+| Cross-feature context engineering and retrieval | Dev | QA, BA, Delivery | `context-cache` | disposable SQLite state and HTML graph view, plus canonical TOON receipts and context packs |
 
 ## Why it exists
 
@@ -43,7 +43,7 @@ Use ai-sdlc-context-cache for <target>.
 Choose --quick-flow for bounded assumption-driven progress or --full-flow
 for strict verification only as described below.
 Read the required evidence,
-produce or report disposable SQLite state, a disposable self-contained HTML graph view, plus canonical TOON receipts and context packs, preserve human approval boundaries,
+produce or report disposable SQLite state and HTML graph view, plus canonical TOON receipts and context packs, preserve human approval boundaries,
 and return blockers plus a complete ai-sdlc-handoff/v2.
 ```
 
@@ -102,7 +102,7 @@ The owning agent normally runs these helpers. A human uses the direct starting p
 
 ## Success criteria
 
-A successful result produces disposable SQLite state, a disposable self-contained HTML graph view, plus canonical TOON receipts and context packs and satisfies every output rule and blocker check below.
+A successful result produces disposable SQLite state and HTML graph view, plus canonical TOON receipts and context packs and satisfies every output rule and blocker check below.
 
 ## Blockers and recovery
 
