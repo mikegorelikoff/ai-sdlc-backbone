@@ -9,6 +9,7 @@ import sys
 import tempfile
 import unittest
 from unittest import mock
+from unittest import mock
 from pathlib import Path
 
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
@@ -207,6 +208,22 @@ class NativeInstallTests(unittest.TestCase):
             )
             installed = native_install.toon_codec.loads(record.read_text(encoding="utf-8"))
             self.assertEqual(installed["selection"], "modules:context-cache")
+            with (
+                mock.patch.object(
+                    install_record,
+                    "published_inventory",
+                    return_value=["ai-sdlc-flow", "ai-sdlc-shared-runtime"],
+                ),
+                mock.patch.object(
+                    install_record,
+                    "published_opt_in_inventory",
+                    return_value=["ai-sdlc-context-cache"],
+                ),
+            ):
+                self.assertEqual(
+                    install_record.validate(record, module_consumer / ".agents/skills"),
+                    [],
+                )
 
     def test_unknown_optional_module_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

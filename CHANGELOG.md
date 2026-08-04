@@ -1,5 +1,24 @@
 # Changelog
 
+## v4.2.1 - 2026-08-04
+
+### Fixed
+
+- Extended the installed record validator to accept canonical
+  `modules:<sorted-module-ids>` selections and verify that they include the
+  complete default inventory plus only packaged opt-in skills.
+- Added the packaged opt-in skill inventory to installed shared-runtime
+  references and made the native optional-module test validate the resulting
+  record and lock end to end.
+
+### Validation
+
+- Reproduced the `v4.2.0` post-install validation failure from its immutable
+  published tag, then passed focused install-record and native installer tests
+  with the corrective contract.
+- Preserved the Harness API at `4.1.0`, TOON-only portable records, and the
+  optional `context-cache` module contract at `4.2.0`.
+
 ## v4.2.0 - 2026-08-04
 
 ### Added

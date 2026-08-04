@@ -36,6 +36,9 @@ REQUIRED = {
 LOCK_REQUIRED = {"schema", "revision", "installer", "agent", "profile", "selection", "skills", "target"}
 LOCK_ENTRY_REQUIRED = {"name", "path", "sha256"}
 SKILL_NAME_RE = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
+MODULE_SELECTION_RE = re.compile(
+    r"modules:([a-z0-9]+(?:-[a-z0-9]+)*)(?:,([a-z0-9]+(?:-[a-z0-9]+)*))*"
+)
 
 
 def published_inventory() -> list[str]:
@@ -49,6 +52,29 @@ def published_inventory() -> list[str]:
         if candidate.is_file():
             return candidate.read_text(encoding="utf-8").splitlines()
     return []
+
+
+def published_opt_in_inventory() -> list[str]:
+    """Read the packaged opt-in skill inventory in source or installed layouts."""
+    script = Path(__file__).resolve()
+    candidates = (
+        script.parents[1] / "references" / "ai-sdlc-opt-in-skills.txt",
+        script.parents[2] / "config" / "ai-sdlc-opt-in-skills.txt",
+    )
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate.read_text(encoding="utf-8").splitlines()
+    return []
+
+
+def module_selection_ids(selection: object) -> list[str] | None:
+    """Return canonical module ids or None when selection is not module-shaped."""
+    if not isinstance(selection, str) or not MODULE_SELECTION_RE.fullmatch(selection):
+        return None
+    module_ids = selection.removeprefix("modules:").split(",")
+    if module_ids != sorted(set(module_ids)):
+        return None
+    return module_ids
 
 
 def validate(record_path: Path, skills_root: Path) -> list[str]:
@@ -75,7 +101,9 @@ def validate(record_path: Path, skills_root: Path) -> list[str]:
     profile_contract = INSTALL_PROFILES[profile]
     if value["agent"] != profile_contract["agent"]:
         errors.append("install record agent must match its profile")
-    if value["selection"] not in {"all-skills", "explicit-skills"}:
+    selection = value["selection"]
+    selected_modules = module_selection_ids(selection)
+    if selection not in {"all-skills", "explicit-skills"} and selected_modules is None:
         errors.append("install record selection is invalid")
     if value["inventory"] != ".ai-sdlc/harness-managed-skills.txt":
         errors.append("install record inventory must be .ai-sdlc/harness-managed-skills.txt")
@@ -99,14 +127,27 @@ def validate(record_path: Path, skills_root: Path) -> list[str]:
     published = published_inventory()
     if not published:
         errors.append("packaged full-skill inventory is missing")
-    elif value["selection"] == "all-skills" and names != published:
+    elif selection == "all-skills" and names != published:
         errors.append("all-skills inventory must exactly match the packaged full-skill inventory")
-    elif value["selection"] == "explicit-skills":
+    elif selection == "explicit-skills":
         unknown = sorted(set(names) - set(published))
         if unknown:
             errors.append(f"explicit-skills inventory contains unpublished skills: {', '.join(unknown)}")
         if "ai-sdlc-shared-runtime" not in names:
             errors.append("explicit-skills inventory must include ai-sdlc-shared-runtime")
+    elif selected_modules is not None:
+        opt_in = published_opt_in_inventory()
+        extras = sorted(set(names) - set(published))
+        missing_defaults = sorted(set(published) - set(names))
+        unknown = sorted(set(extras) - set(opt_in))
+        if not opt_in:
+            errors.append("packaged opt-in skill inventory is missing")
+        if missing_defaults:
+            errors.append("module selection must include the packaged default inventory")
+        if not extras:
+            errors.append("module selection must include at least one opt-in skill")
+        if unknown:
+            errors.append(f"module selection contains unpublished opt-in skills: {', '.join(unknown)}")
     installed = sorted(path.name for path in skills_root.iterdir() if path.is_dir()) if skills_root.is_dir() else []
     missing = sorted(set(names) - set(installed))
     if missing:

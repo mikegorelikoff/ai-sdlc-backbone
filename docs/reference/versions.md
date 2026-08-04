@@ -7,7 +7,8 @@ description: Release, harness API, compatibility, and migration support matrix.
 
 | Release | Harness API | Status | Migration |
 | --- | --- | --- | --- |
-| [`v4.2.0`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v4.2.0) | `4.1.0` | Current stable release; adds the optional local context cache, read-through context integration, and pinned twelve-language AST graph | No API migration; opt into `context-cache` and install its offline parser runtime when graph mode is required |
+| [`v4.2.1`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v4.2.1) | `4.1.0` | Current stable release; validates default and optional-module native install records after adding the local cache and twelve-language AST graph | No API migration; use this correction for every new or updated installation |
+| [`v4.2.0`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v4.2.0) | `4.1.0` | Superseded feature release; optional module installation succeeds, but its installed record validator rejects the canonical module selection | Update immediately to `v4.2.1`; do not move or rewrite the original tag |
 | [`v4.1.1`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v4.1.1) | `4.1.0` | Previous corrective release; aligns Pages publication with the native project installer | Update to `v4.2.0` for context-cache and AST graph capabilities |
 | [`v4.1.0`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v4.1.0) | `4.1.0` | Superseded feature release; adds scheduling, effect drivers, provider evidence, and two project install profiles | Update to `v4.1.1` or later for the Pages correction |
 | [`v4.0.1`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v4.0.1) | `4.0.0` | Previous stable release; adds native deterministic installation and a content-addressed TOON lock to the v4 execution harness | [Migrate to 4.0](../how-to/migrate-4.0.md), then update to the current release |

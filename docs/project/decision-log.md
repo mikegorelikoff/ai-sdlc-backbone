@@ -151,3 +151,10 @@ additive and opt-in. Portable machine contracts remain TOON-only; SQLite is
 derived local state, parser wheels are exact-version and SHA-256 locked, and
 any incomplete, stale, unsafe, or uneconomic graph result falls back to
 authoritative direct reads.
+
+The immutable `v4.2.0` post-publication smoke then exposed that the installed
+record validator rejected the installer's canonical
+`modules:context-cache` selection. Corrective release `v4.2.1` adds a packaged
+opt-in inventory and validates module selections against the complete default
+inventory plus declared opt-in skills. It does not change the cache, AST graph,
+Harness API, module version, or TOON-only boundary.
