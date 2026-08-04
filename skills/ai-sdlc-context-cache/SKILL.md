@@ -68,6 +68,11 @@ python3.11 skills/ai-sdlc-context-cache/scripts/install_graph_runtime.py --lock 
 python3.11 skills/ai-sdlc-context-cache/tests/install_graph_smoke.py --lock skills/ai-sdlc-context-cache/references/parser-lock.toon --wheelhouse /path/to/wheelhouse --offline --format toon
 ```
 
+The canonical lock covers CPython 3.11 on macOS arm64. Protected CI additionally
+uses `parser-lock-linux-cp310.toon` and `parser-lock-linux-cp313.toon`; each
+downloaded wheel must match its exact filename and SHA-256 before the installer
+copies it into a private directory and invokes pip with `--no-index --no-deps`.
+
 ## Step Selector
 
 This table is generated from `steps/manifest.toon`. The manifest and linked

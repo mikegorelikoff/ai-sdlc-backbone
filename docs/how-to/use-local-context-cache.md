@@ -47,11 +47,27 @@ may add `.ai-sdlc/context-cache-policy.toon` with the same schema and exact
 `skill` plus `step_id` overrides. Values are always clamped to the owning step
 manifest; unknown fields fail safely. Portable policy is TOON only.
 
-Build the local projection explicitly:
+First prove that all twelve pinned AST parsers are available:
 
 ```bash
 python3 .agents/skills/ai-sdlc-context-cache/scripts/context_cache.py \
-  build --root .
+  graph-preflight --root .
+```
+
+Build or replace the complete codebase index explicitly. `--require-graph`
+fails closed instead of silently accepting lexical-only fallback:
+
+```bash
+python3 .agents/skills/ai-sdlc-context-cache/scripts/context_cache.py \
+  build --root . --rebuild --require-graph
+```
+
+Later incremental refreshes can omit `--rebuild` while retaining the strict
+graph gate:
+
+```bash
+python3 .agents/skills/ai-sdlc-context-cache/scripts/context_cache.py \
+  build --root . --require-graph
 ```
 
 For the concurrency-safe operation used by StepCards, run:

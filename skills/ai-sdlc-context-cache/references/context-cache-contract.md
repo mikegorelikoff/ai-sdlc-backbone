@@ -82,3 +82,9 @@ every SHA-256, then install with pip `--no-index --find-links` into a dedicated
 CPython 3.11 environment. Run `tests/install_graph_smoke.py --offline` with the
 same lock and wheelhouse. A host without the verified graph environment retains
 lexical/direct behavior and cannot claim graph completeness.
+
+Protected Ubuntu CI uses the equivalent TOON-only
+`parser-lock-linux-cp310.toon` and `parser-lock-linux-cp313.toon` targets. It
+downloads exact package versions, verifies every wheel byte against the selected
+lock, installs only from the verified private staging directory with network
+disabled, and then loads all twelve grammars before running the test suite.

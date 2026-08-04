@@ -130,3 +130,11 @@ Depends on: T008
 Output: current skill contract, operator guide, parser provenance guidance, and generated references.
 Refs: FR-001, FR-002, FR-005, FR-006, FR-007, FR-008, AC-001, AC-003, AC-005, AC-007, AC-008, TC-001, TC-019, TC-020, TC-023, TC-024, DEC-006, DEC-007
 Depends on: T001, T005, T006, T007
+- [x] T011. Provision and verify the complete pinned graph runtime before protected Python 3.10 and 3.13 CI tests.
+Output: target-specific Linux TOON locks and offline installer/preflight gates.
+Refs: AC-008, TC-001, TC-023, DEC-008
+Depends on: T001, T007, T009
+- [ ] T012. Prove both protected Linux CI targets and publish the immutable corrective release.
+Output: green Python 3.10 and 3.13 jobs, completed validation evidence, tag v4.2.2, and published release.
+Refs: AC-008, TC-001, TC-023, DEC-008
+Depends on: T011

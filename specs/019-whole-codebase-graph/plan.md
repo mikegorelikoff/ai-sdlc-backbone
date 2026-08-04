@@ -6,10 +6,10 @@ tags:
   - "ai-sdlc"
   - "sdd"
   - "planning"
-status: "stable"
+status: "draft"
 generated:
   by: "process:ai-sdlc"
-  at: "2026-08-03T21:57:38Z"
+  at: "2026-08-04T09:35:19Z"
 artifact_metadata:
   schema: "ai-sdlc-artifact-metadata/v1"
   feature: "019-whole-codebase-graph"
@@ -20,8 +20,8 @@ artifact_metadata:
   flow_mode: "full"
   state_file: "specs/019-whole-codebase-graph/_ai_sdlc/state.toon"
   decision_log: "specs/019-whole-codebase-graph/decision-log.md"
-  status: "approved"
-  owner: "Harness Maintainers"
+  status: "draft"
+  owner: "TBD"
   created_at: "2026-08-04"
   updated_at: "2026-08-04"
   trace_ids: []
@@ -32,8 +32,7 @@ artifact_metadata:
     - "implementation"
     - "ai-sdlc-sdd"
     - "plan"
-    - "approved"
-    - "implemented"
+    - "draft"
 ---
 
 # plan.md
@@ -62,7 +61,7 @@ artifact_metadata:
 - AC-005: requirements.md -> test-cases.md (TC-011, TC-012) -> tasks.md (T004, T007, T008, T010) -> qa.md -> decision-log.md
 - AC-006: requirements.md -> test-cases.md (TC-010, TC-013, TC-014) -> tasks.md (T004, T005, T007, T008) -> qa.md -> decision-log.md
 - AC-007: requirements.md -> test-cases.md (TC-015, TC-016, TC-017, TC-018) -> tasks.md (T006, T007, T008, T010) -> qa.md -> decision-log.md
-- AC-008: requirements.md -> test-cases.md (TC-001, TC-018, TC-019, TC-021, TC-022, TC-023, TC-024) -> tasks.md (T001, T006, T007, T008, T009, T010) -> qa.md -> decision-log.md
+- AC-008: requirements.md -> test-cases.md (TC-001, TC-018, TC-019, TC-021, TC-022, TC-023, TC-024) -> tasks.md (T001, T006, T007, T008, T009, T010, T011, T012) -> qa.md -> decision-log.md
 
 ## Task Execution Plan
 - [x] T001: Add hash-locked offline parser bundle, twelve-language TOON policy, preflight, and install guidance.; refs: FR-002, NFR-002, NFR-005, NFR-007, AC-002, AC-003, AC-008, TC-001, TC-002, TC-008, TC-023, DEC-006; output: parser-lock.toon, language-policy.toon, offline setup/preflight code, and target contract.
@@ -75,6 +74,8 @@ artifact_metadata:
 - [x] T008: Implement and execute two-run real-corpus release audit plus fault injection.; refs: AC-001, AC-002, AC-003, AC-004, AC-005, AC-006, AC-007, AC-008, TC-021, TC-022, DEC-007; output: deterministic audit evidence with production_ready gate and token economics.
 - [x] T009: Run full validation, security testing, code review, compatibility, docs, install, and diff gates.; refs: AC-008, TC-021, TC-022, TC-023, TC-024, DEC-007; output: validation.md, security-review.md, code-review.md, and zero unresolved release blockers.
 - [x] T010: Document graph setup, supported targets/languages, Kotlin/Swift parity, commands, schema, bounds, diagnostics, fallback, purge, privacy, offline operation, and production criteria; refresh generated catalogs.; refs: FR-001, FR-002, FR-005, FR-006, FR-007, FR-008, AC-001, AC-003, AC-005, AC-007, AC-008, TC-001, TC-019, TC-020, TC-023, TC-024, DEC-006, DEC-007; output: current skill contract, operator guide, parser provenance guidance, and generated references.
+- [x] T011: Provision and verify the complete pinned graph runtime before protected Python 3.10 and 3.13 CI tests.; refs: AC-008, TC-001, TC-023, DEC-008; output: target-specific Linux TOON locks and offline installer/preflight gates.
+- [ ] T012: Prove both protected Linux CI targets and publish the immutable corrective release.; refs: AC-008, TC-001, TC-023, DEC-008; output: green Python 3.10 and 3.13 jobs, completed validation evidence, tag v4.2.2, and published release.
 
 ## Task Dependencies
 - T001: depends on none
@@ -87,6 +88,8 @@ artifact_metadata:
 - T008: depends on T007
 - T009: depends on T008
 - T010: depends on T001, T005, T006, T007
+- T011: depends on T001, T007, T009
+- T012: depends on T011
 
 ## Validation Sequence
 - 1. `python3 skills/ai-sdlc-sdd/scripts/check_clarify.py <spec-dir> --full-flow`

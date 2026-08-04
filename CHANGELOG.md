@@ -1,5 +1,23 @@
 # Changelog
 
+## v4.2.2 - 2026-08-04
+
+### Fixed
+
+- Added hash-locked Ubuntu x86_64 Tree-sitter wheel manifests for CPython 3.10
+  and 3.13 using canonical TOON only.
+- Made protected CI download exact parser versions, verify every wheel SHA-256,
+  install only verified bytes with `--no-index --no-deps`, and prove all twelve
+  grammars offline before running graph-required tests.
+- Documented the strict full-codebase indexing command with explicit graph
+  preflight, rebuild, and fail-closed `--require-graph` behavior.
+
+### Validation
+
+- Verified both Linux wheelhouses against their selected TOON locks.
+- Preserved Harness API `4.1.0`, context-cache module `4.2.0`, authoritative
+  source files, disposable SQLite state, and TOON-only portable contracts.
+
 ## v4.2.1 - 2026-08-04
 
 ### Fixed

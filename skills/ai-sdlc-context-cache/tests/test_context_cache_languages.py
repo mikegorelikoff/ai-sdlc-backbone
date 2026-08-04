@@ -57,9 +57,15 @@ class ContextCacheLanguageTests(unittest.TestCase):
         self.assertEqual(output["runtime_network"], "denied")
 
     def test_tc_001_parser_lock_requires_the_complete_runtime(self) -> None:
-        lock_path = ROOT / "skills/ai-sdlc-context-cache/references/parser-lock.toon"
-        lock = CACHE.decode_toon(lock_path.read_text(encoding="utf-8"))
-        self.assertEqual(GRAPH.parser_lock_errors(lock), [])
+        reference_root = ROOT / "skills/ai-sdlc-context-cache/references"
+        lock_paths = (
+            reference_root / "parser-lock.toon",
+            reference_root / "parser-lock-linux-cp310.toon",
+            reference_root / "parser-lock-linux-cp313.toon",
+        )
+        for lock_path in lock_paths:
+            lock = CACHE.decode_toon(lock_path.read_text(encoding="utf-8"))
+            self.assertEqual(GRAPH.parser_lock_errors(lock), [], lock_path.name)
         partial = dict(lock)
         partial["wheels"] = list(lock["wheels"])[:-1]
         self.assertIn(

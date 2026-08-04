@@ -158,3 +158,11 @@ record validator rejected the installer's canonical
 opt-in inventory and validates module selections against the complete default
 inventory plus declared opt-in skills. It does not change the cache, AST graph,
 Harness API, module version, or TOON-only boundary.
+
+The first protected CI run for `v4.2.1` then proved that graph-required tests
+were executed before a Tree-sitter runtime existed on clean Ubuntu runners.
+Corrective release `v4.2.2` adds CPython 3.10 and 3.13 Linux x86_64 parser locks
+in TOON, verifies exact wheel filenames and SHA-256 values, installs only the
+verified bytes with network-disabled pip, and runs the twelve-grammar offline
+preflight before repository tests. The Harness API and context-cache module
+version remain unchanged.

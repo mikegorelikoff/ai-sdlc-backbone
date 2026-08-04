@@ -14,7 +14,7 @@ Progressive index for this OKF knowledge bundle.
 - [Commit Readiness](commit-readiness.md) — ai-sdlc.commit-readiness · stable
 - [Decision Log](decision-log.md) — ai-sdlc.decision-log · draft
 - [Design](design.md) — ai-sdlc.design · stable
-- [Implementation Plan](plan.md) — ai-sdlc.implementation-plan · stable
+- [Implementation Plan](plan.md) — ai-sdlc.implementation-plan · draft
 - [QA Plan](qa.md) — ai-sdlc.qa-plan · stable
 - [Requirements](requirements.md) — ai-sdlc.requirements · stable
 - [Security Review](security-review.md) — ai-sdlc.security-review · stable

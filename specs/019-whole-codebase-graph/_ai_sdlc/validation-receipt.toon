@@ -1,26 +1,26 @@
 commands[12]:
   - argv[8]: python3,"-m",unittest,skills.ai-sdlc-context-cache.tests.test_context_cache,skills.ai-sdlc-context-cache.tests.test_context_cache_languages,skills.ai-sdlc-context-cache.tests.test_context_cache_graph,skills.ai-sdlc-context-cache.tests.test_context_cache_retrieval,"-v"
-    duration_ms: 8684
+    duration_ms: 12226
     exit_code: 0
     id: graph-focused-tests
     output_limited: false
-    stderr_bytes: 6097
-    stderr_sha256: 1eb32da8d78f1c382ca72f11e9251e6c85437f400031df3f5c67ea3e2c1c1d27
+    stderr_bytes: 6098
+    stderr_sha256: 304239ee831e4028f687b6f37b1443295f09636305d52219fd54dd892bed7d9f
     stdout_bytes: 0
     stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
     trace_ids[8]: TC-001,TC-002,TC-005,TC-007,TC-009,TC-015,TC-019,TC-024
   - argv[8]: python3,skills/ai-sdlc-context-cache/tests/release_graph_audit.py,"--root",.,"--runs","2","--format",toon
-    duration_ms: 62210
+    duration_ms: 89197
     exit_code: 0
     id: real-corpus-release-audit
     output_limited: false
     stderr_bytes: 0
     stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
     stdout_bytes: 1289
-    stdout_sha256: ddd841607eab7c2eac52aa49c1f71fdd9ce25b6863ba280abb5b113c71ecde15
+    stdout_sha256: 9d6f308b91847c1d9cbdb06f5e50cad021dfe15d876670f7f3b6004081804bc3
     trace_ids[4]: TC-021,AC-004,AC-007,AC-008
   - argv[9]: python3,skills/ai-sdlc-context-cache/tests/install_graph_smoke.py,"--lock",skills/ai-sdlc-context-cache/references/parser-lock.toon,"--wheelhouse",/tmp/ai-sdlc-wheels,"--offline","--format",toon
-    duration_ms: 87
+    duration_ms: 129
     exit_code: 0
     id: offline-parser-install-smoke
     output_limited: false
@@ -30,17 +30,17 @@ commands[12]:
     stdout_sha256: 066cdc351890a6c79966040daad0fb266ad80b39cba512b4fd491c67480e4786
     trace_ids[4]: TC-001,TC-002,TC-008,TC-023
   - argv[9]: python3,"-m",unittest,discover,"-s",skills/ai-sdlc-shared-runtime/tests,"-p",test*.py,"-v"
-    duration_ms: 122915
+    duration_ms: 173079
     exit_code: 0
     id: shared-runtime-regression
     output_limited: false
     stderr_bytes: 30218
-    stderr_sha256: ad49c67f2df8a72142395eb2532dad18b7bc5fd65cffe0bee15d3ff3c4e5b810
+    stderr_sha256: 408b3e450eab113eab7d0136a10edfbc17ef8175be323788f768a98adf157322
     stdout_bytes: 0
     stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
     trace_ids[3]: AC-008,TC-022,TC-024
   - argv[3]: python3,docs/scripts/build_catalog.py,"--check"
-    duration_ms: 540
+    duration_ms: 765
     exit_code: 0
     id: documentation-catalog
     output_limited: false
@@ -50,7 +50,7 @@ commands[12]:
     stdout_sha256: c07af65dd16f201bcad39e99b10c8ef2a10f6be1dc1607ff4518d17c77529495
     trace_ids[2]: AC-008,TC-023
   - argv[2]: python3,docs/scripts/validate_docs.py
-    duration_ms: 1257
+    duration_ms: 1701
     exit_code: 0
     id: documentation-contract
     output_limited: false
@@ -60,17 +60,17 @@ commands[12]:
     stdout_sha256: 70e1f5607a9522a0bb9b03358658a89b9349d20735e8a7ba4936fa17e40ce9f3
     trace_ids[2]: AC-008,TC-023
   - argv[9]: python3,"-m",unittest,discover,"-s",docs/tests,"-p",test_*.py,"-v"
-    duration_ms: 6130
+    duration_ms: 8465
     exit_code: 0
     id: documentation-tests
     output_limited: false
     stderr_bytes: 6358
-    stderr_sha256: 3f4fabe4155df76eb1f5472003fa261823c57f32f74bd0878086eb9ee79d7f8c
+    stderr_sha256: 5338ad83735e59b2606619226f2b8729b896cffb786b1319549b45b0cfc13fcf
     stdout_bytes: 0
     stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
     trace_ids[2]: AC-008,TC-023
   - argv[8]: python3,skills/ai-sdlc-shared-runtime/scripts/refinement_status.py,"--feature",019-whole-codebase-graph,"--gate",full,"--format",toon
-    duration_ms: 140
+    duration_ms: 175
     exit_code: 0
     id: refinement-full-gate
     output_limited: false
@@ -80,7 +80,7 @@ commands[12]:
     stdout_sha256: e6006086d3e0e0f64af02b8cd116912b27178edb3ac98a5c094d8d85f1663427
     trace_ids[2]: AC-001,AC-008
   - argv[5]: python3,skills/ai-sdlc-sdd/scripts/plan_links.py,specs/019-whole-codebase-graph,"--check","--full-flow"
-    duration_ms: 83
+    duration_ms: 128
     exit_code: 0
     id: sdd-plan-links
     output_limited: false
@@ -90,7 +90,7 @@ commands[12]:
     stdout_sha256: 7723df59039755b52468c921697007723b1bc5a54c0aacc03db405f20db960be
     trace_ids[2]: AC-001,AC-008
   - argv[4]: python3,skills/ai-sdlc-sdd/scripts/validate_spec.py,specs/019-whole-codebase-graph,"--full-flow"
-    duration_ms: 89
+    duration_ms: 73
     exit_code: 0
     id: sdd-validation
     output_limited: false
@@ -100,7 +100,7 @@ commands[12]:
     stdout_sha256: 8e2b21561d5bee354eda9c3aebcb67d5411361db6166bf4ecc4aae2b79fef34d
     trace_ids[2]: AC-001,AC-008
   - argv[9]: python3,skills/ai-sdlc-sdd/scripts/sdd_status.py,"--spec",specs/019-whole-codebase-graph,"--feature",019-whole-codebase-graph,"--full-flow","--format",toon
-    duration_ms: 86
+    duration_ms: 126
     exit_code: 0
     id: sdd-status
     output_limited: false
@@ -110,7 +110,7 @@ commands[12]:
     stdout_sha256: cc8bd06a79aa0da1e968fa09ffd849090ef0c5f342810fdd6026a587217de349
     trace_ids[2]: AC-001,AC-008
   - argv[3]: git,diff,"--check"
-    duration_ms: 24
+    duration_ms: 39
     exit_code: 0
     id: diff-hygiene
     output_limited: false
@@ -123,10 +123,10 @@ environment:
   platform: macOS-26.3.1-arm64-arm-64bit
   python: 3.11.15
 evidence_trust: local-structural-not-authenticated
-executed_at: "2026-08-03T22:17:15.892292Z"
+executed_at: "2026-08-04T09:56:14.542920Z"
 plan_path: specs/019-whole-codebase-graph/_ai_sdlc/validation-plan.toon
 plan_sha256: 0e55811c829b51113943b620678b4f475b6ddf7353373b1f0cf98a13088e4434
-receipt_fingerprint: d96d00869d83957e29d7278e7d00855e264afe38c9c5c71e856b3ceff87f9d79
-revision: 31a8c80f3ad8a4bd0ba94b4ee711de35780638a0
+receipt_fingerprint: e7c320b4c5d54247d43bc47a0fa042d74ef6ba81e22a3bcc51d07f2aef56d34e
+revision: d6f74c83045eaaa9847718a6bc91e347a67af026
 schema: ai-sdlc-validation-receipt/v1
-workspace_fingerprint: 8f7cbd7302aa0534ba31778daa2a63b3a48ef7dd23a2854705a7550f50081459
+workspace_fingerprint: 7ecd5e420fee4e08d3eb530f681476ebc615ec2ee6cc41b394cc197b2f745c4e

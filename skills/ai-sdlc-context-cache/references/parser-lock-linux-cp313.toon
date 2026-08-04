@@ -1,0 +1,44 @@
+schema: ai-sdlc-code-graph-parser-lock/v1
+status: locked
+python:
+  min: 3.13
+  max: 3.13
+runtime:
+  name: tree-sitter
+  version: 0.25.2
+runtime_download_allowed: false
+grammars[12]{language,key,package,version,license,required}:
+  typescript,typescript,tree-sitter-typescript,0.23.2,MIT,true
+  python,python,tree-sitter-python,0.25.0,MIT,true
+  javascript,javascript,tree-sitter-javascript,0.25.0,MIT,true
+  java,java,tree-sitter-java,0.23.5,MIT,true
+  csharp,csharp,tree-sitter-c-sharp,0.23.5,MIT,true
+  php,php,tree-sitter-php,0.24.1,MIT,true
+  shell,bash,tree-sitter-bash,0.25.1,MIT,true
+  cpp,cpp,tree-sitter-cpp,0.23.4,MIT,true
+  go,go,tree-sitter-go,0.25.0,MIT,true
+  rust,rust,tree-sitter-rust,0.24.2,MIT,true
+  kotlin,kotlin,tree-sitter-kotlin,1.1.0,MIT,true
+  swift,swift,tree-sitter-swift,0.7.3,MIT,true
+declared_targets[1]{python,platform,architecture,status}:
+  3.13,ubuntu-24.04,x86_64,verified
+wheels[13]{name,filename,sha256}:
+  tree-sitter,tree_sitter-0.25.2-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl,b878e296e63661c8e124177cc3084b041ba3f5936b43076d57c487822426f614
+  tree-sitter-typescript,tree_sitter_typescript-0.23.2-cp39-abi3-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl,e96d36b85bcacdeb8ff5c2618d75593ef12ebaf1b4eace3477e2bdb2abb1752c
+  tree-sitter-python,tree_sitter_python-0.25.0-cp310-abi3-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl,86f118e5eecad616ecdb81d171a36dde9bef5a0b21ed71ea9c3e390813c3baf5
+  tree-sitter-javascript,tree_sitter_javascript-0.25.0-cp310-abi3-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl,9dc04ba91fc8583344e57c1f1ed5b2c97ecaaf47480011b92fbeab8dda96db75
+  tree-sitter-java,tree_sitter_java-0.23.5-cp39-abi3-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl,370b204b9500b847f6d0c5ad584045831cee69e9a3e4d878535d39e4a7e4c4f1
+  tree-sitter-c-sharp,tree_sitter_c_sharp-0.23.5-cp310-abi3-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl,aa88a780204cd153c4c1ae2d59c654cee1402212fa0d069823d6d34301587438
+  tree-sitter-php,tree_sitter_php-0.24.1-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl,7a1404a30f2972498ace040b0029738b8dac45d0a12932ccb8b605eb94bafbe4
+  tree-sitter-bash,tree_sitter_bash-0.25.1-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl,3f484c4bb8796cde7a87ca351e6116f09653edac0eb3c6d238566359dd28b117
+  tree-sitter-cpp,tree_sitter_cpp-0.23.4-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl,773d2cafc08bbc0f998687fa33f42f378c1a371cdb582870c4d13abb06092706
+  tree-sitter-go,tree_sitter_go-0.25.0-cp310-abi3-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl,04b3b3cb4aff18e74e28d49b716c6f24cb71ddfdd66768987e26e4d0fa812f74
+  tree-sitter-rust,tree_sitter_rust-0.24.2-cp39-abi3-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl,e033c5a93b57c88e0a835880de39fc802909ff69f57aaff6000211c196ea5190
+  tree-sitter-kotlin,tree_sitter_kotlin-1.1.0-cp39-abi3-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl,9a92afe24b634cf914c5812af0f5c53184b1c18bdf6ee5505c83afac81f6bf6c
+  tree-sitter-swift,tree_sitter_swift-0.7.3-cp38-abi3-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl,f38feeb4f7350c8b30d567a0dc08bf1eeaa67c241b6888d72a45a8b1a4aa7187
+safety:
+  parse_process_isolation: true
+  parse_timeout_seconds: 8
+  runtime_network: denied
+  native_crash_strategy: direct_read
+portable_format: toon
