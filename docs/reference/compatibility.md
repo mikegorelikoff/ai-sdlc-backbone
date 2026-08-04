@@ -5,8 +5,8 @@ description: Public surfaces protected across additive harness releases and the 
 
 ## Protected surfaces
 
-The published `v4.0.1` source implements Harness API `4.0.0`. It is a hard
-contract cut from the `3.0.0-rc.2` line: all 44 skills use executable
+The published `v4.2.0` source implements Harness API `4.1.0`. It preserves the
+hard contract cut from the `3.0.0-rc.2` line: all 46 skills use executable
 `ai-sdlc-skill-steps/v2` graphs, and canonical TOON is the sole structured
 machine-data representation.
 

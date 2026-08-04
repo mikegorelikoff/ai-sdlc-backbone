@@ -7,7 +7,10 @@ description: Release, harness API, compatibility, and migration support matrix.
 
 | Release | Harness API | Status | Migration |
 | --- | --- | --- | --- |
-| [`v4.0.1`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v4.0.1) | `4.0.0` | Current stable release; adds native deterministic installation and a content-addressed TOON lock to the v4 execution harness | [Migrate to 4.0](../how-to/migrate-4.0.md); evaluate in a bounded pilot |
+| [`v4.2.0`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v4.2.0) | `4.1.0` | Current stable release; adds the optional local context cache, read-through context integration, and pinned twelve-language AST graph | No API migration; opt into `context-cache` and install its offline parser runtime when graph mode is required |
+| [`v4.1.1`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v4.1.1) | `4.1.0` | Previous corrective release; aligns Pages publication with the native project installer | Update to `v4.2.0` for context-cache and AST graph capabilities |
+| [`v4.1.0`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v4.1.0) | `4.1.0` | Superseded feature release; adds scheduling, effect drivers, provider evidence, and two project install profiles | Update to `v4.1.1` or later for the Pages correction |
+| [`v4.0.1`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v4.0.1) | `4.0.0` | Previous stable release; adds native deterministic installation and a content-addressed TOON lock to the v4 execution harness | [Migrate to 4.0](../how-to/migrate-4.0.md), then update to the current release |
 | [`v4.0.0`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v4.0.0) | `4.0.0` | Superseded initial release; execution harness is intact, but its external consumer installer creates a non-TOON lock | Update immediately to `v4.0.1`; do not move or rewrite the original tag |
 | [`v3.0.0-rc.2`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v3.0.0-rc.2) | `3.0.0` | Previous published prerelease; role-guided flow, progressive skill steps, canonical runtime, and OKF v0.2 bundles | Complete the 4.0 migration before updating |
 | [`v3.0.0-rc.1`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v3.0.0-rc.1) | `3.0.0` | Superseded prerelease; package smoke passes, but release CI used incomplete Git history and a stale remote-install contract | Update through `v3.0.0-rc.2`, then migrate to 4.0 |
@@ -19,11 +22,11 @@ description: Release, harness API, compatibility, and migration support matrix.
 
 The repository version describes the tagged capability set. The Harness API
 version protects public skill names, flags, routes, configuration, module
-ranges, handoffs, artifact authority, and major data contracts. The `v4.0.x`
+ranges, handoffs, artifact authority, and major data contracts. The `v4.x`
 family intentionally rejects pre-v4 machine contracts and removes alternate
 parsers and serializers. Consumers must regenerate managed manifests,
 configuration, fixtures, plans, state, journals, and receipts as canonical
-TOON before enabling Harness API `4.0.0` modules or execution.
+TOON before enabling Harness API `4.x` modules or execution.
 
 The full compatibility helper requires a **harness source checkout**, including
 `compatibility/`, `modules/`, `concepts/`, and

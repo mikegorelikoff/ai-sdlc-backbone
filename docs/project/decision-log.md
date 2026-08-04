@@ -141,3 +141,13 @@ one-line command to the release tag, narrows the validated target to
 project-scoped Codex, and writes a deterministic content-addressed TOON lock.
 The installed validator recomputes all managed digests. Global and other-host
 installation remain explicit future conformance work.
+
+## Local context cache and AST graph release
+
+On 2026-08-04, release `v4.2.0` adds the optional local context-cache module,
+read-through StepCard integration, and a deterministic Tree-sitter AST graph
+for twelve languages. The Harness API remains `4.1.0` because the capability is
+additive and opt-in. Portable machine contracts remain TOON-only; SQLite is
+derived local state, parser wheels are exact-version and SHA-256 locked, and
+any incomplete, stale, unsafe, or uneconomic graph result falls back to
+authoritative direct reads.

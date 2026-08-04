@@ -42,8 +42,8 @@ host.
 The supported profiles install all 45 skills into the host's project directory:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.1.1/install.sh | sh -s -- codex-project
-curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.1.1/install.sh | sh -s -- claude-code-project
+curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.2.0/install.sh | sh -s -- codex-project
+curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.2.0/install.sh | sh -s -- claude-code-project
 ```
 
 The additive `context-cache` module is opt-in and makes the installed set 46
@@ -73,7 +73,7 @@ global state cannot replace it.
 
 ## Release support
 
-Consumer instructions resolve annotated tag `v4.1.1` to an exact commit. Local
+Consumer instructions resolve annotated tag `v4.2.0` to an exact commit. Local
 deterministic, documentation, and installed-layout gates pass before
 publication. Protected remote CI and a fresh tagged remote installation are
 post-publication signals and must be reported separately.
