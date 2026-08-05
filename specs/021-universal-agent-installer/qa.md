@@ -23,7 +23,7 @@ artifact_metadata:
   status: "review"
   owner: "Harness Maintainers"
   created_at: "2026-08-04"
-  updated_at: "2026-08-04"
+  updated_at: "2026-08-05"
   trace_ids: []
   related_artifacts:
     - "specs/021-universal-agent-installer/decision-log.md"
@@ -44,18 +44,21 @@ artifact_metadata:
 # QA
 
 ## Change Summary
-Add portable Windows/macOS/Linux installation and a safe configurable project skills root while preserving named profiles.
+Add portable Windows/macOS/Linux installation, a safe configurable project skills root, and record-driven update while preserving named profiles.
 
 ## Acceptance Scenarios
 - QA-001: A contributor runs Python bootstrap and receives valid installed skills and TOON records.
 - QA-002: Codex/Claude users retain the same targets.
 - QA-003: A compatible host uses `.agent/skills` and automatic validation.
 - QA-004: Escape or metadata-overlap targets fail before writes.
+- QA-005: Update preserves the recorded profile, target, and module selection.
+- QA-006: Update refuses an edited managed skill and preserves its bytes.
 
 ## Regression Targets
 - Tag/SHA binding and dirty-source rejection.
 - Collision review and rollback.
 - Modules and TOON-only records.
+- Existing installation validation and update transaction rollback.
 - README/Home/Start here contracts.
 
 ## Risk Notes

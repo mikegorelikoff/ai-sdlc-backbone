@@ -23,7 +23,7 @@ artifact_metadata:
   status: "review"
   owner: "Harness Maintainers"
   created_at: "2026-08-04"
-  updated_at: "2026-08-04"
+  updated_at: "2026-08-05"
   trace_ids:
     - "AC-001"
     - "AC-002"
@@ -33,6 +33,7 @@ artifact_metadata:
     - "AC-006"
     - "AC-007"
     - "AC-008"
+    - "AC-009"
     - "DEC-001"
     - "DEC-002"
     - "DEC-003"
@@ -74,6 +75,7 @@ The public bootstrap is POSIX-shell-only, the native installer imports Unix-only
 - Make installer locking portable.
 - Preserve named profiles, module selection, immutable-source verification, TOON records, and transactional writes.
 - Add cross-platform tests and canonical docs.
+- Add a one-command cross-platform update that recovers existing install choices.
 
 ## Actors
 - Contributors installing the harness.
@@ -86,6 +88,7 @@ The public bootstrap is POSIX-shell-only, the native installer imports Unix-only
 - Consumer Git root.
 - Named profile, or `agent-project` plus relative skills root.
 - Optional modules and reviewed replacement authorization.
+- Existing TOON record, lock, inventory, and managed content digests for update.
 
 ## Outputs
 - Installed `SKILL.md` packages under the selected root.
@@ -102,6 +105,8 @@ The public bootstrap is POSIX-shell-only, the native installer imports Unix-only
 - FR-007: Preserve modules, transactionality, collision review, and rollback.
 - FR-008: Publish platform commands while retaining one primary install command in README, Home, and Start here.
 - FR-009: Add native Windows, macOS, and Linux CI coverage.
+- FR-010: `update` shall verify existing provenance, recover profile, target,
+  explicit selection, and modules, and refuse managed digest drift before replacement.
 
 ## Non-Functional Requirements
 - NFR-001: Use only Python standard library.
@@ -126,12 +131,16 @@ The public bootstrap is POSIX-shell-only, the native installer imports Unix-only
 - AC-006: Given the context-cache module and custom profile, when Python bootstrap installs it, then the opt-in skill and module selection validate.
 - AC-007: Given the release candidate, when focused installer, docs, SDD, and native OS-matrix gates run, then every required gate exits successfully.
 - AC-008: Given canonical public docs, when platform guidance is reviewed, then Linux/macOS and Windows commands are present and unnamed hosts are described only as package-compatible.
+- AC-009: Given a valid named or custom installation, when `update` runs, then
+  it preserves the recorded profile, target, selection, and modules; given a
+  local managed edit, it exits nonzero without overwriting that edit.
 
 ## Out of Scope
 - Proprietary rule-format conversion.
 - Per-user/global installation.
 - Removing `install.sh`.
 - Certifying unnamed agent model execution.
+- Automatically deleting retired skill directories.
 
 ## Assumptions
 - A-001: Compatible hosts can discover a user-selected project skills root.

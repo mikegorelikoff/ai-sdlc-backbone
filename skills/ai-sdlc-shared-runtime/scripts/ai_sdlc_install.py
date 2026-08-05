@@ -46,6 +46,14 @@ WINDOWS_RESERVED_NAMES = {
     *(f"COM{value}" for value in range(1, 10)),
     *(f"LPT{value}" for value in range(1, 10)),
 }
+UPDATE_RECORD_FIELDS = {
+    "schema", "revision", "installer", "agent", "profile", "selection",
+    "inventory", "lock", "target",
+}
+UPDATE_LOCK_FIELDS = {
+    "schema", "revision", "installer", "agent", "profile", "selection", "skills", "target",
+}
+UPDATE_LOCK_ENTRY_FIELDS = {"name", "path", "sha256"}
 
 
 class InstallError(RuntimeError):
@@ -214,6 +222,89 @@ def module_skills(source: Path, requested: list[str]) -> tuple[list[str], str]:
                 raise InstallError(f"requested module skill is missing: {name}")
             names.add(name)
     return sorted(names), "modules:" + ",".join(module_ids)
+
+
+def read_existing_install(root: Path) -> tuple[str, list[str], list[str], str | None]:
+    """Validate installed provenance and recover the exact update selection."""
+    root = root.resolve()
+    metadata = root / ".ai-sdlc"
+    validate_managed_directory(root, metadata)
+    record_path = metadata / "harness-install.toon"
+    inventory_path = metadata / "harness-managed-skills.txt"
+    lock_path = metadata / "harness-install-lock.toon"
+    for path in (record_path, inventory_path, lock_path):
+        if path.is_symlink() or not path.is_file():
+            raise InstallError(f"existing installation metadata is missing or unsafe: {path}")
+    try:
+        record = toon_codec.loads(record_path.read_text(encoding="utf-8-sig"))
+        lock = toon_codec.loads(lock_path.read_text(encoding="utf-8-sig"))
+        names = inventory_path.read_text(encoding="utf-8").splitlines()
+    except (OSError, toon_codec.ToonDecodeError) as exc:
+        raise InstallError(f"cannot read existing installation metadata: {exc}") from exc
+    if not isinstance(record, dict) or set(record) != UPDATE_RECORD_FIELDS:
+        raise InstallError("existing install record has an unsupported shape")
+    if record["schema"] != RECORD_SCHEMA or record["installer"] != INSTALLER_ID:
+        raise InstallError("existing install record is not compatible with this updater")
+    if not isinstance(record["revision"], str) or not REVISION_RE.fullmatch(record["revision"]):
+        raise InstallError("existing install revision must be an exact Git SHA")
+    profile = record["profile"]
+    target = record["target"]
+    if not isinstance(profile, str) or not isinstance(target, str):
+        raise InstallError("existing install profile or target is invalid")
+    skills_root = target if profile == "agent-project" else None
+    agent, normalized_target = resolve_profile(profile, skills_root)
+    if target != normalized_target or record["agent"] != agent:
+        raise InstallError("existing install profile does not match its recorded target")
+    if record["inventory"] != ".ai-sdlc/harness-managed-skills.txt":
+        raise InstallError("existing install inventory path is invalid")
+    if record["lock"] != ".ai-sdlc/harness-install-lock.toon":
+        raise InstallError("existing install lock path is invalid")
+    if names != sorted(set(names)) or not names or any(not SKILL_NAME_RE.fullmatch(name) for name in names):
+        raise InstallError("existing managed inventory must contain unique sorted skill names")
+    if not isinstance(lock, dict) or set(lock) != UPDATE_LOCK_FIELDS or lock["schema"] != LOCK_SCHEMA:
+        raise InstallError("existing install lock has an unsupported shape")
+    for field in ("revision", "installer", "agent", "profile", "selection", "target"):
+        if lock[field] != record[field]:
+            raise InstallError(f"existing install lock {field} does not match the record")
+    entries = lock["skills"]
+    if not isinstance(entries, list) or len(entries) != len(names):
+        raise InstallError("existing install lock does not match the managed inventory")
+    locked_names: list[str] = []
+    destination_root = root.joinpath(*target.split("/"))
+    validate_managed_directory(root, destination_root)
+    for entry in entries:
+        if not isinstance(entry, dict) or set(entry) != UPDATE_LOCK_ENTRY_FIELDS:
+            raise InstallError("existing install lock contains an invalid skill entry")
+        name = entry["name"]
+        if not isinstance(name, str) or not SKILL_NAME_RE.fullmatch(name):
+            raise InstallError("existing install lock contains an invalid skill name")
+        locked_names.append(name)
+        if entry["path"] != f"{target}/{name}":
+            raise InstallError(f"existing install lock path is invalid for {name}")
+        digest = entry["sha256"]
+        if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest):
+            raise InstallError(f"existing install lock digest is invalid for {name}")
+        installed = destination_root / name
+        if directory_digest(installed) != digest:
+            raise InstallError(f"installed skill digest differs for {name}; preserve and review local changes")
+    if locked_names != names:
+        raise InstallError("existing install lock skill names do not match the managed inventory")
+    selection = record["selection"]
+    requested: list[str] = []
+    modules: list[str] = []
+    if selection == "all-skills":
+        pass
+    elif selection == "explicit-skills":
+        requested = names
+    elif isinstance(selection, str) and selection.startswith("modules:"):
+        modules = selection.removeprefix("modules:").split(",")
+        if not modules or modules != sorted(set(modules)) or any(
+            not SKILL_NAME_RE.fullmatch(module) for module in modules
+        ):
+            raise InstallError("existing module selection is invalid")
+    else:
+        raise InstallError("existing install selection is invalid")
+    return profile, requested, modules, skills_root
 
 
 def regular_files(directory: Path) -> list[Path]:
@@ -529,28 +620,41 @@ def main() -> int:
     parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--root", type=Path, default=Path.cwd())
     parser.add_argument("--revision", required=True)
-    parser.add_argument("--profile", choices=tuple(sorted(INSTALL_PROFILES)), default="codex-project")
+    parser.add_argument("--profile", choices=tuple(sorted(INSTALL_PROFILES)))
     parser.add_argument("--skills-root", help="Project-relative skills directory; required for agent-project")
     parser.add_argument("--skill", action="append", default=[])
     parser.add_argument("--module", action="append", default=[])
     parser.add_argument("--replace-reviewed", action="store_true")
+    parser.add_argument("--update-existing", action="store_true")
     args = parser.parse_args()
     try:
+        if args.update_existing:
+            if args.profile is not None or args.skills_root is not None or args.skill or args.module:
+                raise InstallError("--update-existing recovers profile and selection; do not combine install selectors")
+            profile, requested, modules, skills_root = read_existing_install(args.root)
+            replace_reviewed = True
+        else:
+            profile = args.profile or "codex-project"
+            requested = args.skill
+            modules = args.module
+            skills_root = args.skills_root
+            replace_reviewed = args.replace_reviewed
         count, record, lock = install(
             source=args.source,
             root=args.root,
             revision=args.revision,
-            profile=args.profile,
-            requested=args.skill,
-            replace_reviewed=args.replace_reviewed,
-            modules=args.module,
-            skills_root=args.skills_root,
+            profile=profile,
+            requested=requested,
+            replace_reviewed=replace_reviewed,
+            modules=modules,
+            skills_root=skills_root,
         )
     except (InstallError, OSError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
-    _, target = resolve_profile(args.profile, args.skills_root)
-    print(f"Installed {count} AI SDLC Harness skills into {target}")
+    _, target = resolve_profile(profile, skills_root)
+    verb = "Updated" if args.update_existing else "Installed"
+    print(f"{verb} {count} AI SDLC Harness skills in {target}")
     print(f"Install record: {record.relative_to(args.root.resolve())}")
     print(f"Deterministic lock: {lock.relative_to(args.root.resolve())}")
     return 0

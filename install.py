@@ -122,10 +122,11 @@ def parser() -> argparse.ArgumentParser:
         description="Install AI SDLC Harness skills into the current Git project.",
         epilog=(
             "Use codex-project or claude-code-project for their fixed roots. "
-            "Use agent-project --skills-root PATH for another Agent Skills-compatible host."
+            "Use agent-project --skills-root PATH for another Agent Skills-compatible host. "
+            "Use update to recover the existing profile and selection from its verified TOON record."
         ),
     )
-    value.add_argument("profile", choices=PROFILES)
+    value.add_argument("command", choices=(*PROFILES, "update"))
     value.add_argument("--skills-root", help="Project-relative skills directory; required for agent-project")
     value.add_argument("--module", action="append", default=[], help="Optional module id; repeatable")
     return value
@@ -143,6 +144,9 @@ def main() -> int:
     requested = os.environ.get("AI_SDLC_REVISION")
     replace = os.environ.get("AI_SDLC_INSTALL_REPLACE", "0") == "1"
     try:
+        updating = args.command == "update"
+        if updating and (args.skills_root is not None or args.module):
+            raise BootstrapError("update recovers --skills-root and modules from the existing install record")
         with tempfile.TemporaryDirectory(prefix="ai-sdlc-harness-") as temporary:
             source: Path
             revision: str
@@ -178,15 +182,19 @@ def main() -> int:
                 "--source", str(source),
                 "--root", str(Path.cwd().resolve()),
                 "--revision", revision,
-                "--profile", args.profile,
             ]
-            if args.skills_root is not None:
-                command.extend(("--skills-root", args.skills_root))
-            for module in args.module:
-                command.extend(("--module", module))
-            if replace:
-                command.append("--replace-reviewed")
-            print(f'Installing AI SDLC Harness profile "{args.profile}" from revision "{revision}"...')
+            if updating:
+                command.append("--update-existing")
+                print(f'Updating AI SDLC Harness from revision "{revision}"...')
+            else:
+                command.extend(("--profile", args.command))
+                if args.skills_root is not None:
+                    command.extend(("--skills-root", args.skills_root))
+                for module in args.module:
+                    command.extend(("--module", module))
+                if replace:
+                    command.append("--replace-reviewed")
+                print(f'Installing AI SDLC Harness profile "{args.command}" from revision "{revision}"...')
             return subprocess.run(command, check=False).returncode
     except (BootstrapError, OSError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)

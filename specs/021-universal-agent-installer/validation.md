@@ -19,7 +19,7 @@ artifact_metadata:
   status: "validated"
   owner: "Harness Maintainers"
   created_at: "2026-08-04"
-  updated_at: "2026-08-04"
+  updated_at: "2026-08-05"
   trace_ids:
     - "AC-001"
     - "AC-002"
@@ -29,11 +29,13 @@ artifact_metadata:
     - "AC-006"
     - "AC-007"
     - "AC-008"
+    - "AC-009"
     - "TC-001"
     - "TC-002"
     - "TC-004"
     - "TC-006"
     - "TC-007"
+    - "TC-008"
   related_artifacts:
     - "specs/021-universal-agent-installer/_ai_sdlc/validation-plan.toon"
     - "specs/021-universal-agent-installer/_ai_sdlc/validation-receipt.toon"
@@ -42,7 +44,8 @@ artifact_metadata:
     - "specs/021-universal-agent-installer/test-cases.md"
   validation:
     - "ai-sdlc-validation-receipt/v1: 14 current commands; 0 failures"
-    - "Python 3.11 portable installer tests: 20 passed"
+    - "Python 3.11 portable installer tests: 23 passed"
+    - "Python 3.11 full shared-runtime regression: 189 passed"
     - "custom, Codex, and Claude installed-layout smokes: passed"
     - "documentation source, strict build, rendered links, SDD, compatibility, and diff gates: passed"
   metatags:
@@ -60,16 +63,20 @@ artifact_metadata:
 Validate the portable Python bootstrap, configurable Agent Skills project
 root, preserved Codex and Claude profiles, native Windows lock adapter, safe
 path and remote handling, dynamic install records, installed runtime root
-discovery, and the public cross-platform installation contract.
+discovery, record-driven update with drift refusal, and the public
+cross-platform installation and update contracts.
 
 ## Results
 
 - PASS: the canonical argv-only receipt records 14 current commands and zero
   failures.
-- PASS: all 20 portable installer tests pass on Python 3.11, including the
+- PASS: all 23 portable installer tests pass on Python 3.11, including the
   simulated Windows lock adapter, unsafe/case-variant paths, symlink escape,
-  credential URL non-echo, bootstrap, module, rollback, and named-profile
-  regressions.
+  credential URL non-echo, Python and shell install-to-update flows, preserved
+  custom target/module selection, linked-metadata rejection, local-drift refusal, rollback, and
+  named-profile regressions.
+- PASS: all 189 shared-runtime tests pass in an isolated Python 3.11
+  environment with the exact Tree-sitter versions used by protected CI.
 - PASS: `agent-project` at `.agent/skills`, `codex-project`, and
   `claude-code-project` each pass the complete native installed-layout smoke.
 - PASS: the full shared-runtime regression suite, generated skill graph,

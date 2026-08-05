@@ -215,7 +215,7 @@ discovery suite a pre-tag gate.
 
 ## Cross-platform and agent-neutral project installation
 
-On 2026-08-04, additive release `v4.4.0` makes the existing deterministic
+On 2026-08-05, additive release `v4.4.0` makes the existing deterministic
 project installer native across Windows, macOS, and Linux. A standard-library
 Python bootstrap performs the same immutable source resolution as the POSIX
 shell entrypoint, and the mutation lock selects `msvcrt` on Windows or `fcntl`
@@ -229,3 +229,12 @@ Codex and Claude Code retain their fixed targets and installed records remain
 schema-compatible. The generic profile proves Agent Skills package placement
 and installed-runtime integrity; named host discovery or model execution
 remains a separate conformance claim.
+
+The release also exposes `update` through both portable bootstraps. Update
+authority comes from the existing deterministic record and lock: the updater
+recovers the exact profile, target, explicit selection, and modules, verifies
+every managed digest, and only then enables transactional replacement from the
+reviewed target release. It fails closed on missing or unsafe metadata and on
+local skill drift. Retired directories remain a manual Git-reviewed cleanup
+because absence from a new release is not sufficient proof that deleting a
+consumer path is safe.

@@ -71,6 +71,9 @@ roots use the [cross-platform installation path](how-to/install.md). The second
 command must validate all 45 installed skills and their locked content digests. Then ask your agent to
 Explore a request without applying changes:
 
+Already installed? Use the [safe update command](how-to/update.md), which
+recovers the recorded profile, skills root, and optional modules automatically.
+
 ```text
 Use ai-sdlc-flow to Explore this request. Show the route, evidence, rigor,
 roles, blockers, planned writes, and next checkpoint. Do not Apply until I

@@ -23,7 +23,7 @@ artifact_metadata:
   status: "draft"
   owner: "TBD"
   created_at: "2026-08-04"
-  updated_at: "2026-08-04"
+  updated_at: "2026-08-05"
   trace_ids: []
   related_artifacts: []
   validation: []
@@ -62,6 +62,7 @@ artifact_metadata:
 - AC-006: requirements.md -> test-cases.md (TC-005) -> tasks.md (T002) -> qa.md -> decision-log.md
 - AC-007: requirements.md -> test-cases.md (TC-006) -> tasks.md (T005, T007) -> qa.md -> decision-log.md
 - AC-008: requirements.md -> test-cases.md (TC-007) -> tasks.md (T006, T007) -> qa.md -> decision-log.md
+- AC-009: requirements.md -> test-cases.md (TC-008) -> tasks.md (T008, T009) -> qa.md -> decision-log.md
 
 ## Task Execution Plan
 - [x] T001: Add portable profile resolution, normalization, containment, and locking.; refs: FR-002, FR-004, FR-005, FR-006, AC-002, AC-003, AC-004, AC-005; output: cross-platform installer runtime.
@@ -71,6 +72,8 @@ artifact_metadata:
 - [x] T005: Add native OS CI and run SDD/docs/repository gates.; refs: FR-009, TC-006, AC-007; output: platform and release evidence.
 - [x] T006: Update canonical install/support/update/troubleshooting pages, entry docs, changelog, and project decisions.; refs: FR-008, NFR-006, TC-007, AC-008; output: accurate portable installation contract.
 - [ ] T007: Publish the additive release only after local and remote gates pass.; refs: A-003, AC-007, AC-008; output: immutable verified release.
+- [x] T008: Add record-driven update to Python and shell entrypoints.; refs: FR-010, AC-009; output: profile-, target-, selection-, and module-preserving portable update.
+- [x] T009: Add install-to-update and local-drift refusal tests.; refs: FR-010, TC-008, AC-009; output: Python and POSIX update regression coverage in the native OS matrix.
 
 ## Task Dependencies
 - T001: depends on previous applicable task / none
@@ -80,13 +83,15 @@ artifact_metadata:
 - T005: depends on previous applicable task / none
 - T006: depends on previous applicable task / none
 - T007: depends on previous applicable task / none
+- T008: depends on T002, T003
+- T009: depends on T008
 
 ## Validation Sequence
 - 1. `python3 skills/ai-sdlc-sdd/scripts/check_clarify.py <spec-dir> --full-flow`
 - 2. `python3 skills/ai-sdlc-sdd/scripts/check_checklist.py <spec-dir> --full-flow`
 - 3. `python3 skills/ai-sdlc-sdd/scripts/analyze_spec.py <spec-dir> --full-flow`
 - 4. `python3 skills/ai-sdlc-sdd/scripts/validate_spec.py <spec-dir> --full-flow`
-- Generated: 2026-08-04
+- Generated: 2026-08-05
 
 ## Open Links And Blockers
 - No unresolved AC/TC/task links; decision and external blockers remain in `decision-log.md` and owner reports.

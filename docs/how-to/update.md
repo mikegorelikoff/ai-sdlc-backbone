@@ -1,31 +1,30 @@
 ---
 title: Update safely
-description: Repair or upgrade a project-scoped installation from an exact revision without losing provenance or local review.
+description: Upgrade a project-scoped installation from an exact release without losing its profile, selection, provenance, or local review.
 ---
 
 # Update safely
 
 ## Goal
 
-Replace only reviewed Harness-managed skill directories, regenerate
-deterministic TOON provenance, and preserve unrelated project and third-party
-content.
+Update a verified AI SDLC Harness installation with one cross-platform command
+while preserving its recorded agent profile, skills root, optional modules,
+TOON provenance, and unrelated project content.
 
 ## When to use it
 
-Use this procedure for a same-revision repair or an upgrade to a reviewed
-release. A **Consumer repository** contains the project skills root recorded in
-`.ai-sdlc/harness-install.toon` (for example `.agents/skills`). A **Source checkout**
-contains this Harness repository and maintainer
-paths such as `skills/ai-sdlc-shared-runtime`. Keep those execution contexts
-separate.
+Use this procedure for a same-release repair or an upgrade to a reviewed
+release. Run it from the consumer repository that contains
+`.ai-sdlc/harness-install.toon`, not from a Harness source checkout.
+A **Consumer repository** uses its installed `.agents/skills` or recorded
+custom root. A **Source checkout** contains maintainer paths such as
+`skills/ai-sdlc-shared-runtime`; do not confuse those execution contexts.
 
 ## Prerequisites
 
 - the existing installation is committed or otherwise recoverable;
-- `.ai-sdlc/harness-install.toon`,
-  `.ai-sdlc/harness-install-lock.toon`, and the managed inventory are present;
-- the current validator result and Git diff have been preserved;
+- `.ai-sdlc/harness-install.toon`, `.ai-sdlc/harness-install-lock.toon`, and
+  `.ai-sdlc/harness-managed-skills.txt` are present;
 - the target release and migration notes have been reviewed;
 - Git and Python `3.10+` are available.
 
@@ -33,107 +32,87 @@ separate.
 
 ### Establish the consumer baseline
 
+For the Codex profile, validate the current installation and inspect the
+working tree:
+
 ```bash
 PYTHON_BIN="${PYTHON_BIN:-python3}"
 "$PYTHON_BIN" .agents/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py
 git status --short
-git diff -- .agents/skills .ai-sdlc
 ```
 
-Stop if a managed directory differs from its recorded digest and ownership of
-that change is unclear. The validator is expected to fail on a local edit; that
-failure is evidence to resolve, not a reason to discard the edit.
+For Claude Code or a custom `agent-project` root, run the validator from the
+recorded skills root instead. Stop if it reports digest drift. The updater
+deliberately refuses to overwrite a local skill edit.
 
-### Resolve the exact target
+### Apply the exact release
+
+On Linux or macOS, run the updater pinned to the reviewed release:
 
 ```bash
-TARGET_TAG=v4.4.0
-TARGET_TMP="$(mktemp -d)"
-TARGET_SRC="$TARGET_TMP/ai-sdlc-harness"
-git init "$TARGET_SRC"
-git -C "$TARGET_SRC" remote add origin https://github.com/mikegorelikoff/ai-sdlc-harness.git
-git -C "$TARGET_SRC" fetch --depth 1 origin "refs/tags/$TARGET_TAG:refs/tags/$TARGET_TAG"
-git -C "$TARGET_SRC" checkout --detach "$TARGET_TAG^{commit}"
-TARGET_REV="$(git -C "$TARGET_SRC" rev-parse HEAD)"
-test "$(git -C "$TARGET_SRC" rev-list -n 1 "$TARGET_TAG")" = "$TARGET_REV"
-git -C "$TARGET_SRC" status --short
+curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.4.0/install.sh | sh -s -- update
 ```
 
-For a same-release repair, fetch the exact revision already recorded in
-`harness-install.toon` instead of selecting a newer tag.
+On Windows PowerShell, use the same release and native Python bootstrap:
 
-Compare the old and target managed inventories:
-
-```bash
-comm -23 .ai-sdlc/harness-managed-skills.txt "$TARGET_SRC/config/ai-sdlc-managed-skills.txt"
-comm -13 .ai-sdlc/harness-managed-skills.txt "$TARGET_SRC/config/ai-sdlc-managed-skills.txt"
+```powershell
+irm https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.4.0/install.py | py -3 - update
 ```
 
-The first command prints retired managed names; the second prints newly added
-names. Review both sets and the target migration guide before replacement.
+`update` verifies the existing TOON record, lock, inventory, and every managed
+digest before mutation. It recovers the recorded profile, target, explicit
+selection, and optional modules automatically. The target source is still
+bound to an annotated tag and exact commit.
 
-### Apply the reviewed replacement
-
-The installer normally refuses any differing managed destination. The explicit
-environment flag below is the human-reviewed replacement authority:
-
-```bash
-AI_SDLC_SOURCE="$TARGET_SRC" \
-AI_SDLC_REVISION="$TARGET_REV" \
-AI_SDLC_INSTALL_REPLACE=1 \
-"$TARGET_SRC/install.sh" codex-project
-```
-
-The native installer stages and hashes all target skills before applying
-changes, keeps rollback backups during the operation, preserves unrelated
-skills, and writes a new deterministic `harness-install-lock.toon`.
-
-It does not remove retired directories automatically. For each retired name,
-compare `.agents/skills/<name>` with the previously accepted revision. Remove
-it only when it is confirmed to be an unmodified Harness-owned directory;
-retain and document any ambiguous or locally modified directory.
+The native installer stages and hashes the replacement, keeps rollback backups
+during the transaction, preserves unrelated skills, and writes a new
+deterministic lock. It does not remove retired directories automatically.
+Remove one only when Git proves it is unchanged Harness-owned content.
 
 ### Clean up and review
+
+For the Codex profile:
 
 ```bash
 "$PYTHON_BIN" .agents/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py
 git status --short
 git diff --check
 git diff -- .agents/skills .ai-sdlc
-rm -rf "$TARGET_TMP"
 ```
 
-Commit the update separately from product changes:
+Use the recorded root in those commands for Claude Code or a custom agent
+profile. Commit the update separately from product changes:
 
 ```bash
 git add .agents/skills .ai-sdlc/harness-install.toon .ai-sdlc/harness-install-lock.toon .ai-sdlc/harness-managed-skills.txt
 git diff --cached --check
-git commit -m "chore: update AI SDLC harness"
+git commit -m "chore: update AI SDLC Harness"
 ```
 
 ## Verify
 
-- the install-record validator passes;
-- record and lock point to `TARGET_REV`;
+- the installed record validator passes;
+- record and lock point to the reviewed target revision;
+- the profile, target, selection, and optional modules are unchanged;
 - all managed names and digests match;
-- additions and retirements match the reviewed inventory comparison;
 - no unrelated agent skill or product file changed;
 - one bounded Explore flow and the relevant project validation pass.
 
 Maintainers validating a source checkout must also run the canonical release
-suite and the native installed-layout smoke before publishing. Consumer
-repositories must not substitute source-only test paths for their installed
+suite and native installed-layout smoke before publishing. Consumer
+repositories must not substitute source-only tests for their installed
 validator.
 
 ## Troubleshooting
 
 | Symptom | Safe response |
 | --- | --- |
-| Existing managed digest differs before review | Preserve the diff and identify its owner; do not set the replacement flag yet. |
+| Installed skill digest differs | Preserve the diff and identify its owner; the updater will not overwrite it. |
+| Existing metadata is missing or unsafe | Restore the committed `.ai-sdlc` record, lock, and inventory before updating. |
 | Target revision does not match the tag | Stop and resolve remote/tag integrity before running installer code. |
 | Replacement is interrupted | Inspect Git status and rerun the same exact target after confirming no unowned content was touched. |
 | Retired directory remains | Compare it with the prior accepted revision; remove only confirmed unmodified Harness content. |
-| Post-update validation fails | Use the installation commit for rollback of only `.agents/skills` and `.ai-sdlc`, then validate the restored record. |
+| Post-update validation fails | Use the installation commit to restore only the recorded skills root and `.ai-sdlc`, then validate again. |
 
 ## Next step
 
