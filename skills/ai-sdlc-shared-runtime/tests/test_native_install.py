@@ -391,25 +391,36 @@ class NativeInstallTests(unittest.TestCase):
                 self.run_install(source, root / "consumer")
 
     def test_missing_local_source_path_fails_without_remote_fallback(self) -> None:
-        if shutil.which("sh") is None:
-            self.skipTest("POSIX shell bootstrap is unavailable")
         with tempfile.TemporaryDirectory() as temp:
             consumer = Path(temp)
             subprocess.run(["git", "init", str(consumer)], check=True, stdout=subprocess.DEVNULL)
             environment = os.environ.copy()
             environment["AI_SDLC_SOURCE"] = str(consumer / "missing-source")
             environment["AI_SDLC_PYTHON"] = sys.executable
-            result = subprocess.run(
-                ["sh", str(ROOT / "install.sh"), "codex-project"],
-                cwd=consumer,
-                env=environment,
-                check=False,
-                text=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-            )
-            self.assertEqual(result.returncode, 65)
-            self.assertIn("local path that does not exist", result.stderr)
+            if sys.version_info >= (3, 10):
+                result = subprocess.run(
+                    [sys.executable, str(ROOT / "install.py"), "codex-project"],
+                    cwd=consumer,
+                    env=environment,
+                    check=False,
+                    text=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                )
+                self.assertEqual(result.returncode, 65)
+                self.assertIn("local path that does not exist", result.stderr)
+            if os.name != "nt" and shutil.which("sh") is not None:
+                result = subprocess.run(
+                    ["sh", str(ROOT / "install.sh"), "codex-project"],
+                    cwd=consumer,
+                    env=environment,
+                    check=False,
+                    text=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                )
+                self.assertEqual(result.returncode, 65)
+                self.assertIn("local path that does not exist", result.stderr)
 
     def test_legacy_installer_lock_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
