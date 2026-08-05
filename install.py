@@ -61,6 +61,15 @@ def normalize_remote(value: str) -> str:
     raise BootstrapError("AI_SDLC_SOURCE must be a local checkout or reviewed Git remote")
 
 
+def is_explicit_local_source(value: str, candidate: Path) -> bool:
+    """Recognize local path syntax before a missing path can resemble a remote."""
+    return (
+        candidate.is_absolute()
+        or value.startswith(("/", "./", "../", "~/", ".\\", "..\\", "~\\", "\\\\"))
+        or re.match(r"^[A-Za-z]:[\\/]", value) is not None
+    )
+
+
 def verify_local_source(source: Path, requested: str | None) -> tuple[Path, str]:
     source = source.resolve()
     head = require_git(run_git("-C", str(source), "rev-parse", "--verify", "HEAD"), "source revision")
@@ -143,7 +152,7 @@ def main() -> int:
                     if not candidate.is_dir():
                         raise BootstrapError("AI_SDLC_SOURCE local path is not a directory")
                     source, revision = verify_local_source(candidate, requested)
-                elif source_value.startswith(("/", "./", "../", "~/")):
+                elif is_explicit_local_source(source_value, candidate):
                     raise BootstrapError("AI_SDLC_SOURCE names a local path that does not exist")
                 else:
                     source, revision = checkout_remote(
