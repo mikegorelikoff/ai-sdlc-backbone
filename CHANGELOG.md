@@ -1,6 +1,6 @@
 # Changelog
 
-## v4.4.0 - 2026-08-04
+## v4.4.0 - 2026-08-05
 
 ### Added
 
@@ -12,6 +12,9 @@
   Codex and Claude Code profiles.
 - Added a native Windows/macOS/Linux CI matrix for configurable and named
   profiles, optional modules, deterministic records, and portable locking.
+- Added `update` to both portable entrypoints. It recovers the verified
+  profile, target, explicit selection, and optional modules from the existing
+  TOON record instead of requiring platform-specific update steps.
 
 ### Security and compatibility
 
@@ -21,6 +24,8 @@
   on POSIX without changing TOON record or lock schemas.
 - Preserved Harness API `4.1.0`, all existing installed paths, module selection,
   collision review, transactional rollback, and immutable source verification.
+- Refused updates when install metadata is unsafe or a managed digest differs,
+  preserving local edits for review before any replacement.
 
 ## v4.3.1 - 2026-08-04
 

@@ -230,7 +230,7 @@ class NativeInstallTests(unittest.TestCase):
             with self.assertRaisesRegex(InstallError, "only with agent-project"):
                 self.run_install(source, root / "consumer", skills_root=".agent/skills")
 
-    def test_python_bootstrap_installs_custom_profile_and_module(self) -> None:
+    def test_python_bootstrap_installs_and_updates_custom_profile_and_module(self) -> None:
         if sys.version_info < (3, 10):
             self.skipTest("portable bootstrap requires Python 3.10+")
         with tempfile.TemporaryDirectory() as temp:
@@ -284,6 +284,172 @@ class NativeInstallTests(unittest.TestCase):
             self.assertEqual(payload["profile"], "agent-project")
             self.assertEqual(payload["target"], ".agent/skills")
             self.assertEqual(payload["selection"], "modules:context-cache")
+            installed = consumer / ".agent/skills/ai-sdlc-flow/SKILL.md"
+            source_skill = source / "skills/ai-sdlc-flow/SKILL.md"
+            source_skill.write_text(
+                source_skill.read_text(encoding="utf-8") + "\nUpdated fixture.\n",
+                encoding="utf-8",
+            )
+            subprocess.run(["git", "-C", str(source), "add", "."], check=True)
+            subprocess.run(
+                [
+                    "git", "-C", str(source),
+                    "-c", "user.name=Fixture",
+                    "-c", "user.email=fixture@example.invalid",
+                    "-c", "commit.gpgsign=false",
+                    "commit", "-m", "update portable fixture",
+                ],
+                check=True,
+                stdout=subprocess.DEVNULL,
+            )
+            environment["AI_SDLC_REVISION"] = subprocess.check_output(
+                ["git", "-C", str(source), "rev-parse", "HEAD"], text=True,
+            ).strip()
+            result = subprocess.run(
+                [sys.executable, str(ROOT / "install.py"), "update"],
+                cwd=consumer,
+                env=environment,
+                check=False,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("Updated fixture.", installed.read_text(encoding="utf-8"))
+            updated = native_install.toon_codec.loads(
+                (consumer / ".ai-sdlc/harness-install.toon").read_text(encoding="utf-8")
+            )
+            self.assertEqual(updated["profile"], "agent-project")
+            self.assertEqual(updated["target"], ".agent/skills")
+            self.assertEqual(updated["selection"], "modules:context-cache")
+            self.assertTrue(
+                (consumer / ".agent/skills/ai-sdlc-context-cache/SKILL.md").is_file()
+            )
+
+            installed.write_text("local edit\n", encoding="utf-8")
+            result = subprocess.run(
+                [sys.executable, str(ROOT / "install.py"), "update"],
+                cwd=consumer,
+                env=environment,
+                check=False,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("preserve and review local changes", result.stderr)
+            self.assertEqual(installed.read_text(encoding="utf-8"), "local edit\n")
+
+    def test_update_contract_recovers_exact_profile_selection_and_target(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = self.source_fixture(root)
+            consumer = root / "consumer"
+            self.run_install(
+                source,
+                consumer,
+                profile="agent-project",
+                requested=[],
+                modules=["context-cache"],
+                skills_root=".agent/skills",
+            )
+            self.assertEqual(
+                native_install.read_existing_install(consumer),
+                ("agent-project", [], ["context-cache"], ".agent/skills"),
+            )
+
+    @unittest.skipIf(os.name == "nt", "Windows CI does not guarantee unprivileged symlink creation")
+    def test_update_rejects_linked_metadata_root(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = self.source_fixture(root)
+            consumer = root / "consumer"
+            self.run_install(source, consumer)
+            metadata = consumer / ".ai-sdlc"
+            relocated = consumer / "relocated-metadata"
+            metadata.rename(relocated)
+            metadata.symlink_to(relocated, target_is_directory=True)
+            with self.assertRaisesRegex(InstallError, "must not be a symbolic link"):
+                native_install.read_existing_install(consumer)
+
+    @unittest.skipIf(os.name == "nt" or shutil.which("sh") is None, "requires POSIX sh")
+    def test_shell_bootstrap_updates_existing_profile(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = self.source_fixture(root)
+            scripts = source / "skills/ai-sdlc-shared-runtime/scripts"
+            scripts.mkdir()
+            for name in ("ai_sdlc_install.py", "ai_sdlc_toon.py"):
+                shutil.copy2(SCRIPTS / name, scripts / name)
+            subprocess.run(["git", "-C", str(source), "add", "."], check=True)
+            subprocess.run(
+                [
+                    "git", "-C", str(source),
+                    "-c", "user.name=Fixture",
+                    "-c", "user.email=fixture@example.invalid",
+                    "-c", "commit.gpgsign=false",
+                    "commit", "-m", "add shell fixture",
+                ],
+                check=True,
+                stdout=subprocess.DEVNULL,
+            )
+            consumer = root / "consumer"
+            consumer.mkdir()
+            subprocess.run(["git", "init", str(consumer)], check=True, stdout=subprocess.DEVNULL)
+            environment = os.environ.copy()
+            environment.update(
+                {
+                    "AI_SDLC_SOURCE": str(source),
+                    "AI_SDLC_REVISION": subprocess.check_output(
+                        ["git", "-C", str(source), "rev-parse", "HEAD"], text=True,
+                    ).strip(),
+                    "AI_SDLC_PYTHON": sys.executable,
+                }
+            )
+            result = subprocess.run(
+                ["sh", str(ROOT / "install.sh"), "claude-code-project"],
+                cwd=consumer,
+                env=environment,
+                check=False,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            source_skill = source / "skills/ai-sdlc-flow/SKILL.md"
+            source_skill.write_text(
+                source_skill.read_text(encoding="utf-8") + "\nShell update.\n",
+                encoding="utf-8",
+            )
+            subprocess.run(["git", "-C", str(source), "add", "."], check=True)
+            subprocess.run(
+                [
+                    "git", "-C", str(source),
+                    "-c", "user.name=Fixture",
+                    "-c", "user.email=fixture@example.invalid",
+                    "-c", "commit.gpgsign=false",
+                    "commit", "-m", "update shell fixture",
+                ],
+                check=True,
+                stdout=subprocess.DEVNULL,
+            )
+            environment["AI_SDLC_REVISION"] = subprocess.check_output(
+                ["git", "-C", str(source), "rev-parse", "HEAD"], text=True,
+            ).strip()
+            result = subprocess.run(
+                ["sh", str(ROOT / "install.sh"), "update"],
+                cwd=consumer,
+                env=environment,
+                check=False,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn(
+                "Shell update.",
+                (consumer / ".claude/skills/ai-sdlc-flow/SKILL.md").read_text(encoding="utf-8"),
+            )
 
     def test_bootstraps_reject_credential_bearing_remote_without_echo(self) -> None:
         if sys.version_info < (3, 10):

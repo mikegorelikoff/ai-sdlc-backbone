@@ -23,7 +23,7 @@ artifact_metadata:
   status: "approved"
   owner: "Harness Maintainers"
   created_at: "2026-08-04"
-  updated_at: "2026-08-04"
+  updated_at: "2026-08-05"
   trace_ids: []
   related_artifacts:
     - "specs/021-universal-agent-installer/decision-log.md"
@@ -48,9 +48,13 @@ artifact_metadata:
 ## Implementation
 - Use branch `feature/021-universal-agent-installer` from refreshed `main`.
 - Implement the portable bootstrap, dynamic profile, path guards, record validation, and OS locking without changing existing named-profile targets.
+- Use follow-up branch `feature/021-universal-agent-update-command` from the
+  validated installer commit for the pre-release update interface.
+- Recover update profile and selection only from verified installed provenance.
 
 ## Testing
 - Add focused unit/integration tests for named and configurable profiles, unsafe targets, modules, bootstraps, and portable locking.
+- Add Python and shell install-to-update coverage plus local-drift refusal.
 - Run native OS matrix plus repository SDD/docs gates before release.
 
 ## Documentation

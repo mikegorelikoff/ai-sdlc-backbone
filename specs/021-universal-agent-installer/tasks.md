@@ -23,7 +23,7 @@ artifact_metadata:
   status: "validated"
   owner: "Harness Maintainers"
   created_at: "2026-08-04"
-  updated_at: "2026-08-04"
+  updated_at: "2026-08-05"
   trace_ids:
     - "AC-001"
     - "AC-002"
@@ -33,6 +33,7 @@ artifact_metadata:
     - "AC-006"
     - "AC-007"
     - "AC-008"
+    - "AC-009"
     - "NFR-002"
     - "NFR-006"
     - "TC-001"
@@ -42,6 +43,7 @@ artifact_metadata:
     - "TC-005"
     - "TC-006"
     - "TC-007"
+    - "TC-008"
   related_artifacts:
     - "specs/021-universal-agent-installer/branch-plan.md"
     - "specs/021-universal-agent-installer/decision-log.md"
@@ -73,6 +75,9 @@ Refs: FR-001, FR-003, FR-007, AC-001, AC-006
 - [x] T003. Extend installed-record validation for dynamic targets.
 Output: named and generic record validation.
 Refs: FR-006, NFR-002, AC-003
+- [x] T008. Add record-driven update to Python and shell entrypoints.
+Output: profile-, target-, selection-, and module-preserving portable update.
+Refs: FR-010, AC-009
 
 ## Testing
 - [x] T004. Add profile, unsafe-path, lock, bootstrap, module, and regression tests.
@@ -81,6 +86,9 @@ Refs: FR-009, TC-001, TC-002, TC-003, TC-004, TC-005
 - [x] T005. Add native OS CI and run SDD/docs/repository gates.
 Output: platform and release evidence.
 Refs: FR-009, TC-006, AC-007
+- [x] T009. Add install-to-update and local-drift refusal tests.
+Output: Python and POSIX update regression coverage in the native OS matrix.
+Refs: FR-010, TC-008, AC-009
 
 ## Documentation
 - [x] T006. Update canonical install/support/update/troubleshooting pages, entry docs, changelog, and project decisions.

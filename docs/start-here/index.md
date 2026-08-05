@@ -29,6 +29,8 @@ curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.4
 Keep verification as the next separate step in the [install guide](../how-to/install.md).
 That guide also provides native Windows, Claude Code, and configurable
 Agent Skills-compatible host commands.
+For an existing installation, use the [one-command safe update](../how-to/update.md)
+instead of selecting its profile and target again.
 
 ## Choose a next path
 

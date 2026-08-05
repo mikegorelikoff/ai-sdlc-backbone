@@ -23,7 +23,7 @@ artifact_metadata:
   status: "review"
   owner: "Harness Maintainers"
   created_at: "2026-08-04"
-  updated_at: "2026-08-04"
+  updated_at: "2026-08-05"
   trace_ids:
     - "AC-001"
     - "AC-002"
@@ -33,6 +33,7 @@ artifact_metadata:
     - "AC-006"
     - "AC-007"
     - "AC-008"
+    - "AC-009"
     - "TC-001"
     - "TC-002"
     - "TC-003"
@@ -40,6 +41,7 @@ artifact_metadata:
     - "TC-005"
     - "TC-006"
     - "TC-007"
+    - "TC-008"
   related_artifacts:
     - "specs/021-universal-agent-installer/decision-log.md"
     - "specs/021-universal-agent-installer/design.md"
@@ -68,10 +70,12 @@ Installer CLI, source resolution, locking, target safety, record validation, mod
 - TC-005 / AC-006: context-cache module via Python/custom profile.
 - TC-006 / AC-007: installer, docs, SDD, and OS workflow gates.
 - TC-007 / AC-008: portable commands and compatibility caveat in canonical docs.
+- TC-008 / AC-009: Python and shell update recover custom/named profiles and
+  selections; managed local drift fails without overwrite.
 
 ## Layer Mapping
 - Unit: normalization, resolution, locks, validator.
-- Integration: Python and shell bootstrap fixtures.
+- Integration: Python and shell install-to-update bootstrap fixtures.
 - System: installed-runtime smoke.
 - Documentation: validators, tests, strict build, rendered checks.
 

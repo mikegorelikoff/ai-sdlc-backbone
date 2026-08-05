@@ -46,6 +46,9 @@ Agent Skills-compatible host use the cross-platform Python bootstrap and
 deterministic installer writes only the project-scoped skill inventory,
 portable TOON install record, and content-addressed TOON lock. Review remote
 scripts before running them.
+Existing installations can use the profile-preserving one-command
+[update flow](docs/how-to/update.md); it verifies recorded digests before any
+replacement.
 
 ## Expected first result
 
@@ -128,7 +131,9 @@ vulnerabilities privately through [SECURITY.md](SECURITY.md).
 The current stable release is `v4.4.0` with Harness API `4.1.0`. It adds a
 cross-platform Python bootstrap, portable Windows/POSIX mutation locking, and
 a safe configurable project skills root for Agent Skills-compatible hosts,
-while preserving the named Codex and Claude Code profiles. Review
+while preserving the named Codex and Claude Code profiles. The same portable
+entrypoints now expose `update`, which recovers the recorded target and module
+selection and refuses local digest drift. Review
 [compatibility](docs/reference/compatibility.md), [limitations](docs/explanation/maturity-limitations.md),
 and the [4.0 migration guide](docs/how-to/migrate-4.0.md) before adoption.
 

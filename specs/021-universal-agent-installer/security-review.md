@@ -23,7 +23,7 @@ artifact_metadata:
   status: "validated"
   owner: "Harness Maintainers"
   created_at: "2026-08-04"
-  updated_at: "2026-08-04"
+  updated_at: "2026-08-05"
   trace_ids: []
   related_artifacts:
     - "specs/021-universal-agent-installer/branch-plan.md"
@@ -56,6 +56,9 @@ artifact_metadata:
 ## Authn/Authz
 - The installer has no application identity or network authorization model; filesystem authority is the operating-system user running it and Git transport authentication remains external.
 - Named profiles have fixed destinations. The configurable profile requires an explicit project-relative root, and replacing divergent managed content requires the separate reviewed-replacement signal.
+- The public update action derives its write target and selection only from the
+  existing record after its record, lock, inventory, paths, and current content
+  digests agree. CLI input cannot redirect an update to another root.
 - Assumption: repository membership, branch protection, and credential policy are enforced by the host project and Git provider, not by the package installer.
 
 ## Input Validation
@@ -79,12 +82,14 @@ artifact_metadata:
 - Case-variant `.GIT` or `.AI-SDLC` overlap is rejected on case-insensitive platforms.
 - A symlinked target ancestor cannot redirect writes outside the repository.
 - Concurrent installer mutation fails on the repository-owned lock; divergent existing managed content requires explicit review and replacement.
+- Tampered update metadata, missing installed content, or any managed digest
+  drift fails before replacement; the updater does not expose a drift-bypass flag.
 - A credential embedded in an HTTP-family remote cannot reach Git or diagnostic output.
 - Residual risk: a separate local process with the same OS permissions can race filesystem mutations outside the installer lock; this is within the trusted local-user boundary.
 
 ## Security Validation
 - Findings: none open after the two hardening changes recorded in Input Validation.
-- Automated coverage: unsafe root matrix, case-variant protected roots, linked ancestors, Windows lock adapter, collision/rollback, clean immutable source, credential URL non-echo, dynamic record validation, and named-profile regressions.
-- Focused result: 20 native installer tests pass under Python 3.11; shell syntax validation passes.
+- Automated coverage: unsafe root matrix, case-variant protected roots, linked ancestors, Windows lock adapter, collision/rollback, clean immutable source, credential URL non-echo, dynamic record validation, install-to-update profile recovery, local-drift refusal, and named-profile regressions.
+- Focused result: 23 native installer tests pass under Python 3.11; shell syntax validation passes.
 - Release gate: GitHub Actions must pass the portable installer matrix on Ubuntu, macOS, and Windows before tag publication.
 - Residual validation gap: local execution cannot reproduce native Windows filesystem and locking semantics; the remote Windows job is the release authority for that surface.

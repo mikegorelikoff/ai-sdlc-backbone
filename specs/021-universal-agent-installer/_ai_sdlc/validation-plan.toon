@@ -1,10 +1,10 @@
 commands[14]:
   - argv[9]: python3,"-m",unittest,discover,"-s",skills/ai-sdlc-shared-runtime/tests,"-p",test_native_install.py,"-v"
     id: portable-installer-tests
-    trace_ids[5]: AC-001,AC-002,AC-004,AC-005,TC-004
+    trace_ids[7]: AC-001,AC-002,AC-004,AC-005,AC-009,TC-004,TC-008
   - argv[9]: python3,"-m",unittest,discover,"-s",skills/ai-sdlc-shared-runtime/tests,"-p",test*.py,"-v"
     id: shared-runtime-regression
-    trace_ids[3]: AC-001,AC-006,TC-001
+    trace_ids[5]: AC-001,AC-006,AC-009,TC-001,TC-008
   - argv[10]: python3,skills/ai-sdlc-shared-runtime/tests/install_smoke.py,"--mode",native,"--source",.,"--profile",agent-project,"--skills-root",.agent/skills
     id: custom-profile-installed-smoke
     trace_ids[4]: AC-002,AC-003,AC-006,TC-002
@@ -16,7 +16,7 @@ commands[14]:
     trace_ids[2]: AC-001,TC-001
   - argv[3]: python3,docs/scripts/build_catalog.py,"--check"
     id: documentation-catalog
-    trace_ids[2]: AC-008,TC-007
+    trace_ids[4]: AC-008,AC-009,TC-007,TC-008
   - argv[2]: python3,docs/scripts/validate_docs.py
     id: documentation-contract
     trace_ids[2]: AC-008,TC-007

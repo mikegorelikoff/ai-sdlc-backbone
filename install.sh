@@ -5,6 +5,7 @@ set -eu
 usage() {
   printf '%s\n' \
     "Usage: install.sh PROFILE [--skills-root PATH] [--module MODULE]" \
+    "       install.sh update" \
     "" \
     "Install every AI SDLC Harness skill into the current project with TOON-only provenance." \
     "" \
@@ -13,6 +14,7 @@ usage() {
     "  ./install.sh claude-code-project" \
     "  ./install.sh agent-project --skills-root .agent/skills" \
     "  ./install.sh codex-project --module context-cache" \
+    "  ./install.sh update" \
     "  curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.4.0/install.sh | sh -s -- codex-project" \
     "" \
     "Optional environment overrides:" \
@@ -40,8 +42,9 @@ ai_sdlc_profile=$1
 shift
 case "$ai_sdlc_profile" in
   agent-project|codex-project|claude-code-project) ;;
+  update) ;;
   *)
-    printf '%s\n' "Unknown profile; expected agent-project, codex-project, or claude-code-project." >&2
+    printf '%s\n' "Unknown command; expected update, agent-project, codex-project, or claude-code-project." >&2
     exit 65
     ;;
 esac
@@ -85,6 +88,10 @@ if [ "$ai_sdlc_profile" = "agent-project" ] && [ -z "$ai_sdlc_skills_root" ]; th
 fi
 if [ "$ai_sdlc_profile" != "agent-project" ] && [ -n "$ai_sdlc_skills_root" ]; then
   printf '%s\n' "--skills-root is supported only with agent-project." >&2
+  exit 64
+fi
+if [ "$ai_sdlc_profile" = "update" ] && { [ -n "$ai_sdlc_skills_root" ] || [ -n "$ai_sdlc_modules" ]; }; then
+  printf '%s\n' "update recovers --skills-root and modules from the existing install record." >&2
   exit 64
 fi
 
@@ -224,16 +231,24 @@ else
   fi
 fi
 
-printf 'Installing AI SDLC Harness profile "%s" from revision "%s"...\n' \
-  "$ai_sdlc_profile" "$ai_sdlc_revision"
+if [ "$ai_sdlc_profile" = "update" ]; then
+  printf 'Updating AI SDLC Harness from revision "%s"...\n' "$ai_sdlc_revision"
+else
+  printf 'Installing AI SDLC Harness profile "%s" from revision "%s"...\n' \
+    "$ai_sdlc_profile" "$ai_sdlc_revision"
+fi
 
 set -- \
   "$ai_sdlc_source/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install.py" \
   --source "$ai_sdlc_source" \
   --root "$ai_sdlc_target" \
-  --revision "$ai_sdlc_revision" \
-  --profile "$ai_sdlc_profile"
-if [ "${AI_SDLC_INSTALL_REPLACE:-0}" = "1" ]; then
+  --revision "$ai_sdlc_revision"
+if [ "$ai_sdlc_profile" = "update" ]; then
+  set -- "$@" --update-existing
+else
+  set -- "$@" --profile "$ai_sdlc_profile"
+fi
+if [ "$ai_sdlc_profile" != "update" ] && [ "${AI_SDLC_INSTALL_REPLACE:-0}" = "1" ]; then
   set -- "$@" --replace-reviewed
 fi
 if [ -n "$ai_sdlc_skills_root" ]; then
