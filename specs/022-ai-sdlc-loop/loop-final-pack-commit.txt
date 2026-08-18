@@ -1,0 +1,28 @@
+feat: complete Loop delivery control pack
+
+Business context
+
+Close the remaining pre-Specify and pre-release ownership gaps while keeping
+AI SDLC Loop independent from the full Harness refinement cascade.
+
+Implementation details
+
+- add Harness-v2-compatible requirements-review and release-readiness skills
+- emit typed fail-closed TOON review artifacts through a shared safe writer
+- install and verify the exact seventeen-member package
+- configure shared helper output as UTF-8 for Windows portability
+- exercise helper contracts under simulated cp1252 output
+- document compact lifecycle v1 versus delivery-control v2 compatibility
+- namespace every installed skill as ai-sdlc-loop-{slug}
+- expose ai-sdlc-loop-orchestrate as the root router
+
+Validation
+
+- 37/37 Python unit tests passed, including exact namespace inventory
+- all 17 skill directories passed quick validation
+- Python compile, POSIX shell syntax, and git diff checks passed
+- previous hosted Linux and macOS passed; Windows defect has local regression
+
+Spec: specs/022-ai-sdlc-loop
+Task: T002, T003, T005, T006, T007
+Validation: specs/022-ai-sdlc-loop/validation.md

@@ -1,0 +1,37 @@
+feature: 022-ai-sdlc-loop
+workspace: refinement
+current_stage: delivery_handoff
+active_skill:
+flow_mode: full
+updated_at: 2026-08-17
+decision_log: specs-refiniment/022-ai-sdlc-loop/decision-log.md
+
+stages[26]{id,skill,status,workspace,artifacts,decision_ref}:
+  discovery,ai-sdlc-working-backwards-discovery,done,refinement,specs-refiniment/022-ai-sdlc-loop/discovery.md,DEC-001
+  prfaq,ai-sdlc-prfaq-package-synthesis,done,refinement,specs-refiniment/022-ai-sdlc-loop/prfaq.md,DEC-002
+  delivery_package_gap_review,ai-sdlc-delivery-package-gap-review,done,refinement,specs-refiniment/022-ai-sdlc-loop/delivery-gap-review.md,DEC-002
+  requirements_readiness,ai-sdlc-requirements-readiness-review,done,refinement,specs-refiniment/022-ai-sdlc-loop/requirements-readiness.md,DEC-002
+  goal_epic_mapping,ai-sdlc-goal-capability-and-epic-mapping,done,refinement,specs-refiniment/022-ai-sdlc-loop/goal-capability-map.md,DEC-002
+  backlog_gap_review,ai-sdlc-backlog-requirements-gap-review,done,refinement,specs-refiniment/022-ai-sdlc-loop/backlog-gap-review.md,DEC-002
+  backlog_decomposition,ai-sdlc-backlog-decomposition-and-task-planning,done,refinement,specs-refiniment/022-ai-sdlc-loop/backlog.md,DEC-002
+  story_decomposition,ai-sdlc-user-story-decomposition,done,refinement,specs-refiniment/022-ai-sdlc-loop/user-stories.md,DEC-002
+  release_slicing,ai-sdlc-release-slicing-and-backlog-readiness-review,done,refinement,specs-refiniment/022-ai-sdlc-loop/release-slicing.md,DEC-002
+  ba_context,ai-sdlc-ba,done,refinement,specs-refiniment/022-ai-sdlc-loop/business-context.md,DEC-002
+  delivery_spec,ai-sdlc-delivery-spec-synthesis,done,refinement,specs-refiniment/022-ai-sdlc-loop/delivery-spec.md,DEC-005
+  qa_plan,ai-sdlc-qa,done,refinement,specs-refiniment/022-ai-sdlc-loop/qa.md,DEC-004
+  qa_gap_review,ai-sdlc-qa-requirements-gap-review,done,refinement,specs-refiniment/022-ai-sdlc-loop/qa-gap-review.md,DEC-004
+  test_strategy,ai-sdlc-test-scope-and-strategy-design,done,refinement,specs-refiniment/022-ai-sdlc-loop/qa-strategy.md,DEC-004
+  test_cases,ai-sdlc-test-cases,done,refinement,specs-refiniment/022-ai-sdlc-loop/test-cases.md,DEC-004
+  test_suite,ai-sdlc-test-case-and-suite-synthesis,done,refinement,specs-refiniment/022-ai-sdlc-loop/test-suite.md,DEC-004
+  qa_traceability,ai-sdlc-qa-traceability-and-readiness-review,done,refinement,specs-refiniment/022-ai-sdlc-loop/qa-readiness.md,DEC-004
+  delivery_handoff,ai-sdlc-delivery-handoff-review,done,refinement,specs-refiniment/022-ai-sdlc-loop/delivery-handoff-review.md,DEC-001
+  branching,ai-sdlc-branching,not_started,implementation,branch-plan.md,
+  sdd,ai-sdlc-sdd,not_started,implementation,specs/022-ai-sdlc-loop,
+  validation,ai-sdlc-validation,not_started,implementation,validation.md,
+  code_review,ai-sdlc-code-review,not_started,implementation,code-review.md,
+  security_testing,ai-sdlc-security-testing,not_started,implementation,security-review.md,
+  commit_prep,ai-sdlc-commit-prep,not_started,implementation,commit-readiness.md,
+  conventional_commit,ai-sdlc-conventional-commit,not_started,implementation,commit-message.md,
+  approvals_sandbox,ai-sdlc-approvals-sandbox,not_applicable,utility,approval-plan.md,
+
+skips[0]{stage,reason,decision_ref,flow_mode}:

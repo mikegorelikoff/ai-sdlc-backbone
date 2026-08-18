@@ -1,0 +1,22 @@
+fix: ignore bytecode in namespace scan
+
+Business context
+
+Keep the namespace regression portable when test execution creates Python
+bytecode inside distributed skill directories.
+
+Implementation details
+
+- restrict the namespace content scan to supported text source formats
+- continue validating every installed directory, frontmatter name, and manifest
+- exclude generated __pycache__ bytecode from UTF-8 source inspection
+
+Validation
+
+- 37/37 Python unit tests passed locally
+- Python compile, POSIX shell syntax, and git diff checks passed
+- hosted run 32126548053 reproduced the bytecode decoding failure on all OSes
+
+Spec: specs/022-ai-sdlc-loop
+Task: T005, T006, T007
+Validation: specs/022-ai-sdlc-loop/validation.md

@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Added the docs-enabled AI SDLC Loop commit immediately after `v0.1.1` as the
+  pinned `products/ai-sdlc-loop` submodule and documented it as the smaller
+  approval-gated member of the AI SDLC product family.
+
 ## v4.4.0 - 2026-08-05
 
 ### Added

@@ -1,0 +1,29 @@
+feat: integrate AI SDLC Loop
+
+Business context
+
+Expose the smaller approval-gated delivery product as an immutable member of
+the AI SDLC product family without expanding the Harness installer surface.
+
+Implementation details
+
+- pin the docs-enabled AI SDLC Loop commit as products/ai-sdlc-loop
+- document the independent product boundary in README, Home, and Project
+- link the live six-section Loop MkDocs site from product-family surfaces
+- record the additive gitlink decision and release entry
+- retain public navigation, canonical paths, and generated catalog contracts
+- include the complete full-flow SDD and release evidence package
+
+Validation
+
+- Loop hosted Linux, macOS, and Windows CI passed for the pinned commit
+- Loop Docs build/deploy passed and the HTTPS Pages site is live
+- all 38 Loop tests and the strict Loop MkDocs build passed
+- the published installer installed and verified all 17 Loop skills
+- Harness docs validation and all 47 documentation tests passed
+- strict site build and 5,559-target rendered validation passed
+- SDD gates, catalog check, and git diff checks passed
+
+Spec: specs/022-ai-sdlc-loop
+Task: T004, T006, T007, T008, T009, T010
+Validation: specs/022-ai-sdlc-loop/validation.md

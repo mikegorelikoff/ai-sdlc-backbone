@@ -1,0 +1,3 @@
+[submodule "products/ai-sdlc-loop"]
+	path = products/ai-sdlc-loop
+	url = https://github.com/mikegorelikoff/ai-sdlc-loop.git

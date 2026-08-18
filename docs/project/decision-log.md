@@ -7,6 +7,25 @@ description: Record the AI SDLC Harness documentation architecture, URL, governa
 
 Execution date: 2026-07-27
 
+## AI SDLC Loop product boundary
+
+On 2026-08-18, Harness added the public
+[AI SDLC Loop](https://github.com/mikegorelikoff/ai-sdlc-loop) repository as the
+git submodule `products/ai-sdlc-loop`, pinned to the docs-enabled commit
+`e94902883389d1271d080b605e5b13beb09990f6` immediately after the `v0.1.1`
+runtime release.
+
+Loop is the smaller independently installed delivery member of the AI SDLC
+product family: 16 working `ai-sdlc-loop-{slug}` skills plus one shared runtime,
+TOON-only durable workflow artifacts, separate approval gates before code
+mutation and commit, and its own six-section MkDocs site. The gitlink is an
+immutable compatibility, documentation, and promotion fixture; it does not
+merge Loop installation or lifecycle ownership into the Harness installer.
+
+This additive path introduces no public documentation move or redirect. The
+existing Home, Start here, How it works, Guides, Reference, and Project
+navigation remains unchanged.
+
 ## Optional local context cache
 
 On 2026-08-03, the documentation added an opt-in local context-cache path for

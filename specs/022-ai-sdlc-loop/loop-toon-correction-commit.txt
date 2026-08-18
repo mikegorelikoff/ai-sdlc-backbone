@@ -1,0 +1,61 @@
+fix: use staged skills and TOON contracts
+
+Business context
+
+Correct the initial Loop release so its support boundary matches the AI SDLC
+product family: a small composable skill graph with TOON machine artifacts.
+
+Implementation details
+
+- split lifecycle ownership across the ai-sdlc router and Specify, Implement,
+  Verify, and Commit skills
+- add approvals, branching, test-case, validation, code-review, security,
+  commit-prep, and Conventional Commit skills as self-contained owners
+- add a compact QA owner with typed acceptance and TOON-native signoff
+- add canonical TOON step manifests and bounded step documents to every
+  working skill
+- move deterministic gates into a shared runtime with a vendored canonical
+  TOON codec
+- install and verify the exact fifteen-member package transactionally for every
+  supported project profile
+- reject linked package content, malformed TOON, and non-TOON promotion names
+- update public guidance and regression coverage for the corrected contract
+
+Change flow
+
+Route request -> Specify TOON -> approve Implement -> bounded mutation ->
+Verify TOON -> approve Commit -> optional Harness-compatible TOON promotion.
+
+Mermaid diagram
+
+```mermaid
+flowchart LR
+  R[ai-sdlc router] --> S[ai-sdlc-specify]
+  S --> I[ai-sdlc-implement]
+  I --> V[ai-sdlc-verify]
+  V --> C[ai-sdlc-commit]
+  S --> X[shared TOON runtime]
+  I --> X
+  V --> X
+  C --> X
+```
+
+How to test
+
+- run the complete Python unit-test suite
+- compile installer, skills, runtime, codec, and tests with an isolated cache
+- validate POSIX bootstrap syntax
+- run Git whitespace validation
+
+Validation
+
+- 32/32 Python unit tests passed
+- canonical and malformed TOON contracts passed
+- all three installer profiles passed with the exact fifteen-member inventory
+- Python compile validation and `sh -n install.sh` passed
+- `git diff --check` passed
+- security and code review have no open finding
+
+Spec: specs/022-ai-sdlc-loop
+Task: T001, T002, T003, T005
+Validation: specs/022-ai-sdlc-loop/validation.md

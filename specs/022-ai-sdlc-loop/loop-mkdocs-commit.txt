@@ -1,0 +1,25 @@
+docs: add Loop product site
+
+Business context
+
+Give the independently released AI SDLC Loop product a maintained public
+documentation surface beyond its repository README.
+
+Implementation details
+
+- add a six-section MkDocs Material site and restrained product styling
+- document installation, lifecycle authority, delivery controls, and scope
+- keep Reference aligned with the exact 17-skill source inventory
+- add strict docs CI and GitHub Pages deployment
+- validate navigation, source inventory, and primary install command parity
+
+Validation
+
+- 38/38 Python unit tests passed
+- all 17 skill directories passed quick validation
+- MkDocs build --strict passed
+- Python compile, POSIX shell syntax, and git diff checks passed
+
+Spec: specs/022-ai-sdlc-loop
+Task: T009, T010
+Validation: specs/022-ai-sdlc-loop/validation.md

@@ -31,7 +31,9 @@ understand why the documentation and product are structured this way.
 
 ## AI SDLC product family
 
-AI SDLC Harness structures delivery. Context Guard controls avoidable context
-growth and retains local evidence. AI SDLC Metrics measures local adoption from
-available evidence. They are complementary, independently installed products;
-this repository does not claim built-in technical integration.
+AI SDLC Harness structures delivery. [AI SDLC Loop](https://mikegorelikoff.github.io/ai-sdlc-loop/)
+provides a smaller approval-gated delivery cycle. Context Guard controls
+avoidable context growth and retains local evidence. AI SDLC Metrics measures
+local adoption from available evidence. They are complementary, independently
+installed products. Harness pins Loop for compatibility and promotion testing;
+no built-in technical integration with Context Guard or Metrics is implied.

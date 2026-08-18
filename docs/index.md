@@ -158,6 +158,9 @@ your environment. Human review remains required. See
 
 - <span class="status-badge">Current product</span> **AI SDLC Harness** —
   structure delivery from request through evidence and handoff.
+- [AI SDLC Loop](https://mikegorelikoff.github.io/ai-sdlc-loop/) — run a
+  smaller approval-gated delivery cycle through 16 focused skills and one
+  shared runtime.
 - [Context Guard](https://github.com/mikegorelikoff/ai-sdlc-context) — control
   avoidable context growth and retain full evidence locally.
 - [AI SDLC Metrics](https://github.com/mikegorelikoff/ai-sdlc-metrics) —
@@ -165,5 +168,6 @@ your environment. Human review remains required. See
 
 </div>
 
-These products are complementary and independently installed. No built-in
-technical integration is implied.
+These products are complementary and independently installed. Harness pins
+Loop for immutable compatibility and promotion testing; no built-in technical
+integration with Context Guard or AI SDLC Metrics is implied.

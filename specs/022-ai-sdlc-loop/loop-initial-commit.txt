@@ -1,0 +1,53 @@
+feat: introduce AI SDLC Loop
+
+Business context
+
+Provide a small, separately supportable entry point into the AI SDLC product
+family while keeping generated evidence compatible with AI SDLC Harness.
+
+Implementation details
+
+- add one `ai-sdlc` skill for the Specify, Implement, and Verify loop
+- require fingerprint-bound approval before code mutation and a separate
+  fingerprint-bound approval before commit
+- add deterministic local state, bounded verification evidence, status, and
+  Harness-compatible promotion artifacts
+- add a transactional one-command installer for Codex, Claude Code, and custom
+  agent project skill roots
+- add portable tests, repository trust files, and an operating-system CI matrix
+
+Change flow
+
+Install one skill -> specify the change -> approve implementation -> verify the
+result -> approve commit -> optionally promote evidence to AI SDLC Harness.
+
+Mermaid diagram
+
+```mermaid
+flowchart LR
+  I[Install] --> S[Specify]
+  S --> A[Approve implementation]
+  A --> M[Implement]
+  M --> V[Verify]
+  V --> C[Approve commit]
+  V --> P[Promote evidence]
+```
+
+How to test
+
+- run the complete Python unit-test suite
+- compile the installer, runtime, and test modules with an isolated cache
+- validate POSIX shell syntax for the bootstrap
+- run Git whitespace validation
+
+Validation
+
+- 19/19 Python unit tests passed
+- Python compile validation passed
+- `sh -n install.sh` passed
+- `git diff --check` passed
+- security review and code review have no open finding
+
+Spec: specs/022-ai-sdlc-loop
+Task: T001, T002, T003, T005
+Validation: specs/022-ai-sdlc-loop/validation.md

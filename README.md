@@ -109,13 +109,17 @@ delivery, lower cost, or better quality in your environment.
 **Structure delivery. Control context. Measure adoption.**
 
 - **AI SDLC Harness — current:** structures AI-assisted software delivery.
+- [AI SDLC Loop](https://mikegorelikoff.github.io/ai-sdlc-loop/) provides a
+  smaller approval-gated delivery cycle with 16 focused skills and one shared
+  runtime, pinned here as `products/ai-sdlc-loop`.
 - [Context Guard](https://github.com/mikegorelikoff/ai-sdlc-context) controls
   avoidable context growth while retaining full local evidence.
 - [AI SDLC Metrics](https://github.com/mikegorelikoff/ai-sdlc-metrics)
   measures local Codex CLI and Claude Code adoption from available evidence.
 
-The products are complementary and independently installed. This repository
-does not claim a built-in technical integration with the other two.
+The products are complementary and independently installed. Harness pins Loop
+for immutable compatibility and promotion testing; no built-in technical
+integration with Context Guard or AI SDLC Metrics is implied.
 
 ## Security and privacy
 

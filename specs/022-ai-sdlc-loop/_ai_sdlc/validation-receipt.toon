@@ -1,0 +1,82 @@
+commands[7]:
+  - argv[6]: python3,skills/ai-sdlc-sdd/scripts/check_refinement_context.py,specs/022-ai-sdlc-loop,"--feature",022-ai-sdlc-loop,"--full-flow"
+    duration_ms: 76
+    exit_code: 0
+    id: refinement-context
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 115
+    stdout_sha256: b038c95420b341addba1a4b50382ced77fd9798124371e5ee28dc4ef9e7a34a3
+    trace_ids[2]: AC-007,TC-023
+  - argv[4]: python3,skills/ai-sdlc-sdd/scripts/check_clarify.py,specs/022-ai-sdlc-loop,"--full-flow"
+    duration_ms: 72
+    exit_code: 0
+    id: clarify-gate
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 98
+    stdout_sha256: aea17223446be7673407076fc7f134a72ca375adaa035160699b658ce75ff0fe
+    trace_ids[2]: AC-007,TC-023
+  - argv[4]: python3,skills/ai-sdlc-sdd/scripts/check_checklist.py,specs/022-ai-sdlc-loop,"--full-flow"
+    duration_ms: 69
+    exit_code: 0
+    id: checklist-gate
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 100
+    stdout_sha256: 8aea08ce560cd7415f56b85c2e22bf2b40f9b7aa125ac2439ccd8ed63edc1a1f
+    trace_ids[2]: AC-007,TC-023
+  - argv[7]: python3,skills/ai-sdlc-sdd/scripts/plan_links.py,specs/022-ai-sdlc-loop,"--check","--feature",022-ai-sdlc-loop,"--full-flow"
+    duration_ms: 74
+    exit_code: 0
+    id: plan-links
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 203
+    stdout_sha256: d67fc7dc292bf737b58fe45a926aa2efb282fa35ac871a442d9ef290c7b5b732
+    trace_ids[2]: AC-007,TC-023
+  - argv[4]: python3,skills/ai-sdlc-sdd/scripts/analyze_spec.py,specs/022-ai-sdlc-loop,"--full-flow"
+    duration_ms: 73
+    exit_code: 0
+    id: analyze-spec
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 98
+    stdout_sha256: 86d155f36818f841fb0d2fd1539e22b239cd01621b39c4f765dd5f2a4823c65e
+    trace_ids[2]: AC-007,TC-023
+  - argv[4]: python3,skills/ai-sdlc-sdd/scripts/validate_spec.py,specs/022-ai-sdlc-loop,"--full-flow"
+    duration_ms: 72
+    exit_code: 0
+    id: validate-spec
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 42
+    stdout_sha256: a34c5d40b52e0870c62ac2f49bf4d33b054d5263e3976a42ea5dc7429157aa05
+    trace_ids[2]: AC-007,TC-023
+  - argv[3]: git,diff,"--check"
+    duration_ms: 39
+    exit_code: 0
+    id: diff-hygiene
+    output_limited: false
+    stderr_bytes: 0
+    stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    stdout_bytes: 0
+    stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    trace_ids[2]: AC-007,TC-023
+environment:
+  platform: macOS-26.3.1-arm64-arm-64bit
+  python: 3.9.6
+evidence_trust: local-structural-not-authenticated
+executed_at: "2026-08-18T11:34:58.719944Z"
+plan_path: specs/022-ai-sdlc-loop/_ai_sdlc/validation-plan.toon
+plan_sha256: c3382a3d6731db3cd91138152be9442270ed044a3631b59a6aae67ca1dc8c216
+receipt_fingerprint: 17ca50b2776830b5d99ee6c4dfd7b3b8f6544a6bc79cb297972cb902425eb913
+revision: c4a5dbb484038589d66f2a70bc19657402fa1a1c
+schema: ai-sdlc-validation-receipt/v1
+workspace_fingerprint: 9a8ea6797ef5fc32e364b34921a670b4938c5e32f9cb83ba9e75ac7ecdefa07d
