@@ -61,14 +61,21 @@ async function promptSecret() {
 async function download(url, destination) {
   const response = await fetch(url, { redirect: "error", signal: AbortSignal.timeout(60000) });
   if (!response.ok || !response.body) throw new Error("Installation aborted: artifact download failed.");
+  const declaredSize = Number(response.headers.get("content-length") || "0");
+  if (!Number.isFinite(declaredSize) || declaredSize < 0 || declaredSize > 100 * 1024 * 1024) throw new Error("Installation aborted: artifact exceeds size limit.");
   const stream = fs.createWriteStream(destination, { flags: "wx", mode: 0o600 });
-  let size = 0;
-  for await (const chunk of response.body) {
-    size += chunk.length;
-    if (size > 100 * 1024 * 1024) throw new Error("Installation aborted: artifact exceeds size limit.");
-    stream.write(chunk);
+  try {
+    let size = 0;
+    for await (const chunk of response.body) {
+      size += chunk.length;
+      if (size > 100 * 1024 * 1024) throw new Error("Installation aborted: artifact exceeds size limit.");
+      if (!stream.write(chunk)) await new Promise((resolve) => stream.once("drain", resolve));
+    }
+    await new Promise((resolve, reject) => stream.end((error) => error ? reject(error) : resolve()));
+  } catch (error) {
+    stream.destroy();
+    throw error;
   }
-  await new Promise((resolve, reject) => stream.end((error) => error ? reject(error) : resolve()));
 }
 
 async function extract(archive, destination) {
