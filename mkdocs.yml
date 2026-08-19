@@ -1,89 +1,37 @@
 site_name: AI SDLC Harness
-site_description: Turn a software request into traceable delivery artifacts, implementation, evidence, and handoff.
+site_description: Public documentation for the licensed AI SDLC Harness product.
 site_url: https://mikegorelikoff.github.io/ai-sdlc-harness/
 repo_url: https://github.com/mikegorelikoff/ai-sdlc-harness
 repo_name: mikegorelikoff/ai-sdlc-harness
 edit_uri: edit/main/docs/
 docs_dir: docs
 site_dir: site
-use_directory_urls: true
 strict: true
 
 theme:
   name: material
   language: en
-  icon:
-    logo: material/source-branch
-    repo: fontawesome/brands/github
-  palette:
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: black
-      accent: cyan
-      toggle:
-        icon: material/weather-night
-        name: Switch to dark mode
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      primary: black
-      accent: cyan
-      toggle:
-        icon: material/weather-sunny
-        name: Switch to light mode
   features:
-    - navigation.instant
-    - navigation.instant.prefetch
-    - navigation.tracking
     - navigation.tabs
-    - navigation.tabs.sticky
     - navigation.sections
-    - navigation.indexes
-    - navigation.path
-    - navigation.prune
     - navigation.top
-    - navigation.footer
-    - toc.follow
     - content.code.copy
-    - content.code.annotate
-    - content.tabs.link
 
 plugins: []
 
 markdown_extensions:
   - admonition
   - attr_list
-  - md_in_html
   - tables
   - toc:
       permalink: true
-  - pymdownx.details
-  - pymdownx.highlight:
-      anchor_linenums: true
-      line_spans: __span
-      pygments_lang_class: true
-  - pymdownx.inlinehilite
-  - pymdownx.snippets
+  - pymdownx.highlight
   - pymdownx.superfences
-  - pymdownx.tabbed:
-      alternate_style: true
-  - pymdownx.tasklist:
-      custom_checkbox: true
 
 extra_css:
   - assets/stylesheets/ai-sdlc.css
 
 extra:
-  ai_sdlc_learning_pages:
-    - start.md
-    - learn/ai-foundations.md
-    - learn/prompt-engineering.md
-    - learn/context-and-verification.md
-    - learn/agents-tools-and-subagents.md
-    - learn/multi-role-review.md
-    - learn/ai-sdlc-and-sdd.md
-    - learn/harness-essentials.md
-    - learn/guided-practice.md
-    - learn/role-learning-paths.md
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/mikegorelikoff/ai-sdlc-harness
@@ -96,73 +44,36 @@ exclude_docs: |
   tests/
 
 not_in_nav: |
-  reference/skills/*.md
-  audits/**/*.md
-  learn/*.md
-  reference/release-*.md
-  about/maintainers/*.md
   adoption/*.md
   explanation/*.md
-  flows/*.md
-  foundations/*.md
   how-to/*.md
   maintainers/*.md
-  onboarding/*.md
   operations/*.md
   roles/*.md
   tutorials/*.md
+  roadmap.md
+  start.md
+  start-here/first-run.md
+  start-here/prerequisites.md
+  reference/compatibility.md
+  reference/skills-overview.md
+  reference/supported-environments.md
+  reference/versions.md
 
 nav:
   - Home: index.md
   - Start here:
       - Overview: start-here/index.md
-      - Prerequisites: start-here/prerequisites.md
-      - Install: how-to/install.md
-      - First run: start-here/first-run.md
-      - Troubleshooting: operations/troubleshooting.md
   - How it works:
       - Overview: how-it-works/index.md
-      - Delivery workflow: how-it-works/workflow.md
-      - Quick, full, and expert paths: how-to/choose-flow.md
-      - System model: explanation/system-model.md
-      - Artifact authority: explanation/artifact-authority.md
-      - Feature state: explanation/state-machine.md
-      - Human and agent responsibilities: foundations/responsibilities.md
-      - Governance and trust: operations/governance.md
   - Guides:
       - Overview: guides/index.md
-      - Ship a first feature: tutorials/first-feature.md
-      - Adopt an existing project: tutorials/existing-project.md
-      - Run the full lifecycle: tutorials/full-lifecycle.md
-      - How-to catalog: how-to/index.md
-      - Migrate to 4.0: how-to/migrate-4.0.md
-      - Learning path: start.md
-      - Role paths: roles/index.md
-      - Pilot and adoption: adoption/index.md
-      - Operations: operations/index.md
+      - Install the Harness: guides/install.md
   - Reference:
       - Overview: reference/index.md
-      - Skills overview: reference/skills-overview.md
-      - Skills by lifecycle: reference/skills-by-lifecycle.md
-      - Skills by role: reference/skills-by-role.md
-      - Searchable skill catalog: reference/skills.md
-      - Workflow map: reference/workflow-map.md
-      - Flow flags: reference/flow-flags.md
-      - Artifact routing: reference/artifact-routing.md
-      - Data contracts: reference/data-contracts.md
-      - Script catalog: reference/scripts.md
-      - Module catalog: reference/modules.md
-      - Directory layout: reference/directory-layout.md
-      - Validation commands: reference/validation.md
-      - Compatibility: reference/compatibility.md
-      - Supported environments: reference/supported-environments.md
-      - Supported versions: reference/versions.md
-      - Release 4.0.1: reference/release-4.0.md
+      - Licensing: reference/licensing.md
+      - Licensing API: reference/licensing-api.yaml
   - Project:
       - Overview: project/index.md
-      - Status and limitations: explanation/maturity-limitations.md
       - Security and privacy: project/security-privacy.md
-      - Roadmap: roadmap.md
-      - Maintain and contribute: maintainers/index.md
       - Documentation decisions: project/decision-log.md
-      - Audit archive: project/audits.md

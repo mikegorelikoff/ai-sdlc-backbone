@@ -1,22 +1,29 @@
 # Contributing
 
-The canonical contributor documentation is the public
-[Maintain and contribute](docs/maintainers/index.md) path.
+This public repository accepts changes to documentation, examples, community
+metadata, and the public installer. Product skills, runtime logic, internal
+templates, release packaging, and implementation tests belong in the private
+core repository.
 
-Use a source checkout, keep one bounded task in one commit, edit canonical
-sources rather than installed/generated mirrors, add focused positive and
-negative tests, regenerate catalogs, validate compatibility and documentation,
-and document migration, deprecation, and rollback where public contracts
-change.
+For documentation changes, preserve public paths, the top-level navigation
+order, the product-family block, and the guide template. Material changes must
+update `docs/project/decision-log.md` and `CHANGELOG.md`.
 
-Start with:
+Validate a contribution with:
 
-- [Extend skills and modules](docs/maintainers/extend.md)
-- [Prepare and release](docs/maintainers/release.md)
-- [Validation commands](docs/reference/validation.md)
+```bash
+python3 docs/scripts/build_catalog.py --check
+python3 docs/scripts/validate_docs.py
+python3 -m unittest discover -s docs/tests -v
+python3 -m unittest discover -s tests -v
+mkdocs build --strict
+python3 docs/scripts/validate_rendered.py site
+git diff --check
+```
 
-Documentation changes must also follow [AGENTS.md](AGENTS.md), preserve the six
-shared top-level navigation labels and product-family block, update the
-[documentation decision log](docs/project/decision-log.md) for material
-architecture changes, and run the documentation contract checks before
-review.
+Installer changes additionally require:
+
+```bash
+cd installer
+npm test
+```

@@ -1,40 +1,8 @@
----
-title: Reference
-description: Exact workflow, skill, module, path, flag, schema, and validation contracts.
----
-
 # Reference
 
-Reference pages state the contracts precisely. Use them while configuring automation, authoring skills, reviewing artifacts, or debugging a workflow.
+This section is the canonical source for exact public contracts. It documents
+the externally observable installer and licensing behavior without exposing
+private implementation.
 
-<div class="grid cards" markdown>
-
-- [**Skills by role**](skills-by-role.md) — QA, BA, PM, PO, Dev, VP, and Head of AI Practice task entry points and shared handoffs.
-- [**Skill catalog**](skills.md) — compact alphabetical inventory of every installed capability and its canonical guide.
-- [**Workflow map**](workflow-map.md) — lifecycle stages, entry points, and artifacts.
-- [**Script catalog**](scripts.md) — every helper and validation runner with a safe starting point and repository effect.
-- [**Module catalog**](modules.md) — optional capability groups and compatibility.
-- [**Artifact routing**](artifact-routing.md) — canonical paths by work type.
-- [**Flow flags**](flow-flags.md) — exact quick/full execution semantics.
-- [**Data contracts**](data-contracts.md) — machine-readable schemas and handoffs.
-- [**Validation commands**](validation.md) — deterministic repository checks.
-- [**Directory layout**](directory-layout.md) — source tree ownership.
-- [**Compatibility contract**](compatibility.md) — release and extension boundaries.
-- [**Supported versions**](versions.md) — release, API, migration, and support matrix.
-- [**Release 1.1 audit**](release-1.1.md) — task-to-commit and validation evidence.
-- [**Release 1.2 audit**](release-1.2.md) — guided onboarding closeout and release evidence.
-- [**Release 2.0 candidate**](release-2.0.md) — major-version scope, evidence, limitations, and rollback.
-- [**Release 3.0 candidate**](release-3.0.md) — role-guided flow, progressive disclosure, canonical runtime, OKF bundles, and migration evidence.
-- [**Release 4.0.1**](release-4.0.md) — executable skill DAGs, native deterministic installation, per-step context engineering, durable replay, canonical TOON, validation, and rollback.
-
-</div>
-
-The generated [coverage manifest](catalog-coverage.toon) closes the current
-44-skill and 112-script source inventories against their documentation. It is
-TOON because agents consume it for drift checks; the Markdown catalogs remain
-the human navigation surface.
-
-For rationale, use [Explanation](../explanation/index.md). For a bounded procedure,
-use [How-to guides](../how-to/index.md). For ownership, governance, incidents,
-and recovery, use [Operations](../operations/index.md). Contributors start with
-[Maintainers](../maintainers/index.md).
+- [Licensing and distribution](licensing.md)
+- [Licensing API contract](licensing-api.yaml)

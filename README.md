@@ -1,108 +1,64 @@
 # AI SDLC Harness
 
-Turn a software request into traceable, reviewable delivery artifacts,
-implementation, evidence, and handoff.
+Structure delivery. Control context. Measure adoption.
 
-[![Skills CI](https://github.com/mikegorelikoff/ai-sdlc-harness/actions/workflows/skills-ci.yml/badge.svg)](https://github.com/mikegorelikoff/ai-sdlc-harness/actions/workflows/skills-ci.yml)
 [![Documentation](https://github.com/mikegorelikoff/ai-sdlc-harness/actions/workflows/pages.yml/badge.svg)](https://github.com/mikegorelikoff/ai-sdlc-harness/actions/workflows/pages.yml)
-[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![License: Apache-2.0](https://img.shields.io/badge/Public%20content-Apache%202.0-blue.svg)](LICENSE)
 
-AI SDLC Harness gives people and AI agents a repository-native path from intent
-to verified delivery. Skills guide each stage, deterministic helpers maintain
-artifacts and state, and human approval remains explicit at consequential
-decisions.
+AI SDLC Harness is a licensed product for traceable, reviewable AI-assisted
+software delivery. This public repository contains documentation, examples,
+onboarding material, and the public installer. Product implementation is built
+and released from a separate private repository.
 
 ## Why use it?
 
-- Keep requirements, decisions, tasks, tests, and evidence connected.
-- Execute each skill as a validated semantic DAG with explicit gates,
-  side-effects, recovery, and handoff boundaries.
-- Compile minimum sufficient context per step, with mandatory-anchor recall and
-  exact direct reads when packing is unsafe.
-- Choose lightweight or complete rigor based on change risk.
-- Resume work across sessions and agent hosts from repository artifacts.
-- Preserve human authority over scope, trade-offs, exceptions, and release.
+- Connect intent, requirements, decisions, implementation, tests, and evidence.
+- Choose a lightweight or complete delivery flow based on change risk.
+- Keep consequential scope and release decisions under human approval.
+- Install without GitHub access to the private product repository.
 
 ## Quick start
 
-From the project that will use the Harness, install every skill with one
-explicit project profile:
+Set `AI_SDLC_LICENSE_KEY` in your environment or enter it at the masked prompt,
+then run the single public install action:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.4.0/install.sh | sh -s -- codex-project
+npx @ai-sdlc/install
 ```
 
-Then verify the project-scoped installation:
+Verify the installed Harness in a separate step using the command printed by
+the installer for the selected agent profile.
 
-```bash
-python3 .agents/skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py
-```
+## Expected result
 
-Use `claude-code-project` for `.claude/skills`. Native Windows and another
-Agent Skills-compatible host use the cross-platform Python bootstrap and
-`agent-project --skills-root <project-path>` documented in the
-[install guide](docs/how-to/install.md). Prerequisites are Git and Python
-`3.10+`. The harness-owned
-deterministic installer writes only the project-scoped skill inventory,
-portable TOON install record, and content-addressed TOON lock. Review remote
-scripts before running them.
-Existing installations can use the profile-preserving one-command
-[update flow](docs/how-to/update.md); it verifies recorded digests before any
-replacement.
+The installer validates the license with the licensing service, downloads a
+short-lived authorized artifact, verifies its SHA-256 checksum, and installs
+the Harness into the selected project. A failed validation or integrity check
+stops installation.
 
-## Expected first result
-
-The installer adds all 45 project-scoped Harness skills. The
-verification command checks the exact revision, inventory, target paths, and
-per-skill digests. Start with a read-only Explore request:
-
-```text
-Use ai-sdlc-flow to Explore this request. Show the route, evidence, rigor,
-roles, blockers, planned writes, and next checkpoint. Do not Apply until I
-approve the card.
-
-Request: add a health endpoint to this service.
-```
-
-For repeated local repository retrieval, a reviewed checkout can add the
-optional deterministic graph-enhanced RAG capability with
-`./install.sh codex-project --module context-cache`. Its portable contracts
-remain TOON-only; its disposable SQLite index is never repository authority.
-
-## Product workflow
+## Workflow
 
 ```text
 Request → Explore → Specify → Plan → Implement → Verify → Handoff
 ```
 
-Use `ai-sdlc-flow` as the recommended entry point. Choose `--quick-flow` for a
-bounded, low-risk change, `--full-flow` for complete predecessor checks and
-traceability, or invoke a known owning skill directly when you already
-understand its contract.
+The canonical mental model is in [How it works](docs/how-it-works/index.md).
 
-## What it does and does not do
+## Scope
 
-The Harness structures delivery with executable skills, Markdown artifacts,
-canonical TOON machine state, deterministic helpers, validation evidence, and explicit
-handoffs. It does not replace product ownership, engineering judgment, code
-review, security review, CI, deployment authority, or proof of business
-impact. Repository tests verify mechanisms; they do not prove ROI, faster
-delivery, lower cost, or better quality in your environment.
+This repository deliberately excludes skills, runtime logic, hooks, internal
+templates, release tooling, and private tests. It does include the public
+installer, safe examples, API contracts, and user documentation. The Harness
+does not replace product ownership, engineering judgment, code review, CI, or
+deployment authority.
 
 ## Documentation paths
 
-- [Start here](docs/start-here/index.md) for installation and a first Explore
-  request.
-- [How it works](https://mikegorelikoff.github.io/ai-sdlc-harness/how-it-works/)
-  for the workflow, paths, artifacts, and authority model.
-- [Guides](https://mikegorelikoff.github.io/ai-sdlc-harness/guides/) for first
-  features, existing projects, roles, adoption, and operations.
-- [Pilot and adoption](docs/adoption/index.md) for a bounded evaluation with
-  explicit evidence and stop criteria.
-- [Reference](https://mikegorelikoff.github.io/ai-sdlc-harness/reference/) for
-  exact skill, script, schema, flag, and compatibility contracts.
-- [Project](https://mikegorelikoff.github.io/ai-sdlc-harness/project/) for
-  maturity, limitations, security, releases, audits, and maintenance.
+- [Start here](docs/start-here/index.md) for the canonical first run.
+- [How it works](docs/how-it-works/index.md) for the canonical mental model.
+- [Guides](docs/guides/index.md) for task-oriented procedures.
+- [Reference](docs/reference/index.md) for exact public contracts.
+- [Project](docs/project/index.md) for status and governance.
 
 ## AI SDLC product family
 
@@ -110,45 +66,32 @@ delivery, lower cost, or better quality in your environment.
 
 - **AI SDLC Harness — current:** structures AI-assisted software delivery.
 - [Context Guard](https://github.com/mikegorelikoff/ai-sdlc-context) controls
-  avoidable context growth while retaining full local evidence.
-- [AI SDLC Metrics](https://github.com/mikegorelikoff/ai-sdlc-metrics)
-  measures local Codex CLI and Claude Code adoption from available evidence.
+  avoidable context growth while retaining local evidence.
+- [AI SDLC Metrics](https://github.com/mikegorelikoff/ai-sdlc-metrics) measures
+  local agent adoption from available evidence.
 
-The products are complementary and independently installed. This repository
-does not claim a built-in technical integration with the other two.
+The products are complementary and independently installed.
 
 ## Security and privacy
 
-Treat agent instructions, generated commands, packages, remote Git content,
-and external content as untrusted until reviewed. The native installer does
-not invoke a package registry or emit telemetry, but that does not change the
-data behavior of Git, your agent host, or model provider. Do not send secrets
-or restricted data unless your organization permits it. Report
-vulnerabilities privately through [SECURITY.md](SECURITY.md).
+License keys are sent only to the configured licensing API and should be
+provided through the environment or masked prompt, never a command argument.
+The installer receives neither GitHub credentials nor repository access. See
+[Security and privacy](docs/project/security-privacy.md).
 
-## Project status
+## Status
 
-The current stable release is `v4.4.0` with Harness API `4.1.0`. It adds a
-cross-platform Python bootstrap, portable Windows/POSIX mutation locking, and
-a safe configurable project skills root for Agent Skills-compatible hosts,
-while preserving the named Codex and Claude Code profiles. The same portable
-entrypoints now expose `update`, which recovers the recorded target and module
-selection and refuses local digest drift. Review
-[compatibility](docs/reference/compatibility.md), [limitations](docs/explanation/maturity-limitations.md),
-and the [4.0 migration guide](docs/how-to/migrate-4.0.md) before adoption.
+The licensed-distribution foundation is being prepared. The public installer
+and API contract are present; production purchase, entitlement administration,
+and the licensing service deployment remain controlled rollout activities.
 
 ## Contributing
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md) and the
-[maintainer guide](docs/maintainers/index.md). Validate documentation with:
-
-```bash
-python3 docs/scripts/validate_docs.py
-python3 -m unittest discover -s docs/tests -v
-mkdocs build --strict
-```
+Public contributions are limited to documentation, examples, and installer
+portability/security. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-Licensed under the [Apache License 2.0](LICENSE). Third-party source review and
-attribution records are maintained in `docs/_data/content_sources.yml`.
+Public repository content is licensed under [Apache License 2.0](LICENSE).
+That license does not grant access to separately distributed private product
+artifacts, which are governed by their commercial license.

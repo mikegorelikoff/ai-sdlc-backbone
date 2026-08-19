@@ -1,18 +1,4 @@
----
-title: System model
-description: How skills, deterministic helpers, repository artifacts, lifecycle state, and human authority form one delivery control plane.
----
+# System model
 
-The harness is not a single agent and not a hidden workflow server. It is a repository-resident operating layer made from portable skill instructions, deterministic helper scripts, visible artifacts, and explicit lifecycle state.
-
-## Guidance and execution
-
-Skills define when a workflow applies, what evidence it needs, how it behaves in quick or full flow, and what it must return. Scripts handle repeatable mechanics: parsing, scaffolding, indexing, validation, compatibility, and compact projections. The assistant supplies judgment; the helper supplies deterministic boundaries.
-
-## Human and machine views
-
-Markdown holds detailed delivery truth for people: requirements, design, cases, QA, decisions, and plans. TOON holds bounded machine projections for routing and continuity. Neither is disposable chat history, and the compact view never replaces the authoritative detail.
-
-## Control through evidence
-
-Flow Explore reads bounded repository evidence and classifies intent before selecting a route. The rigor engine reads explicit risk factors. State machines and plans record progress. Validation, review, and commit preparation attach evidence to completion. Humans retain authority over product decisions, approvals, and policy changes.
+This legacy path is retained for existing links. Use the canonical
+[How it works](../how-it-works/index.md) explanation.

@@ -1,45 +1,43 @@
----
-title: Start here
-description: Install AI SDLC Harness, run a safe first Explore request, verify the result, and choose a next path.
----
-
 # Start here
 
-Use this path if you are installing AI SDLC Harness for the first time. The
-recommended default is a project-scoped install followed by a read-only
-`ai-sdlc-flow` Explore request.
+This is the canonical first-run path for AI SDLC Harness.
 
-## Recommended path
+## Prerequisites
 
-1. Check the [prerequisites](prerequisites.md).
-2. [Run the one-line installer](../how-to/install.md) in one evaluation project.
-3. [Run your first request](first-run.md) without applying changes.
-4. Verify the installed skills and the Explore card.
-5. Continue to the [first-feature tutorial](../tutorials/first-feature.md).
+- Node.js 20 or newer with `npx`.
+- Python 3.10 or newer for the packaged installation operation.
+- A valid AI SDLC Harness license key.
+- Network access to the configured licensing service.
 
-You do not need to understand every skill before starting. The flow entry point
-selects the owning path and shows the planned writes before Apply.
+Keep the key in `AI_SDLC_LICENSE_KEY` or use the masked interactive prompt. Do
+not place the key in a CLI argument, source file, issue, or log.
 
-From the project you want to evaluate, run the primary Codex install action:
+## Install
+
+From the project that should receive the Harness, run:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.4.0/install.sh | sh -s -- codex-project
+npx @ai-sdlc/install
 ```
 
-Keep verification as the next separate step in the [install guide](../how-to/install.md).
-That guide also provides native Windows, Claude Code, and configurable
-Agent Skills-compatible host commands.
-For an existing installation, use the [one-command safe update](../how-to/update.md)
-instead of selecting its profile and target again.
+The default profile is `codex-project`. Select another supported profile with
+`--profile`; see the [install guide](../guides/install.md).
 
-## Choose a next path
+## Verify
 
-- New to AI-assisted delivery: follow the [learning path](../start.md).
-- Working in an existing repository: use the
-  [existing-project tutorial](../tutorials/existing-project.md).
-- Evaluating team adoption: run a [bounded pilot](../adoption/pilot.md).
-- Already know the owning skill: use the
-  [skills overview](../reference/skills-overview.md).
+Use the verification command printed by the successful installer. Confirm the
+installed version matches the version authorized by the licensing response.
 
-If installation or state checks fail, use
-[troubleshooting and recovery](../operations/troubleshooting.md).
+## First request
+
+Ask the installed agent host to explore a bounded change before applying it:
+
+```text
+Use ai-sdlc-flow to Explore this request. Show the route, evidence, rigor,
+roles, blockers, planned writes, and next checkpoint. Do not Apply until I
+approve the card.
+
+Request: add a health endpoint to this service.
+```
+
+Next, learn the [delivery mental model](../how-it-works/index.md).
