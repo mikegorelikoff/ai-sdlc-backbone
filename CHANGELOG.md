@@ -4,6 +4,9 @@
 
 ### Changed
 
+- Expanded the npm package metadata and installer README with requirements,
+  profiles, CLI options, environment variables, security behavior, and
+  troubleshooting guidance.
 - Renamed the licensed product to **AI SDLC Backbone** and the public installer
   package to `ai-sdlc-backbone`; the canonical install action is now
   `npx ai-sdlc-backbone`.
