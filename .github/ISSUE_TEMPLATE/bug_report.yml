@@ -11,7 +11,7 @@ body:
   - type: input
     id: version
     attributes:
-      label: Harness version or commit
+      label: Backbone version or commit
       placeholder: v2.0.0-rc.1 or commit SHA
     validations:
       required: true

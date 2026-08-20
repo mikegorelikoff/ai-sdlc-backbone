@@ -17,6 +17,6 @@ compliance certification, or emergency response.
 
 For installation and runtime recovery, start with:
 
-- [Install the Harness](docs/guides/install.md)
+- [Install the Backbone](docs/guides/install.md)
 - [Start here](docs/start-here/index.md)
 - [Status and governance](docs/project/index.md)

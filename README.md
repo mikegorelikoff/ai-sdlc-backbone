@@ -1,11 +1,11 @@
-# AI SDLC Harness
+# AI SDLC Backbone
 
 Structure delivery. Control context. Measure adoption.
 
-[![Documentation](https://github.com/mikegorelikoff/ai-sdlc-harness/actions/workflows/pages.yml/badge.svg)](https://github.com/mikegorelikoff/ai-sdlc-harness/actions/workflows/pages.yml)
+[![Documentation](https://github.com/mikegorelikoff/ai-sdlc-backbone/actions/workflows/pages.yml/badge.svg)](https://github.com/mikegorelikoff/ai-sdlc-backbone/actions/workflows/pages.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/Public%20content-Apache%202.0-blue.svg)](LICENSE)
 
-AI SDLC Harness is a licensed product for traceable, reviewable AI-assisted
+AI SDLC Backbone is a licensed product for traceable, reviewable AI-assisted
 software delivery. This public repository contains documentation, examples,
 onboarding material, and the public installer. Product implementation is built
 and released from a separate private repository.
@@ -23,17 +23,17 @@ Set `AI_SDLC_LICENSE_KEY` in your environment or enter it at the masked prompt,
 then run the single public install action:
 
 ```bash
-npx @ai-sdlc/install
+npx ai-sdlc-backbone
 ```
 
-Verify the installed Harness in a separate step using the command printed by
+Verify the installed Backbone in a separate step using the command printed by
 the installer for the selected agent profile.
 
 ## Expected result
 
 The installer validates the license with the licensing service, downloads a
 short-lived authorized artifact, verifies its SHA-256 checksum, and installs
-the Harness into the selected project. A failed validation or integrity check
+the Backbone into the selected project. A failed validation or integrity check
 stops installation.
 
 ## Workflow
@@ -48,7 +48,7 @@ The canonical mental model is in [How it works](docs/how-it-works/index.md).
 
 This repository deliberately excludes skills, runtime logic, hooks, internal
 templates, release tooling, and private tests. It does include the public
-installer, safe examples, API contracts, and user documentation. The Harness
+installer, safe examples, API contracts, and user documentation. The Backbone
 does not replace product ownership, engineering judgment, code review, CI, or
 deployment authority.
 
@@ -64,7 +64,7 @@ deployment authority.
 
 **Structure delivery. Control context. Measure adoption.**
 
-- **AI SDLC Harness — current:** structures AI-assisted software delivery.
+- **AI SDLC Backbone — current:** structures AI-assisted software delivery.
 - [Context Guard](https://github.com/mikegorelikoff/ai-sdlc-context) controls
   avoidable context growth while retaining local evidence.
 - [AI SDLC Metrics](https://github.com/mikegorelikoff/ai-sdlc-metrics) measures

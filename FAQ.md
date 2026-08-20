@@ -1,6 +1,6 @@
 # FAQ
 
-## What is AI SDLC Harness?
+## What is AI SDLC Backbone?
 
 It is a licensed product for structured, traceable AI-assisted software
 delivery across product, analysis, engineering, QA, and delivery roles.

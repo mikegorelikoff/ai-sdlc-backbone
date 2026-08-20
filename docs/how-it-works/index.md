@@ -1,12 +1,12 @@
 # How it works
 
-This page is the canonical mental model for AI SDLC Harness.
+This page is the canonical mental model for AI SDLC Backbone.
 
 ```text
 Request → Explore → Specify → Plan → Implement → Verify → Handoff
 ```
 
-The Harness structures work through skills, repository artifacts, explicit
+The Backbone structures work through skills, repository artifacts, explicit
 state, deterministic helpers, evidence, and human-controlled gates. A request
 is routed to the smallest useful flow. Higher-risk or ambiguous work uses more
 predecessor checks, traceability, and approval points.

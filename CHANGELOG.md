@@ -4,6 +4,12 @@
 
 ### Changed
 
+- Renamed the licensed product to **AI SDLC Backbone** and the public installer
+  package to `ai-sdlc-backbone`; the canonical install action is now
+  `npx ai-sdlc-backbone`.
+- Renamed the public and private-core repository identities to
+  `ai-sdlc-backbone` and `ai-sdlc-backbone-core` while preserving public paths
+  and established `ai-sdlc-*` runtime compatibility identifiers.
 - Restricted the current public tree to documentation, examples, onboarding,
   project metadata, and the public licensed installer.
 - Moved executable implementation and release tooling to the private core,

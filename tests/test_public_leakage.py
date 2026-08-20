@@ -27,6 +27,25 @@ class PublicLeakageTest(unittest.TestCase):
         for relative in ["README.md", "docs/index.md", "examples", "installer/package.json", "mkdocs.yml"]:
             self.assertTrue((ROOT / relative).exists(), relative)
 
+    def test_active_product_identity_is_backbone(self):
+        active = [
+            "README.md",
+            "mkdocs.yml",
+            "docs/index.md",
+            "docs/start-here/index.md",
+            "docs/guides/install.md",
+            "docs/reference/licensing-api.yaml",
+            "installer/package.json",
+            "installer/src/cli.js",
+        ]
+        for relative in active:
+            text = (ROOT / relative).read_text(encoding="utf-8")
+            self.assertNotIn("AI SDLC Harness", text, relative)
+            self.assertNotIn("ai-sdlc-harness", text, relative)
+        package = (ROOT / "installer/package.json").read_text(encoding="utf-8")
+        self.assertIn('"name": "ai-sdlc-backbone"', package)
+        self.assertIn('"ai-sdlc-backbone": "src/cli.js"', package)
+
 
 if __name__ == "__main__":
     unittest.main()

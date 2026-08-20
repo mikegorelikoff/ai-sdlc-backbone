@@ -13,7 +13,7 @@ def main() -> int:
         if not path.is_file():
             raise SystemExit(f"missing rendered page: {relative}")
     home = (site / "index.html").read_text(encoding="utf-8")
-    if "AI SDLC Harness" not in home or "Structure delivery" not in home:
+    if "AI SDLC Backbone" not in home or "Structure delivery" not in home:
         raise SystemExit("rendered home is missing product contract")
     print("rendered documentation: ok")
     return 0

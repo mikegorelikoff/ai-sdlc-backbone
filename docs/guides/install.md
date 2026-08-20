@@ -1,8 +1,8 @@
-# Install the Harness
+# Install the Backbone
 
 ## Goal
 
-Install an authorized AI SDLC Harness release into a local project.
+Install an authorized AI SDLC Backbone release into a local project.
 
 ## When to use it
 
@@ -21,7 +21,7 @@ Provide `AI_SDLC_LICENSE_KEY` through a protected environment mechanism, or
 use the masked prompt. From the target project, run:
 
 ```bash
-npx @ai-sdlc/install
+npx ai-sdlc-backbone
 ```
 
 Optional public flags are `--profile`, `--project-root`, `--skills-root`, and

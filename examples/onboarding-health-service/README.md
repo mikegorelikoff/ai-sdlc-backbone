@@ -1,6 +1,6 @@
 # Onboarding Health Service
 
-This intentionally small Python fixture supports the AI SDLC Harness first
+This intentionally small Python fixture supports the AI SDLC Backbone first
 feature tutorial. It exposes `/version` and a fallback response. The tutorial
 asks the learner to add a read-only `/health` route through an evidence-backed
 workflow.
