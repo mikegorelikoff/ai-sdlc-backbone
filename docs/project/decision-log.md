@@ -1,5 +1,13 @@
 # Documentation decision log
 
+## 2026-08-20 — npm package documentation is a supported entry point
+
+The `ai-sdlc-backbone` package README now provides the complete installer
+contract: prerequisites, supported profiles, CLI options, environment
+variables, verification, security behavior, and troubleshooting. Canonical
+product concepts remain in the public documentation site; the npm README links
+there instead of duplicating the broader architecture.
+
 ## 2026-08-20 — AI SDLC Backbone product identity
 
 The licensed product is now **AI SDLC Backbone**. Its public package and

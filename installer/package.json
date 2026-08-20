@@ -1,7 +1,17 @@
 {
   "name": "ai-sdlc-backbone",
   "version": "1.0.1",
-  "description": "Licensed AI SDLC Backbone installer",
+  "description": "Secure licensed installer for AI SDLC Backbone — structured delivery, controlled context, and measurable adoption for AI-assisted software teams.",
+  "keywords": [
+    "ai-sdlc",
+    "software-development-lifecycle",
+    "spec-driven-development",
+    "developer-tools",
+    "ai-agents",
+    "codex",
+    "claude-code"
+  ],
+  "author": "AI SDLC",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -9,6 +19,9 @@
     "directory": "installer"
   },
   "homepage": "https://github.com/mikegorelikoff/ai-sdlc-backbone#readme",
+  "bugs": {
+    "url": "https://github.com/mikegorelikoff/ai-sdlc-backbone/issues"
+  },
   "type": "module",
   "bin": { "ai-sdlc-backbone": "src/cli.js" },
   "scripts": { "test": "node --test" },
