@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { spawnSync } from "node:child_process";
 import test from "node:test";
 import { main, safeEntryName, sha256, validateInstallResponse, verifyArtifact } from "../src/cli.js";
 
@@ -33,4 +34,15 @@ test("corrupted artifact is rejected before installation", async () => {
 
 test("help does not contact the licensing service", async () => {
   await main(["--help"]);
+});
+
+test("npm-style symlink invokes the CLI entrypoint", () => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "installer-bin-"));
+  try {
+    const bin = path.join(directory, "ai-sdlc-backbone");
+    fs.symlinkSync(path.resolve("src/cli.js"), bin);
+    const result = spawnSync(process.execPath, [bin, "--help"], { encoding: "utf8" });
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, /^Usage: ai-sdlc-backbone /);
+  } finally { fs.rmSync(directory, { recursive: true, force: true }); }
 });

@@ -10,6 +10,11 @@
 - Renamed the public and private-core repository identities to
   `ai-sdlc-backbone` and `ai-sdlc-backbone-core` while preserving public paths
   and established `ai-sdlc-*` runtime compatibility identifiers.
+
+### Fixed
+
+- Fixed the npm symlink entrypoint so `npx ai-sdlc-backbone` executes the CLI
+  instead of exiting without output.
 - Restricted the current public tree to documentation, examples, onboarding,
   project metadata, and the public licensed installer.
 - Moved executable implementation and release tooling to the private core,

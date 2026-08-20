@@ -5,10 +5,10 @@ import os from "node:os";
 import path from "node:path";
 import process from "node:process";
 import { spawnSync } from "node:child_process";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 
 const PRODUCT = "ai-sdlc-backbone";
-const INSTALLER_VERSION = "1.0.0";
+const INSTALLER_VERSION = "1.0.1";
 const ERROR_CODES = new Set(["INVALID_LICENSE", "EXPIRED_LICENSE", "REVOKED_LICENSE", "VERSION_NOT_ALLOWED", "INSTALL_LIMIT_REACHED", "UNSUPPORTED_PLATFORM", "RELEASE_NOT_FOUND"]);
 
 export function platformId() {
@@ -136,4 +136,4 @@ export async function main(argv = process.argv.slice(2)) {
   } finally { fs.rmSync(temporary, { recursive: true, force: true }); }
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main().catch((error) => { console.error(error.message); process.exitCode = 1; });
+if (process.argv[1] && fs.realpathSync(process.argv[1]) === fileURLToPath(import.meta.url)) main().catch((error) => { console.error(error.message); process.exitCode = 1; });
