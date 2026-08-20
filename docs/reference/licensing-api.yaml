@@ -1,0 +1,38 @@
+openapi: 3.1.0
+info:
+  title: AI SDLC Harness Licensing API
+  version: 1.0.0
+paths:
+  /v1/install:
+    post:
+      summary: Authorize an installation and create a short-lived download grant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [license_key, installer_version, requested_version, platform]
+              properties:
+                license_key: {type: string}
+                installer_version: {type: string}
+                requested_version: {type: string}
+                platform: {type: string}
+      responses:
+        "200":
+          description: Authorized
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [product, version, download_url, expires_in, sha256, artifact]
+                properties:
+                  product: {const: ai-sdlc-harness}
+                  version: {type: string}
+                  download_url: {type: string, format: uri}
+                  expires_in: {type: integer}
+                  sha256: {type: string, pattern: "^[0-9a-f]{64}$"}
+                  artifact: {type: string}
+        "400": {description: INVALID_REQUEST or UNSUPPORTED_PLATFORM}
+        "403": {description: INVALID_LICENSE, EXPIRED_LICENSE, REVOKED_LICENSE, VERSION_NOT_ALLOWED, or INSTALL_LIMIT_REACHED}
+        "404": {description: RELEASE_NOT_FOUND}

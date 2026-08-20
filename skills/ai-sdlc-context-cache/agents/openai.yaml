@@ -1,4 +1,0 @@
-interface:
-  display_name: "AI SDLC Context Cache"
-  short_description: "Reuse deterministic local RAG context safely."
-  default_prompt: "Use $ai-sdlc-context-cache to warm, query, observe, or recover a safe local repository context cache for StepCards."

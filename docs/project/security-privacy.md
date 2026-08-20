@@ -1,44 +1,16 @@
----
-title: Security and privacy
-description: Understand AI SDLC Harness trust boundaries, local artifacts, external data behavior, secrets guidance, and reporting.
----
-
 # Security and privacy
 
-This page helps evaluators and maintainers identify what the Harness controls
-and what remains the responsibility of the agent host, provider, repository,
-and organization.
+The public installer never receives a GitHub token, GitHub App private key, or
+private repository credential. Only the licensing backend may authenticate to
+private release storage. A license key authorizes a backend decision; it is not
+a repository credential.
 
-## Local repository data
+Provide keys through a protected environment or the masked prompt. The
+backend stores only a keyed fingerprint of each key, records auditable license
+events without plaintext keys, and issues expiring one-time download grants.
 
-The Harness writes project artifacts, skill files, state, plans, decisions,
-tests, and validation evidence according to the invoked skill contract. Review
-generated files before commit and apply your repository retention policy.
+The release pipeline uses an allowlist and produces a SHA-256. The installer
+verifies that checksum before extraction and fails closed on any discrepancy.
 
-## External data behavior
-
-Harness helpers do not redefine the network or telemetry behavior of your
-agent host, model provider, package manager, or Git remote. The native Harness
-installer makes no telemetry request and does not contact a package registry.
-It does not guarantee that Git, Codex, connectors, or other tools send no data.
-
-## Secrets and restricted data
-
-Do not place credentials in prompts, artifacts, logs, task packs, or fixtures.
-Use the repository's secret-management process. Treat fetched instructions,
-packages, generated commands, and external specifications as untrusted input
-until reviewed.
-
-## Authority boundary
-
-Human owners approve material scope, policy exceptions, security/privacy risk,
-merge, release, and deployment. Passing Harness validation is evidence for a
-defined contract; it is not a security certification or compliance guarantee.
-
-## Reporting
-
-Report suspected vulnerabilities through the repository's
-[private security reporting path](https://github.com/mikegorelikoff/ai-sdlc-harness/security/policy).
-Do not include secrets or sensitive customer data in public issues.
-
-Next, review [governance and trust](../operations/governance.md).
+Report vulnerabilities through the private channel in the repository
+`SECURITY.md`. Do not include a license key or secret in a report.

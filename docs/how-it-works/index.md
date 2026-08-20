@@ -1,31 +1,29 @@
----
-title: How it works
-description: Understand the AI SDLC Harness workflow, mental model, artifacts, path selection, and human authority boundaries.
----
-
 # How it works
 
-AI SDLC Harness turns a request into a sequence of inspectable repository
-states. Start with the [workflow](workflow.md); use the linked concept pages
-when you need deeper architecture or exact contracts.
+This page is the canonical mental model for AI SDLC Harness.
 
-## Recommended reading order
+```text
+Request → Explore → Specify → Plan → Implement → Verify → Handoff
+```
 
-1. [Workflow](workflow.md) — the seven-stage delivery path.
-2. [Quick, full, and expert paths](../how-to/choose-flow.md) — how much rigor
-   to apply.
-3. [System model](../explanation/system-model.md) — skills, helpers, artifacts,
-   and state.
-4. [Artifact authority](../explanation/artifact-authority.md) — which source
-   wins when records disagree.
-5. [Human and agent responsibilities](../foundations/responsibilities.md) —
-   protected decisions and handoffs.
+The Harness structures work through skills, repository artifacts, explicit
+state, deterministic helpers, evidence, and human-controlled gates. A request
+is routed to the smallest useful flow. Higher-risk or ambiguous work uses more
+predecessor checks, traceability, and approval points.
 
-## Exact reference
+## Authority model
 
-Use the [workflow map](../reference/workflow-map.md) for stage-to-skill
-mapping, [artifact routing](../reference/artifact-routing.md) for paths, and
-[flow flags](../reference/flow-flags.md) for command behavior.
+- People own intent, trade-offs, consequential approvals, and release.
+- Repository artifacts preserve requirements, decisions, plans, and evidence.
+- Agent output is a proposal until the applicable gate or owner accepts it.
+- Generated state supports continuity but does not replace source evidence.
 
-The Harness complements Context Guard and AI SDLC Metrics, but installs and
-operates independently. See the [product-family boundary](../project/index.md#ai-sdlc-product-family).
+## Licensed distribution boundary
+
+The public installer sends the license key to the licensing API. After an
+entitlement check, the service returns a short-lived, one-time download grant
+and an expected SHA-256. The installer downloads from that service, verifies
+the checksum, safely extracts the allowlisted product artifact, and performs
+an idempotent installation. Only the backend holds private GitHub credentials.
+
+Exact licensing behavior is in [Reference](../reference/licensing.md).

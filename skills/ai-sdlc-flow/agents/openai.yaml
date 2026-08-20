@@ -1,7 +1,0 @@
-interface:
-  display_name: "AI SDLC Guided Flow"
-  short_description: "Explore a safe route, then apply one checkpoint"
-  default_prompt: "Use ai-sdlc-flow to Explore this request, show the complete decision card, and wait for explicit Apply before mutation."
-
-policy:
-  allow_implicit_invocation: true

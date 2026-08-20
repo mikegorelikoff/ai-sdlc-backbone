@@ -1,9 +1,0 @@
-files[3]{path,schema,sha256}:
-  config/policy.toon,policy/v1,aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-  skills/legacy/SKILL.md,"",bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
-  skills/runtime/SKILL.md,skill/v1,cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-harness_api:
-  max_exclusive: 2.0.0
-  min: 1.0.0
-schema: ai-sdlc-upgrade-inventory/v1
-version: 1.0.0

@@ -12,10 +12,8 @@ on:
       - "mkdocs.yml"
       - "requirements-docs.txt"
       - "requirements-docs.lock"
-      - "skills/**"
-      - "modules/**"
-      - "compatibility/**"
-      - "config/**"
+      - "installer/**"
+      - "tests/**"
       - ".github/workflows/pages.yml"
   push:
     branches: [main]
@@ -29,10 +27,8 @@ on:
       - "mkdocs.yml"
       - "requirements-docs.txt"
       - "requirements-docs.lock"
-      - "config/**"
-      - "skills/**"
-      - "modules/**"
-      - "compatibility/**"
+      - "installer/**"
+      - "tests/**"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -64,12 +60,19 @@ jobs:
         run: python3 docs/scripts/build_catalog.py --check
       - name: Validate documentation source
         run: python3 docs/scripts/validate_docs.py
-      - name: Report Learn page token counts
-        run: python3 docs/scripts/learning_tokens.py --config mkdocs.yml --encoding o200k_base --minimum 6000 --maximum 8000
-      - name: Smoke test checked-out candidate installation
-        run: python3 skills/ai-sdlc-shared-runtime/tests/install_smoke.py --mode native --source . --profile codex-project
       - name: Run documentation tests
         run: python3 -m unittest discover -s docs/tests -v
+      - name: Verify public implementation boundary
+        run: python3 -m unittest discover -s tests -v
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: installer/package-lock.json
+      - name: Test public installer
+        run: npm ci && npm test
+        working-directory: installer
       - name: Build documentation
         run: mkdocs build --strict
       - name: Validate rendered site
