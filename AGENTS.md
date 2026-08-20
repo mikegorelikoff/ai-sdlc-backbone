@@ -5,7 +5,7 @@ maintainer guides, skill instructions, and validation references.
 
 ## Documentation contract
 
-- Product name: **AI SDLC Harness**.
+- Product name: **AI SDLC Backbone**.
 - Ecosystem wording: **AI SDLC product family** and “Structure delivery.
   Control context. Measure adoption.”
 - Public top-level navigation must remain, in order: Home; Start here; How it

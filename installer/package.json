@@ -1,9 +1,16 @@
 {
-  "name": "@ai-sdlc/install",
+  "name": "ai-sdlc-backbone",
   "version": "1.0.0",
-  "description": "Licensed AI SDLC Harness installer",
+  "description": "Licensed AI SDLC Backbone installer",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mikegorelikoff/ai-sdlc-backbone.git",
+    "directory": "installer"
+  },
+  "homepage": "https://github.com/mikegorelikoff/ai-sdlc-backbone#readme",
   "type": "module",
-  "bin": { "ai-sdlc-install": "src/cli.js" },
+  "bin": { "ai-sdlc-backbone": "src/cli.js" },
   "scripts": { "test": "node --test" },
   "engines": { "node": ">=20" },
   "dependencies": { "tar": "7.5.22" },

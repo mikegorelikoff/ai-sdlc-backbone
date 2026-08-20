@@ -1,8 +1,8 @@
-site_name: AI SDLC Harness
-site_description: Public documentation for the licensed AI SDLC Harness product.
-site_url: https://mikegorelikoff.github.io/ai-sdlc-harness/
-repo_url: https://github.com/mikegorelikoff/ai-sdlc-harness
-repo_name: mikegorelikoff/ai-sdlc-harness
+site_name: AI SDLC Backbone
+site_description: Public documentation for the licensed AI SDLC Backbone product.
+site_url: https://mikegorelikoff.github.io/ai-sdlc-backbone/
+repo_url: https://github.com/mikegorelikoff/ai-sdlc-backbone
+repo_name: mikegorelikoff/ai-sdlc-backbone
 edit_uri: edit/main/docs/
 docs_dir: docs
 site_dir: site
@@ -34,10 +34,10 @@ extra_css:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/mikegorelikoff/ai-sdlc-harness
-      name: AI SDLC Harness on GitHub
+      link: https://github.com/mikegorelikoff/ai-sdlc-backbone
+      name: AI SDLC Backbone on GitHub
 
-copyright: Copyright &copy; 2026 AI SDLC Harness contributors
+copyright: Copyright &copy; 2026 AI SDLC Backbone contributors
 
 exclude_docs: |
   scripts/
@@ -68,7 +68,7 @@ nav:
       - Overview: how-it-works/index.md
   - Guides:
       - Overview: guides/index.md
-      - Install the Harness: guides/install.md
+      - Install the Backbone: guides/install.md
   - Reference:
       - Overview: reference/index.md
       - Licensing: reference/licensing.md

@@ -25,7 +25,7 @@ def main() -> int:
             fail(f"missing public documentation contract: {relative}")
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     ordered = [
-        "# AI SDLC Harness", "Structure delivery. Control context. Measure adoption.",
+        "# AI SDLC Backbone", "Structure delivery. Control context. Measure adoption.",
         "## Why use it?", "## Quick start", "## Expected result", "## Workflow",
         "## Scope", "## Documentation paths", "## AI SDLC product family",
         "## Security and privacy", "## Status", "## Contributing", "## License",
@@ -35,7 +35,7 @@ def main() -> int:
         fail("README contract is missing or out of order")
     for relative in ["README.md", "docs/index.md", "docs/start-here/index.md"]:
         content = (ROOT / relative).read_text(encoding="utf-8")
-        if content.count("npx @ai-sdlc/install") != 1:
+        if content.count("npx ai-sdlc-backbone") != 1:
             fail(f"{relative} must contain exactly one primary install command")
     print("documentation source contracts: ok")
     return 0

@@ -1,12 +1,12 @@
 # Start here
 
-This is the canonical first-run path for AI SDLC Harness.
+This is the canonical first-run path for AI SDLC Backbone.
 
 ## Prerequisites
 
 - Node.js 20 or newer with `npx`.
 - Python 3.10 or newer for the packaged installation operation.
-- A valid AI SDLC Harness license key.
+- A valid AI SDLC Backbone license key.
 - Network access to the configured licensing service.
 
 Keep the key in `AI_SDLC_LICENSE_KEY` or use the masked interactive prompt. Do
@@ -14,10 +14,10 @@ not place the key in a CLI argument, source file, issue, or log.
 
 ## Install
 
-From the project that should receive the Harness, run:
+From the project that should receive the Backbone, run:
 
 ```bash
-npx @ai-sdlc/install
+npx ai-sdlc-backbone
 ```
 
 The default profile is `codex-project`. Select another supported profile with

@@ -1,8 +1,8 @@
-# AI SDLC Harness
+# AI SDLC Backbone
 
 Structure delivery. Control context. Measure adoption.
 
-AI SDLC Harness is a licensed product that gives teams a structured path from
+AI SDLC Backbone is a licensed product that gives teams a structured path from
 software intent to verified delivery. This site is the public source for user
 documentation, examples, onboarding, licensing behavior, and installer use.
 The executable product implementation is not published in this repository.
@@ -13,7 +13,7 @@ After placing your license key in `AI_SDLC_LICENSE_KEY`, or when ready to enter
 it at the masked prompt, run:
 
 ```bash
-npx @ai-sdlc/install
+npx ai-sdlc-backbone
 ```
 
 ## Verify
@@ -30,7 +30,7 @@ public contracts.
 
 **Structure delivery. Control context. Measure adoption.**
 
-- **AI SDLC Harness — current:** structures AI-assisted software delivery.
+- **AI SDLC Backbone — current:** structures AI-assisted software delivery.
 - [Context Guard](https://github.com/mikegorelikoff/ai-sdlc-context) controls
   avoidable context growth while retaining local evidence.
 - [AI SDLC Metrics](https://github.com/mikegorelikoff/ai-sdlc-metrics) measures

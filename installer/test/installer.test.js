@@ -6,14 +6,14 @@ import test from "node:test";
 import { main, safeEntryName, sha256, validateInstallResponse, verifyArtifact } from "../src/cli.js";
 
 test("response requires same-origin backend grant", () => {
-  const valid = { product: "ai-sdlc-harness", version: "4.5.0", download_url: "https://licenses.test/v1/download/token", expires_in: 300, sha256: "a".repeat(64), artifact: "ai-sdlc-harness-4.5.0.tar.gz" };
-  assert.equal(validateInstallResponse(valid, "https://licenses.test").version, "4.5.0");
+  const valid = { product: "ai-sdlc-backbone", version: "5.0.0", download_url: "https://licenses.test/v1/download/token", expires_in: 300, sha256: "a".repeat(64), artifact: "ai-sdlc-backbone-5.0.0.tar.gz" };
+  assert.equal(validateInstallResponse(valid, "https://licenses.test").version, "5.0.0");
   assert.throws(() => validateInstallResponse({ ...valid, download_url: "https://github.com/private" }, "https://licenses.test"));
 });
 
 test("unsafe archive paths fail closed", () => {
   for (const name of ["../secret", "/absolute", "C:\\secret", "safe/../../secret"]) assert.throws(() => safeEntryName(name));
-  assert.equal(safeEntryName("ai-sdlc-harness-4.5.0/VERSION"), "ai-sdlc-harness-4.5.0/VERSION");
+  assert.equal(safeEntryName("ai-sdlc-backbone-5.0.0/VERSION"), "ai-sdlc-backbone-5.0.0/VERSION");
 });
 
 test("sha256 is exact", async () => {

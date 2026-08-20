@@ -1,5 +1,17 @@
 # Documentation decision log
 
+## 2026-08-20 — AI SDLC Backbone product identity
+
+The licensed product is now **AI SDLC Backbone**. Its public package and
+machine product identifier are `ai-sdlc-backbone`; the primary installation
+action is `npx ai-sdlc-backbone`. Existing `ai-sdlc-*` skill names,
+`AI_SDLC_*` environment variables, `.ai-sdlc/` project paths, and `ASDL-*`
+license keys remain stable compatibility contracts.
+
+Historical AI SDLC Harness entries, tags, and release assets are retained as
+historical evidence. Public documentation paths and the required top-level
+navigation remain unchanged.
+
 ## 2026-08-19 — Licensed distribution boundary
 
 The public repository now owns only documentation, examples, onboarding,
