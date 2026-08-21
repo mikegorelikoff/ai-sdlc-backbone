@@ -1,5 +1,13 @@
 # Documentation decision log
 
+## 2026-08-21 — Product and installer releases use independent versions
+
+AI SDLC Backbone `5.0.1` is the current licensed product release, while
+`ai-sdlc-backbone` `1.0.1` remains the current public installer. Product
+artifacts and the npm installer advance independently; every product manifest
+declares its minimum compatible installer version. The public versions
+reference is the canonical user-facing status surface.
+
 ## 2026-08-20 — npm package documentation is a supported entry point
 
 The `ai-sdlc-backbone` package README now provides the complete installer
