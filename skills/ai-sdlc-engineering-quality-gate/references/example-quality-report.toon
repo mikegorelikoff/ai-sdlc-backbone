@@ -1,0 +1,94 @@
+change_fingerprint: sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+change_scope:
+  files_changed: 2
+  lines_added: 18
+  lines_removed: 4
+  new_dependencies[0]:
+  unrelated_changes[0]:
+context_fingerprint: sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+context_path: specs/order-discount/_ai_sdlc/quality-gate-post-fix-context.toon
+final_decision:
+  blocking_reasons[0]:
+  ready_for_next_stage: true
+findings_fixed[1]:
+  - blocking: false
+    category: correctness
+    evidence[2]: "src/invoices/invoice.service.ts:81 preserves explicit zero with a nullish check","src/orders/order.service.ts:94 used a truthy fallback that discarded zero"
+    file: src/orders/order.service.ts
+    fix: Replaced the truthy fallback with an explicit nullish check and added the zero-discount case.
+    id: QG-001
+    impact: A caller could not intentionally clear the discount to zero.
+    issue: Explicit zero discount was replaced by the existing value.
+    location: updateDiscount
+    reason_not_fixed: ""
+    recommended_fix: Preserve zero and fall back only for null or undefined input.
+    resolution: fixed
+    severity: medium
+quality_evidence:
+  correctness[2]: QG-001 covers the explicit-zero boundary,"src/orders/order.service.test.ts:143 exercises zero and omitted input"
+  repository_consistency[2]: "src/invoices/invoice.service.ts:81 uses the same nullish update rule",src/orders/order.service.ts remains inside the existing service boundary
+  simplicity[2]: no new abstraction or dependency was introduced,the correction changes one branch and one focused test
+  testing[2]: focused order tests pass after the fix,required TypeScript typecheck passes on the post-fix diff
+remaining_findings[1]:
+  - blocking: false
+    category: maintainability
+    evidence[1]: "src/orders/order.service.ts:91 contains a comment that repeats the following assignment"
+    file: src/orders/order.service.ts
+    fix: ""
+    id: QG-002
+    impact: Minor reading noise without behavioral or delivery risk.
+    issue: One comment restates obvious code.
+    location: updateDiscount
+    reason_not_fixed: Low-only style cleanup is outside the automatic fix policy.
+    recommended_fix: Remove the comment in a separately authorized cleanup if desired.
+    resolution: remaining
+    severity: low
+report_fingerprint: sha256:939eac85a70ba3532863c3338c5fe98ad6913681f9eba99c041a0147cc253f03
+repository_profile:
+  applicable_rules[3]: "src/http/order.controller.ts:36 — keep controllers thin","src/invoices/invoice.service.ts:81 — preserve explicit numeric zero","src/shared/result.ts:12 — return domain failures through Result<T>"
+  architecture:
+    pattern: layered HTTP and service modules
+    relevant_layers[3]: application,http,tests
+  conventions[3]:
+    - evidence[1]: "src/shared/result.ts:12"
+      name: error_handling
+      value: Result<T>
+    - evidence[2]: "src/customers/customer.service.ts:55","src/invoices/invoice.service.ts:81"
+      name: optional_numeric_update
+      value: nullish check preserves zero
+    - evidence[1]: "src/orders/order.service.test.ts:22"
+      name: testing
+      value: vitest behavior tests with minimal mocking
+  example_shortfall_reason: ""
+  representative_examples[3]: src/customers/customer.service.ts,src/invoices/invoice.service.ts,src/orders/order.service.test.ts
+schema: ai-sdlc-engineering-quality-gate/v1
+status: PASS_WITH_FINDINGS
+summary: The explicit-zero defect was fixed using the local update pattern; required post-fix checks pass and one non-blocking Low finding remains.
+verification[3]:
+  - command[5]: npm,test,"--","--runInBand",src/orders/order.service.test.ts
+    evidence[1]: focused test exposed the explicit-zero regression
+    exit_code: 1
+    id: VG-001
+    kind: tests
+    phase: before_fix
+    reason: Exercise the changed order update behavior before remediation.
+    required: false
+    status: fail
+  - command[5]: npm,test,"--","--runInBand",src/orders/order.service.test.ts
+    evidence[1]: 12 focused tests passed after the fix
+    exit_code: 0
+    id: VG-002
+    kind: tests
+    phase: after_fix
+    reason: Recheck every affected order behavior after remediation.
+    required: true
+    status: pass
+  - command[3]: npm,run,typecheck
+    evidence[1]: TypeScript typecheck completed with exit code zero
+    exit_code: 0
+    id: VG-003
+    kind: typecheck
+    phase: final
+    reason: Repository contract requires type safety for the final diff.
+    required: true
+    status: pass

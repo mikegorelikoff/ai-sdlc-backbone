@@ -1,9 +1,9 @@
 feature: 022-ai-sdlc-loop
 workspace: implementation
-current_stage: conventional_commit
+current_stage: sdd
 active_skill:
-flow_mode: full
-updated_at: 2026-08-17
+flow_mode: quick
+updated_at: 2026-09-01
 decision_log: specs/022-ai-sdlc-loop/decision-log.md
 upstream_state: specs-refiniment/022-ai-sdlc-loop/_ai_sdlc/state.toon
 
@@ -27,7 +27,7 @@ stages[26]{id,skill,status,workspace,artifacts,decision_ref}:
   qa_traceability,ai-sdlc-qa-traceability-and-readiness-review,not_started,refinement,qa-readiness.md,
   delivery_handoff,ai-sdlc-delivery-handoff-review,not_started,refinement,delivery-handoff-review.md,
   branching,ai-sdlc-branching,done,implementation,specs/022-ai-sdlc-loop/branch-plan.md,DEC-001
-  sdd,ai-sdlc-sdd,done,implementation,specs/022-ai-sdlc-loop,
+  sdd,ai-sdlc-sdd,done,implementation,specs/022-ai-sdlc-loop,DEC-008
   validation,ai-sdlc-validation,done,implementation,specs/022-ai-sdlc-loop/validation.md,
   code_review,ai-sdlc-code-review,done,implementation,specs/022-ai-sdlc-loop/code-review.md,
   security_testing,ai-sdlc-security-testing,done,implementation,specs/022-ai-sdlc-loop/security-review.md,
@@ -35,4 +35,5 @@ stages[26]{id,skill,status,workspace,artifacts,decision_ref}:
   conventional_commit,ai-sdlc-conventional-commit,done,implementation,specs/022-ai-sdlc-loop/commit-message.md,DEC-001
   approvals_sandbox,ai-sdlc-approvals-sandbox,not_applicable,utility,approval-plan.md,
 
-skips[0]{stage,reason,decision_ref,flow_mode}:
+skips[1]{stage,reason,decision_ref,flow_mode}:
+  sdd,Reopen the completed Loop SDD for the user-requested additive core engineering-quality-gate capability with deterministic contracts.,,quick

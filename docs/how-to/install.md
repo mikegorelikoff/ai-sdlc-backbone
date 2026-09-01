@@ -7,8 +7,9 @@ description: Install AI SDLC Harness from an immutable revision with determinist
 
 ## Goal
 
-Install all 45 Harness skills into one consumer repository on Windows, macOS,
-or Linux, bind them to an exact Git revision, and produce a portable
+Install the complete Harness inventory from one selected revision into a
+consumer repository on Windows, macOS, or Linux, bind it to that exact Git
+revision, and produce a portable
 content-addressed TOON record that can be verified without a package registry.
 
 ## When to use it
@@ -113,7 +114,9 @@ guide instead of overwriting it.
 
 ### Add the optional local context cache
 
-The default profile remains the existing 45-skill installation. Add the local
+Published `v4.4.0` retains its immutable 45-skill default. The current
+unreleased source has 46 default skills because
+`ai-sdlc-engineering-quality-gate` is now in `core`. Add the local
 graph-enhanced RAG capability explicitly when repeated repository retrieval is
 worth maintaining disposable local state:
 
@@ -121,8 +124,9 @@ worth maintaining disposable local state:
 AI_SDLC_SOURCE="$HARNESS_SRC" AI_SDLC_REVISION="$HARNESS_REV" "$HARNESS_SRC/install.sh" codex-project --module context-cache
 ```
 
-This selection installs the 45-skill baseline plus
-`ai-sdlc-context-cache`. Its install record uses
+This selection installs the selected revision's default inventory plus
+`ai-sdlc-context-cache`: 46 skills from `v4.4.0`, or 47 from the current
+unreleased source. Its install record uses
 `selection: modules:context-cache`; the database itself is created only by a
 later authorized `build` command and is never part of the install lock.
 
@@ -164,13 +168,14 @@ git status --short
 Expected:
 
 - the validator reports a valid install record;
-- the managed inventory and lock contain 45 skills;
+- the managed inventory and lock contain the selected revision's exact default
+  set: 45 for published `v4.4.0`, or 46 for the current unreleased source;
 - every locked content digest matches the installed directory;
 - helper usage renders without an import traceback;
 - Git shows only the selected host root and `.ai-sdlc/` additions.
 
-For a `context-cache` module install, expect 46 locked skills. The default
-profile still expects 45.
+For a `context-cache` module install, expect one additional locked skill: 46
+for published `v4.4.0`, or 47 for the current unreleased source.
 
 After verification, remove only the temporary reviewed checkout:
 

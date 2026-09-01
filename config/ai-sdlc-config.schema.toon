@@ -4,7 +4,7 @@
     properties:
       actions:
         items:
-          enum[9]: branching,commit,implementation,new_refinement,qa_planning,review,security_review,story_decomposition,validation
+          enum[10]: branching,commit,engineering_quality_gate,implementation,new_refinement,qa_planning,review,security_review,story_decomposition,validation
         type: array
         uniqueItems: true
       id:

@@ -72,8 +72,13 @@ remain TOON-only; its disposable SQLite index is never repository authority.
 ## Product workflow
 
 ```text
-Request → Explore → Specify → Plan → Implement → Verify → Handoff
+Request → Explore → Specify → Plan → Implement → Engineering Quality Gate → Verify → Handoff
 ```
+
+The current source exposes the gate from `core`; it is mandatory when selected
+by the owning workflow and is hard-required by AI SDLC Loop before Verify.
+Existing Harness lifecycle state remains backward-compatible with direct
+validation.
 
 Use `ai-sdlc-flow` as the recommended entry point. Choose `--quick-flow` for a
 bounded, low-risk change, `--full-flow` for complete predecessor checks and
@@ -110,7 +115,7 @@ delivery, lower cost, or better quality in your environment.
 
 - **AI SDLC Harness — current:** structures AI-assisted software delivery.
 - [AI SDLC Loop](https://mikegorelikoff.github.io/ai-sdlc-loop/) provides a
-  smaller approval-gated delivery cycle with 16 focused skills and one shared
+  smaller approval-gated delivery cycle with 19 focused skills and one shared
   runtime, pinned here as `products/ai-sdlc-loop`.
 - [Context Guard](https://github.com/mikegorelikoff/ai-sdlc-context) controls
   avoidable context growth while retaining full local evidence.

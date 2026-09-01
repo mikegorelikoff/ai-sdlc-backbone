@@ -16,7 +16,7 @@ git submodule `products/ai-sdlc-loop`, pinned to the docs-enabled commit
 runtime release.
 
 Loop is the smaller independently installed delivery member of the AI SDLC
-product family: 16 working `ai-sdlc-loop-{slug}` skills plus one shared runtime,
+product family: 19 working `ai-sdlc-loop-{slug}` skills plus one shared runtime,
 TOON-only durable workflow artifacts, separate approval gates before code
 mutation and commit, and its own six-section MkDocs site. The gitlink is an
 immutable compatibility, documentation, and promotion fixture; it does not
@@ -26,6 +26,25 @@ This additive path introduces no public documentation move or redirect. The
 existing Home, Start here, How it works, Guides, Reference, and Project
 navigation remains unchanged.
 
+## Repository-grounded engineering quality gate
+
+On 2026-09-01, Harness added `ai-sdlc-engineering-quality-gate` to the default
+`core` module and Loop added its independently installable namespaced
+counterpart, advancing the pinned Loop gitlink to
+`5fe9b9dd04992e723486bf189f22c722614f6582`. The gate is post-implementation: it binds review to the current
+diff, uses bounded repository evidence and representative implementations,
+records typed findings before fixes, applies only safe High and Medium fixes,
+reruns available deterministic checks, and produces a fingerprinted TOON
+quality report.
+
+Harness keeps the gate directly callable and exposes a stable guided-flow
+intent. Loop makes it a mandatory stage between Implement and Verify; Verify
+requires a current report with `ready_for_next_stage: true`. Stable ordering,
+documented candidate tie-breakers, canonical TOON encoding, and exclusion of
+volatile values from readiness identity make repeated unchanged runs
+reproducible. Existing public documentation paths and top-level navigation do
+not move.
+
 ## Optional local context cache
 
 On 2026-08-03, the documentation added an opt-in local context-cache path for
@@ -34,8 +53,9 @@ than authority: canonical repository sources, accepted decisions, and human
 approvals remain controlling. The portable boundary stays TOON-only, while the
 SQLite FTS5 database is disposable project-local state excluded from Git.
 
-The public install path remains the 45-skill baseline. Users deliberately add
-the 46th cache skill with `--module context-cache`; that project-scoped install
+The current source install path contains 46 default skills; immutable published
+`v4.4.0` retains its 45-skill inventory. Current-source users deliberately add
+the 47th cache skill with `--module context-cache`; that project-scoped install
 is the opt-in for bounded automatic StepCard warming and reuse. A separate
 rollback-journal control database serializes warmers, while source verification,
 strict TOON policy, manifest-budget clamping, v4 validation, and direct-read

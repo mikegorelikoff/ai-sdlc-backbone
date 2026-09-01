@@ -135,7 +135,7 @@ class ConfigTests(unittest.TestCase):
                 "context_selectors": [{
                     "id": "implementation-contract",
                     "roles": ["software-engineer"],
-                    "actions": ["implementation"],
+                    "actions": ["implementation", "engineering_quality_gate"],
                     "include": ["references/flow-contract.md"],
                     "priority": 75,
                     "max_tokens": 1200,

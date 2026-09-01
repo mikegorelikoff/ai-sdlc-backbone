@@ -5,8 +5,8 @@ description: Public surfaces protected across additive harness releases and the 
 
 ## Protected surfaces
 
-The published `v4.4.0` source implements Harness API `4.1.0`. It preserves the
-hard contract cut from the `3.0.0-rc.2` line: all 46 skills use executable
+The current source implements Harness API `4.1.0`. It preserves the hard
+contract cut from the `3.0.0-rc.2` line: all 47 skills use executable
 `ai-sdlc-skill-steps/v2` graphs, and canonical TOON is the sole structured
 machine-data representation.
 
@@ -16,8 +16,9 @@ machine-data representation.
 - Feature state and machine plan locations.
 - Configuration schema and protected gate semantics.
 - Module manifest schema and the `>=4.0.0,<5.0.0` harness API range.
-- Exactly 46 semantic graphs with at least five nodes each, including additive
-  scheduler and optional context-cache capabilities introduced after v4.0.1.
+- Exactly 47 semantic graphs with at least five nodes each, including the
+  additive engineering quality gate, scheduler, and optional context-cache
+  capabilities introduced after v4.0.1.
 - Canonical TOON codec path and `.toon` extension.
 - StepCard, per-step context, run, workflow, adapter, and evaluation contract
   identities and canonical bytes.

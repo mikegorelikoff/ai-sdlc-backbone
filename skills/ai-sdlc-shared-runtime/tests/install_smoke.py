@@ -205,7 +205,7 @@ def checkout_revision(repository: str, revision: str, destination: Path) -> None
 def verify(
     consumer: Path,
     source_checkout: Path | None = None,
-    expected_skill_count: int = 46,
+    expected_skill_count: int = 47,
     profile: str | None = None,
     skills_root: str | None = None,
 ) -> None:
@@ -509,7 +509,7 @@ def main() -> int:
             else:
                 install_emulated(source_path, consumer)
             installed_source = source_checkout if args.mode == "native-remote" else source_path
-            expected_skill_count = 45 if args.mode.startswith("native") else 46
+            expected_skill_count = 45 if args.mode.startswith("native") else 47
             verify(
                 consumer,
                 installed_source if installed_source.is_dir() else None,

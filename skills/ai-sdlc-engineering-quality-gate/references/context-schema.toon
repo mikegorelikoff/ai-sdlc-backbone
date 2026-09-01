@@ -1,0 +1,135 @@
+"$defs":
+  candidateExample:
+    additionalProperties: false
+    properties:
+      id:
+        pattern: "^[A-Z]+-[0-9]{3}$"
+        type: string
+      kind:
+        minLength: 1
+        type: string
+      mode:
+        pattern: "^(100644|100755|160000)$"
+        type: string
+      path:
+        minLength: 1
+        type: string
+      reason:
+        minLength: 1
+        type: string
+      score:
+        minimum: 0
+        type: integer
+    required[5]: id,path,kind,score,reason
+    type: object
+  changeScope:
+    additionalProperties: false
+    properties:
+      files_changed:
+        minimum: 0
+        type: integer
+      lines_added:
+        minimum: 0
+        type: integer
+      lines_removed:
+        minimum: 0
+        type: integer
+    required[3]: files_changed,lines_added,lines_removed
+    type: object
+  changedFile:
+    additionalProperties: false
+    properties:
+      kind:
+        minLength: 1
+        type: string
+      path:
+        minLength: 1
+        type: string
+      sha256:
+        pattern: "^[a-f0-9]{64}$"
+        type: string
+    required[2]: path,kind
+    type: object
+  verificationCandidate:
+    additionalProperties: false
+    properties:
+      argv:
+        items:
+          minLength: 1
+          type: string
+        minItems: 1
+        type: array
+      id:
+        pattern: "^[A-Z]+-[0-9]{3}$"
+        type: string
+      kind:
+        enum[7]: build,typecheck,lint,tests,static_analysis,integration,other
+      priority:
+        minimum: 0
+        type: integer
+      scope:
+        minLength: 1
+        type: string
+      source:
+        minLength: 1
+        type: string
+    required[6]: id,kind,argv,source,priority,scope
+    type: object
+"$id": "https://github.com/mikegorelikoff/ai-sdlc-harness/schemas/ai-sdlc-engineering-quality-gate-context-v1"
+"$schema": ai-sdlc-toon-contract/v1
+additionalProperties: false
+properties:
+  base_reference:
+    minLength: 1
+    type: string
+  base_revision:
+    minLength: 1
+    type: string
+  candidate_examples:
+    items:
+      "$ref": #/$defs/candidateExample
+    type: array
+  change_fingerprint:
+    pattern: "^sha256:[a-f0-9]{64}$"
+    type: string
+  change_scope:
+    "$ref": #/$defs/changeScope
+  changed_files:
+    items:
+      "$ref": #/$defs/changedFile
+    minItems: 1
+    type: array
+  context_fingerprint:
+    pattern: "^sha256:[a-f0-9]{64}$"
+    type: string
+  feature:
+    type: string
+  flow_mode:
+    enum[2]: quick,full
+  head_revision:
+    minLength: 1
+    type: string
+  instruction_sources:
+    items:
+      minLength: 1
+      type: string
+    type: array
+    uniqueItems: true
+  max_candidates:
+    maximum: 5
+    minimum: 2
+    type: integer
+  request:
+    minLength: 1
+    type: string
+  schema:
+    const: ai-sdlc-engineering-quality-gate-context/v1
+  spec_fingerprint:
+    type: string
+  verification_candidates:
+    items:
+      "$ref": #/$defs/verificationCandidate
+    type: array
+required[16]: schema,request,flow_mode,feature,base_reference,base_revision,head_revision,spec_fingerprint,max_candidates,changed_files,change_scope,instruction_sources,candidate_examples,verification_candidates,change_fingerprint,context_fingerprint
+title: AI SDLC Engineering Quality Gate Context
+type: object

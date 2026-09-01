@@ -33,6 +33,9 @@ description: Core versioned records used for artifacts, handoffs, modules, compa
 | `ai-sdlc-context-query/v1` | Return fresh ranked lexical and bounded graph evidence, exact source identity, explained fallback, and query fingerprint. |
 | `ai-sdlc-context-cache-benchmark-cases/v1` | Declare deterministic golden queries, expected paths and anchors, owning steps, budgets, and expected packed or direct-read strategies. |
 | `ai-sdlc-context-cache-benchmark/v1` | Compare lexical, graph-enhanced, and context-pack outcomes with recall, savings, stable mode fingerprints, and a deterministic release verdict. |
+| `ai-sdlc-engineering-quality-gate-context/v1` | Bind a bounded post-implementation diff to stably ranked repository examples, verification sources, change scope, and current context identity. |
+| `ai-sdlc-engineering-quality-gate-draft/v1` | Carry the repository profile, typed findings, fixes, verification outcomes, quality evidence, and proposed decision into deterministic finalization. |
+| `ai-sdlc-engineering-quality-gate/v1` | Report the canonical current quality decision, fixed and remaining findings, exact verification states, change scope, blocking reasons, and readiness fingerprint. |
 | `ai-sdlc-run-plan/v2` | Define immutable StepCard-derived dependency tasks, fingerprints, idempotency keys, retry limits, budgets, and commit boundaries. |
 | `ai-sdlc-run-event/v2` | Append one canonical TOON transition with contiguous sequence, previous-event identity, task attempt, and evidence payload. |
 | `ai-sdlc-run-state/v2` | Project replayable task phase, status, attempts, readiness, budgets, stop reason, and run identity. |

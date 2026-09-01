@@ -44,6 +44,7 @@ Own testability, coverage strategy, acceptance evidence, and QA readiness; produ
 | Handoff and recovery | Produce, consume, or reopen evidence | [`ai-sdlc-delivery-handoff-review`](skills/ai-sdlc-delivery-handoff-review.md) |
 | Planning and delivery | Collaborate or resolve inputs | [`ai-sdlc-sdd`](skills/ai-sdlc-sdd.md) |
 | Review and assurance | Contribute risk or review evidence | [`ai-sdlc-code-review`](skills/ai-sdlc-code-review.md) |
+| Review and assurance | Contribute risk or review evidence | [`ai-sdlc-engineering-quality-gate`](skills/ai-sdlc-engineering-quality-gate.md) |
 | Review and assurance | Contribute risk or review evidence | [`ai-sdlc-evidence-council`](skills/ai-sdlc-evidence-council.md) |
 | Review and assurance | Contribute risk or review evidence | [`ai-sdlc-quality-lenses`](skills/ai-sdlc-quality-lenses.md) |
 | Review and assurance | Contribute risk or review evidence | [`ai-sdlc-requirements-readiness-review`](skills/ai-sdlc-requirements-readiness-review.md) |
@@ -171,6 +172,7 @@ Own technical design, implementation correctness, testable task boundaries, revi
 | Specify a behavior or architecture change | Own or execute engineering work | [`ai-sdlc-sdd`](skills/ai-sdlc-sdd.md) | Clear behavior and affected system | Bounded implementation tasks |
 | Derive verifiable implementation scenarios | Own or execute engineering work | [`ai-sdlc-test-cases`](skills/ai-sdlc-test-cases.md) | Requirement IDs and expected outcomes | Automated tests or suite synthesis |
 | Run focused implementation checks | Own or execute engineering work | [`ai-sdlc-validation`](skills/ai-sdlc-validation.md) | Changed files, expected behavior, and available commands | Code review or release handoff |
+| Review and repair a completed implementation against repository evidence | Own or execute engineering work | [`ai-sdlc-engineering-quality-gate`](skills/ai-sdlc-engineering-quality-gate.md) | Bounded diff, accepted change contract, and repository-owned checks | Independent validation or commit preparation |
 | Review a completed change | Own or execute engineering work | [`ai-sdlc-code-review`](skills/ai-sdlc-code-review.md) | Diff plus accepted contract and tests | Finding resolution or commit prep |
 | Prepare an auditable atomic commit | Own or execute engineering work | [`ai-sdlc-commit-prep`](skills/ai-sdlc-commit-prep.md) | Completed scope, validation, and review evidence | Human commit/release workflow |
 

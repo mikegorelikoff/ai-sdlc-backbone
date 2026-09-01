@@ -1,6 +1,7 @@
-actions[9]{code,id,role,skill,stage,step,workspace}:
+actions[10]{code,id,role,skill,stage,step,workspace}:
   COMMIT,commit,software-engineer,ai-sdlc-commit-prep,commit_prep,steps/complete.md,implementation
   BUILD,implementation,software-engineer,ai-sdlc-sdd,sdd,steps/execute.md,implementation
+  QUALITY,engineering_quality_gate,software-engineer,ai-sdlc-engineering-quality-gate,quality_gate,steps/validate.md,implementation
   DISCOVER,new_refinement,business-analyst,ai-sdlc-working-backwards-discovery,discovery,steps/execute.md,refinement
   QA-PLAN,qa_planning,qa-engineer,ai-sdlc-qa-requirements-gap-review,qa_gap_review,steps/validate.md,refinement
   REVIEW,review,software-engineer,ai-sdlc-code-review,code_review,steps/validate.md,implementation

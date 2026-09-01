@@ -7,6 +7,13 @@
 - Added the docs-enabled AI SDLC Loop commit immediately after `v0.1.1` as the
   pinned `products/ai-sdlc-loop` submodule and documented it as the smaller
   approval-gated member of the AI SDLC product family.
+- Added the core `ai-sdlc-engineering-quality-gate` capability for
+  repository-grounded adversarial review, safe High and Medium finding fixes,
+  deterministic verification reruns, and fingerprinted evidence-based quality
+  reports; guided flow exposes it through a stable direct intent.
+- Added the namespaced Loop quality gate as the mandatory stage between
+  Implement and Verify, bringing Loop to 19 working skills plus its shared
+  runtime.
 
 ## v4.4.0 - 2026-08-05
 

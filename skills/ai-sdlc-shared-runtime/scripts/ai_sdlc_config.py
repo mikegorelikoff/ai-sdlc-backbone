@@ -183,6 +183,7 @@ def validate_flow(values: dict[str, Any]) -> list[str]:
     actions = {
         "branching",
         "commit",
+        "engineering_quality_gate",
         "implementation",
         "new_refinement",
         "qa_planning",

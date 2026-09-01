@@ -19,7 +19,7 @@ artifact_metadata:
   status: "validated"
   owner: "maintainer"
   created_at: "2026-08-17"
-  updated_at: "2026-08-17"
+  updated_at: "2026-09-01"
   trace_ids:
     - "AC-001"
     - "AC-002"
@@ -73,9 +73,9 @@ No open finding remains.
 | Medium | `install.py` custom roots; NFR-002 | The generic profile accepted roots below `.git` or `.ai-sdlc-loop`, allowing installed files to overlap protected metadata. | Reject protected-root equality and descendants; TC-002 covers both values. |
 | Medium | `changed_paths`; NFR-003 | Newline-delimited Git output was ambiguous for legal filenames containing newlines and could misclassify the approved change set. | Use `-z` for all Git path inventories and split only on NUL. |
 | Low | `install.sh` temporary extraction | Replacing the shell with `exec python3` bypassed the EXIT trap and leaked the temporary directory after every remote install. | Invoke Python normally so shell exit executes cleanup while preserving the command status under `set -e`. |
-| Low | original `requirements.md` Outputs and `design.md` Components | The first SDD named `spec.md` and `commit-check`, neither of which existed in that candidate contract. | Corrected in the first pass; DEC-002 subsequently replaces all Loop-owned JSON with canonical TOON. |
+| Low | original `requirements.md` Outputs and `design.md` Components | The first SDD named `spec.md` and `commit-check`, neither of which existed in that candidate contract. | Corrected in the first pass; DEC-002 subsequently replaces all Loop-owned non-TOON object notation with canonical TOON. |
 | Medium | `install.py::digest_tree`; NFR-002/AC-001 | Multi-skill verification followed linked files and could read content outside an installed skill tree. | Reject every symlink before hashing; TC-003 covers linked installed content. |
-| Medium | `cmd_promote`; NFR-009/AC-008 | The TOON encoder accepted an output name ending in `.json`, violating the durable artifact contract and misleading downstream tooling. | Require a `.toon` suffix before any output write; TC-025 covers atomic rejection. |
+| Medium | `cmd_promote`; NFR-009/AC-008 | The TOON encoder accepted a legacy object-notation suffix, violating the durable artifact contract and misleading downstream tooling. | Require a `.toon` suffix before any output write; TC-025 covers atomic rejection. |
 | Medium | imported delivery-control helpers; AC-009 | The original Harness helpers assumed optional BA, QA, and SDD packages that Loop intentionally does not ship, so copied commands could emit unavailable checks or route outside the package. | Route steps through Loop's Specify/Verify entrypoints and make SDD-only checks conditional; TC-026 executes all eight helper contracts and proves the validation planner omits absent SDD commands. |
 | Low | initial compact QA candidate; AC-010 | The first QA script used a Python 3.10-only `zip` option and its three-node graph did not satisfy the packaged v2 selector contract. | Use Python 3.9-compatible construction and a five-node plan/context/artifact/evidence/signoff graph; TC-027 and the strict selector pass. |
 | Medium | hosted CI run `32113320810`; NFR-006/TC-026 | Windows `cp1252` stdout could not encode a Unicode arrow encountered by imported helper smoke tests, while Linux and macOS passed. | Reconfigure shared helper stdout/stderr to UTF-8 and run TC-026 under an explicit `PYTHONIOENCODING=cp1252` environment; local 32-test regression passes. |
@@ -95,3 +95,20 @@ The original independent pass was recorded before consulting its security verdic
 ## Verdict
 
 Corrected candidate is ready for refreshed validation and commit preparation with no open finding. Commit, push, `v0.1.1`, submodule integration, hosted CI, parent documentation, and final release signoff remain gated work rather than review waivers.
+
+## Engineering Quality Gate Addendum — 2026-09-01
+
+An independent adversarial helper audit found and the implementation fixed
+three High issues: same-basename source drift was hidden by artifact filtering,
+Git executable-mode drift was absent from fingerprints, and truthful failed
+`before_fix` evidence permanently blocked a passing post-fix decision. It also
+fixed localized Medium issues in external symlinked command discovery,
+verification ID/exit/argv validation, artifact overwrite protection, empty-diff
+approval, and POSIX path ranking.
+
+The corrective pass then added fail-closed dirty nested-worktree handling and
+deduplicated case aliases for one repository command source after macOS
+dogfooding exposed cross-platform differences. Each material finding now has a
+focused regression in the core or Loop suite. No unresolved High or blocking
+Medium finding remains; non-gate aggregate-suite environment gaps are recorded
+in `validation.md` and were not hidden by configuration or test changes.

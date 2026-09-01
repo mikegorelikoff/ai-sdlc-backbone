@@ -23,8 +23,9 @@ requirements to executable tasks.
 
 ## Implement and verify
 
-Branching, bounded implementation, validation, security testing, code review,
-change impact, and commit preparation produce and assess the change.
+Branching, bounded implementation, the repository-grounded engineering quality
+gate, validation, security testing, code review, change impact, and commit
+preparation produce and assess the change.
 
 ## Govern and recover
 

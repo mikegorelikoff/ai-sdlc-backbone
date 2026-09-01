@@ -5,7 +5,9 @@ description: Follow the verified AI SDLC Harness path from request through explo
 
 # Delivery workflow
 
-The primary workflow connects seven outcomes. Exact skill ownership varies by
+The primary workflow can connect eight outcomes. The Engineering Quality Gate
+is mandatory when the owning workflow selects it (and always in AI SDLC Loop);
+the existing Harness lifecycle remains compatible with direct validation. Exact skill ownership varies by
 request, role, and rigor; `ai-sdlc-flow` is the recommended entry point when
 you do not already know the owning skill.
 
@@ -15,6 +17,7 @@ you do not already know the owning skill.
   <div class="workflow-step"><strong>Specify</strong><span>Record requirements, acceptance, and boundaries.</span></div>
   <div class="workflow-step"><strong>Plan</strong><span>Connect design, tests, tasks, decisions, and order.</span></div>
   <div class="workflow-step"><strong>Implement</strong><span>Execute only approved, bounded tasks.</span></div>
+  <div class="workflow-step"><strong>Engineering quality gate</strong><span>Evaluate the current diff against repository patterns, remediate safe material findings, and bind the decision to deterministic evidence.</span></div>
   <div class="workflow-step"><strong>Verify</strong><span>Run focused checks and record exact evidence.</span></div>
   <div class="workflow-step"><strong>Handoff</strong><span>Transfer state, findings, authority, and next action.</span></div>
 </div>

@@ -1,0 +1,306 @@
+"$defs":
+  architecture:
+    additionalProperties: false
+    properties:
+      pattern:
+        minLength: 1
+        type: string
+      relevant_layers:
+        items:
+          minLength: 1
+          type: string
+        type: array
+        uniqueItems: true
+    required[2]: pattern,relevant_layers
+    type: object
+  convention:
+    additionalProperties: false
+    properties:
+      evidence:
+        items:
+          minLength: 1
+          type: string
+        minItems: 1
+        type: array
+        uniqueItems: true
+      name:
+        minLength: 1
+        type: string
+      value:
+        minLength: 1
+        type: string
+    required[3]: name,value,evidence
+    type: object
+  draft:
+    additionalProperties: false
+    properties:
+      change_scope:
+        "$ref": #/$defs/draftChangeScope
+      final_decision:
+        "$ref": #/$defs/finalDecision
+      findings_fixed:
+        items:
+          "$ref": #/$defs/finding
+        type: array
+      quality_evidence:
+        "$ref": #/$defs/qualityEvidence
+      remaining_findings:
+        items:
+          "$ref": #/$defs/finding
+        type: array
+      repository_profile:
+        "$ref": #/$defs/repositoryProfile
+      schema:
+        const: ai-sdlc-engineering-quality-gate-draft/v1
+      status:
+        enum[3]: PASS,PASS_WITH_FINDINGS,FAIL
+      summary:
+        minLength: 1
+        type: string
+      verification:
+        items:
+          "$ref": #/$defs/verification
+        minItems: 1
+        type: array
+    required[10]: schema,status,summary,repository_profile,findings_fixed,remaining_findings,verification,change_scope,quality_evidence,final_decision
+    type: object
+  draftChangeScope:
+    additionalProperties: false
+    properties:
+      new_dependencies:
+        items:
+          minLength: 1
+          type: string
+        type: array
+        uniqueItems: true
+      unrelated_changes:
+        items:
+          minLength: 1
+          type: string
+        type: array
+        uniqueItems: true
+    required[2]: new_dependencies,unrelated_changes
+    type: object
+  finalDecision:
+    additionalProperties: false
+    properties:
+      blocking_reasons:
+        items:
+          minLength: 1
+          type: string
+        type: array
+        uniqueItems: true
+      ready_for_next_stage:
+        type: boolean
+    required[2]: ready_for_next_stage,blocking_reasons
+    type: object
+  finding:
+    additionalProperties: false
+    properties:
+      blocking:
+        type: boolean
+      category:
+        enum[8]: correctness,architecture,repository-fit,maintainability,testing,security,performance,scope
+      evidence:
+        items:
+          minLength: 1
+          type: string
+        minItems: 1
+        type: array
+        uniqueItems: true
+      file:
+        minLength: 1
+        type: string
+      fix:
+        type: string
+      id:
+        pattern: "^QG-[0-9]{3}$"
+        type: string
+      impact:
+        minLength: 1
+        type: string
+      issue:
+        minLength: 1
+        type: string
+      location:
+        type: string
+      reason_not_fixed:
+        type: string
+      recommended_fix:
+        minLength: 1
+        type: string
+      resolution:
+        enum[2]: fixed,remaining
+      severity:
+        enum[3]: high,medium,low
+    required[13]: id,severity,category,file,location,issue,evidence,impact,recommended_fix,blocking,resolution,fix,reason_not_fixed
+    type: object
+  qualityEvidence:
+    additionalProperties: false
+    properties:
+      correctness:
+        items:
+          minLength: 1
+          type: string
+        minItems: 1
+        type: array
+        uniqueItems: true
+      repository_consistency:
+        items:
+          minLength: 1
+          type: string
+        minItems: 1
+        type: array
+        uniqueItems: true
+      simplicity:
+        items:
+          minLength: 1
+          type: string
+        minItems: 1
+        type: array
+        uniqueItems: true
+      testing:
+        items:
+          minLength: 1
+          type: string
+        minItems: 1
+        type: array
+        uniqueItems: true
+    required[4]: repository_consistency,correctness,testing,simplicity
+    type: object
+  report:
+    additionalProperties: false
+    properties:
+      change_fingerprint:
+        pattern: "^sha256:[a-f0-9]{64}$"
+        type: string
+      change_scope:
+        "$ref": #/$defs/reportChangeScope
+      context_fingerprint:
+        pattern: "^sha256:[a-f0-9]{64}$"
+        type: string
+      context_path:
+        minLength: 1
+        type: string
+      final_decision:
+        "$ref": #/$defs/finalDecision
+      findings_fixed:
+        items:
+          "$ref": #/$defs/finding
+        type: array
+      quality_evidence:
+        "$ref": #/$defs/qualityEvidence
+      remaining_findings:
+        items:
+          "$ref": #/$defs/finding
+        type: array
+      report_fingerprint:
+        pattern: "^sha256:[a-f0-9]{64}$"
+        type: string
+      repository_profile:
+        "$ref": #/$defs/repositoryProfile
+      schema:
+        const: ai-sdlc-engineering-quality-gate/v1
+      status:
+        enum[3]: PASS,PASS_WITH_FINDINGS,FAIL
+      summary:
+        minLength: 1
+        type: string
+      verification:
+        items:
+          "$ref": #/$defs/verification
+        minItems: 1
+        type: array
+    required[14]: schema,status,summary,repository_profile,findings_fixed,remaining_findings,verification,change_scope,quality_evidence,final_decision,context_path,change_fingerprint,context_fingerprint,report_fingerprint
+    type: object
+  reportChangeScope:
+    additionalProperties: false
+    properties:
+      files_changed:
+        minimum: 0
+        type: integer
+      lines_added:
+        minimum: 0
+        type: integer
+      lines_removed:
+        minimum: 0
+        type: integer
+      new_dependencies:
+        items:
+          minLength: 1
+          type: string
+        type: array
+        uniqueItems: true
+      unrelated_changes:
+        items:
+          minLength: 1
+          type: string
+        type: array
+        uniqueItems: true
+    required[5]: files_changed,lines_added,lines_removed,new_dependencies,unrelated_changes
+    type: object
+  repositoryProfile:
+    additionalProperties: false
+    properties:
+      applicable_rules:
+        items:
+          minLength: 1
+          type: string
+        type: array
+        uniqueItems: true
+      architecture:
+        "$ref": #/$defs/architecture
+      conventions:
+        items:
+          "$ref": #/$defs/convention
+        type: array
+      example_shortfall_reason:
+        type: string
+      representative_examples:
+        items:
+          minLength: 1
+          type: string
+        maxItems: 5
+        type: array
+        uniqueItems: true
+    required[5]: architecture,conventions,representative_examples,example_shortfall_reason,applicable_rules
+    type: object
+  verification:
+    additionalProperties: false
+    properties:
+      command:
+        items:
+          minLength: 1
+          type: string
+        type: array
+      evidence:
+        items:
+          minLength: 1
+          type: string
+        minItems: 1
+        type: array
+        uniqueItems: true
+      exit_code:
+        type[2]: integer,"null"
+      id:
+        pattern: "^[A-Z]+-[0-9]{3}$"
+        type: string
+      kind:
+        enum[7]: build,typecheck,lint,tests,static_analysis,integration,other
+      phase:
+        enum[3]: before_fix,after_fix,final
+      reason:
+        minLength: 1
+        type: string
+      required:
+        type: boolean
+      status:
+        enum[4]: pass,fail,not_run,unavailable
+    required[9]: id,kind,phase,required,status,command,exit_code,evidence,reason
+    type: object
+"$id": "https://github.com/mikegorelikoff/ai-sdlc-harness/schemas/ai-sdlc-engineering-quality-gate-report-v1"
+"$schema": ai-sdlc-toon-contract/v1
+oneOf[2]{"$ref"}:
+  #/$defs/draft
+  #/$defs/report
+title: AI SDLC Engineering Quality Gate Draft And Report

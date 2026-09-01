@@ -40,6 +40,7 @@ STAGE_PREDECESSORS: dict[str, tuple[str, ...]] = {
     "qa_gap_review": ("qa_plan",),
     "branching": (),
     "sdd": ("branching",),
+    "quality_gate": ("sdd",),
     "validation": ("sdd",),
     "code_review": ("validation",),
     "security_testing": ("sdd",),
@@ -125,6 +126,7 @@ INTENT_RULES: tuple[tuple[str, tuple[str, ...], str, str, str], ...] = (
     ("new_refinement", ("feedback", "refinement", "new feature", "new request", "idea", "customer problem", "product", "discover"), "refinement", "discovery", "ai-sdlc-working-backwards-discovery"),
     ("qa_planning", ("testability", "qa coverage", "test plan"), "refinement", "qa_gap_review", "ai-sdlc-qa-requirements-gap-review"),
     ("story_decomposition", ("story", "backlog", "epic"), "refinement", "story_decomposition", "ai-sdlc-user-story-decomposition"),
+    ("engineering_quality_gate", ("engineering-quality-gate", "engineering quality gate", "quality gate", "engineering review", "repository-fit review", "repository fit review"), "implementation", "quality_gate", "ai-sdlc-engineering-quality-gate"),
     ("review", ("code review", "review diff", "review pr", "review code", "review"), "implementation", "code_review", "ai-sdlc-code-review"),
     ("validation", ("validate", "validation", "regression", "smoke test"), "implementation", "validation", "ai-sdlc-validation"),
     ("implementation", ("implement", "fix", "bug", "refactor", "api", "architecture"), "implementation", "sdd", "ai-sdlc-sdd"),
@@ -296,6 +298,12 @@ def classify_intent(intent: str) -> tuple[str, str, str, str, tuple[str, ...]]:
         if keyword in normalized
     ]
     classes = {item[0] for item in matches}
+    if "engineering_quality_gate" in classes:
+        matches = [
+            item for item in matches
+            if item[0] not in {"implementation", "review"}
+        ]
+        classes = {item[0] for item in matches}
     if "review" in classes and len(classes) > 1:
         matches = [item for item in matches if item[0] != "review"]
         classes = {item[0] for item in matches}
@@ -663,7 +671,11 @@ def build_card(
     if existing:
         workspace, stage, skill, reason = existing
         route_evidence.append(reason)
-    elif workspace == "implementation" and current_branch(root) in DEFAULT_BASE_BRANCHES:
+    elif (
+        workspace == "implementation"
+        and skill == "ai-sdlc-sdd"
+        and current_branch(root) in DEFAULT_BASE_BRANCHES
+    ):
         workspace, stage, skill = "implementation", "branching", "ai-sdlc-branching"
         route_evidence.append("shared base branch requires task branching before SDD writes")
     actual_action = by_skill.get(skill, action or {})

@@ -44,11 +44,13 @@ workflow structure; it does not replace engineering or product judgment.
   <div class="workflow-step"><strong>3. Specify</strong><span>Make requirements and acceptance explicit.</span></div>
   <div class="workflow-step"><strong>4. Plan</strong><span>Connect design, tests, tasks, and ownership.</span></div>
   <div class="workflow-step"><strong>5. Implement</strong><span>Change only the approved scope.</span></div>
-  <div class="workflow-step"><strong>6. Verify and hand off</strong><span>Record evidence and the next owner.</span></div>
+  <div class="workflow-step"><strong>6. Engineering quality gate</strong><span>Review the current diff against repository evidence and fix safe material findings.</span></div>
+  <div class="workflow-step"><strong>7. Verify and hand off</strong><span>Record current evidence and the next owner.</span></div>
 </div>
 
 Each stage produces or updates repository artifacts that the next stage can
-consume. [Explore the detailed workflow](how-it-works/workflow.md) or compare
+consume. The current unreleased source adds the core quality gate; published
+`v4.4.0` retains its prior inventory and direct validation route. [Explore the detailed workflow](how-it-works/workflow.md) or compare
 the [quick, full, and expert paths](how-to/choose-flow.md).
 
 ## Five-minute first success

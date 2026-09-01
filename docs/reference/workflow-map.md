@@ -22,7 +22,7 @@ changed intent/stale evidence → control plane ← learning/retrospective/metri
 | --- | --- | --- | --- |
 | Explore | Goal known, workflow unclear | Flow Explore, project context, rigor | Evidence-backed required/optional handoff; no mutation. |
 | Refine | Product/business/QA evidence incomplete | Exact 18 stages in [Complete refinement](../flows/refinement.md) | Delivery specification + QA readiness + accepted handoff. |
-| Implement | Behavior/design change ready to build | SDD, branching, context, validation, review, security, commit | Bounded task evidence and traceable commits. |
+| Implement | Behavior/design change ready to build | SDD, branching, context, engineering quality gate, validation, review, security, commit | Bounded task evidence, current repository-grounded quality evidence, and traceable commits. |
 | Control | Change, automation, policy, runtime, portability, operations | Change set, graph, evidence, policy, context v2, runtime, workflow, adapter, doctor, trust, metrics | Explained decision/result with recovery and handoff. |
 | Recover/learn | Failed/stale/interrupted/changed outcome | Change impact, resume, migration, retrospective | Authority restored, dependent evidence reopened, proposal governed. |
 

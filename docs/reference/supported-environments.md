@@ -40,7 +40,9 @@ host.
 
 ## Installation contract
 
-The supported profiles install all 45 skills into the host's project directory:
+The current source profiles install all 46 default skills into the host's
+project directory. The immutable published `v4.4.0` commands below reproduce
+that release's 45-skill inventory:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.4.0/install.sh | sh -s -- codex-project
@@ -53,9 +55,9 @@ Native PowerShell and configurable compatible-host roots use `install.py`:
 irm https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.4.0/install.py | py -3 - agent-project --skills-root .agent/skills
 ```
 
-The additive `context-cache` module is opt-in and makes the installed set 46
-skills. It uses the same two project-scoped host profiles and requires local
-Python SQLite FTS5 support:
+The additive `context-cache` module is opt-in. It makes the current source set
+47 skills and the immutable `v4.4.0` set 46 skills. It uses the same two
+project-scoped host profiles and requires local Python SQLite FTS5 support:
 
 ```bash
 ./install.sh codex-project --module context-cache

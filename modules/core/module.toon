@@ -6,7 +6,7 @@ id: core
 kind: core
 requires[0]:
 schema: ai-sdlc-module/v1
-skills[40]{name,path}:
+skills[41]{name,path}:
   ai-sdlc-approvals-sandbox,skills/ai-sdlc-approvals-sandbox
   ai-sdlc-ba,skills/ai-sdlc-ba
   ai-sdlc-backlog-decomposition-and-task-planning,skills/ai-sdlc-backlog-decomposition-and-task-planning
@@ -22,6 +22,7 @@ skills[40]{name,path}:
   ai-sdlc-delivery-package-gap-review,skills/ai-sdlc-delivery-package-gap-review
   ai-sdlc-delivery-spec-synthesis,skills/ai-sdlc-delivery-spec-synthesis
   ai-sdlc-doctor,skills/ai-sdlc-doctor
+  ai-sdlc-engineering-quality-gate,skills/ai-sdlc-engineering-quality-gate
   ai-sdlc-goal-capability-and-epic-mapping,skills/ai-sdlc-goal-capability-and-epic-mapping
   ai-sdlc-flow,skills/ai-sdlc-flow
   ai-sdlc-package-trust,skills/ai-sdlc-package-trust

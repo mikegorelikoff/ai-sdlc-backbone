@@ -81,6 +81,11 @@ IMPLEMENTATION_CONTRACT = (
     ("sdd", "ai-sdlc-sdd", "specs/<feature>/"),
     ("task_context", "ai-sdlc-project-context", "ai-sdlc-context-pack/v4"),
     ("implement", "Host coding agent", "Code, tests"),
+    (
+        "quality_gate",
+        "ai-sdlc-engineering-quality-gate",
+        "Canonical context and evidence-based quality report",
+    ),
     ("validate", "ai-sdlc-validation", "Exact command outcomes"),
     ("review", "ai-sdlc-code-review", "Evidence-ranked findings"),
     ("commit_prep", "ai-sdlc-commit-prep", "traceable commit"),

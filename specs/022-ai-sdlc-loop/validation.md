@@ -19,7 +19,7 @@ artifact_metadata:
   status: "validated"
   owner: "maintainer"
   created_at: "2026-08-17"
-  updated_at: "2026-08-17"
+  updated_at: "2026-09-01"
   trace_ids:
     - "AC-001"
     - "AC-002"
@@ -54,6 +54,14 @@ artifact_metadata:
     - "TC-027"
     - "TC-028"
     - "TC-029"
+    - "TC-032"
+    - "TC-033"
+    - "TC-034"
+    - "TC-035"
+    - "TC-036"
+    - "TC-037"
+    - "TC-038"
+    - "TC-039"
   related_artifacts:
     - "specs/022-ai-sdlc-loop/_ai_sdlc/validation-plan.toon"
     - "specs/022-ai-sdlc-loop/_ai_sdlc/validation-receipt.toon"
@@ -102,3 +110,37 @@ Validate the exact namespaced sixteen-skill plus shared-runtime installer, canon
 ## Residual Risk
 
 Loop `v0.1.1` is published and remotely installable; the docs-enabled follow-up `e94902883389d1271d080b605e5b13beb09990f6` is green on all hosted operating systems, deployed through GitHub Pages, pinned by the Harness gitlink, and passes the repeated complete parent documentation/build/render suite. TC-024 human UAT and separate approval for the parent commit remain. Owner: maintainer. Impact: the Loop release and site are available, but the parent integration commit must not claim complete human signoff. Resolution: retain TC-024 as an explicit human gate and request separate approval for the prepared parent commit.
+
+## Engineering Quality Gate Addendum — 2026-09-01
+
+- PASS: the canonical core helper regression suite passes 12/12, including
+  byte stability across checkout roots, content and executable-mode drift,
+  recognized artifact routing, empty-diff rejection, external configuration
+  symlinks, verification typing, honest pre/post-fix evidence, and dirty nested
+  worktree rejection. Its package contract test also passes.
+- PASS: the complete autonomous Loop suite passes 46/46. Verify fails closed
+  for missing, failed, tampered, content-stale, and mode-stale reports; ready
+  `PASS` and `PASS_WITH_FINDINGS` reports proceed and promotion/status retain
+  their fingerprints.
+- PASS: focused Harness runtime compatibility, configuration, flow, selector,
+  module, inventory, and generated-catalog checks pass with 46 default skills,
+  47 total skills, 6 modules, and 122 scripts.
+- PASS: SDD clarify, checklist, plan-link, analysis, and structure gates pass
+  after T011 through T015 completion.
+- PASS: catalog check, documentation validation, 47 documentation tests,
+  strict MkDocs build, rendered validation (208 pages and 5,584 local targets),
+  and root/nested `git diff --check` all pass.
+- PASS: a disposable forward fixture exposed a zero-value correctness defect
+  despite an initially passing suite. The gate recorded three findings, fixed
+  the High correctness issue and two localized Medium issues, reran seven tests,
+  compile validation, and diff hygiene, then finalized and reverified current
+  `PASS` report fingerprint
+  `sha256:6f1de9823ed07d2e7bf5e40468ba4ac2565949f9092c44205aca8dfbdc8299a2`.
+- NOT RUN as a release claim: a fresh delegated model invocation exhausted its
+  provider usage allowance before reviewing the fixture. The same fixture was
+  completed through the executable skill contract, but provider-independent
+  live evaluation remains future evidence rather than a fabricated pass.
+- UNAVAILABLE in the current host: the aggregate 189-test Harness run reaches
+  unrelated opt-in context-cache tests whose twelve pinned tree-sitter grammar
+  packages are absent; one existing process-group timeout test is denied by the
+  managed sandbox. These are recorded without weakening or suppressing tests.

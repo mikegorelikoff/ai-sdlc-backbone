@@ -104,6 +104,10 @@ SKILL_SELECTION_BOUNDARIES: dict[str, tuple[str, ...]] = {
         "Do not use it to diagnose application feature behavior. Use `ai-sdlc-validation` instead.",
         "Do not use it to apply installation or upgrade changes. Use the authorized install or update workflow instead.",
     ),
+    "ai-sdlc-engineering-quality-gate": (
+        "Do not use it before a bounded implementation diff and accepted change contract exist. Use `ai-sdlc-sdd` or the owning implementation workflow instead.",
+        "Do not use it only to execute an already defined check list. Use `ai-sdlc-validation` instead.",
+    ),
     "ai-sdlc-evidence-council": (
         "Do not use it as authoritative approval or sign-off. Use the accountable human gate instead.",
         "Do not use it to gather missing sources. Use `ai-sdlc-research` instead.",
@@ -226,7 +230,8 @@ ROLE_SKILL_GROUPS: dict[str, dict[str, object]] = {
             "ai-sdlc-delivery-handoff-review", "ai-sdlc-quality-lenses",
             "ai-sdlc-change-impact", "ai-sdlc-delivery-graph",
             "ai-sdlc-evidence-council", "ai-sdlc-security-testing",
-            "ai-sdlc-sdd", "ai-sdlc-code-review", "ai-sdlc-policy",
+            "ai-sdlc-sdd", "ai-sdlc-engineering-quality-gate",
+            "ai-sdlc-code-review", "ai-sdlc-policy",
         ),
     },
     "BA": {
@@ -296,7 +301,8 @@ ROLE_SKILL_GROUPS: dict[str, dict[str, object]] = {
         "start": (
             "ai-sdlc-flow", "ai-sdlc-project-context", "ai-sdlc-branching",
             "ai-sdlc-sdd", "ai-sdlc-test-cases", "ai-sdlc-validation",
-            "ai-sdlc-code-review", "ai-sdlc-commit-prep",
+            "ai-sdlc-engineering-quality-gate", "ai-sdlc-code-review",
+            "ai-sdlc-commit-prep",
         ),
         "shared": (
             "ai-sdlc-conventional-commit", "ai-sdlc-architecture",
@@ -340,6 +346,7 @@ TASK_SELECTION_HINTS: dict[str, tuple[str, str, str]] = {
     "ai-sdlc-project-context": ("Ground work in repository evidence", "Repository sources and one task intent", "Flow Explore or SDD"),
     "ai-sdlc-branching": ("Create or verify the task branch", "Accepted task/spec and Git state", "SDD or implementation"),
     "ai-sdlc-sdd": ("Specify a behavior or architecture change", "Clear behavior and affected system", "Bounded implementation tasks"),
+    "ai-sdlc-engineering-quality-gate": ("Review and repair a completed implementation against repository evidence", "Bounded diff, accepted change contract, and repository-owned checks", "Independent validation or commit preparation"),
     "ai-sdlc-code-review": ("Review a completed change", "Diff plus accepted contract and tests", "Finding resolution or commit prep"),
     "ai-sdlc-commit-prep": ("Prepare an auditable atomic commit", "Completed scope, validation, and review evidence", "Human commit/release workflow"),
     "ai-sdlc-delivery-graph": ("Inspect lifecycle coverage and dependencies", "Current indexed lifecycle artifacts", "Missing producer or governance review"),
@@ -385,7 +392,7 @@ def shared_skill_group(skill_id: str) -> tuple[str, str]:
         return "Handoff and recovery", "Produce, consume, or reopen evidence"
     if skill_id in {"ai-sdlc-policy", "ai-sdlc-package-trust", "ai-sdlc-approvals-sandbox", "ai-sdlc-host-adapter", "ai-sdlc-doctor", "ai-sdlc-workflow", "ai-sdlc-runtime", "ai-sdlc-scheduler", "ai-sdlc-shared-runtime"}:
         return "Governance and operations", "Consult or apply within role authority"
-    if skill_id in {"ai-sdlc-quality-lenses", "ai-sdlc-evidence-council", "ai-sdlc-code-review", "ai-sdlc-security-testing", "ai-sdlc-validation", "ai-sdlc-qa-traceability-and-readiness-review", "ai-sdlc-requirements-readiness-review", "ai-sdlc-qa-requirements-gap-review"}:
+    if skill_id in {"ai-sdlc-quality-lenses", "ai-sdlc-evidence-council", "ai-sdlc-engineering-quality-gate", "ai-sdlc-code-review", "ai-sdlc-security-testing", "ai-sdlc-validation", "ai-sdlc-qa-traceability-and-readiness-review", "ai-sdlc-requirements-readiness-review", "ai-sdlc-qa-requirements-gap-review"}:
         return "Review and assurance", "Contribute risk or review evidence"
     return "Planning and delivery", "Collaborate or resolve inputs"
 

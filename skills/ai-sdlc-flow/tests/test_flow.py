@@ -47,12 +47,41 @@ class FlowTests(unittest.TestCase):
             "Decompose this backlog into stories": "ai-sdlc-user-story-decomposition",
             "Discover a new product idea": "ai-sdlc-working-backwards-discovery",
             "Review PR": "ai-sdlc-code-review",
+            "Run the engineering quality gate": "ai-sdlc-engineering-quality-gate",
             "Run regression validation": "ai-sdlc-validation",
             "Implement GET /health behavior while preserving existing route behavior.": "ai-sdlc-sdd",
         }
         for intent, expected in fixtures.items():
             with self.subTest(intent=intent):
                 self.assertEqual(FLOW.classify_intent(intent)[3], expected)
+
+    def test_engineering_quality_gate_has_one_stable_direct_action(self) -> None:
+        result = FLOW.classify_intent(
+            "Review the implementation with the engineering quality gate"
+        )
+        self.assertEqual(
+            result[:4],
+            (
+                "engineering_quality_gate",
+                "implementation",
+                "quality_gate",
+                "ai-sdlc-engineering-quality-gate",
+            ),
+        )
+        registry = FLOW.load_registry(ROOT)
+        actions = [
+            action
+            for action in registry["actions"]
+            if action["id"] == "engineering_quality_gate"
+        ]
+        self.assertEqual(1, len(actions))
+        self.assertEqual("QUALITY", actions[0]["code"])
+        self.assertEqual(
+            "ai-sdlc-engineering-quality-gate",
+            FLOW.classify_intent("Run engineering-quality-gate")[3],
+        )
+        self.assertEqual(("sdd",), FLOW.STAGE_PREDECESSORS["quality_gate"])
+        self.assertEqual(("sdd",), FLOW.STAGE_PREDECESSORS["validation"])
 
     def test_guided_entrypoint_is_unique_in_active_inventories(self) -> None:
         navigator = "ai-sdlc-navigator"
@@ -206,6 +235,46 @@ class FlowTests(unittest.TestCase):
 
             self.assertEqual(card.skill, "ai-sdlc-branching")
             self.assertIn("shared base branch", card.intent_reason)
+
+    def test_shared_base_branch_does_not_hijack_direct_quality_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            subprocess.run(
+                ["git", "init", "-b", "main"],
+                cwd=root,
+                check=True,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            subprocess.run(
+                [
+                    "git",
+                    "-c",
+                    "user.name=Fixture",
+                    "-c",
+                    "user.email=fixture@example.invalid",
+                    "-c",
+                    "commit.gpgsign=false",
+                    "commit",
+                    "--allow-empty",
+                    "-m",
+                    "fixture",
+                ],
+                cwd=root,
+                check=True,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+
+            card = FLOW.build_card(
+                root=root,
+                intent="Run the engineering quality gate",
+                feature="022-ai-sdlc-loop",
+            )
+
+            self.assertEqual(card.skill, "ai-sdlc-engineering-quality-gate")
+            self.assertEqual(card.stage, "quality_gate")
+            self.assertFalse(card.blockers, card.blockers)
 
     def test_context_pack_requires_recall_and_net_savings(self) -> None:
         accepted = FLOW.choose_context(

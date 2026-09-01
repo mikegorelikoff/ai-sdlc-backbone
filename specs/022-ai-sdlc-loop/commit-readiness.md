@@ -63,7 +63,7 @@ The main corrective Loop commit `136ebb2` is published. Hosted Linux/macOS passe
 - Security review has no open critical/high finding after state and package-tree symlink fixes.
 - Code review has no open finding after the TOON output-extension fix.
 - All SDD gates and the current seven-command Harness validation receipt pass.
-- The exact delta replaces the monolithic JSON design with five stage entrypoints, eleven delivery-control skills, one shared runtime, canonical step manifests/documents, TOON-only durable contracts, installer/docs updates, and directly related tests.
+- The exact delta replaces the monolithic legacy object-notation design with five stage entrypoints, eleven delivery-control skills, one shared runtime, canonical step manifests/documents, TOON-only durable contracts, installer/docs updates, and directly related tests.
 
 ## Commit Boundaries
 
