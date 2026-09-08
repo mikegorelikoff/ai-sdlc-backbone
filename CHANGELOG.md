@@ -1,5 +1,11 @@
 # Changelog
 
+## v5.5.0 - 2026-09-08
+
+- Add read-only framework Doctor profiles and three distinct quality-discovery skills: edge conditions, missing model dimensions and evidence-backed implementation defects.
+- Share deterministic finding IDs, source fingerprints, TOON gates, bounded reference validation, explicit reproduction and verified downstream handoffs.
+- Preserve existing approval and lifecycle boundaries. Seeded fixture results do not establish live-model precision or complete defect detection.
+
 ## v5.4.0 - 2026-09-08
 
 - Add hierarchical delivery decomposition from sourced initiatives, Epics or Stories, with optional Feature depth and explicit acceptance and verification.

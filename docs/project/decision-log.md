@@ -72,3 +72,7 @@ Publish the user-authorized determinism reinforcement from feature 026. Keep nat
 ## 2026-09-08 — Release 5.4.0
 
 Publish the additive hierarchical decomposition capability and update the supported product version. Keep licensed runtime implementation private, public install paths unchanged, and installer version independent.
+
+## 2026-09-08 — Release 5.5.0
+
+Publish additive Doctor and hunter capabilities after deterministic regression checks. Keep licensed implementation and detailed fixtures in Core; public installer remains 1.0.1. Existing approval boundaries and install paths stay stable. Rollback pins 5.4.0.
