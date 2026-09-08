@@ -1,0 +1,25 @@
+CHANGELOG.md
+  s_3ed0e2a5baca41::t_732c1cf7b0f8af 3-8
+docs/project/decision-log.md
+  s_3ed0e2a5baca41::t_c835df4420ef19 75-78
+docs/reference/skills-overview.md
+  s_3ed0e2a5baca41::t_cba9590b60bc99 5-15
+docs/reference/versions.md
+  s_3ed0e2a5baca41::t_aedf13cfac28b8 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.18",
+  "base_commit_sha": "517215621ceaa6522100c2731da610b7d53e5781",
+  "prompts": {},
+  "sessions": {
+    "s_3ed0e2a5baca41": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a08067-877f-73c2-8b3c-28699b7f9ad3",
+        "model": "unknown"
+      },
+      "human_author": "mikegorelikoff <mike.gorelikov.dev@gmail.com>"
+    }
+  }
+}
