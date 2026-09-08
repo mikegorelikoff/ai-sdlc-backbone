@@ -68,3 +68,7 @@ The next Backbone change strengthens existing runtime primitives and all 48 loca
 ## 2026-09-08 — Release 5.3.0
 
 Publish the user-authorized determinism reinforcement from feature 026. Keep native artifact formats and existing approval boundaries. Structural and fixture-based tests do not establish live model reliability. Roll back by pinning 5.2.0; do not rewrite published tags.
+
+## 2026-09-08 — Release 5.4.0
+
+Publish the additive hierarchical decomposition capability and update the supported product version. Keep licensed runtime implementation private, public install paths unchanged, and installer version independent.

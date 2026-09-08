@@ -1,5 +1,12 @@
 # Changelog
 
+## v5.4.0 - 2026-09-08
+
+- Add hierarchical delivery decomposition from sourced initiatives, Epics or Stories, with optional Feature depth and explicit acceptance and verification.
+- Deterministic Python validates scope coverage, dependencies, uncertainty, stable identities and source-bound branch handoffs.
+- Preserve native five-step execution, canonical TOON and existing backlog/SDD approval gates. Table-first reports include evidence and explicit blockers.
+- Cover 33 property scenarios and independent review repairs; structural validation does not replace semantic review.
+
 ## v5.3.0 - 2026-09-08
 
 ### Changed

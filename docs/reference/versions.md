@@ -4,7 +4,7 @@ The licensing API authorizes the exact product version available to a license.
 
 | Component | Current stable version | Distribution |
 | --- | --- | --- |
-| AI SDLC Backbone | `5.3.0` | Licensed release authorized by the licensing API. |
+| AI SDLC Backbone | `5.4.0` | Licensed release authorized by the licensing API. |
 | Public installer | `1.0.1` | `npx ai-sdlc-backbone` from npm. |
 
 The product and installer use independent version lines. The release manifest
