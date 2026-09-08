@@ -39,7 +39,7 @@ class SkillEvalTests(unittest.TestCase):
         self.assertEqual(decode_toon(first_bytes), first)
         self.assertEqual(first["schema"], "ai-sdlc-eval-receipt/v1")
         self.assertEqual(first["skills"], 2)
-        self.assertEqual(first["scenarios"], 10)
+        self.assertEqual(first["scenarios"], 2 * len(skill_eval.SCENARIOS))
         self.assertEqual(first["failed"], 0)
         self.assertEqual(first["result"], "passed")
         for item in first["items"]:

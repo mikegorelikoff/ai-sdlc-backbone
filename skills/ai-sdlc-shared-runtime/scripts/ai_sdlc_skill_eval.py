@@ -25,7 +25,8 @@ from ai_sdlc_toon import encode_toon  # noqa: E402
 RECEIPT_SCHEMA = "ai-sdlc-eval-receipt/v1"
 LIVE_PROTOCOL_SCHEMA = "ai-sdlc-live-eval-protocol/v1"
 LIVE_RECEIPT_SCHEMA = "ai-sdlc-live-eval-receipt/v1"
-SCENARIOS = ("happy", "blocked", "invalid", "resume", "context")
+SCENARIOS = ("happy", "blocked", "invalid", "resume", "context",
+             "inconsistent-completion", "unsupported-role", "optional-input", "terminal")
 LIVE_SCENARIOS = (
     {
         "id": "routing",
@@ -250,8 +251,53 @@ def _context(root: Path, skill: str, cache: dict[str, object]) -> str:
     )
 
 
+def _inconsistent_completion(root: Path, skill: str, _cache: dict[str, object]) -> str:
+    _, manifest = steps_runtime.load_manifest(root, skill)
+    dependent = next(step for step in manifest["steps"] if step["depends_on"])
+    try:
+        steps_runtime.select_steps(root, skill, "complete", completed_steps=[dependent["id"]])
+    except ValueError as exc:
+        if str(exc).startswith("STEP_INVALID_COMPLETION:"):
+            return "completion without prerequisite evidence rejected"
+        raise
+    raise ValueError("inconsistent completion was accepted")
+
+
+def _unsupported_role(root: Path, skill: str, _cache: dict[str, object]) -> str:
+    try:
+        steps_runtime.select_steps(root, skill, "prepare", role="unsupported-role")
+    except ValueError as exc:
+        if str(exc).startswith("STEP_UNKNOWN_ROLE:"):
+            return "unsupported role rejected without inventing a route"
+        raise
+    raise ValueError("unsupported role was accepted")
+
+
+def _optional_input(root: Path, skill: str, _cache: dict[str, object]) -> str:
+    # Explicit paths are optional retrieval candidates in context/v4. Missing
+    # required business inputs remain the owning validator's responsibility.
+    missing = "__ai_sdlc_eval_missing_optional__.md"
+    if (root / missing).exists():
+        raise ValueError("optional-input fixture path must be absent")
+    selected = steps_runtime.select_steps(root, skill, "prepare", context_paths=[missing])
+    for card in selected.step_cards:
+        context = card["context"]
+        if not context["sufficient"] or not any(missing in item for item in context["skipped"]):
+            raise ValueError("missing optional context lacks explicit skip evidence")
+    return "missing optional context recorded; mandatory step remains sufficient"
+
+
+def _terminal(root: Path, skill: str, _cache: dict[str, object]) -> str:
+    _, manifest = steps_runtime.load_manifest(root, skill)
+    selected = steps_runtime.select_steps(root, skill, "complete",
+                                         completed_steps=[step["id"] for step in manifest["steps"]])
+    if not selected.complete or selected.ready_steps or selected.step_cards:
+        raise ValueError("terminal selection restarted completed work")
+    return "terminal closure has no pending work; feature approval is not inferred"
+
+
 def evaluate_skill(root: Path, skill: str) -> dict[str, object]:
-    """Run the fixed five-scenario matrix for one skill."""
+    """Run structural execution scenarios; these do not score model judgment."""
     _skill_root, manifest = steps_runtime.load_manifest(root, skill)
     cache: dict[str, object] = {}
     callbacks = (
@@ -260,6 +306,10 @@ def evaluate_skill(root: Path, skill: str) -> dict[str, object]:
         ("invalid", _invalid),
         ("resume", _resume),
         ("context", _context),
+        ("inconsistent-completion", _inconsistent_completion),
+        ("unsupported-role", _unsupported_role),
+        ("optional-input", _optional_input),
+        ("terminal", _terminal),
     )
     results = [
         _case(name, lambda callback=callback: callback(root, skill, cache))

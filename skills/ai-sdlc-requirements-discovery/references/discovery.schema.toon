@@ -1,0 +1,392 @@
+"$schema": ai-sdlc-toon-contract/v1
+context:
+  properties:
+    feature:
+      minLength: 1
+      pattern: "[a-z0-9]+(?:-[a-z0-9]+)*"
+      type: string
+    fingerprint:
+      minLength: 1
+      pattern: "[a-f0-9]{64}"
+      type: string
+    flow_mode:
+      enum[3]: default,quick,full
+      minLength: 1
+      type: string
+    request_source_id:
+      minLength: 1
+      pattern: "SRC-[a-f0-9]{12}"
+      type: string
+    schema:
+      enum[1]: ai-sdlc-requirements-discovery-context/v1
+      minLength: 1
+      type: string
+    sources:
+      items:
+        properties:
+          content:
+            minLength: 1
+            type: string
+          id:
+            minLength: 1
+            pattern: "SRC-[a-f0-9]{12}"
+            type: string
+          kind:
+            enum[2]: file,snapshot
+            type: string
+          path:
+            minLength: 1
+            type: string
+          sha256:
+            minLength: 1
+            pattern: "[a-f0-9]{64}"
+            type: string
+        type: object
+      minItems: 1
+      type: array
+  type: object
+draft:
+  properties:
+    as_of:
+      minLength: 1
+      pattern: "[0-9]{4}-[0-9]{2}-[0-9]{2}"
+      type: string
+    context_fingerprint:
+      minLength: 1
+      pattern: "[a-f0-9]{64}"
+      type: string
+    decision:
+      properties:
+        decided_at:
+          minLength: 0
+          pattern: "(?:[0-9]{4}-[0-9]{2}-[0-9]{2})?"
+          type: string
+        owner:
+          minLength: 0
+          type: string
+        selected_option_id:
+          minLength: 0
+          pattern: "(?:OPT-[0-9]{3})?"
+          type: string
+        source_ids:
+          items:
+            minLength: 1
+            pattern: "SRC-[a-f0-9]{12}"
+            type: string
+          minItems: 0
+          type: array
+          uniqueItems: true
+        status:
+          enum[3]: proposed,awaiting-answers,accepted
+          minLength: 1
+          type: string
+      type: object
+    evidence_limits:
+      items:
+        minLength: 1
+        type: string
+      minItems: 1
+      type: array
+      uniqueItems: true
+    observations:
+      items:
+        properties:
+          id:
+            minLength: 1
+            pattern: "(?:REQ|GAP)-[0-9]{3}"
+            type: string
+          impact:
+            minLength: 1
+            type: string
+          kind:
+            enum[5]: fact,assumption,contradiction,unknown,proposal
+            minLength: 1
+            type: string
+          material:
+            type: boolean
+          source_ids:
+            items:
+              minLength: 1
+              pattern: "SRC-[a-f0-9]{12}"
+              type: string
+            minItems: 0
+            type: array
+            uniqueItems: true
+          statement:
+            minLength: 1
+            type: string
+        type: object
+      minItems: 1
+      type: array
+    options:
+      items:
+        properties:
+          beneficiary:
+            minLength: 1
+            type: string
+          business_rules:
+            items:
+              minLength: 1
+              type: string
+            minItems: 0
+            type: array
+            uniqueItems: true
+          cost_assumptions:
+            minLength: 1
+            type: string
+          dependencies:
+            items:
+              minLength: 1
+              type: string
+            minItems: 0
+            type: array
+            uniqueItems: true
+          evidence_kind:
+            enum[2]: sourced,hypothesis
+            minLength: 1
+            type: string
+          id:
+            minLength: 1
+            pattern: "OPT-[0-9]{3}"
+            type: string
+          observation_ids:
+            items:
+              minLength: 1
+              pattern: "(?:REQ|GAP)-[0-9]{3}"
+              type: string
+            minItems: 1
+            type: array
+            uniqueItems: true
+          precedent_ids:
+            items:
+              minLength: 1
+              pattern: "PRE-[0-9]{3}"
+              type: string
+            minItems: 0
+            type: array
+            uniqueItems: true
+          rejection_reason:
+            minLength: 0
+            type: string
+          reversibility:
+            minLength: 1
+            type: string
+          risks:
+            items:
+              minLength: 1
+              type: string
+            minItems: 0
+            type: array
+            uniqueItems: true
+          source_ids:
+            items:
+              minLength: 1
+              pattern: "SRC-[a-f0-9]{12}"
+              type: string
+            minItems: 0
+            type: array
+            uniqueItems: true
+          status:
+            enum[2]: candidate,rejected
+            minLength: 1
+            type: string
+          title:
+            minLength: 1
+            type: string
+          tradeoffs:
+            minLength: 1
+            type: string
+          value:
+            minLength: 1
+            type: string
+          workflow:
+            minLength: 1
+            type: string
+        type: object
+      minItems: 1
+      type: array
+    precedents:
+      items:
+        properties:
+          applicability:
+            minLength: 1
+            type: string
+          decision:
+            minLength: 1
+            type: string
+          differences:
+            minLength: 1
+            type: string
+          id:
+            minLength: 1
+            pattern: "PRE-[0-9]{3}"
+            type: string
+          outcome:
+            minLength: 0
+            type: string
+          outcome_source_ids:
+            items:
+              minLength: 1
+              pattern: "SRC-[a-f0-9]{12}"
+              type: string
+            minItems: 0
+            type: array
+            uniqueItems: true
+          source_ids:
+            items:
+              minLength: 1
+              pattern: "SRC-[a-f0-9]{12}"
+              type: string
+            minItems: 1
+            type: array
+            uniqueItems: true
+          status:
+            enum[3]: proposed,implemented,outcome-measured
+            minLength: 1
+            type: string
+        type: object
+      minItems: 0
+      type: array
+    problem:
+      properties:
+        actors:
+          items:
+            minLength: 1
+            type: string
+          minItems: 1
+          type: array
+          uniqueItems: true
+        constraints:
+          items:
+            minLength: 1
+            type: string
+          minItems: 0
+          type: array
+          uniqueItems: true
+        current_process:
+          minLength: 1
+          type: string
+        desired_outcome:
+          minLength: 1
+          type: string
+        success_measures:
+          items:
+            minLength: 1
+            type: string
+          minItems: 0
+          type: array
+          uniqueItems: true
+        summary:
+          minLength: 1
+          type: string
+      type: object
+    questions:
+      items:
+        properties:
+          answer:
+            minLength: 0
+            type: string
+          answer_source_ids:
+            items:
+              minLength: 1
+              pattern: "SRC-[a-f0-9]{12}"
+              type: string
+            minItems: 0
+            type: array
+            uniqueItems: true
+          decision_impact:
+            minLength: 1
+            type: string
+          evidence_location:
+            minLength: 1
+            type: string
+          id:
+            minLength: 1
+            pattern: "Q-[0-9]{3}"
+            type: string
+          method:
+            minLength: 1
+            type: string
+          observation_ids:
+            items:
+              minLength: 1
+              pattern: "(?:REQ|GAP)-[0-9]{3}"
+              type: string
+            minItems: 1
+            type: array
+            uniqueItems: true
+          option_ids:
+            items:
+              minLength: 1
+              pattern: "OPT-[0-9]{3}"
+              type: string
+            minItems: 1
+            type: array
+            uniqueItems: true
+          priority:
+            enum[3]: before-selection,before-implementation,later
+            minLength: 1
+            type: string
+          purpose:
+            minLength: 1
+            type: string
+          question:
+            minLength: 1
+            type: string
+          response_status:
+            enum[2]: open,answered
+            minLength: 1
+            type: string
+          stakeholder:
+            minLength: 1
+            type: string
+        type: object
+      minItems: 1
+      type: array
+    recommendation:
+      properties:
+        change_conditions:
+          items:
+            minLength: 1
+            type: string
+          minItems: 1
+          type: array
+          uniqueItems: true
+        criteria:
+          items:
+            minLength: 1
+            type: string
+          minItems: 1
+          type: array
+          uniqueItems: true
+        expected_evidence:
+          minLength: 1
+          type: string
+        next_action:
+          minLength: 1
+          type: string
+        next_owner:
+          minLength: 1
+          type: string
+        preferred_option_id:
+          minLength: 0
+          pattern: "(?:OPT-[0-9]{3})?"
+          type: string
+        rationale:
+          minLength: 1
+          type: string
+        single_option_reason:
+          minLength: 0
+          type: string
+      type: object
+    schema:
+      enum[1]: ai-sdlc-requirements-discovery-draft/v1
+      minLength: 1
+      type: string
+  type: object
+report:
+  packet_status: complete
+  required_fields[10]: schema,skill,feature,flow_mode,packet_status,decision_status,context,analysis,trust,fingerprint
+  schemas[2]: ai-sdlc-requirements-discovery/v1,ai-sdlc-loop-requirements-discovery/v1
+  trust: local-structural-not-authenticated
+schema: ai-sdlc-requirements-discovery-contract/v1

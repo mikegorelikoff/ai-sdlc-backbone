@@ -17,18 +17,14 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 ### 0.2 Clarification Rules
 
-- Ask when a target skill, entrypoint, action, role, or approval owner is
-  materially ambiguous.
-- Reject unknown fields, cycles, unsafe identifiers, invalid conditions, and
-  missing canonical skill graphs.
-- Never infer approval, shell authority, network authority, or host execution.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 ### 0.2.1 Flow Mode Flags
 
-- Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Both modes use identical validation, cycle, condition, approval, and
-  compilation rules.
-- Full flow requires review of every skipped, deferred, or blocked node.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
+
 
 ### 0.3 Output Rules
 
@@ -66,6 +62,15 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 - Read `_ai_sdlc/specs-index.toon` before resolving feature-local actions and
   use feature-local `index.md` for human review.
 - Planning does not refresh either specs index.
+
+## Execution contract
+
+Do not use it for a one-off task with no reusable or declared DAG. Use the normal owning skill instead. Do not use it to execute an accepted plan. Use `ai-sdlc-runtime` instead.
+
+Read the [shared execution decisions](../../ai-sdlc-shared-runtime/references/execution-contract.md) once for this invocation.
+Apply its required/discoverable/inherited/optional input rules to this step's
+declared inputs. Record the source and status of material facts, then validate
+the owning output contract and current evidence before completion.
 
 ## Exit
 

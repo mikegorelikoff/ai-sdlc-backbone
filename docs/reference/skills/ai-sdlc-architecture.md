@@ -65,19 +65,15 @@ This is an agent instruction, not a shell command. Terminal commands belong in t
 
 ## Human checkpoints
 
-- Ask when system boundary, quality attribute, authority, or irreversible choice is ambiguous.
-- Separate constraints from decisions and decisions from implementation tasks.
-- Record alternatives and consequences for every material decision.
-- Do not invent infrastructure, data classification, or production topology.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 Humans accept or reject material product, security, QA, policy, rollout, release, and destructive-action decisions; a complete agent handoff is evidence, not approval.
 
 ## Flow modes
 
-- Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Quick flow permits a bounded architecture slice with explicit gaps.
-- Full flow requires at least one decision, risk, and validation check.
-- Both modes require trace targets for constraints, interfaces, decisions, and risks.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
 
 ## Procedural step selectors
 

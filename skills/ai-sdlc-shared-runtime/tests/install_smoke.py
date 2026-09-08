@@ -205,7 +205,7 @@ def checkout_revision(repository: str, revision: str, destination: Path) -> None
 def verify(
     consumer: Path,
     source_checkout: Path | None = None,
-    expected_skill_count: int = 47,
+    expected_skill_count: int = 48,
     profile: str | None = None,
     skills_root: str | None = None,
 ) -> None:
@@ -255,6 +255,32 @@ def verify(
             consumer,
         )
     require(config_result, "installed packaged configuration defaults")
+    discovery = installed / "ai-sdlc-requirements-discovery"
+    helper = discovery / "scripts/requirements_discovery.py"
+    if helper.is_file():
+        # Keep immutable older-release regression fixtures usable while checking
+        # the complete discovery workflow when this package is installed.
+        with tempfile.TemporaryDirectory(prefix="ai-sdlc-discovery-smoke-") as temporary:
+            project = Path(temporary)
+            fixture = toon_codec.loads((discovery / "references/example-context.toon").read_text(encoding="utf-8"))
+            for source in fixture["sources"]:
+                (project / source["path"]).write_bytes(source["content"].encode("utf-8"))
+            prepared = run([sys.executable, str(helper), "prepare", "--feature", "example",
+                            "--request", "request.md", "--source", "pilot.md", "--quick-flow", "--write"], project)
+            require(prepared, "installed discovery preparation")
+            if toon_codec.loads(prepared.stdout) != fixture:
+                raise RuntimeError("installed discovery context differs from the portable fixture")
+            context = "specs-refiniment/example/_ai_sdlc/requirements-discovery-context.toon"
+            require(run([sys.executable, str(helper), "scaffold", "--context", context,
+                         "--as-of", "2026-09-07"], project), "installed discovery scaffold")
+            shutil.copyfile(discovery / "references/example-draft.toon", project / "draft.toon")
+            for command in ("validate", "finalize"):
+                args = [sys.executable, str(helper), command, "--context", context, "--draft", "draft.toon"]
+                require(run(args + (["--write"] if command == "finalize" else []), project),
+                        f"installed discovery {command}")
+            require(run([sys.executable, str(helper), "verify", "--report",
+                         "specs-refiniment/example/_ai_sdlc/requirements-discovery.toon"], project),
+                    "installed discovery verification")
     step_result = run(
         [
             sys.executable,
@@ -509,7 +535,7 @@ def main() -> int:
             else:
                 install_emulated(source_path, consumer)
             installed_source = source_checkout if args.mode == "native-remote" else source_path
-            expected_skill_count = 45 if args.mode.startswith("native") else 47
+            expected_skill_count = 47 if args.mode.startswith("native") else 48
             verify(
                 consumer,
                 installed_source if installed_source.is_dir() else None,

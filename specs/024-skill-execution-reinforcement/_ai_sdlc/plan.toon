@@ -1,0 +1,28 @@
+feature: 024-skill-execution-reinforcement
+workspace: implementation
+flow_mode: quick
+updated_at: 2026-09-08
+source_artifacts[6]{artifact,path}:
+  requirements,requirements.md
+  design,design.md
+  test_cases,test-cases.md
+  qa,qa.md
+  tasks,tasks.md
+  decisions,decision-log.md
+trace[5]{acceptance_id,test_cases,tasks}:
+  AC-001,TC-001,T001
+  AC-002,TC-002,T002
+  AC-003,TC-003,T002
+  AC-004,TC-004,T003
+  AC-005,TC-005,T004
+tasks[4]{id,status,refs,tests,depends_on,artifact,decision_ref}:
+  T001,done,AC-001/TC-001,TC-001,none,compact product-local input; failure and handoff contracts.,TBD
+  T002,done,AC-002/AC-003/TC-002/TC-003,TC-002/TC-003,none,deterministic rejection of inconsistent completion and stale verification.,TBD
+  T003,done,AC-004/TC-004,TC-004,none,executed positive/negative test evidence.,TBD
+  T004,done,AC-005/TC-005,TC-005,none,current catalogs; scorecard and remaining weaknesses.,TBD
+validation_sequence[5]{step,command}:
+  1,check_refinement_context.py --full-flow
+  2,check_clarify.py --full-flow
+  3,check_checklist.py --full-flow
+  4,plan_links.py --check --full-flow
+  5,analyze_spec.py --full-flow && validate_spec.py --full-flow

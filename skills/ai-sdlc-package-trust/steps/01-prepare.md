@@ -15,15 +15,14 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 ### 0.2 Clarification Rules
 
-- Ask when trust policy or package root is ambiguous.
-- Reject unsafe paths, symlinks, hash drift, incompatible APIs, undeclared or
-  disallowed capabilities, and missing required provenance.
-- Never equate a digest with author identity or approval.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 ### 0.2.1 Flow Mode Flags
 
-- Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Full flow reviews every file, capability, origin, provenance claim, and privacy field.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
+
 
 ### 0.3 Output Rules
 
@@ -56,6 +55,15 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 - Read `_ai_sdlc/specs-index.toon` first and use feature-local `index.md` for human review.
 - Trust and metrics outputs do not refresh either index.
+
+## Execution contract
+
+Do not use package verification to install, execute, publish, sign, approve, or delete a package. Use the separately authorized package lifecycle workflow instead. Do not use local metrics for content analytics or telemetry upload. Use an approved observability and privacy workflow instead.
+
+Read the [shared execution decisions](../../ai-sdlc-shared-runtime/references/execution-contract.md) once for this invocation.
+Apply its required/discoverable/inherited/optional input rules to this step's
+declared inputs. Record the source and status of material facts, then validate
+the owning output contract and current evidence before completion.
 
 ## Exit
 

@@ -538,6 +538,18 @@ def _repository_candidates(
     ]
 
 
+def execution_reference(skill_root: Path, text: str) -> tuple[str, str, Path] | None:
+    """Resolve only the declared sibling execution contract, never arbitrary links."""
+    match = re.search(r"\]\(\.\./\.\./(ai-sdlc-(?:loop-)?shared-runtime)/references/execution-contract\.md\)", text)
+    if not match:
+        return None
+    relative = match.group(1) + "/references/execution-contract.md"
+    content, error, path = _read_text(skill_root.parent, relative)
+    if error or content is None or path is None:
+        raise ValueError(f"STEP_CONTEXT_INSUFFICIENT: {relative}: {error or 'missing'}")
+    return relative, content, path
+
+
 def compile_step_context(
     *,
     root: Path,
@@ -586,6 +598,17 @@ def compile_step_context(
                 content=step_text,
             )
         )
+
+    reference = execution_reference(skill_root, step_text)
+    if reference:
+        relative, content, path = reference
+        raw_tokens += token_estimate(content)
+        selected.append(ContextRange(
+            path=relative, sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+            authority="skill_instruction", start_line=1, end_line=len(content.splitlines()),
+            estimated_tokens=token_estimate(content), strategy="full-source",
+            reasons=("mandatory:declared-execution-contract",), matched_terms=(), content=content,
+        ))
 
     candidates = _repository_candidates(
         root,

@@ -64,19 +64,15 @@ This is an agent instruction, not a shell command. Terminal commands belong in t
 
 ## Human checkpoints
 
-- Ask when action identity, subject, accountable waiver owner, or decision
-  reference is missing.
-- Reject unknown fields, operators, layer scopes, and ambiguous rule identity.
-- Never infer approval or create a waiver on the requester's behalf.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 Humans accept or reject material product, security, QA, policy, rollout, release, and destructive-action decisions; a complete agent handoff is evidence, not approval.
 
 ## Flow modes
 
-- Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Both modes use the same fail-closed evaluator and protected-rule semantics.
-- Full flow requires explicit review of every matched rule, rejected override,
-  required gate, and waiver result.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
 
 ## Procedural step selectors
 

@@ -66,19 +66,15 @@ This is an agent instruction, not a shell command. Terminal commands belong in t
 
 ## Human checkpoints
 
-- Ask when review question, authority owner, panel scope, or decision boundary is unclear.
-- Label simulated and independent modes exactly; never imply independence.
-- Preserve reviewer conflict and uncertainty instead of forcing consensus.
-- Do not infer acceptance from reviewer count or apparent agreement.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 Humans accept or reject material product, security, QA, policy, rollout, release, and destructive-action decisions; a complete agent handoff is evidence, not approval.
 
 ## Flow modes
 
-- Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Quick flow may use labeled simulated reviewers and focused evidence.
-- Full flow requires at least three reviewers, two roles, and populated evidence.
-- Independent mode requires unique independent execution IDs for every reviewer.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
 
 ## Procedural step selectors
 

@@ -16,17 +16,14 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 ### 0.2 Clarification Rules
 
-- Ask only when the feature, changed reference, or source evidence is ambiguous.
-- Do not infer that an artifact is stale without an exact trace occurrence.
-- Report missing state or unowned artifacts as blockers, not guessed stages.
-- Preserve multiple changes independently even when they affect one artifact.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 ### 0.2.1 Flow Mode Flags
 
-- Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Quick flow scans feature Markdown and reports missing state as a blocker.
-- Full flow requires canonical state plus valid changed-reference source lines.
-- Neither mode changes state, artifacts, decisions, tasks, or indexes.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
+
 
 ### 0.3 Output Rules
 
@@ -75,6 +72,15 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
   `specs-refiniment/<feature-name>/index.md` during read-only analysis.
 - The owning workflow refreshes indexes only after an accepted state or
   authoritative artifact change.
+
+## Execution contract
+
+Do not use it for an unaccepted proposal that has no baseline change set. Use `ai-sdlc-change-set` instead.
+
+Read the [shared execution decisions](../../ai-sdlc-shared-runtime/references/execution-contract.md) once for this invocation.
+Apply its required/discoverable/inherited/optional input rules to this step's
+declared inputs. Record the source and status of material facts, then validate
+the owning output contract and current evidence before completion.
 
 ## Exit
 

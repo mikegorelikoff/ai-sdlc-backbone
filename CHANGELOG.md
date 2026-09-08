@@ -2,8 +2,26 @@
 
 ## Unreleased
 
+### Changed
+
+- Reinforced all Harness and Loop skill input, failure, completion and handoff
+  contracts. Derive Harness lifecycle bindings from registered stages and keep
+  utility skills out of feature-state transitions.
+- Reject inconsistent completed-step histories and handoff graphs that bypass
+  action validation. Include shared execution instructions in context and graph
+  fingerprints, and expand deterministic evaluation from five to nine scenarios.
+- Added deterministic selection for Loop's compact stage graphs, corrected
+  specific intent routing, and revalidate command evidence and source freshness
+  before commit approval. Loop commit preparation now hands off to its Commit owner.
+
 ### Added
 
+- Added `ai-sdlc-requirements-discovery` and the Loop counterpart for raw
+  feature/task analysis, evidence-backed business options and prioritized
+  stakeholder questions with explicit evidence-gathering methods.
+- Back both discovery assistants with deterministic offline source preparation,
+  typed draft validation, canonical report generation and source-freshness
+  checks; add repeatability, invalid-input, safe-write and installed-helper tests.
 - Added the docs-enabled AI SDLC Loop commit immediately after `v0.1.1` as the
   pinned `products/ai-sdlc-loop` submodule and documented it as the smaller
   approval-gated member of the AI SDLC product family.

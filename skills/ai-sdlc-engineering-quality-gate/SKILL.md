@@ -40,8 +40,6 @@ step documents are canonical; regenerate this projection after graph changes.
   IDs back to the selector before requesting the next ready node.
 - Treat `direct_read` as an explicit context strategy. Block only when mandatory
   evidence or critical anchors are missing.
-- Read `references/quality-gate-contract.md` before review or mutation. Read the
-  schemas before drafting durable TOON; load usage examples only when needed.
 - Explore is read-only. After Apply, journal every selected owning-skill step,
   including analysis and validation nodes, before advancing the graph.
 - In source use `skills/<skill>/...`; use `.agents/skills/<skill>/...` for

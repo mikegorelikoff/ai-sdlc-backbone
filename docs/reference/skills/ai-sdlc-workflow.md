@@ -65,20 +65,15 @@ This is an agent instruction, not a shell command. Terminal commands belong in t
 
 ## Human checkpoints
 
-- Ask when a target skill, entrypoint, action, role, or approval owner is
-  materially ambiguous.
-- Reject unknown fields, cycles, unsafe identifiers, invalid conditions, and
-  missing canonical skill graphs.
-- Never infer approval, shell authority, network authority, or host execution.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 Humans accept or reject material product, security, QA, policy, rollout, release, and destructive-action decisions; a complete agent handoff is evidence, not approval.
 
 ## Flow modes
 
-- Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Both modes use identical validation, cycle, condition, approval, and
-  compilation rules.
-- Full flow requires review of every skipped, deferred, or blocked node.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
 
 ## Procedural step selectors
 
@@ -126,11 +121,9 @@ Quality gate:
 
 ## Blockers and recovery
 
-- Ask when a target skill, entrypoint, action, role, or approval owner is
-  materially ambiguous.
-- Reject unknown fields, cycles, unsafe identifiers, invalid conditions, and
-  missing canonical skill graphs.
-- Never infer approval, shell authority, network authority, or host execution.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 On a blocker, preserve failed/stale evidence, name the accountable owner and exact missing input, then resume this skill or the earliest reopened producer. Never manufacture completion by editing derived state.
 

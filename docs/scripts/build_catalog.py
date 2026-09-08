@@ -48,6 +48,10 @@ SKILL_GUIDE_HEADINGS = (
 # human question "when should I choose something else?" and must close exactly
 # over the installable skill inventory.
 SKILL_SELECTION_BOUNDARIES: dict[str, tuple[str, ...]] = {
+    "ai-sdlc-requirements-discovery": (
+        "Do not repeat discovery when the business direction is accepted and only actors, rules or acceptance logic need detail. Use `ai-sdlc-ba` instead.",
+        "Do not use a discovery packet as implementation approval or a readiness verdict. Use the appropriate requirements review and `ai-sdlc-sdd` instead.",
+    ),
     "ai-sdlc-approvals-sandbox": (
         "Do not use it to decide product, delivery, or security risk. Use the owning lifecycle skill and accountable human policy instead.",
     ),
@@ -237,6 +241,7 @@ ROLE_SKILL_GROUPS: dict[str, dict[str, object]] = {
     "BA": {
         "boundary": "Own actors, workflows, business rules, assumptions, and acceptance logic; product value and implementation design remain with their accountable roles.",
         "start": (
+            "ai-sdlc-requirements-discovery",
             "ai-sdlc-ba", "ai-sdlc-delivery-package-gap-review",
             "ai-sdlc-requirements-readiness-review",
             "ai-sdlc-backlog-requirements-gap-review",
@@ -257,6 +262,7 @@ ROLE_SKILL_GROUPS: dict[str, dict[str, object]] = {
     "PM": {
         "boundary": "Own customer problem, value, outcomes, scope, priority, and product trade-offs; agents may synthesize evidence but never accept these decisions.",
         "start": (
+            "ai-sdlc-requirements-discovery",
             "ai-sdlc-flow", "ai-sdlc-working-backwards-discovery",
             "ai-sdlc-prfaq-package-synthesis",
             "ai-sdlc-goal-capability-and-epic-mapping",
@@ -278,6 +284,7 @@ ROLE_SKILL_GROUPS: dict[str, dict[str, object]] = {
     "PO": {
         "boundary": "Own day-to-day backlog readiness, acceptance clarity, sequencing, and product handoffs within delegated product authority.",
         "start": (
+            "ai-sdlc-requirements-discovery",
             "ai-sdlc-flow", "ai-sdlc-backlog-requirements-gap-review",
             "ai-sdlc-backlog-decomposition-and-task-planning",
             "ai-sdlc-user-story-decomposition",
@@ -324,6 +331,7 @@ ROLE_SKILL_GROUPS: dict[str, dict[str, object]] = {
 # only the routing questions that role metadata cannot: what evidence should
 # already exist and who normally consumes the result next.
 TASK_SELECTION_HINTS: dict[str, tuple[str, str, str]] = {
+    "ai-sdlc-requirements-discovery": ("Compare business options and prepare stakeholder questions", "Raw feature/task notes and available historical evidence", "Stakeholder elicitation, then business analysis"),
     "ai-sdlc-flow": ("Explore a readable route and apply one checkpoint", "Request, repository controls, and explicit feature", "One owning skill"),
     "ai-sdlc-qa": ("Plan acceptance or regression work", "Accepted behavior and changed surface", "QA gap review or test strategy"),
     "ai-sdlc-qa-requirements-gap-review": ("Find testability blockers", "Stories, specification, or QA scope", "Requirements owner or test strategy"),
@@ -363,6 +371,7 @@ TASK_SELECTION_HINTS: dict[str, tuple[str, str, str]] = {
 
 
 PO_START_RELATIONSHIPS = {
+    "ai-sdlc-requirements-discovery": "Clarify options and resolve product questions",
     "ai-sdlc-flow": "Use to route work",
     "ai-sdlc-backlog-requirements-gap-review": "Collaborate and review",
     "ai-sdlc-backlog-decomposition-and-task-planning": "Prioritize and review",

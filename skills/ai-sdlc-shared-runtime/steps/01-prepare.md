@@ -18,20 +18,14 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 ### 0.2 Clarification Rules
 
-- Ask only when the installed skills root or failing downstream script cannot
-  be located safely.
-- Distinguish a missing runtime package from a corrupt runtime copy, missing
-  Python, an unsupported package revision, and an application-level failure.
-- Never infer that an import failure is permission to download or execute an
-  unreviewed replacement.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 ### 0.2.1 Flow Mode Flags
 
-- This package has no independent quick/full lifecycle flow.
-- Preserve `--quick-flow` and `--full-flow` flags for the downstream owning
-  skill; this runtime must not reinterpret them.
-- Verification is read-only. Reinstallation or repair requires the same human
-  authority and trusted source used for installation.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
+
 
 ### 0.3 Output Rules
 
@@ -91,6 +85,15 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 - The runtime exposes feature-local OKF `index.md` and compact workspace TOON
   helpers but does not rebuild them during read-only routing.
 - Index reads and writes remain owned by the selected lifecycle workflow.
+
+## Execution contract
+
+Do not use shared helpers as a lifecycle entry point. Use `ai-sdlc-flow` Explore or the owning skill instead. Do not patch installed copies ad hoc. Use the authorized install or update workflow and the canonical runtime package instead.
+
+Read the [shared execution decisions](../../ai-sdlc-shared-runtime/references/execution-contract.md) once for this invocation.
+Apply its required/discoverable/inherited/optional input rules to this step's
+declared inputs. Record the source and status of material facts, then validate
+the owning output contract and current evidence before completion.
 
 ## Exit
 

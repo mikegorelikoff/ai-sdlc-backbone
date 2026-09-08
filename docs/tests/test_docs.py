@@ -440,9 +440,9 @@ class DocumentationValidationTests(unittest.TestCase):
         outputs = generated_outputs()
         skills = skill_sources()
         records = [script_record(path) for path in script_sources()]
-        self.assertEqual(len(skills), 47)
-        self.assertEqual(len(records), 122)
-        self.assertEqual(len(SKILL_SELECTION_BOUNDARIES), 47)
+        self.assertEqual(len(skills), 48)
+        self.assertEqual(len(records), 124)
+        self.assertEqual(len(SKILL_SELECTION_BOUNDARIES), 48)
         self.assertEqual(validate_selection_contract(skills), [])
         self.assertEqual(validate_role_skill_groups(skills), [])
         role_page = outputs[CATALOG_DOCS / "reference/skills-by-role.md"]

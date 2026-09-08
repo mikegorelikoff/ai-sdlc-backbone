@@ -17,20 +17,14 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 ### 0.2 Clarification Rules
 
-- Ask only when the target repository or output root is ambiguous.
-- Mark missing stack, command, or architecture evidence as not detected.
-- Separate detected evidence from inferred conventions.
-- Never infer credentials, deployment authority, or production access.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 ### 0.2.1 Flow Mode Flags
 
-- Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Quick flow scans the canonical high-signal repository files.
-- Full flow also treats missing guidance, validation commands, or revision
-  identity as blockers in the returned report.
-- Both modes use the same deterministic fingerprint and secret exclusions.
-- Full-flow task packs require ownership and test topology plus explicit review
-  of every freshness warning and budget exclusion.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
+
 
 ### 0.3 Output Rules
 
@@ -101,6 +95,15 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 - Refresh the `_ai_sdlc/` runtime bundle indexes for project-wide context writes.
 - Downstream skills read project context before broad code and then use feature
   indexes for feature-specific evidence.
+
+## Execution contract
+
+Do not use repository context as product authority or missing requirements. Use `ai-sdlc-ba` or `ai-sdlc-sdd` instead.
+
+Read the [shared execution decisions](../../ai-sdlc-shared-runtime/references/execution-contract.md) once for this invocation.
+Apply its required/discoverable/inherited/optional input rules to this step's
+declared inputs. Record the source and status of material facts, then validate
+the owning output contract and current evidence before completion.
 
 ## Exit
 

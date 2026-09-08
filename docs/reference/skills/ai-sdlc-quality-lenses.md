@@ -66,19 +66,15 @@ This is an agent instruction, not a shell command. Terminal commands belong in t
 
 ## Human checkpoints
 
-- Ask only when the artifact, review objective, or accountable owner is ambiguous.
-- Record uncertainty as a finding; do not invent evidence or trace targets.
-- Treat a lens with no supported finding as a valid clean result.
-- Do not silently convert a finding into a requirement, decision, or task.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 Humans accept or reject material product, security, QA, policy, rollout, release, and destructive-action decisions; a complete agent handoff is evidence, not approval.
 
 ## Flow modes
 
-- Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Quick flow uses the explicitly selected lenses, or the registry defaults.
-- Full flow applies every lens whose `applies_to` includes the artifact kind.
-- Both modes use the same finding schema and finalization gates.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
 
 ## Procedural step selectors
 

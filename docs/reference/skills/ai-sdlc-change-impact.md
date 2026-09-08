@@ -64,19 +64,15 @@ This is an agent instruction, not a shell command. Terminal commands belong in t
 
 ## Human checkpoints
 
-- Ask only when the feature, changed reference, or source evidence is ambiguous.
-- Do not infer that an artifact is stale without an exact trace occurrence.
-- Report missing state or unowned artifacts as blockers, not guessed stages.
-- Preserve multiple changes independently even when they affect one artifact.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 Humans accept or reject material product, security, QA, policy, rollout, release, and destructive-action decisions; a complete agent handoff is evidence, not approval.
 
 ## Flow modes
 
-- Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Quick flow scans feature Markdown and reports missing state as a blocker.
-- Full flow requires canonical state plus valid changed-reference source lines.
-- Neither mode changes state, artifacts, decisions, tasks, or indexes.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
 
 ## Procedural step selectors
 

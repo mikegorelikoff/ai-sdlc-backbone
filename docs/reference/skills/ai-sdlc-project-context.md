@@ -69,22 +69,15 @@ This is an agent instruction, not a shell command. Terminal commands belong in t
 
 ## Human checkpoints
 
-- Ask only when the target repository or output root is ambiguous.
-- Mark missing stack, command, or architecture evidence as not detected.
-- Separate detected evidence from inferred conventions.
-- Never infer credentials, deployment authority, or production access.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 Humans accept or reject material product, security, QA, policy, rollout, release, and destructive-action decisions; a complete agent handoff is evidence, not approval.
 
 ## Flow modes
 
-- Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Quick flow scans the canonical high-signal repository files.
-- Full flow also treats missing guidance, validation commands, or revision
-  identity as blockers in the returned report.
-- Both modes use the same deterministic fingerprint and secret exclusions.
-- Full-flow task packs require ownership and test topology plus explicit review
-  of every freshness warning and budget exclusion.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
 
 ## Procedural step selectors
 

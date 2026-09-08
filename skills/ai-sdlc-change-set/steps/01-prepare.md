@@ -17,19 +17,14 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 ### 0.2 Clarification Rules
 
-- Ask when the owner, target authority, or intended outcome is ambiguous.
-- Reject absolute paths, parent traversal, targets inside `changes/`, and
-  duplicate targets instead of normalizing them silently.
-- Treat generated workspace content as a proposal until a later controlled
-  apply workflow proves approval and conflict freedom.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 ### 0.2.1 Flow Mode Flags
 
-- Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Quick flow may create a draft from confirmed repository context and visible
-  assumptions.
-- Full flow requires explicit owner, summary, and canonical targets.
-- Neither flow reads, writes, renames, or deletes canonical targets.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
+
 
 ### 0.3 Output Rules
 
@@ -83,6 +78,15 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
   specs index.
 - The later apply workflow refreshes indexes only after an approved canonical
   artifact change.
+
+## Execution contract
+
+Do not use it for an ordinary new feature with no accepted downstream baseline. Use `ai-sdlc-flow` Explore or `ai-sdlc-sdd` instead.
+
+Read the [shared execution decisions](../../ai-sdlc-shared-runtime/references/execution-contract.md) once for this invocation.
+Apply its required/discoverable/inherited/optional input rules to this step's
+declared inputs. Record the source and status of material facts, then validate
+the owning output contract and current evidence before completion.
 
 ## Exit
 

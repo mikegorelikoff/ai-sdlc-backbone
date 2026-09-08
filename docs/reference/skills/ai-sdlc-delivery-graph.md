@@ -65,18 +65,15 @@ This is an agent instruction, not a shell command. Terminal commands belong in t
 
 ## Human checkpoints
 
-- Report ambiguous short IDs with all matching scoped node IDs.
-- Never invent an edge because two terms look semantically similar.
-- Treat missing links as gaps or orphans instead of guessing intent.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 Humans accept or reject material product, security, QA, policy, rollout, release, and destructive-action decisions; a complete agent handoff is evidence, not approval.
 
 ## Flow modes
 
-- Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Both modes rebuild from current authoritative inputs before answering.
-- Full flow requires reviewers to resolve every reported ambiguity and high-value
-  requirement coverage gap before claiming readiness.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
 
 ## Procedural step selectors
 

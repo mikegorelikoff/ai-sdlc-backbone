@@ -16,16 +16,14 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 ### 0.2 Clarification Rules
 
-- Report ambiguous short IDs with all matching scoped node IDs.
-- Never invent an edge because two terms look semantically similar.
-- Treat missing links as gaps or orphans instead of guessing intent.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 ### 0.2.1 Flow Mode Flags
 
-- Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Both modes rebuild from current authoritative inputs before answering.
-- Full flow requires reviewers to resolve every reported ambiguity and high-value
-  requirement coverage gap before claiming readiness.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
+
 
 ### 0.3 Output Rules
 
@@ -87,6 +85,15 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 - Scope short trace IDs by feature directory to prevent cross-feature identity
   collisions.
 - Do not mutate either specs index during graph generation.
+
+## Execution contract
+
+Do not use it to invent missing requirements or delivery artifacts. Use the owning producer skill instead, then rebuild the graph.
+
+Read the [shared execution decisions](../../ai-sdlc-shared-runtime/references/execution-contract.md) once for this invocation.
+Apply its required/discoverable/inherited/optional input rules to this step's
+declared inputs. Record the source and status of material facts, then validate
+the owning output contract and current evidence before completion.
 
 ## Exit
 

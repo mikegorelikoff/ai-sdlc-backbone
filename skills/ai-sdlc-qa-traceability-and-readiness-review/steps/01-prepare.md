@@ -16,22 +16,14 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 ### 0.2 Clarification Rules
 
-- Ask concise questions before finalizing when role, artifact, requirements, scope, audience, or constraints are unclear.
-- If optional information is missing, mark it as `TBD`, `Not provided`, or `Assumption` instead of inventing it.
-- Separate confirmed facts from assumptions and open questions.
-- Do not proceed to downstream synthesis when a required upstream artifact or decision is missing.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 ### 0.2.1 Flow Mode Flags
 
-- Support two explicit execution flags: `--quick-flow` and `--full-flow`.
-- If both flags are supplied, `--full-flow` takes precedence because it is the stricter mode.
-- `--quick-flow`: move fast, make high-quality progress with available context, avoid clarification questions unless continuing would create material product, security, compliance, data-loss, or irreversible implementation risk.
-- In `--quick-flow`, use documented assumptions, recommended defaults, existing repository patterns, and the nearest available artifact evidence; record important assumptions and decisions in `decision-log.md`.
-- In `--quick-flow`, run only focused checks that are directly relevant, cheap, and likely to catch regressions for the requested work; report any skipped broader checks as residual risk.
-- `--full-flow`: ask concise clarification questions when inputs, scope, ownership, acceptance criteria, or decisions are unclear; do not silently assume material requirements.
-- In `--full-flow`, verify upstream and downstream artifacts, decision-log entries, traceability links, acceptance criteria, and validation evidence before finalizing.
-- In `--full-flow`, run or recommend the skill-appropriate gates, reviews, scripts, and validation commands needed for end-to-end confidence; document any blocked verification explicitly.
-- When neither flag is supplied, follow the skill default rules and choose the least risky behavior for the request size and domain.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
+
 
 ### 0.3 Output Rules
 
@@ -72,23 +64,20 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 ## 0.5 Feature State Machine
 
-- Maintain feature lifecycle state in TOON at `specs-refiniment/<feature-name>/_ai_sdlc/state.toon` for refinement work and `specs/<feature-name>/_ai_sdlc/state.toon` for implementation work.
-- Before executing this skill for a feature, check the state machine with `python3 skills/ai-sdlc-shared-runtime/scripts/state_machine.py check --feature <feature-name> --skill <this-skill-name> --workspace <refinement|implementation> --quick-flow|--full-flow`.
-- When this skill starts durable work, mark it in progress with `begin`; when the skill's required artifact or review is complete, mark it done with `complete` and include `--artifacts <path>` plus `--decision-ref DEC-###` when a decision was involved.
-- In `--full-flow`, do not proceed when predecessor stages are incomplete, another lifecycle skill is active, or the state file reports a blocker.
-- In `--quick-flow`, a predecessor skip is allowed only when continuing is low risk and the command includes `--assumption "..."` or `--decision-ref DEC-###`; record the same assumption or decision in `decision-log.md`.
-- Use `python3 skills/ai-sdlc-shared-runtime/scripts/state_machine.py status --feature <feature-name> --workspace <refinement|implementation> --format toon` to emit compact LLM-readable state before choosing the next skill.
-- The state machine is feature-scoped: do not reuse a `state.toon` across unrelated feature folders.
+Registered stage: `qa_traceability`; workspace: `refinement`.
+Canonical output: `qa-readiness.md`. Required predecessors: `ai-sdlc-test-case-and-suite-synthesis`.
+Possible downstream consumers: `ai-sdlc-delivery-handoff-review`; these are not automatic invocations.
+
+Follow the shared registered-stage protocol for `check`, `begin` and evidence-
+backed `complete`. Keep feature state at `_ai_sdlc/state.toon`; an index or
+conversation does not establish stage completion. Preserve the owning skill's
+quick/full gates and record any permitted predecessor exception explicitly.
 
 ## 0.6 Artifact Metadata And Metatags
 
-- Every Markdown artifact generated or updated by this skill must start with an `artifact_metadata` YAML frontmatter block before the first visible heading.
-- Use schema `ai-sdlc-artifact-metadata/v1` and keep these fields current: `feature`, `artifact`, `path`, `workspace`, `skill`, `flow_mode`, `state_file`, `decision_log`, `status`, `owner`, `created_at`, `updated_at`, `trace_ids`, `related_artifacts`, `validation`, and `metatags`.
-- `metatags` must include at minimum `ai-sdlc`, the workspace (`refinement` or `implementation`), this skill name, the artifact type or filename stem, and a lifecycle/status tag such as `draft`, `review`, `approved`, or `validated`.
-- When `--quick-flow` is active, set `flow_mode: quick`, keep assumptions visible in the body, and add tags for major defaults or unresolved risk only when they help retrieval.
-- When `--full-flow` is active, set `flow_mode: full`, keep blockers and validation evidence reflected in `status`, `validation`, `trace_ids`, and `related_artifacts`.
-- Update metadata whenever the artifact path, status, owner, trace links, validation evidence, related artifacts, or decision references change.
-- Metadata is an index for routing, retrieval, and traceability; it does not replace the artifact body, `decision-log.md`, or `state.toon`.
+For canonical lifecycle Markdown, use the shared Harness metadata contract.
+The owning writer maintains `artifact_metadata`, `metatags`, current sources,
+validation and status. Do not mark planned or missing evidence as validated.
 
 ## 0.7 Specs Index
 
@@ -108,6 +97,15 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 - After every stage, finalize its artifact, record required decisions, mark the stage `done`, and refresh the refinement indexes before selecting the next skill.
 - Do not declare the cascade complete until `python3 skills/ai-sdlc-shared-runtime/scripts/refinement_status.py --feature <feature-name> --gate full --format markdown` exits successfully with `18/18`. If it fails, continue with the reported next skill or return the concrete blocker and remaining inventory in the active agent response.
 - Surface checkpoint and final summaries in Codex only; never persist a cascade summary as a text file.
+
+## Execution contract
+
+Do not use it before executable cases and suites exist. Use `ai-sdlc-test-cases` and `ai-sdlc-test-case-and-suite-synthesis` instead.
+
+Read the [shared execution decisions](../../ai-sdlc-shared-runtime/references/execution-contract.md) once for this invocation.
+Apply its required/discoverable/inherited/optional input rules to this step's
+declared inputs. Record the source and status of material facts, then validate
+the owning output contract and current evidence before completion.
 
 ## Exit
 

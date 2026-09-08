@@ -44,4 +44,4 @@ design work into every delivery path or reducing UX to generic acceptance prose.
 
 ## Exit
 
-Stop after the bounded owning-skill action. Preserve evidence, decisions, and traceability needed by validation; do not silently start another skill.
+Finish this owning action with evidence for validation. Return control to the authorized coordinator; continue only work already requested by the user and allowed by the next gate.

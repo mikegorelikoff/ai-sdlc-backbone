@@ -65,19 +65,15 @@ This is an agent instruction, not a shell command. Terminal commands belong in t
 
 ## Human checkpoints
 
-- Ask when actor, goal, permission, channel, or success outcome is ambiguous.
-- Separate user need from interface solution and visual preference.
-- Include non-happy states and recovery behavior, not only a golden path.
-- Do not infer accessibility conformance or user research evidence.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 Humans accept or reject material product, security, QA, policy, rollout, release, and destructive-action decisions; a complete agent handoff is evidence, not approval.
 
 ## Flow modes
 
-- Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Quick flow permits one traced actor journey with explicit gaps.
-- Full flow requires at least one journey, interaction state, and accessibility check.
-- Both modes require exact trace targets and actor consistency.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
 
 ## Procedural step selectors
 

@@ -16,15 +16,14 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 ### 0.2 Clarification Rules
 
-- Ask when task outcome, result identity, commit evidence, or stop reason is missing.
-- Reject unknown tasks, invalid transitions, dependency cycles, and journal gaps.
-- Never mark an unrecorded task complete from conversational confidence.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 ### 0.2.1 Flow Mode Flags
 
-- Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Both modes use the same journal, idempotency, dependency, budget, and commit rules.
-- Full flow reviews every event, retry, stop reason, and commit boundary.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
+
 
 ### 0.3 Output Rules
 
@@ -63,6 +62,15 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 - Read `_ai_sdlc/specs-index.toon` first and use feature-local `index.md` for human
   feature discovery before constructing a plan.
 - Runtime state does not refresh either specs index.
+
+## Execution contract
+
+Do not use it without an accepted immutable execution plan. Use `ai-sdlc-workflow` or `ai-sdlc-sdd` instead. Do not use it for a bounded one-off task that needs no declared DAG. Use the normal owning implementation workflow instead.
+
+Read the [shared execution decisions](../../ai-sdlc-shared-runtime/references/execution-contract.md) once for this invocation.
+Apply its required/discoverable/inherited/optional input rules to this step's
+declared inputs. Record the source and status of material facts, then validate
+the owning output contract and current evidence before completion.
 
 ## Exit
 

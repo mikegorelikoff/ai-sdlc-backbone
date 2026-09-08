@@ -60,6 +60,7 @@ Own actors, workflows, business rules, assumptions, and acceptance logic; produc
 
 | Choose when… | Role relationship | Start with | Required input | Next handoff |
 | --- | --- | --- | --- | --- |
+| Compare business options and prepare stakeholder questions | Own or produce analysis | [`ai-sdlc-requirements-discovery`](skills/ai-sdlc-requirements-discovery.md) | Raw feature/task notes and available historical evidence | Stakeholder elicitation, then business analysis |
 | Clarify actors, rules, and behavior | Own or produce analysis | [`ai-sdlc-ba`](skills/ai-sdlc-ba.md) | Feature request or known business ambiguity | Gap review or story decomposition |
 | Check discovery-package completeness | Own or produce analysis | [`ai-sdlc-delivery-package-gap-review`](skills/ai-sdlc-delivery-package-gap-review.md) | Discovery notes or PRFAQ package | Story decomposition or missing discovery producer |
 | Gate requirements before planning | Own or produce analysis | [`ai-sdlc-requirements-readiness-review`](skills/ai-sdlc-requirements-readiness-review.md) | PRFAQ/BRD package and resolved delivery gaps | Goal/epic mapping or requirements owner |
@@ -95,6 +96,7 @@ Own customer problem, value, outcomes, scope, priority, and product trade-offs; 
 
 | Choose when… | Role relationship | Start with | Required input | Next handoff |
 | --- | --- | --- | --- | --- |
+| Compare business options and prepare stakeholder questions | Own product decision inputs | [`ai-sdlc-requirements-discovery`](skills/ai-sdlc-requirements-discovery.md) | Raw feature/task notes and available historical evidence | Stakeholder elicitation, then business analysis |
 | Explore a readable route and apply one checkpoint | Own product decision inputs | [`ai-sdlc-flow`](skills/ai-sdlc-flow.md) | Request, repository controls, and explicit feature | One owning skill |
 | Frame an unclear customer problem | Own product decision inputs | [`ai-sdlc-working-backwards-discovery`](skills/ai-sdlc-working-backwards-discovery.md) | Audience, observed problem, and available evidence | PRFAQ synthesis |
 | Create a decision-ready product package | Own product decision inputs | [`ai-sdlc-prfaq-package-synthesis`](skills/ai-sdlc-prfaq-package-synthesis.md) | Validated discovery notes | Requirements readiness |
@@ -132,6 +134,7 @@ Own day-to-day backlog readiness, acceptance clarity, sequencing, and product ha
 
 | Choose when… | Role relationship | Start with | Required input | Next handoff |
 | --- | --- | --- | --- | --- |
+| Compare business options and prepare stakeholder questions | Clarify options and resolve product questions | [`ai-sdlc-requirements-discovery`](skills/ai-sdlc-requirements-discovery.md) | Raw feature/task notes and available historical evidence | Stakeholder elicitation, then business analysis |
 | Explore a readable route and apply one checkpoint | Use to route work | [`ai-sdlc-flow`](skills/ai-sdlc-flow.md) | Request, repository controls, and explicit feature | One owning skill |
 | Check planning inputs before backlog work | Collaborate and review | [`ai-sdlc-backlog-requirements-gap-review`](skills/ai-sdlc-backlog-requirements-gap-review.md) | Goals, roles, capabilities, and epics | Backlog decomposition or planning owner |
 | Create delivery backlog and stories | Prioritize and review | [`ai-sdlc-backlog-decomposition-and-task-planning`](skills/ai-sdlc-backlog-decomposition-and-task-planning.md) | Ready goals, capabilities, and epics | Release slicing |

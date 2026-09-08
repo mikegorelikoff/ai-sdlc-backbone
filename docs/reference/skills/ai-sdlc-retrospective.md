@@ -65,20 +65,15 @@ This is an agent instruction, not a shell command. Terminal commands belong in t
 
 ## Human checkpoints
 
-- Ask only when evidence, proposal owner, or intended policy target is unclear.
-- Keep observed facts separate from interpretation and proposed change.
-- Do not mark a proposal accepted without a durable decision reference.
-- Do not infer approval from implementation, silence, or prior chat.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 Humans accept or reject material product, security, QA, policy, rollout, release, and destructive-action decisions; a complete agent handoff is evidence, not approval.
 
 ## Flow modes
 
-- Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Quick flow permits draft proposals but still requires observation evidence.
-- Full flow additionally requires every proposal to have an owner and every
-  accepted proposal to have a decision reference.
-- Neither mode applies proposals or edits target files.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
 
 ## Procedural step selectors
 

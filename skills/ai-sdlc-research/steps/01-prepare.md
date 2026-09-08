@@ -17,19 +17,14 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 ### 0.2 Clarification Rules
 
-- Ask when topic, decision to inform, source boundary, or freshness requirement is unclear.
-- Separate sourced findings from inference and unresolved questions.
-- Record contradictory sources and limitations; do not average them away.
-- Do not claim current facts, legal conclusions, or user evidence without verification.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 ### 0.2.1 Flow Mode Flags
 
-- Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Quick flow permits one strong source when scope is explicitly narrow.
-- Full flow requires at least two sources and two source types for each report.
-- External and mixed scopes require an internet search and at least one direct
-  `http://` or `https://` source locator; do not cite search-result pages.
-- Both modes require every finding to cite registered sources and trace targets.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
+
 
 ### 0.3 Output Rules
 
@@ -72,6 +67,15 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 - Refresh the matching `specs/<feature-name>/index.md` or
   `specs-refiniment/<feature-name>/index.md` only after durable writes.
 - Keep research inside the feature whose decisions it informs.
+
+## Execution contract
+
+Do not use external research for facts already authoritative in the repository. Use `ai-sdlc-project-context` instead. Do not use research to accept a product, legal, security, or delivery decision. Route evidence to the accountable owner or `ai-sdlc-change-impact` instead.
+
+Read the [shared execution decisions](../../ai-sdlc-shared-runtime/references/execution-contract.md) once for this invocation.
+Apply its required/discoverable/inherited/optional input rules to this step's
+declared inputs. Record the source and status of material facts, then validate
+the owning output contract and current evidence before completion.
 
 ## Exit
 

@@ -1,0 +1,8 @@
+feature: example
+fingerprint: 6ceafcb65cc1d801c57c942143ec420715eb68d05b4f98553ceef0293cc31670
+flow_mode: quick
+request_source_id: SRC-10effbaea4d2
+schema: ai-sdlc-requirements-discovery-context/v1
+sources[2]{content,id,kind,path,sha256}:
+  "Reduce approval waiting time. Consider bulk approval.\n",SRC-10effbaea4d2,file,request.md,cee54a073734cc2a2e166cdc9abc28e9723e0540f00e0d95943b404314c287c4
+  "A low-value batch pilot was implemented; outcomes were not measured.\n",SRC-cd5966fd5484,file,pilot.md,38454fd17e6dac47e3f23a92f947375f84bd3664662bef0ae31e60631e0957b5

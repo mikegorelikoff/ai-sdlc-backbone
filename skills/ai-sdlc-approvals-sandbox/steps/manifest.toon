@@ -140,7 +140,7 @@ steps[5]:
     id: handoff
     load: before-completion
     max_attempts: 1
-    max_tokens: 361
+    max_tokens: 402
     on_failure: handoff
     operation: handoff-result
     outputs[2]: handoff,next-action

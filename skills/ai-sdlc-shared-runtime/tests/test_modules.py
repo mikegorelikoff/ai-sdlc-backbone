@@ -50,6 +50,7 @@ class ModuleTests(unittest.TestCase):
         self.assertIn("ai-sdlc-doctor", result.stdout)
         self.assertIn("ai-sdlc-package-trust", result.stdout)
         self.assertIn("ai-sdlc-flow", result.stdout)
+        self.assertIn("ai-sdlc-requirements-discovery", result.stdout)
 
     def test_module_version_accepts_semver_prerelease(self) -> None:
         """Release-candidate module identities remain valid SemVer."""

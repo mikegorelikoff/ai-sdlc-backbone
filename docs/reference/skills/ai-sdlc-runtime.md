@@ -65,17 +65,15 @@ This is an agent instruction, not a shell command. Terminal commands belong in t
 
 ## Human checkpoints
 
-- Ask when task outcome, result identity, commit evidence, or stop reason is missing.
-- Reject unknown tasks, invalid transitions, dependency cycles, and journal gaps.
-- Never mark an unrecorded task complete from conversational confidence.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 Humans accept or reject material product, security, QA, policy, rollout, release, and destructive-action decisions; a complete agent handoff is evidence, not approval.
 
 ## Flow modes
 
-- Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Both modes use the same journal, idempotency, dependency, budget, and commit rules.
-- Full flow reviews every event, retry, stop reason, and commit boundary.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
 
 ## Procedural step selectors
 

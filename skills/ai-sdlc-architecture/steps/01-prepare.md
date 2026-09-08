@@ -16,17 +16,14 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 ### 0.2 Clarification Rules
 
-- Ask when system boundary, quality attribute, authority, or irreversible choice is ambiguous.
-- Separate constraints from decisions and decisions from implementation tasks.
-- Record alternatives and consequences for every material decision.
-- Do not invent infrastructure, data classification, or production topology.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 ### 0.2.1 Flow Mode Flags
 
-- Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Quick flow permits a bounded architecture slice with explicit gaps.
-- Full flow requires at least one decision, risk, and validation check.
-- Both modes require trace targets for constraints, interfaces, decisions, and risks.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
+
 
 ### 0.3 Output Rules
 
@@ -70,6 +67,15 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 - Refresh `specs/<feature-name>/index.md` only after a durable architecture write.
 - Do not alter `specs-refiniment/_ai_sdlc/specs-index.toon` or
   `specs-refiniment/<feature-name>/index.md` for implementation-owned architecture.
+
+## Execution contract
+
+Do not use it while business behavior or customer value is still unclear. Use `ai-sdlc-ba` or the appropriate refinement workflow instead.
+
+Read the [shared execution decisions](../../ai-sdlc-shared-runtime/references/execution-contract.md) once for this invocation.
+Apply its required/discoverable/inherited/optional input rules to this step's
+declared inputs. Record the source and status of material facts, then validate
+the owning output contract and current evidence before completion.
 
 ## Exit
 

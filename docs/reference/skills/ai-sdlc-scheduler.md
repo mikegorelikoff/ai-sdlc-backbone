@@ -60,15 +60,15 @@ This is an agent instruction, not a shell command. Terminal commands belong in t
 
 ## Human checkpoints
 
-- Block when plan ownership, repository boundary, worker authority, clock, or
-  external-effect approval is ambiguous. Mark optional facts as assumptions.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 Humans accept or reject material product, security, QA, policy, rollout, release, and destructive-action decisions; a complete agent handoff is evidence, not approval.
 
 ## Flow modes
 
-- Quick flow uses documented defaults and focused checks. Full flow verifies
-  all upstream artifacts, decisions, receipts, and handoff evidence.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
 
 ## Procedural step selectors
 

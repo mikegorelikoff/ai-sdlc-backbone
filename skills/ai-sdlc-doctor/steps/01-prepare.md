@@ -15,14 +15,14 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 ### 0.2 Clarification Rules
 
-- Ask when the installation root or target inventory is ambiguous.
-- Reject unsafe paths, invalid hashes, duplicate files, invalid versions, and incompatible API ranges.
-- Never repair, install, delete, overwrite, migrate, or restore files automatically.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 ### 0.2.1 Flow Mode Flags
 
-- Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Full flow requires review of every warning, migration, backup, rollback, and blocker.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
+
 
 ### 0.3 Output Rules
 
@@ -57,6 +57,15 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 - Read `_ai_sdlc/specs-index.toon` first and use feature-local `index.md` for human review.
 - Operational reports do not refresh either index.
+
+## Execution contract
+
+Do not use it to diagnose application feature behavior. Use `ai-sdlc-validation` instead. Do not use it to apply installation or upgrade changes. Use the authorized install or update workflow instead.
+
+Read the [shared execution decisions](../../ai-sdlc-shared-runtime/references/execution-contract.md) once for this invocation.
+Apply its required/discoverable/inherited/optional input rules to this step's
+declared inputs. Record the source and status of material facts, then validate
+the owning output contract and current evidence before completion.
 
 ## Exit
 

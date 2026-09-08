@@ -14,11 +14,14 @@ Repository root, operation, cache path, authorization, and bounds are known.
 
 ### 0.2 Clarification Rules
 
-- Ask only when root, authorization, or intent is materially unclear.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 ### 0.2.1 Flow Mode Flags
 
-- `--quick-flow` uses safe bounds; `--full-flow` verifies all evidence.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
+
 
 ### 0.3 Output Rules
 
@@ -55,6 +58,15 @@ Repository root, operation, cache path, authorization, and bounds are known.
 
 - Require a contained non-symlink cache target; exclude symlinks, secrets,
   binaries, generated trees, and oversized files; record all bounds.
+
+## Execution contract
+
+Do not use cached retrieval as repository, product, approval, or instruction authority. Use current canonical sources and accountable human gates instead. Do not use it for a one-off narrow read when building an index costs more than direct context. Use `ai-sdlc-project-context` or direct reads instead.
+
+Read the [shared execution decisions](../../ai-sdlc-shared-runtime/references/execution-contract.md) once for this invocation.
+Apply its required/discoverable/inherited/optional input rules to this step's
+declared inputs. Record the source and status of material facts, then validate
+the owning output contract and current evidence before completion.
 
 ## Exit
 

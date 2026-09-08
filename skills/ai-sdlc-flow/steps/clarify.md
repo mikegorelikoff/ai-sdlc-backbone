@@ -18,9 +18,8 @@ Resolve only the material role, action, scope, or rigor ambiguity needed to prod
 
 ### 0.2.1 Flow Mode Flags
 
-- `--quick-flow` requests quick rigor when risk and policy permit it.
-- `--full-flow` requests full rigor and takes precedence.
-- Explore explains every automatic choice or override.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
+
 
 ## Role and Rigor Rule
 
@@ -37,6 +36,15 @@ architecture work.
 # Clarify
 
 Present the deterministic action menu. Ask only for the role or action needed to resolve material ambiguity. Do not load feature context or mutate lifecycle state.
+
+## Execution contract
+
+Do not use it to Apply before a matching Explore card exists. Use `ai-sdlc-flow` Explore instead for read-only routing. Do not use it to bypass lifecycle prerequisites. Use `ai-sdlc-sdd` or the selected owning skill instead.
+
+Read the [shared execution decisions](../../ai-sdlc-shared-runtime/references/execution-contract.md) once for this invocation.
+Apply its required/discoverable/inherited/optional input rules to this step's
+declared inputs. Record the source and status of material facts, then validate
+the owning output contract and current evidence before completion.
 
 ## Exit
 

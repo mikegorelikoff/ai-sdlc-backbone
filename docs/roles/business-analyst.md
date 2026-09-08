@@ -28,6 +28,11 @@ approved implementation input.
 
 ## Inputs and outputs
 
+For raw feature/task notes, start with the
+[requirements discovery assistant](../reference/skills/ai-sdlc-requirements-discovery.md)
+to compare business options and prepare questions for the stakeholders who can
+resolve them. Its packet is upstream evidence for the existing refinement flow.
+
 Inputs: stakeholder evidence, domain terms, policies, current process, desired
 outcome, constraints, and known exceptions. Outputs: business context, actor and
 permission matrix, workflow, rule and exception catalog, assumption/conflict

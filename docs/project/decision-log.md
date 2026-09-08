@@ -5,7 +5,51 @@ description: Record the AI SDLC Harness documentation architecture, URL, governa
 
 # Documentation decision log
 
+## 2026-09-08 — Cross-product execution reinforcement
+
+Keep semantic manifests, owning procedures, artifact profiles and deterministic
+helpers as the authority. Consolidate common execution and metadata decisions in
+the installed shared-runtime reference; include that reference in context and
+graph fingerprints so edits invalidate prior execution identity. Registered
+feature-stage bindings remain derived from the existing runtime graph; optional
+utilities must not invent a feature-state transition.
+
+Preserve all public paths and skill names. Generate public catalogs from the
+updated sources. Loop retains its smaller lifecycle and compact manifest schema;
+its new selector interprets those existing graphs without granting execution
+authority. Keep commit preparation separate from the separately authorized
+Commit stage. The full scope and per-skill evidence are tracked in
+`specs/024-skill-execution-reinforcement/` in the source repository.
+
+Validation covers completion-history and graph mutations, declared-reference
+freshness, product-local handoffs, source drift during verification, intent
+boundaries, all-skill evals and both product regression/documentation suites.
+
 Execution date: 2026-07-27
+
+## Requirements discovery assistants
+
+On 2026-09-07, add optional `ai-sdlc-requirements-discovery` to Harness core
+and `ai-sdlc-loop-requirements-discovery` to Loop's own installer. Each accepts
+raw feature/task inputs, compares business options with sourced precedents,
+and prepares questions tied to stakeholder roles, evidence methods and the
+decisions their answers affect. Missing historical outcomes remain unknown.
+
+The assistant completes an advisory packet without adding a mandatory lifecycle
+stage or granting implementation approval. Harness role views link to the
+generated [canonical guide](../reference/skills/ai-sdlc-requirements-discovery.md);
+Loop has an independent guide and a current 21-directory source inventory.
+Existing pages and navigation remain in place. The implementation contract is
+`specs/023-requirements-discovery`.
+
+The same day's review corrected the initial instruction-only implementation:
+both skills now require product-local deterministic helpers for source
+preparation, draft scaffolding, typed reference/coverage checks, canonical
+finalization and freshness verification. Identical input bytes and an explicit
+date produce identical output. Model judgment remains draft data; local hashes
+do not authenticate stakeholder acceptance. Harness Markdown is generated from
+the complete TOON report, and Loop retains TOON-only output. Publication remains
+paused while this correction is reviewed.
 
 ## AI SDLC Loop product boundary
 

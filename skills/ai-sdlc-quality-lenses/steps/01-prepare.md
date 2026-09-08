@@ -17,17 +17,14 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 ### 0.2 Clarification Rules
 
-- Ask only when the artifact, review objective, or accountable owner is ambiguous.
-- Record uncertainty as a finding; do not invent evidence or trace targets.
-- Treat a lens with no supported finding as a valid clean result.
-- Do not silently convert a finding into a requirement, decision, or task.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 ### 0.2.1 Flow Mode Flags
 
-- Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Quick flow uses the explicitly selected lenses, or the registry defaults.
-- Full flow applies every lens whose `applies_to` includes the artifact kind.
-- Both modes use the same finding schema and finalization gates.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
+
 
 ### 0.3 Output Rules
 
@@ -76,6 +73,15 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
   the report is routed into that workspace and the owning workflow requires it.
 - Do not use a quality report as a replacement for source requirements,
   decisions, tests, tasks, or state.
+
+## Execution contract
+
+Do not use a quality lens when the primary artifact is missing. Use its owning producer skill instead. Do not use a lens as formal approval. Use the accountable human review gate instead.
+
+Read the [shared execution decisions](../../ai-sdlc-shared-runtime/references/execution-contract.md) once for this invocation.
+Apply its required/discoverable/inherited/optional input rules to this step's
+declared inputs. Record the source and status of material facts, then validate
+the owning output contract and current evidence before completion.
 
 ## Exit
 

@@ -75,9 +75,7 @@ Humans accept or reject material product, security, QA, policy, rollout, release
 
 ## Flow modes
 
-- `--quick-flow` requests quick rigor when risk and policy permit it.
-- `--full-flow` requests full rigor and takes precedence.
-- Explore explains every automatic choice or override.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
 
 ## Procedural step selectors
 

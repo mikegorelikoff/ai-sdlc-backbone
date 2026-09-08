@@ -1,9 +1,9 @@
 schema: ai-sdlc-documentation-coverage/v1
-skill_count: 47
-script_count: 122
+skill_count: 48
+script_count: 124
 documentation_root: docs
 
-skills[47]{skill,source,page,module,package_scripts}:
+skills[48]{skill,source,page,module,package_scripts}:
   ai-sdlc-approvals-sandbox,skills/ai-sdlc-approvals-sandbox/SKILL.md,reference/skills/ai-sdlc-approvals-sandbox.md,core,1
   ai-sdlc-architecture,skills/ai-sdlc-architecture/SKILL.md,reference/skills/ai-sdlc-architecture.md,architecture,1
   ai-sdlc-ba,skills/ai-sdlc-ba/SKILL.md,reference/skills/ai-sdlc-ba.md,core,1
@@ -35,6 +35,7 @@ skills[47]{skill,source,page,module,package_scripts}:
   ai-sdlc-qa-traceability-and-readiness-review,skills/ai-sdlc-qa-traceability-and-readiness-review/SKILL.md,reference/skills/ai-sdlc-qa-traceability-and-readiness-review.md,core,1
   ai-sdlc-quality-lenses,skills/ai-sdlc-quality-lenses/SKILL.md,reference/skills/ai-sdlc-quality-lenses.md,core,1
   ai-sdlc-release-slicing-and-backlog-readiness-review,skills/ai-sdlc-release-slicing-and-backlog-readiness-review/SKILL.md,reference/skills/ai-sdlc-release-slicing-and-backlog-readiness-review.md,core,1
+  ai-sdlc-requirements-discovery,skills/ai-sdlc-requirements-discovery/SKILL.md,reference/skills/ai-sdlc-requirements-discovery.md,core,1
   ai-sdlc-requirements-readiness-review,skills/ai-sdlc-requirements-readiness-review/SKILL.md,reference/skills/ai-sdlc-requirements-readiness-review.md,core,1
   ai-sdlc-research,skills/ai-sdlc-research/SKILL.md,reference/skills/ai-sdlc-research.md,research,1
   ai-sdlc-retrospective,skills/ai-sdlc-retrospective/SKILL.md,reference/skills/ai-sdlc-retrospective.md,core,1
@@ -52,7 +53,7 @@ skills[47]{skill,source,page,module,package_scripts}:
   ai-sdlc-workflow,skills/ai-sdlc-workflow/SKILL.md,reference/skills/ai-sdlc-workflow.md,core,1
   ai-sdlc-working-backwards-discovery,skills/ai-sdlc-working-backwards-discovery/SKILL.md,reference/skills/ai-sdlc-working-backwards-discovery.md,core,1
 
-scripts[122]{path,owner,classification,documentation}:
+scripts[124]{path,owner,classification,documentation}:
   skills/ai-sdlc-approvals-sandbox/scripts/approval_plan.py,ai-sdlc-approvals-sandbox,skill package helper,reference/scripts.md
   skills/ai-sdlc-architecture/scripts/architecture.py,ai-sdlc-architecture,skill package helper,reference/scripts.md
   skills/ai-sdlc-ba/scripts/ba_context_scaffold.py,ai-sdlc-ba,skill package helper,reference/scripts.md
@@ -95,6 +96,7 @@ scripts[122]{path,owner,classification,documentation}:
   skills/ai-sdlc-qa-traceability-and-readiness-review/scripts/traceability_matrix.py,ai-sdlc-qa-traceability-and-readiness-review,skill package helper,reference/scripts.md
   skills/ai-sdlc-quality-lenses/scripts/quality_lens_report.py,ai-sdlc-quality-lenses,skill package helper,reference/scripts.md
   skills/ai-sdlc-release-slicing-and-backlog-readiness-review/scripts/release_slice_plan.py,ai-sdlc-release-slicing-and-backlog-readiness-review,skill package helper,reference/scripts.md
+  skills/ai-sdlc-requirements-discovery/scripts/requirements_discovery.py,ai-sdlc-requirements-discovery,skill package helper,reference/scripts.md
   skills/ai-sdlc-requirements-readiness-review/scripts/requirements_readiness_score.py,ai-sdlc-requirements-readiness-review,skill package helper,reference/scripts.md
   skills/ai-sdlc-research/scripts/research.py,ai-sdlc-research,skill package helper,reference/scripts.md
   skills/ai-sdlc-retrospective/scripts/retrospective.py,ai-sdlc-retrospective,skill package helper,reference/scripts.md
@@ -155,6 +157,7 @@ scripts[122]{path,owner,classification,documentation}:
   skills/ai-sdlc-shared-runtime/tests/test_all_skill_scripts.py,shared runtime,repository validation runner,reference/scripts.md
   skills/ai-sdlc-shared-runtime/tests/test_artifact_scaffold.py,shared runtime,repository validation runner,reference/scripts.md
   skills/ai-sdlc-shared-runtime/tests/test_compatibility.py,shared runtime,repository validation runner,reference/scripts.md
+  skills/ai-sdlc-shared-runtime/tests/test_completion_contract.py,shared runtime,repository validation runner,reference/scripts.md
   skills/ai-sdlc-shared-runtime/tests/test_config.py,shared runtime,repository validation runner,reference/scripts.md
   skills/ai-sdlc-shared-runtime/tests/test_each_skill_tests.py,shared runtime,repository validation runner,reference/scripts.md
   skills/ai-sdlc-shared-runtime/tests/test_handoff.py,shared runtime,repository validation runner,reference/scripts.md

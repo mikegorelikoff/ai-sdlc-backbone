@@ -16,17 +16,14 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 ### 0.2 Clarification Rules
 
-- Ask when action identity, subject, accountable waiver owner, or decision
-  reference is missing.
-- Reject unknown fields, operators, layer scopes, and ambiguous rule identity.
-- Never infer approval or create a waiver on the requester's behalf.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 ### 0.2.1 Flow Mode Flags
 
-- Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Both modes use the same fail-closed evaluator and protected-rule semantics.
-- Full flow requires explicit review of every matched rule, rejected override,
-  required gate, and waiver result.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
+
 
 ### 0.3 Output Rules
 
@@ -64,6 +61,15 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 - Read `_ai_sdlc/specs-index.toon` first and use feature-local `index.md` for human
   discovery when evaluation context refers to feature artifacts.
 - Policy evaluation does not refresh either specs index.
+
+## Execution contract
+
+Do not use policy evaluation to create requirements or product decisions. Use the owning refinement or `ai-sdlc-sdd` skill instead.
+
+Read the [shared execution decisions](../../ai-sdlc-shared-runtime/references/execution-contract.md) once for this invocation.
+Apply its required/discoverable/inherited/optional input rules to this step's
+declared inputs. Record the source and status of material facts, then validate
+the owning output contract and current evidence before completion.
 
 ## Exit
 

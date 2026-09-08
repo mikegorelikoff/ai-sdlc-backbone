@@ -28,6 +28,7 @@ ai-sdlc-qa-requirements-gap-review
 ai-sdlc-qa-traceability-and-readiness-review
 ai-sdlc-quality-lenses
 ai-sdlc-release-slicing-and-backlog-readiness-review
+ai-sdlc-requirements-discovery
 ai-sdlc-requirements-readiness-review
 ai-sdlc-research
 ai-sdlc-retrospective

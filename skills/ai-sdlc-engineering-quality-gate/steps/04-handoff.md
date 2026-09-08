@@ -10,7 +10,7 @@ pre-fix check, prior context window, or unverified report.
 
 ## Procedure
 
-Assemble an `ai-sdlc-handoff/v2` result from the owning step journal. Name the
+Assemble an `ai-sdlc-handoff/v2` result from the owning step evidence. Name the
 completed step IDs, canonical context and report paths, context/report
 fingerprints, fixed and remaining finding counts, exact verification status,
 change scope, residual risks, current owner, and the single next required

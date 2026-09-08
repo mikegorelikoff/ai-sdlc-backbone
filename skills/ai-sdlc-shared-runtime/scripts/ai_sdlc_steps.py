@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Iterable
 
 from ai_sdlc_step_context import (
+    execution_reference,
     StepContextPack,
     compile_step_context,
     validate_step_context_pack,
@@ -548,6 +549,21 @@ def load_manifest(root: Path, skill: str) -> tuple[Path, dict[str, object]]:
             + ", ".join(sorted(ids - reachable))
         )
 
+    for phase in ("handoff", "complete"):
+        closure = _closure(by_id, entrypoints[phase])
+        validated_actions: set[str] = set()
+        for step_id in closure:
+            if by_id[step_id]["type"] == "validation":
+                validated_actions.update(_closure(by_id, [step_id]))
+        unvalidated = sorted(step_id for step_id in closure
+                             if by_id[step_id]["type"] == "action"
+                             and step_id not in validated_actions)
+        if unvalidated:
+            raise ValueError(
+                f"STEP_INVALID_MANIFEST: {phase} has unvalidated actions: "
+                + ", ".join(unvalidated)
+            )
+
     actual_paths = {
         item.relative_to(skill_root).as_posix()
         for item in (skill_root / "steps").glob("*.md")
@@ -584,6 +600,13 @@ def _graph_fingerprint(
         }
         for step in manifest["steps"]
     ]
+    for step in manifest["steps"]:
+        text = _contained_file(skill_root, str(step["path"])).read_text(encoding="utf-8")
+        reference = execution_reference(skill_root, text)
+        if reference:
+            relative, _content, path = reference
+            documents.append({"step": step["id"], "path": relative,
+                              "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
     return _digest({"manifest": manifest, "documents": documents})
 
 
@@ -808,7 +831,10 @@ def _build_card(
 ) -> StepCard:
     context: StepContextPack | None = None
     cache_root = _context_cache_root(root)
-    if cache_root is not None:
+    step_document = _contained_file(skill_root, str(step["path"])).read_text(encoding="utf-8")
+    # The cache retrieval path does not yet retain sibling mandatory references.
+    # Compile preflight directly until it can prove that contract's recall.
+    if cache_root is not None and execution_reference(skill_root, step_document) is None:
         try:
             context = _cached_context(
                 root=root, cache_root=cache_root, skill=skill, step=step,
@@ -909,6 +935,13 @@ def select_steps(
         raise ValueError(
             "STEP_UNKNOWN_COMPLETION: " + ", ".join(unknown_completed)
         )
+    for step_id in sorted(completed):
+        missing = sorted(set(by_id[step_id]["depends_on"]) - completed)
+        if missing:
+            raise ValueError(
+                f"STEP_INVALID_COMPLETION: {step_id} requires completed dependencies: "
+                + ", ".join(missing)
+            )
     order = _topological_order(steps, subset=closure)
     pending = tuple(step_id for step_id in order if step_id not in completed)
     ready = tuple(

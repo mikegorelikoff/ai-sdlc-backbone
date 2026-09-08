@@ -32,7 +32,7 @@ steps[5]:
     id: preflight
     load: required
     max_attempts: 1
-    max_tokens: 1800
+    max_tokens: 1842
     on_failure: block
     operation: inspect-and-route
     outputs[3]: review-boundary,routing-evidence,blockers

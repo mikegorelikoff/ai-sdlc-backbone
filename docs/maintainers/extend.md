@@ -75,6 +75,13 @@ context/gate/output contracts, unknown roles/phases, budget overflow, and
 unmatched entrypoints. Its public guide is generated; never hand-edit
 `docs/reference/skills/<skill>.md`.
 
+Completed-node claims must include every prerequisite. Handoff and completion
+closures must put each action upstream of a validation node. The declared shared
+execution reference is mandatory context and contributes to graph identity;
+changing it invalidates earlier fingerprints. Keep registered-stage preflight
+bindings aligned with `ai_sdlc_state_machine.py`; utility skills do not acquire
+feature-state authority merely because they share a runtime.
+
 Add an explicit selection boundary to `SKILL_SELECTION_BOUNDARIES`. Generation
 must fail if the new skill lacks a concrete “use another capability instead”
 case.

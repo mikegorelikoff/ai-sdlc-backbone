@@ -79,21 +79,15 @@ The [research input contract](https://github.com/mikegorelikoff/ai-sdlc-harness/
 
 ## Human checkpoints
 
-- Ask when topic, decision to inform, source boundary, or freshness requirement is unclear.
-- Separate sourced findings from inference and unresolved questions.
-- Record contradictory sources and limitations; do not average them away.
-- Do not claim current facts, legal conclusions, or user evidence without verification.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 Humans accept or reject material product, security, QA, policy, rollout, release, and destructive-action decisions; a complete agent handoff is evidence, not approval.
 
 ## Flow modes
 
-- Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Quick flow permits one strong source when scope is explicitly narrow.
-- Full flow requires at least two sources and two source types for each report.
-- External and mixed scopes require an internet search and at least one direct
-  `http://` or `https://` source locator; do not cite search-result pages.
-- Both modes require every finding to cite registered sources and trace targets.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
 
 ## Procedural step selectors
 

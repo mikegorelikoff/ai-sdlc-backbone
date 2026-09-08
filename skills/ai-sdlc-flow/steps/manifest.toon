@@ -32,7 +32,7 @@ steps[6]:
     id: clarify
     load: required
     max_attempts: 1
-    max_tokens: 503
+    max_tokens: 670
     on_failure: block
     operation: inspect-and-route
     outputs[2]: routing-evidence,blockers

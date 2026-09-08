@@ -2,6 +2,8 @@
 
 | Spec | Status | Change size | Branch | Purpose |
 | --- | --- | --- | --- | --- |
+| `specs/024-skill-execution-reinforcement` | complete | large | `feature/023-requirements-discovery` (existing working branch preserved; DEC-001) | Reinforce all Harness and Loop skill contracts with deterministic graph selection, context identity, evidence checks, bounded recovery, and regression evaluation. |
+| `specs/023-requirements-discovery` | complete | medium | `feature/023-requirements-discovery` | Add optional requirements discovery assistants to Harness and Loop with sourced business options and actionable stakeholder questions. |
 | `specs/001-adaptive-harness-roadmap` | active | large | `feature/001-adaptive-harness-roadmap` | Add guided navigation, adaptive rigor, evidence-backed context, reusable quality and recovery workflows, customization, optional modules, evidence council, and compatibility enforcement. |
 | `specs/002-github-pages-docs` | complete | medium | `feature/002-github-pages-docs` | Publish a responsive GitHub Pages documentation site with generated capability catalogs, deterministic validation, and automated deployment. |
 | `specs/003-mkdocs-material-site` | complete | medium | `feature/003-mkdocs-material-site` | Replace the custom documentation presentation and Jekyll build with MkDocs Material, built-in search/navigation, generated Markdown catalogs, strict validation, and Pages deployment. |

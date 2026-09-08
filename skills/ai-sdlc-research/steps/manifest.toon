@@ -32,7 +32,7 @@ steps[5]:
     id: preflight
     load: required
     max_attempts: 1
-    max_tokens: 1028
+    max_tokens: 1120
     on_failure: block
     operation: inspect-and-route
     outputs[2]: routing-evidence,blockers
@@ -140,7 +140,7 @@ steps[5]:
     id: handoff
     load: before-completion
     max_attempts: 1
-    max_tokens: 359
+    max_tokens: 400
     on_failure: handoff
     operation: handoff-result
     outputs[2]: handoff,next-action

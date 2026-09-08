@@ -16,17 +16,14 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 
 ### 0.2 Clarification Rules
 
-- Ask when actor, goal, permission, channel, or success outcome is ambiguous.
-- Separate user need from interface solution and visual preference.
-- Include non-happy states and recovery behavior, not only a golden path.
-- Do not infer accessibility conformance or user research evidence.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 ### 0.2.1 Flow Mode Flags
 
-- Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Quick flow permits one traced actor journey with explicit gaps.
-- Full flow requires at least one journey, interaction state, and accessibility check.
-- Both modes require exact trace targets and actor consistency.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
+
 
 ### 0.3 Output Rules
 
@@ -69,6 +66,15 @@ Confirm the requested scope, flow mode, canonical workspace, required evidence, 
 - Refresh the matching `specs/<feature-name>/index.md` or
   `specs-refiniment/<feature-name>/index.md` only after durable writes.
 - Keep one UX artifact in the owning feature boundary.
+
+## Execution contract
+
+Do not use it while actors, workflows, or business rules are unclear. Use `ai-sdlc-ba` instead. Do not use it to implement interface code. Use `ai-sdlc-sdd` instead.
+
+Read the [shared execution decisions](../../ai-sdlc-shared-runtime/references/execution-contract.md) once for this invocation.
+Apply its required/discoverable/inherited/optional input rules to this step's
+declared inputs. Record the source and status of material facts, then validate
+the owning output contract and current evidence before completion.
 
 ## Exit
 

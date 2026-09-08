@@ -32,7 +32,7 @@ steps[5]:
     id: preflight
     load: required
     max_attempts: 1
-    max_tokens: 520
+    max_tokens: 903
     on_failure: block
     operation: inspect-cache-boundary
     outputs[2]: cache-boundary,blockers

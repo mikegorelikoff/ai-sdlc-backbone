@@ -27,26 +27,14 @@ bytes, index state, and ownership.
 
 ### 0.2 Clarification Rules
 
-- Ask only when the request, review target, acceptance boundary, fix authority,
-  or required verification cannot be recovered from repository evidence.
-- Keep confirmed facts, assumptions, and blockers distinct. Product ambiguity
-  becomes a remaining finding; it is not permission to guess.
-- A missing optional comparison is not a blocker when the bounded search and
-  shortfall reason are explicit.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 ### 0.2.1 Flow Mode Flags
 
-- Support mutually exclusive `--quick-flow` and `--full-flow` modes; reject an
-  invocation that supplies both.
-- Quick flow uses the smallest relevant diff, the highest-ranked local
-  comparisons, focused checks, and visible reversible assumptions. Ask only
-  when continuing could cause material correctness, security, data-loss,
-  compatibility, or authority risk.
-- Full flow verifies every available trace artifact, inspects all applicable
-  review dimensions, and runs the justified repository gates required for
-  delivery confidence. Stop on material ambiguity rather than guessing.
-- Both modes require findings before mutation, the same severity/fix policy,
-  current post-fix evidence, and the same readiness invariants.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
+
 
 ### 0.3 Output Rules
 
@@ -131,6 +119,15 @@ bytes, index state, and ownership.
 - Use `$ai-sdlc-security-testing` when exploitability, abuse cases, or security
   boundaries are the primary scope. This gate still records evidence-backed
   security and reliability findings relevant to the changed behavior.
+
+## Execution contract
+
+Do not use it before a bounded implementation diff and accepted change contract exist. Use `ai-sdlc-sdd` or the owning implementation workflow instead. Do not use it only to execute an already defined check list. Use `ai-sdlc-validation` instead.
+
+Read the [shared execution decisions](../../ai-sdlc-shared-runtime/references/execution-contract.md) once for this invocation.
+Apply its required/discoverable/inherited/optional input rules to this step's
+declared inputs. Record the source and status of material facts, then validate
+the owning output contract and current evidence before completion.
 
 ## Exit
 

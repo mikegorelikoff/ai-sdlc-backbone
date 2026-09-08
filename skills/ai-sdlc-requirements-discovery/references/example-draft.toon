@@ -1,0 +1,97 @@
+as_of: 2026-09-07
+context_fingerprint: 6ceafcb65cc1d801c57c942143ec420715eb68d05b4f98553ceef0293cc31670
+decision:
+  decided_at: ""
+  owner: ""
+  selected_option_id: ""
+  source_ids[0]:
+  status: awaiting-answers
+evidence_limits[1]: Pilot outcomes were not measured; the current bottleneck is unknown
+observations[2]:
+  - id: GAP-001
+    impact: Choice of workflow change
+    kind: unknown
+    material: true
+    source_ids[0]:
+    statement: Where is waiting concentrated?
+  - id: REQ-001
+    impact: Approval lead time
+    kind: fact
+    material: true
+    source_ids[1]: SRC-10effbaea4d2
+    statement: Requester reports long waits
+options[2]:
+  - beneficiary: Requester
+    business_rules[1]: Keep reviewer accountability
+    cost_assumptions: No estimate; ask the operations owner
+    dependencies[1]: Operations owner
+    evidence_kind: sourced
+    id: OPT-001
+    observation_ids[2]: GAP-001,REQ-001
+    precedent_ids[0]:
+    rejection_reason: ""
+    reversibility: Revert the pilot process
+    risks[1]: May target the wrong cause of delay
+    source_ids[1]: SRC-10effbaea4d2
+    status: candidate
+    title: Improve assignment
+    tradeoffs: Pilot learning requires reviewer time
+    value: Reduce idle queue time
+    workflow: Triage before individual review
+  - beneficiary: Requester
+    business_rules[1]: Keep reviewer accountability
+    cost_assumptions: No estimate; ask the operations owner
+    dependencies[1]: Operations owner
+    evidence_kind: sourced
+    id: OPT-002
+    observation_ids[2]: GAP-001,REQ-001
+    precedent_ids[1]: PRE-001
+    rejection_reason: ""
+    reversibility: Revert the pilot process
+    risks[1]: May target the wrong cause of delay
+    source_ids[1]: SRC-10effbaea4d2
+    status: candidate
+    title: Limited batch pilot
+    tradeoffs: Pilot learning requires reviewer time
+    value: Test reduced review effort
+    workflow: Group eligible cases; review exceptions individually
+precedents[1]:
+  - applicability: Similar approval workflow
+    decision: Try low-value batch review
+    differences: Current eligibility is unknown
+    id: PRE-001
+    outcome: ""
+    outcome_source_ids[0]:
+    source_ids[1]: SRC-cd5966fd5484
+    status: implemented
+problem:
+  actors[2]: Requester,Reviewer
+  constraints[1]: Preserve required individual reviews
+  current_process: Cases await a reviewer
+  desired_outcome: Less waiting with correct decisions
+  success_measures[1]: Time waiting for assignment
+  summary: Reduce waiting for approvals
+questions[1]:
+  - answer: ""
+    answer_source_ids[0]:
+    decision_impact: Assignment delay supports OPT-001; review effort motivates testing OPT-002
+    evidence_location: Recent approval event timestamps
+    id: Q-001
+    method: Audit a representative sample
+    observation_ids[1]: GAP-001
+    option_ids[2]: OPT-001,OPT-002
+    priority: before-selection
+    purpose: Choose the intervention
+    question: Where does the time accumulate?
+    response_status: open
+    stakeholder: Operations analyst
+recommendation:
+  change_conditions[1]: Review effort dominates waiting
+  criteria[2]: Observed waiting stage,Policy compatibility
+  expected_evidence: Sample audit identifying the waiting stage
+  next_action: Inspect approval timestamps
+  next_owner: Operations analyst
+  preferred_option_id: OPT-001
+  rationale: Start with assignment if timestamps confirm idle waiting
+  single_option_reason: ""
+schema: ai-sdlc-requirements-discovery-draft/v1

@@ -68,21 +68,15 @@ This is an agent instruction, not a shell command. Terminal commands belong in t
 
 ## Human checkpoints
 
-- Ask when the owner, target authority, or intended outcome is ambiguous.
-- Reject absolute paths, parent traversal, targets inside `changes/`, and
-  duplicate targets instead of normalizing them silently.
-- Treat generated workspace content as a proposal until a later controlled
-  apply workflow proves approval and conflict freedom.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 Humans accept or reject material product, security, QA, policy, rollout, release, and destructive-action decisions; a complete agent handoff is evidence, not approval.
 
 ## Flow modes
 
-- Support `--quick-flow` and `--full-flow`; full flow takes precedence.
-- Quick flow may create a draft from confirmed repository context and visible
-  assumptions.
-- Full flow requires explicit owner, summary, and canonical targets.
-- Neither flow reads, writes, renames, or deletes canonical targets.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
 
 ## Procedural step selectors
 

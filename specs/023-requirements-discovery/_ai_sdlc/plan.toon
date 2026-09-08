@@ -1,0 +1,34 @@
+feature: 023-requirements-discovery
+workspace: implementation
+flow_mode: quick
+updated_at: 2026-09-07
+source_artifacts[6]{artifact,path}:
+  requirements,requirements.md
+  design,design.md
+  test_cases,test-cases.md
+  qa,qa.md
+  tasks,tasks.md
+  decisions,decision-log.md
+trace[9]{acceptance_id,test_cases,tasks}:
+  AC-001,TC-001,T001/T003
+  AC-002,TC-002/TC-010,T001
+  AC-003,TC-003,T001/T003
+  AC-004,TC-009,T002/T003/T006
+  AC-005,TC-004,T004
+  AC-006,TC-005/TC-010,T005/T006/T004
+  AC-007,TC-006,T005/T006
+  AC-008,TC-007,T005/T006
+  AC-009,TC-008,T005/T006
+tasks[6]{id,status,refs,tests,depends_on,artifact,decision_ref}:
+  T001,done,AC-001/AC-002/AC-003/TC-001/TC-002/TC-003,TC-001/TC-002/TC-003/TC-010,none,complete namespaced routers; v2 manifests and bounded procedures.,TBD
+  T002,done,AC-004/TC-001,TC-009,none,discoverable and installable packages in both products.,TBD
+  T005,done,AC-006/AC-007/AC-008/AC-009/TC-005/TC-006/TC-007/TC-008/TC-010,TC-005/TC-006/TC-007/TC-008/TC-010,none,product-local scripts and schema contracts.,TBD
+  T003,done,AC-001/AC-003/AC-004/TC-001/TC-002/TC-003,TC-001/TC-003/TC-009,none,observed positive/negative contract validation.,TBD
+  T006,done,AC-004/AC-006/AC-007/AC-008/AC-009/TC-005/TC-006/TC-007/TC-008/TC-009/TC-010,TC-005/TC-006/TC-007/TC-008/TC-009/TC-010,none,current behavior evidence for both products.,TBD
+  T004,done,AC-005/AC-006/TC-004/TC-005,TC-004/TC-005/TC-010,none,current source-backed documentation and validation evidence.,TBD
+validation_sequence[5]{step,command}:
+  1,check_refinement_context.py --full-flow
+  2,check_clarify.py --full-flow
+  3,check_checklist.py --full-flow
+  4,plan_links.py --check --full-flow
+  5,analyze_spec.py --full-flow && validate_spec.py --full-flow

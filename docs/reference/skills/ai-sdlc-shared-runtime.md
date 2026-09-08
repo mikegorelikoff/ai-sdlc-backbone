@@ -42,7 +42,8 @@ The summary table above names the primary and supporting human roles for this ca
 
 ```text
 Use ai-sdlc-shared-runtime for <target>.
-Do not select a flow flag independently; preserve the mode of the owning downstream skill as described below.
+Choose --quick-flow for bounded assumption-driven progress or --full-flow
+for strict verification only as described below.
 Read the required evidence,
 produce or report Read-only runtime verification or an explicit installation blocker, preserve human approval boundaries,
 and return blockers plus a complete ai-sdlc-handoff/v2.
@@ -69,22 +70,15 @@ This is an agent instruction, not a shell command. Terminal commands belong in t
 
 ## Human checkpoints
 
-- Ask only when the installed skills root or failing downstream script cannot
-  be located safely.
-- Distinguish a missing runtime package from a corrupt runtime copy, missing
-  Python, an unsupported package revision, and an application-level failure.
-- Never infer that an import failure is permission to download or execute an
-  unreviewed replacement.
+- Resolve discoverable facts and reuse inherited decisions before asking.
+- Missing optional context stays optional; label assumptions explicitly.
+- Pause only work dependent on a missing material input or conflicting requirement.
 
 Humans accept or reject material product, security, QA, policy, rollout, release, and destructive-action decisions; a complete agent handoff is evidence, not approval.
 
 ## Flow modes
 
-- This package has no independent quick/full lifecycle flow.
-- Preserve `--quick-flow` and `--full-flow` flags for the downstream owning
-  skill; this runtime must not reinterpret them.
-- Verification is read-only. Reinstallation or repair requires the same human
-  authority and trusted source used for installation.
+- Support `--quick-flow` and `--full-flow`; full takes precedence. Apply the shared execution contract below.
 
 ## Procedural step selectors
 
