@@ -44,3 +44,10 @@ it from the current tree does not revoke prior grants or make history private.
 Any history rewrite, replacement repository, or future-version licensing
 policy requires a separate owner and legal decision; this migration does not
 rewrite history automatically.
+
+## 2026-09-08 — Backbone 5.1.0 release
+
+Publish customer-facing notes for discovery and deterministic skill execution.
+Preserve the licensed distribution boundary: implementation is released from
+the private core, and the public repository contains no skill or runtime source.
+Product 5.1.0 and installer 1.0.1 use independent version lines.

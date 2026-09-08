@@ -1,5 +1,28 @@
 # Changelog
 
+## v5.1.0 - 2026-09-08
+
+### Added
+
+- Requirements discovery with bounded source preparation, typed validation and
+  freshness checks.
+- Repository-grounded engineering review and deterministic execution contracts
+  across all 48 product skills.
+
+### Changed
+
+- Reject invalid step histories and handoffs that bypass verification; bind
+  mandatory context to source fingerprints and bound recovery behavior.
+- Keep licensed product implementation in the private core. The public
+  installer remains 1.0.1; existing runtime paths and schema identities remain
+  compatible. Loop 0.3.0 remains a separately installed product.
+
+### Validation and limitations
+
+- Structural and mutation evaluations validate mechanical contracts; they do
+  not establish live model reasoning quality. Release archives remain
+  allowlisted and checksummed. Version 5.0.1 remains the rollback target.
+
 ## v5.0.1 - 2026-08-21
 
 ### Changed
