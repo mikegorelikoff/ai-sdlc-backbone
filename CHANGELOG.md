@@ -1,5 +1,13 @@
 # Changelog
 
+## v5.3.0 - 2026-09-08
+
+### Changed
+
+- Reinforce all 48 skill execution boundaries around existing deterministic Python tools.
+- Preserve lossless TOON/state values and OKF provenance, support fixed observation times, and protect unchanged artifacts from unnecessary rewrites.
+- Add reproducibility and failure-path regression checks while retaining bounded semantic reasoning and native artifact formats.
+
 ## v5.2.0 - 2026-09-08
 
 ### Changed

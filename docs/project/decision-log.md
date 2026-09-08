@@ -60,3 +60,11 @@ licensed archives remain private. Loop 0.4.0 and Context Guard 0.1.3 are separat
 product releases; the unchanged public installer stays at 1.0.1. Simulation
 results do not establish live model reliability. Roll back to Backbone 5.1.0
 when a consumer cannot adopt this additive presentation update.
+
+## 2026-09-08 — Deterministic execution reinforcement
+
+The next Backbone change strengthens existing runtime primitives and all 48 local skill boundaries. The public repository records customer-visible behavior; implementation, fixtures and internal source inventory remain in Backbone Core. This entry does not announce a published release or change the installation command.
+
+## 2026-09-08 — Release 5.3.0
+
+Publish the user-authorized determinism reinforcement from feature 026. Keep native artifact formats and existing approval boundaries. Structural and fixture-based tests do not establish live model reliability. Roll back by pinning 5.2.0; do not rewrite published tags.
