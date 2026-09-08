@@ -1,5 +1,25 @@
 # Changelog
 
+## v5.2.0 - 2026-09-08
+
+### Changed
+
+- Give all 48 Backbone skills individual table-first chat contracts with
+  domain-specific results, evidence, blockers and next actions. Native artifacts
+  and existing delivery authority remain unchanged.
+- Add deterministic rendering, structural checks and eight simulation scenarios
+  per skill. Include local schemas in context and graph fingerprints; fix
+  quoted-content TOON decoding without weakening integrity checks.
+- Update the separately installed Loop product to 0.4.0. Context Guard 0.1.3
+  reinforces its contributor skill outputs. The public installer remains 1.0.1.
+
+### Validation and limitations
+
+- Simulated output and regression checks pass; live model adherence and
+  independent semantic evaluation remain unmeasured. Backbone 5.1.0 is the
+  rollback version; no API migration is required.
+
+
 ## v5.1.0 - 2026-09-08
 
 ### Added

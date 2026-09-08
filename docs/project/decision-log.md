@@ -51,3 +51,12 @@ Publish customer-facing notes for discovery and deterministic skill execution.
 Preserve the licensed distribution boundary: implementation is released from
 the private core, and the public repository contains no skill or runtime source.
 Product 5.1.0 and installer 1.0.1 use independent version lines.
+
+## 2026-09-08 — Backbone 5.2.0 release
+
+Publish per-skill chat output contracts with deterministic validation while
+preserving native artifacts and existing authority boundaries. Core source and
+licensed archives remain private. Loop 0.4.0 and Context Guard 0.1.3 are separate
+product releases; the unchanged public installer stays at 1.0.1. Simulation
+results do not establish live model reliability. Roll back to Backbone 5.1.0
+when a consumer cannot adopt this additive presentation update.
