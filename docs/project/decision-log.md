@@ -1,5 +1,13 @@
 # Documentation decision log
 
+## 2026-09-15 — Adaptive execution depth
+
+Choose process depth from observed change risk and uncertainty. FAST uses targeted
+verification, STANDARD adds a compact plan, and DEEP retains the full lifecycle.
+Escalation reuses context and evidence. Existing approval and release authority
+remain unchanged. Unknown telemetry must not be reported as measured zero.
+
+
 ## 2026-08-21 — Product and installer releases use independent versions
 
 AI SDLC Backbone `5.0.1` is the current licensed product release, while

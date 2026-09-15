@@ -1,5 +1,12 @@
 # Changelog
 
+## v5.6.0 - 2026-09-15
+
+- Add automatic FAST, STANDARD and DEEP execution depth with monotonic escalation and a reusable task context pack.
+- Reuse scoped source reads, prefer risk-triggered deterministic verification, and bound unchanged-state retries.
+- Record stage timings, checks, escalation and available call/token evidence; unavailable telemetry remains explicit.
+- Preserve existing approval gates, full SDLC workflows, context graphs, Doctor and specialized hunters.
+
 ## v5.5.0 - 2026-09-08
 
 - Add read-only framework Doctor profiles and three distinct quality-discovery skills: edge conditions, missing model dimensions and evidence-backed implementation defects.
