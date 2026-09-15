@@ -1,0 +1,23 @@
+CHANGELOG.md
+  s_8788922cf6a1c9::t_b3338e39f0db86 3-9
+docs/project/decision-log.md
+  s_8788922cf6a1c9::t_1fbdd94e888f15 3-10
+docs/reference/versions.md
+  s_8788922cf6a1c9::t_058a762ad73624 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.18",
+  "base_commit_sha": "73cf31a56328549a88d305f98b7401893af2dd61",
+  "prompts": {},
+  "sessions": {
+    "s_8788922cf6a1c9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a4c3-c51c-7f73-8dcf-1571c9980eaf",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Test <test@example.com>"
+    }
+  }
+}
