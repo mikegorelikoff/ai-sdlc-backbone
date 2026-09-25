@@ -1,0 +1,19 @@
+products/ai-sdlc-loop
+  s_674e7cec5b67a6::t_2b820a2d943fac 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.18",
+  "base_commit_sha": "67195d6a12f74a237d43e2a3f307c4c027a83504",
+  "prompts": {},
+  "sessions": {
+    "s_674e7cec5b67a6": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0d813-6264-79b0-9a28-73d47510e8b5",
+        "model": "unknown"
+      },
+      "human_author": "Test <test@example.com>"
+    }
+  }
+}
