@@ -38,9 +38,11 @@ ai-sdlc-scheduler
 ai-sdlc-sdd
 ai-sdlc-security-testing
 ai-sdlc-shared-runtime
+ai-sdlc-spec-state
 ai-sdlc-test-case-and-suite-synthesis
 ai-sdlc-test-cases
 ai-sdlc-test-scope-and-strategy-design
+ai-sdlc-usage-coach
 ai-sdlc-user-story-decomposition
 ai-sdlc-ux
 ai-sdlc-validation

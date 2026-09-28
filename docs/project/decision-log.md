@@ -5,6 +5,32 @@ description: Record the AI SDLC Harness documentation architecture, URL, governa
 
 # Documentation decision log
 
+## 2026-09-28 — Release 5.7.0
+
+Release `v5.7.0` publishes `ai-sdlc-spec-state` and `ai-sdlc-usage-coach` across the Harness core module (expanding the catalog to 50 skills),
+establishing persistent specification state, declarative `.sdlc.toon` configuration,
+deterministic wizard initialization across downstream skills, repository structural
+index freshness monitoring, automated baseline rotation, and decision knowledgebase
+compaction. Parity is established across products: AI SDLC Loop `v0.12.0` (29 skills) and Harness UI `v0.2.0`
+are released and pinned as compatible product baselines. Third-party integrations (Confluence) remain explicitly
+deferred/disabled; Git-backed storage serves as the exclusive persistence provider.
+
+## 2026-09-28 — Persistent specification state and lifecycle management (`ai-sdlc-spec-state`)
+
+Introduce `ai-sdlc-spec-state` as a configuration-driven capability primitive
+governing specification context synchronization, structural repository index
+freshness (14-day default threshold), baseline rotation, and decision
+knowledgebase compaction across feature lifecycles and external Git planning
+repositories (e.g. `vestwell/agent-planning-docs`).
+
+The `.sdlc.toon` file is strictly a declarative configuration layer, while Git
+persists immutable timestamped artifacts (`YYYYMMDD-<feature>-spec.md`,
+`-plan.md`, `-decisions.md`, `-readable.md`, `YYYYMMDD-<repo>.md`,
+`baselinespec-<repo>-<version>-<date>.md`, `decision-knowledgebase-<repo>-<version>-<date>.md`).
+Operations (`init`, `fetch`, `publish`, `status`, `refresh-index`, `rotate`, `cleanup`)
+are deterministic, non-destructive, and provide Python library and CLI APIs.
+Public catalogs and reference guides are regenerated and verified against all contracts.
+
 ## 2026-09-15 — Adaptive execution across Harness and Loop
 
 Document execution depth separately from quick/full interaction flags in the

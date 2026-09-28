@@ -15,11 +15,11 @@ usage() {
     "  ./install.sh agent-project --skills-root .agent/skills" \
     "  ./install.sh codex-project --module context-cache" \
     "  ./install.sh update" \
-    "  curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v5.6.0/install.sh | sh -s -- codex-project" \
+    "  curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v5.7.0/install.sh | sh -s -- codex-project" \
     "" \
     "Optional environment overrides:" \
     "  AI_SDLC_SOURCE               Clean local checkout or reviewed Git remote" \
-    "  AI_SDLC_REVISION             Exact commit or tag (remote default: v5.6.0)" \
+    "  AI_SDLC_REVISION             Exact commit or tag (remote default: v5.7.0)" \
     "  AI_SDLC_PYTHON               Python 3.10+ executable (default: python3)" \
     "  AI_SDLC_INSTALL_REPLACE      Set to 1 only after reviewing managed differences"
 }
@@ -191,7 +191,7 @@ else
       exit 65
       ;;
   esac
-  ai_sdlc_requested_revision=${AI_SDLC_REVISION:-v5.6.0}
+  ai_sdlc_requested_revision=${AI_SDLC_REVISION:-v5.7.0}
   case "$ai_sdlc_requested_revision" in
     *[!A-Za-z0-9._-]*|"")
       printf '%s\n' "AI_SDLC_REVISION contains unsupported characters." >&2

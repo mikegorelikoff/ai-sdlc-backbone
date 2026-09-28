@@ -1,0 +1,17 @@
+clarification[4]: Missing configuration,Why required,Known evidence,Options
+example:
+  Operation: fetch
+  "Repository ID": payments
+  Status: fresh
+  Storage: vestwell/agent-planning-docs:main
+  "Sync state": clean
+failure[5]: Operation,Status,Blocker,Evidence,Required action
+hide: "Secrets, tokens, credentials, and raw git payloads."
+native_exception: "Keep machine artifacts, code, commands and diffs native; presentation does not replace validation."
+primary[5]: Operation,Repository ID,Status,Storage,Sync state
+priority: Show operation outcome and synchronization status before detail; preserve repository authority.
+required_input: Storage configuration
+rows: individual spec state operation records
+schema: ai-sdlc-chat-contract/v1
+secondary[0]:
+skill: ai-sdlc-spec-state

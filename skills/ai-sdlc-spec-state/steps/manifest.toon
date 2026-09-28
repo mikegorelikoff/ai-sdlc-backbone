@@ -1,0 +1,123 @@
+budgets:
+  context_max_tokens: 12000
+  min_context_savings_percent: 15
+  step_max_tokens: 5000
+entrypoints:
+  clarify[1]: context
+  complete[1]: handoff
+  execute[1]: execute
+  handoff[1]: handoff
+  prepare[1]: preflight
+  route[1]: context
+  validate[1]: validate
+schema: ai-sdlc-skill-steps/v2
+skill: ai-sdlc-spec-state
+steps[4]:
+  - capabilities[1]: filesystem.read
+    commit_boundary: none
+    condition:
+      actions[0]:
+      phases[1]: prepare
+      roles[4]: business-analyst,product-manager,software-engineer,qa-engineer
+    context:
+      budget_tokens: 12000
+      critical_anchors[3]: ## Entry,## Procedure,## Exit
+      fallback: direct_read
+      mandatory[1]: step_document
+      min_savings_percent: 15
+      required: true
+      selectors[3]: step,repository-instructions,changed-path-topology
+    depends_on[0]:
+    gates[2]: authority,inputs
+    id: preflight
+    load: required
+    max_attempts: 1
+    max_tokens: 3000
+    on_failure: block
+    operation: validate-configuration
+    outputs[2]: config-status,storage-target
+    path: steps/01-prepare.md
+    reason: locate and validate declarative .sdlc.toon configuration
+    side_effect: none
+    type: analysis
+  - capabilities[2]: filesystem.read,network.git
+    commit_boundary: none
+    condition:
+      actions[0]:
+      phases[2]: clarify,route
+      roles[4]: business-analyst,product-manager,software-engineer,qa-engineer
+    context:
+      budget_tokens: 12000
+      critical_anchors[3]: ## Entry,## Procedure,## Exit
+      fallback: direct_read
+      mandatory[1]: step_document
+      min_savings_percent: 15
+      required: true
+      selectors[3]: step,repository-instructions,feature-traces
+    depends_on[1]: preflight
+    gates[2]: context-sufficiency,storage-access
+    id: context
+    load: required
+    max_attempts: 1
+    max_tokens: 4000
+    on_failure: block
+    operation: fetch-spec-hierarchy
+    outputs[3]: repository-index,baseline-spec,incremental-specs
+    path: steps/02-context.md
+    reason: retrieve compact specification hierarchy from configured storage
+    side_effect: none
+    type: read
+  - capabilities[3]: filesystem.read,filesystem.write,network.git
+    commit_boundary: staging
+    condition:
+      actions[0]:
+      phases[1]: execute
+      roles[4]: business-analyst,product-manager,software-engineer,qa-engineer
+    context:
+      budget_tokens: 12000
+      critical_anchors[3]: ## Entry,## Procedure,## Exit
+      fallback: direct_read
+      mandatory[1]: step_document
+      min_savings_percent: 15
+      required: true
+      selectors[3]: step,feature-traces,changed-path-topology
+    depends_on[1]: context
+    gates[2]: schema-validity,conflict-detection
+    id: execute
+    load: on-demand
+    max_attempts: 2
+    max_tokens: 4000
+    on_failure: block
+    operation: synchronize-spec-state
+    outputs[3]: staged-artifacts,published-state,rotation-receipt
+    path: steps/03-execute.md
+    reason: execute publish, rotate, refresh-index, or cleanup according to policy
+    side_effect: transactional-write
+    type: mutation
+  - capabilities[1]: filesystem.read
+    commit_boundary: none
+    condition:
+      actions[0]:
+      phases[2]: validate,complete
+      roles[4]: business-analyst,product-manager,software-engineer,qa-engineer
+    context:
+      budget_tokens: 12000
+      critical_anchors[3]: ## Entry,## Procedure,## Exit
+      fallback: direct_read
+      mandatory[1]: step_document
+      min_savings_percent: 15
+      required: true
+      selectors[2]: step,feature-traces
+    depends_on[1]: execute
+    gates[2]: verification,retention-compliance
+    id: handoff
+    load: before-completion
+    max_attempts: 1
+    max_tokens: 3000
+    on_failure: report
+    operation: report-status-and-handoff
+    outputs[2]: spec-state-status,downstream-context
+    path: steps/04-validate-and-handoff.md
+    reason: emit deterministic status report and hand off context to downstream skills
+    side_effect: none
+    type: gate

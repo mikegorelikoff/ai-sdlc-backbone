@@ -1,0 +1,48 @@
+schema: ai-sdlc-spec-state-schema/v1
+title: AI SDLC Specification State Configuration Schema
+description: Declarative configuration schema for .sdlc.toon specification state management
+
+properties:
+  artifacts:
+    baseline_spec: boolean
+    decision_logs: boolean
+    feature_specs: boolean
+    index: boolean
+    plans: boolean
+    readable_specs: boolean
+  enabled: boolean
+  impact:
+    enabled: boolean
+    refresh_index_threshold: integer
+  integrations:
+    confluence:
+      enabled: boolean
+      space: string
+  lifecycle:
+    decision_archive_after_specs: integer
+    fetch_before_feature: boolean
+    publish_before_pr: boolean
+    refresh_index_after_days: integer
+    rotation_spec_threshold: integer
+  multi_repo:
+    logical_spec_id_field: string
+    strategy: string
+  naming:
+    convention: string
+    date_format: string
+  repository:
+    id: string
+    source: string
+    version: string
+  retention:
+    cleanup_archived_artifacts: boolean
+    keep_current_baseline: integer
+    keep_previous_baselines: integer
+  schema: string
+  storage:
+    branch: string
+    provider: string
+    repository: string
+    root: string
+
+required[4]: schema,enabled,storage,repository

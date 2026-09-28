@@ -186,6 +186,10 @@ SKILL_SELECTION_BOUNDARIES: dict[str, tuple[str, ...]] = {
         "Do not use shared helpers as a lifecycle entry point. Use `ai-sdlc-flow` Explore or the owning skill instead.",
         "Do not patch installed copies ad hoc. Use the authorized install or update workflow and the canonical runtime package instead.",
     ),
+    "ai-sdlc-spec-state": (
+        "Do not use it to invent requirements, author feature implementation code, or bypass the SDD workflow. Use `ai-sdlc-sdd` or the owning refinement skill instead.",
+        "Do not use it as a general Git repository synchronization tool or code branch manager. Use `ai-sdlc-branching` instead.",
+    ),
     "ai-sdlc-test-case-and-suite-synthesis": (
         "Do not use it before individual test cases and QA strategy exist. Use `ai-sdlc-test-cases` and `ai-sdlc-test-scope-and-strategy-design` instead.",
     ),
@@ -197,6 +201,10 @@ SKILL_SELECTION_BOUNDARIES: dict[str, tuple[str, ...]] = {
     ),
     "ai-sdlc-user-story-decomposition": (
         "Do not use it before goals, capabilities, epics, and delivery gaps are understood. Use the goal-mapping and delivery-package gap workflows instead.",
+    ),
+    "ai-sdlc-usage-coach": (
+        "Do not use behavioral feedback or usage coaching as formal productivity scoring, performance management, or delivery enforcement. Use retrospective and process evaluation instead.",
+        "Do not use it to bypass lifecycle quality gates or commit approval. Use `ai-sdlc-engineering-quality-gate` and `ai-sdlc-commit-prep` instead.",
     ),
     "ai-sdlc-ux": (
         "Do not use it while actors, workflows, or business rules are unclear. Use `ai-sdlc-ba` instead.",
@@ -319,7 +327,7 @@ ROLE_SKILL_GROUPS: dict[str, dict[str, object]] = {
             "ai-sdlc-delivery-graph", "ai-sdlc-evidence-council",
             "ai-sdlc-quality-lenses", "ai-sdlc-runtime", "ai-sdlc-scheduler", "ai-sdlc-workflow",
             "ai-sdlc-host-adapter", "ai-sdlc-doctor", "ai-sdlc-package-trust",
-            "ai-sdlc-policy", "ai-sdlc-shared-runtime", "ai-sdlc-retrospective",
+            "ai-sdlc-policy", "ai-sdlc-shared-runtime", "ai-sdlc-spec-state", "ai-sdlc-usage-coach", "ai-sdlc-retrospective",
             "ai-sdlc-research", "ai-sdlc-ux", "ai-sdlc-qa",
             "ai-sdlc-delivery-spec-synthesis", "ai-sdlc-delivery-handoff-review",
         ),
@@ -367,6 +375,7 @@ TASK_SELECTION_HINTS: dict[str, tuple[str, str, str]] = {
     "ai-sdlc-doctor": ("Diagnose install or upgrade health", "Installed package and repository state", "Authorized update or support owner"),
     "ai-sdlc-workflow": ("Plan a reusable controlled execution", "Installed skills, entrypoints, dependencies, conditions, and approvals", "Runtime execution"),
     "ai-sdlc-quality-lenses": ("Apply a focused cross-lifecycle review", "Existing authoritative artifact and selected lens", "Artifact owner or accountable gate"),
+    "ai-sdlc-usage-coach": ("Analyze workflow patterns and receive evidence-backed coaching suggestions", "Local session event journals in .ai-sdlc/usage/", "Team workflow improvements or retrospective"),
 }
 
 

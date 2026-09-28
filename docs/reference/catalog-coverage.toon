@@ -1,9 +1,9 @@
 schema: ai-sdlc-documentation-coverage/v1
-skill_count: 48
-script_count: 127
+skill_count: 50
+script_count: 133
 documentation_root: docs
 
-skills[48]{skill,source,page,module,package_scripts}:
+skills[50]{skill,source,page,module,package_scripts}:
   ai-sdlc-approvals-sandbox,skills/ai-sdlc-approvals-sandbox/SKILL.md,reference/skills/ai-sdlc-approvals-sandbox.md,core,1
   ai-sdlc-architecture,skills/ai-sdlc-architecture/SKILL.md,reference/skills/ai-sdlc-architecture.md,architecture,1
   ai-sdlc-ba,skills/ai-sdlc-ba/SKILL.md,reference/skills/ai-sdlc-ba.md,core,1
@@ -44,16 +44,18 @@ skills[48]{skill,source,page,module,package_scripts}:
   ai-sdlc-sdd,skills/ai-sdlc-sdd/SKILL.md,reference/skills/ai-sdlc-sdd.md,core,11
   ai-sdlc-security-testing,skills/ai-sdlc-security-testing/SKILL.md,reference/skills/ai-sdlc-security-testing.md,core,1
   ai-sdlc-shared-runtime,skills/ai-sdlc-shared-runtime/SKILL.md,reference/skills/ai-sdlc-shared-runtime.md,core,0
+  ai-sdlc-spec-state,skills/ai-sdlc-spec-state/SKILL.md,reference/skills/ai-sdlc-spec-state.md,core,4
   ai-sdlc-test-case-and-suite-synthesis,skills/ai-sdlc-test-case-and-suite-synthesis/SKILL.md,reference/skills/ai-sdlc-test-case-and-suite-synthesis.md,core,1
   ai-sdlc-test-cases,skills/ai-sdlc-test-cases/SKILL.md,reference/skills/ai-sdlc-test-cases.md,core,1
   ai-sdlc-test-scope-and-strategy-design,skills/ai-sdlc-test-scope-and-strategy-design/SKILL.md,reference/skills/ai-sdlc-test-scope-and-strategy-design.md,core,1
+  ai-sdlc-usage-coach,skills/ai-sdlc-usage-coach/SKILL.md,reference/skills/ai-sdlc-usage-coach.md,core,1
   ai-sdlc-user-story-decomposition,skills/ai-sdlc-user-story-decomposition/SKILL.md,reference/skills/ai-sdlc-user-story-decomposition.md,core,1
   ai-sdlc-ux,skills/ai-sdlc-ux/SKILL.md,reference/skills/ai-sdlc-ux.md,ux,1
   ai-sdlc-validation,skills/ai-sdlc-validation/SKILL.md,reference/skills/ai-sdlc-validation.md,core,2
   ai-sdlc-workflow,skills/ai-sdlc-workflow/SKILL.md,reference/skills/ai-sdlc-workflow.md,core,1
   ai-sdlc-working-backwards-discovery,skills/ai-sdlc-working-backwards-discovery/SKILL.md,reference/skills/ai-sdlc-working-backwards-discovery.md,core,1
 
-scripts[127]{path,owner,classification,documentation}:
+scripts[133]{path,owner,classification,documentation}:
   skills/ai-sdlc-approvals-sandbox/scripts/approval_plan.py,ai-sdlc-approvals-sandbox,skill package helper,reference/scripts.md
   skills/ai-sdlc-architecture/scripts/architecture.py,ai-sdlc-architecture,skill package helper,reference/scripts.md
   skills/ai-sdlc-ba/scripts/ba_context_scaffold.py,ai-sdlc-ba,skill package helper,reference/scripts.md
@@ -146,9 +148,15 @@ scripts[127]{path,owner,classification,documentation}:
   skills/ai-sdlc-shared-runtime/scripts/refinement_status.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/skill_script_contract.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/state_machine.py,shared runtime,canonical shared helper,reference/scripts.md
+  skills/ai-sdlc-shared-runtime/scripts/usage_journal.py,shared runtime,canonical shared helper,reference/scripts.md
+  skills/ai-sdlc-spec-state/scripts/spec_state.py,ai-sdlc-spec-state,skill package helper,reference/scripts.md
+  skills/ai-sdlc-spec-state/scripts/spec_state_config.py,ai-sdlc-spec-state,skill package helper,reference/scripts.md
+  skills/ai-sdlc-spec-state/scripts/spec_state_rotation.py,ai-sdlc-spec-state,skill package helper,reference/scripts.md
+  skills/ai-sdlc-spec-state/scripts/spec_state_storage.py,ai-sdlc-spec-state,skill package helper,reference/scripts.md
   skills/ai-sdlc-test-case-and-suite-synthesis/scripts/suite_outline.py,ai-sdlc-test-case-and-suite-synthesis,skill package helper,reference/scripts.md
   skills/ai-sdlc-test-cases/scripts/case_matrix.py,ai-sdlc-test-cases,skill package helper,reference/scripts.md
   skills/ai-sdlc-test-scope-and-strategy-design/scripts/strategy_scaffold.py,ai-sdlc-test-scope-and-strategy-design,skill package helper,reference/scripts.md
+  skills/ai-sdlc-usage-coach/scripts/coach.py,ai-sdlc-usage-coach,skill package helper,reference/scripts.md
   skills/ai-sdlc-user-story-decomposition/scripts/story_map.py,ai-sdlc-user-story-decomposition,skill package helper,reference/scripts.md
   skills/ai-sdlc-ux/scripts/ux.py,ai-sdlc-ux,skill package helper,reference/scripts.md
   skills/ai-sdlc-validation/scripts/run_validation.py,ai-sdlc-validation,skill package helper,reference/scripts.md

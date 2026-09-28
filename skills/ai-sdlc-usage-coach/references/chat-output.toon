@@ -1,0 +1,17 @@
+clarification[4]: Signal,Unknown context,Known evidence,Options
+example:
+  Evidence: 3 sessions
+  Pattern: Rework Cycle
+  Suggestion: Run quality checks in smaller increments
+  "Suggestion ID": SUG-001
+  "Value rationale": Reduces verification cycles
+failure[5]: Command,Status,Blocker,Evidence,Required action
+hide: Secrets, raw logs, complete transcripts, prompts, source code and unneeded internal tool steps. Keep factual references only.
+native_exception: Keep machine artifacts, code, commands and diffs native; presentation does not replace validation.
+primary[5]: Suggestion ID,Pattern,Evidence,Suggestion,Value rationale
+priority: Show the user observation before detail; preserve source order and explicit authority.
+required_input: Session journal
+rows: individual recommendation records
+schema: ai-sdlc-chat-contract/v1
+secondary[4]: Signal,Meaning,Impact,Action
+skill: ai-sdlc-loop-usage-coach

@@ -1,0 +1,152 @@
+scenarios[8]:
+  - baseline_response: "Result\nStatus: PASS\nDecision: Observed workflow patterns and derived 1 recommendation.\nEvidence: session-journal:3\n\nprimary: Evidence: 3 sessions; Pattern: Rework Cycle; Suggestion: Run quality checks in smaller increments; Suggestion ID: SUG-001; Value rationale: Reduces verification cycles.\nactions: Owner: Developer; Next action: Run localized quality checks; Expected evidence: Passing gate receipt.\n\nsecondary: Action: Run engineering-quality-gate earlier; Impact: 3 extra cycles; Meaning: Repeated implement -> gate -> implement; Signal: rework-cycle.\n"
+    id: happy
+    provenance: "authored scenario from owning output fields; baseline is a simulation"
+    request: "Simulate ai-sdlc-loop-usage-coach: happy"
+    required_facts[3]: "session-journal:3",SUG-001,Rework Cycle
+    result:
+      actions[1]{"Expected evidence","Next action",Owner}:
+        Passing gate receipt,Run localized quality checks,Developer
+      primary[1]{Evidence,Pattern,Suggestion,"Suggestion ID","Value rationale"}:
+        3 sessions,Rework Cycle,Run quality checks in smaller increments,SUG-001,Reduces verification cycles
+      schema: ai-sdlc-chat-result/v1
+      secondary[1]{Action,Impact,Meaning,Signal}:
+        Run engineering-quality-gate earlier,3 extra cycles,Repeated implement -> gate -> implement,rework-cycle
+      summary:
+        Decision: Observed workflow patterns and derived 1 recommendation
+        Evidence: "session-journal:3"
+        Status: PASS
+  - baseline_response: "Result\nStatus: WARNING\nDecision: Partial behavioral signal coverage; one pattern remains unverified.\nEvidence: session-journal:3\n\nprimary: Evidence: 3 sessions; Pattern: Rework Cycle; Suggestion: Run quality checks in smaller increments; Suggestion ID: SUG-001; Value rationale: Reduces verification cycles.\nprimary: Evidence: 3 sessions; Pattern: Rework Cycle [pending case]; Suggestion: Run quality checks in smaller increments; Suggestion ID: SUG-001; Value rationale: Reduces verification cycles.\nactions: Owner: Developer; Next action: Run localized quality checks; Expected evidence: Passing gate receipt.\n"
+    id: partial
+    provenance: "authored scenario from owning output fields; baseline is a simulation"
+    request: "Simulate ai-sdlc-loop-usage-coach: partial"
+    required_facts[3]: "session-journal:3",SUG-001,Rework Cycle
+    result:
+      actions[1]{"Expected evidence","Next action",Owner}:
+        Passing gate receipt,Run localized quality checks,Developer
+      primary[2]{Evidence,Pattern,Suggestion,"Suggestion ID","Value rationale"}:
+        3 sessions,Rework Cycle,Run quality checks in smaller increments,SUG-001,Reduces verification cycles
+        3 sessions,"Rework Cycle [pending case]",Run quality checks in smaller increments,SUG-001,Reduces verification cycles
+      schema: ai-sdlc-chat-result/v1
+      summary:
+        Decision: "Partial result: second case is unverified; do not infer full coverage."
+        Evidence: "session-journal:3"
+        Status: WARNING
+  - baseline_response: "Result\nStatus: WARNING\nDecision: Evidence lag detected between implementation and verification.\nEvidence: session-journal:2\n\nprimary: Evidence: 4 steps lag; Pattern: Evidence Lag; Suggestion: Run verify immediately after editing; Suggestion ID: SUG-002; Value rationale: Catches errors earlier.\nactions: Owner: Developer; Next action: Run verify command; Expected evidence: Passing verification evidence.\n"
+    id: warning
+    provenance: "authored scenario from owning output fields; baseline is a simulation"
+    request: "Simulate ai-sdlc-loop-usage-coach: warning"
+    required_facts[3]: "session-journal:2",SUG-002,Evidence Lag
+    result:
+      actions[1]{"Expected evidence","Next action",Owner}:
+        Passing verification evidence,Run verify command,Developer
+      primary[1]{Evidence,Pattern,Suggestion,"Suggestion ID","Value rationale"}:
+        4 steps lag,Evidence Lag,Run verify immediately after editing,SUG-002,Catches errors earlier
+      schema: ai-sdlc-chat-result/v1
+      summary:
+        Decision: Evidence lag detected between implementation and verification
+        Evidence: "session-journal:2"
+        Status: WARNING
+  - baseline_response: "Result\nStatus: BLOCKED\nDecision: Session journals are missing or unreadable.\nEvidence: source-inventory.toon:missing\n\nfailures: Blocker: Required source is absent; Command: report; Evidence: source-inventory.toon:missing; Required action: Execute at least one Loop skill; Status: BLOCKED.\nactions: Owner: Developer; Next action: Provide session journal; Expected evidence: Validated session journal.\n"
+    id: blocked
+    provenance: "authored scenario from owning output fields; baseline is a simulation"
+    request: "Simulate ai-sdlc-loop-usage-coach: blocked"
+    required_facts[2]: "source-inventory.toon:missing",Validated session journal
+    result:
+      actions[1]{"Expected evidence","Next action",Owner}:
+        Validated session journal,Provide session journal,Developer
+      failures[1]{Blocker,Command,Evidence,"Required action",Status}:
+        Required source is absent,report,"source-inventory.toon:missing",Execute at least one Loop skill,BLOCKED
+      primary[0]:
+      schema: ai-sdlc-chat-result/v1
+      summary:
+        Decision: Session journals are missing or unreadable
+        Evidence: "source-inventory.toon:missing"
+        Status: BLOCKED
+  - baseline_response: "Result\nStatus: BLOCKED\nDecision: Session journals are missing or unreadable.\nEvidence: source-inventory.toon:missing\n\nfailures: Blocker: Required source is absent; Command: report; Evidence: source-inventory.toon:missing; Required action: Provide session journal; Status: BLOCKED.\nclarifications: Known evidence: No supported assumption; Options: Supply journal / run loop command; Signal: report; Unknown context: Session journals missing.\nactions: Owner: Developer; Next action: Provide session journal; Expected evidence: Validated session journal.\n"
+    id: missing-input
+    provenance: "authored scenario from owning output fields; baseline is a simulation"
+    request: "Simulate ai-sdlc-loop-usage-coach: missing-input"
+    required_facts[2]: "source-inventory.toon:missing",Validated session journal
+    result:
+      actions[1]{"Expected evidence","Next action",Owner}:
+        Validated session journal,Provide session journal,Developer
+      clarifications[1]{"Known evidence",Options,Signal,"Unknown context"}:
+        No supported assumption,Supply journal / run loop command,report,Session journals missing
+      failures[1]{Blocker,Command,Evidence,"Required action",Status}:
+        Required source is absent,report,"source-inventory.toon:missing",Provide session journal,BLOCKED
+      primary[0]:
+      schema: ai-sdlc-chat-result/v1
+      summary:
+        Decision: Session journals are missing or unreadable
+        Evidence: "source-inventory.toon:missing"
+        Status: BLOCKED
+  - baseline_response: "Result\nStatus: PASS\nDecision: 20 recommendation records; 8 shown; inspect the linked full artifact.\nEvidence: session-journal:3\n\nprimary: Evidence: 3 sessions; Pattern: Rework Cycle #1; Suggestion: Run quality checks in smaller increments; Suggestion ID: SUG-001; Value rationale: Reduces verification cycles.\nprimary: Evidence: 3 sessions; Pattern: Rework Cycle #2; Suggestion: Run quality checks in smaller increments; Suggestion ID: SUG-001; Value rationale: Reduces verification cycles.\nprimary: Evidence: 3 sessions; Pattern: Rework Cycle #3; Suggestion: Run quality checks in smaller increments; Suggestion ID: SUG-001; Value rationale: Reduces verification cycles.\nprimary: Evidence: 3 sessions; Pattern: Rework Cycle #4; Suggestion: Run quality checks in smaller increments; Suggestion ID: SUG-001; Value rationale: Reduces verification cycles.\nprimary: Evidence: 3 sessions; Pattern: Rework Cycle #5; Suggestion: Run quality checks in smaller increments; Suggestion ID: SUG-001; Value rationale: Reduces verification cycles.\nprimary: Evidence: 3 sessions; Pattern: Rework Cycle #6; Suggestion: Run quality checks in smaller increments; Suggestion ID: SUG-001; Value rationale: Reduces verification cycles.\nprimary: Evidence: 3 sessions; Pattern: Rework Cycle #7; Suggestion: Run quality checks in smaller increments; Suggestion ID: SUG-001; Value rationale: Reduces verification cycles.\nprimary: Evidence: 3 sessions; Pattern: Rework Cycle #8; Suggestion: Run quality checks in smaller increments; Suggestion ID: SUG-001; Value rationale: Reduces verification cycles.\nprimary: Evidence: 3 sessions; Pattern: Rework Cycle #9; Suggestion: Run quality checks in smaller increments; Suggestion ID: SUG-001; Value rationale: Reduces verification cycles.\nprimary: Evidence: 3 sessions; Pattern: Rework Cycle #10; Suggestion: Run quality checks in smaller increments; Suggestion ID: SUG-001; Value rationale: Reduces verification cycles.\nprimary: Evidence: 3 sessions; Pattern: Rework Cycle #11; Suggestion: Run quality checks in smaller increments; Suggestion ID: SUG-001; Value rationale: Reduces verification cycles.\nprimary: Evidence: 3 sessions; Pattern: Rework Cycle #12; Suggestion: Run quality checks in smaller increments; Suggestion ID: SUG-001; Value rationale: Reduces verification cycles.\nprimary: Evidence: 3 sessions; Pattern: Rework Cycle #13; Suggestion: Run quality checks in smaller increments; Suggestion ID: SUG-001; Value rationale: Reduces verification cycles.\nprimary: Evidence: 3 sessions; Pattern: Rework Cycle #14; Suggestion: Run quality checks in smaller increments; Suggestion ID: SUG-001; Value rationale: Reduces verification cycles.\nprimary: Evidence: 3 sessions; Pattern: Rework Cycle #15; Suggestion: Run quality checks in smaller increments; Suggestion ID: SUG-001; Value rationale: Reduces verification cycles.\nprimary: Evidence: 3 sessions; Pattern: Rework Cycle #16; Suggestion: Run quality checks in smaller increments; Suggestion ID: SUG-001; Value rationale: Reduces verification cycles.\nprimary: Evidence: 3 sessions; Pattern: Rework Cycle #17; Suggestion: Run quality checks in smaller increments; Suggestion ID: SUG-001; Value rationale: Reduces verification cycles.\nprimary: Evidence: 3 sessions; Pattern: Rework Cycle #18; Suggestion: Run quality checks in smaller increments; Suggestion ID: SUG-001; Value rationale: Reduces verification cycles.\nprimary: Evidence: 3 sessions; Pattern: Rework Cycle #19; Suggestion: Run quality checks in smaller increments; Suggestion ID: SUG-001; Value rationale: Reduces verification cycles.\nprimary: Evidence: 3 sessions; Pattern: Rework Cycle #20; Suggestion: Run quality checks in smaller increments; Suggestion ID: SUG-001; Value rationale: Reduces verification cycles.\nactions: Owner: Developer; Next action: Run localized quality checks; Expected evidence: Passing gate receipt.\n"
+    id: large
+    provenance: "authored scenario from owning output fields; baseline is a simulation"
+    request: "Simulate ai-sdlc-loop-usage-coach: large"
+    required_facts[3]: "session-journal:3",SUG-001,"Rework Cycle #1"
+    result:
+      actions[1]{"Expected evidence","Next action",Owner}:
+        Passing gate receipt,Run localized quality checks,Developer
+      full_artifact: full-result.toon
+      primary[20]{Evidence,Pattern,Suggestion,"Suggestion ID","Value rationale"}:
+        3 sessions,"Rework Cycle #1",Run quality checks in smaller increments,SUG-001,Reduces verification cycles
+        3 sessions,"Rework Cycle #2",Run quality checks in smaller increments,SUG-001,Reduces verification cycles
+        3 sessions,"Rework Cycle #3",Run quality checks in smaller increments,SUG-001,Reduces verification cycles
+        3 sessions,"Rework Cycle #4",Run quality checks in smaller increments,SUG-001,Reduces verification cycles
+        3 sessions,"Rework Cycle #5",Run quality checks in smaller increments,SUG-001,Reduces verification cycles
+        3 sessions,"Rework Cycle #6",Run quality checks in smaller increments,SUG-001,Reduces verification cycles
+        3 sessions,"Rework Cycle #7",Run quality checks in smaller increments,SUG-001,Reduces verification cycles
+        3 sessions,"Rework Cycle #8",Run quality checks in smaller increments,SUG-001,Reduces verification cycles
+        3 sessions,"Rework Cycle #9",Run quality checks in smaller increments,SUG-001,Reduces verification cycles
+        3 sessions,"Rework Cycle #10",Run quality checks in smaller increments,SUG-001,Reduces verification cycles
+        3 sessions,"Rework Cycle #11",Run quality checks in smaller increments,SUG-001,Reduces verification cycles
+        3 sessions,"Rework Cycle #12",Run quality checks in smaller increments,SUG-001,Reduces verification cycles
+        3 sessions,"Rework Cycle #13",Run quality checks in smaller increments,SUG-001,Reduces verification cycles
+        3 sessions,"Rework Cycle #14",Run quality checks in smaller increments,SUG-001,Reduces verification cycles
+        3 sessions,"Rework Cycle #15",Run quality checks in smaller increments,SUG-001,Reduces verification cycles
+        3 sessions,"Rework Cycle #16",Run quality checks in smaller increments,SUG-001,Reduces verification cycles
+        3 sessions,"Rework Cycle #17",Run quality checks in smaller increments,SUG-001,Reduces verification cycles
+        3 sessions,"Rework Cycle #18",Run quality checks in smaller increments,SUG-001,Reduces verification cycles
+        3 sessions,"Rework Cycle #19",Run quality checks in smaller increments,SUG-001,Reduces verification cycles
+        3 sessions,"Rework Cycle #20",Run quality checks in smaller increments,SUG-001,Reduces verification cycles
+      schema: ai-sdlc-chat-result/v1
+      summary:
+        Decision: 20 recommendation records; 8 shown; inspect the linked full artifact.
+        Evidence: "session-journal:3"
+        Status: PASS
+  - baseline_response: "Result\nStatus: PASS\nDecision: One recommendation record; scope and evidence are explicit.\nEvidence: session-journal:3\n\nprimary: Evidence: 3 sessions; Pattern: Rework Cycle; Suggestion: Run quality checks in smaller increments; Suggestion ID: SUG-001; Value rationale: Reduces verification cycles.\nactions: Owner: Developer; Next action: Run localized quality checks; Expected evidence: Passing gate receipt.\n"
+    id: small
+    provenance: "authored scenario from owning output fields; baseline is a simulation"
+    request: "Simulate ai-sdlc-loop-usage-coach: small"
+    required_facts[3]: "session-journal:3",SUG-001,Rework Cycle
+    result:
+      actions[1]{"Expected evidence","Next action",Owner}:
+        Passing gate receipt,Run localized quality checks,Developer
+      primary[1]{Evidence,Pattern,Suggestion,"Suggestion ID","Value rationale"}:
+        3 sessions,Rework Cycle,Run quality checks in smaller increments,SUG-001,Reduces verification cycles
+      schema: ai-sdlc-chat-result/v1
+      summary:
+        Decision: One recommendation record; scope and evidence are explicit.
+        Evidence: "session-journal:3"
+        Status: PASS
+  - baseline_response: "Result\nStatus: PASS\nDecision: Observed workflow patterns and derived 1 recommendation.\nEvidence: session-journal:3\n\nprimary: Evidence: 3 sessions; Pattern: Rework Cycle; Suggestion: Run quality checks in smaller increments; Suggestion ID: SUG-001 | перенос\nстроки; Value rationale: Reduces verification cycles.\nactions: Owner: Developer; Next action: Run localized quality checks; Expected evidence: Passing gate receipt.\n\nschema: fixture/v1\nstatus: pending\nsource: \"literal | value\"\n"
+    id: edge
+    provenance: "authored scenario from owning output fields; baseline is a simulation"
+    request: "Simulate ai-sdlc-loop-usage-coach: edge"
+    required_facts[3]: "session-journal:3","SUG-001 | перенос\nстроки",Rework Cycle
+    result:
+      actions[1]{"Expected evidence","Next action",Owner}:
+        Passing gate receipt,Run localized quality checks,Developer
+      native[1]{content,language}:
+        "schema: fixture/v1\nstatus: pending\nsource: \"literal | value\"",toon
+      primary[1]{Evidence,Pattern,Suggestion,"Suggestion ID","Value rationale"}:
+        3 sessions,Rework Cycle,Run quality checks in smaller increments,"SUG-001 | перенос\nстроки",Reduces verification cycles
+      schema: ai-sdlc-chat-result/v1
+      summary:
+        Decision: Observed workflow patterns and derived 1 recommendation
+        Evidence: "session-journal:3"
+        Status: PASS
+schema: ai-sdlc-chat-scenarios/v1
+skill: ai-sdlc-loop-usage-coach

@@ -1,6 +1,32 @@
 # Changelog
 
-## Unreleased
+## v5.7.0 - 2026-09-28
+
+### Added
+
+- Added `ai-sdlc-spec-state` skill to maintain persistent specification state,
+  repository structural index freshness, baseline specifications, and decision
+  knowledgebase compaction across feature development and external Git planning
+  repositories (e.g. `vestwell/agent-planning-docs`).
+- Supported declarative `.sdlc.toon` configuration with deterministic operations:
+  `init`, `wizard`, `fetch`, `publish`, `status`, `refresh-index`, `rotate`, `cleanup`.
+- Integrated automated interactive/non-interactive configuration wizard
+  (`ensure_config_or_wizard` / `spec_state.py wizard`) triggered deterministically
+  by any downstream skill whenever `.sdlc.toon` is missing.
+- Supported Git-backed immutable timestamped artifacts with stable multi-repo
+  logical `spec_id` metadata.
+- Implemented automatic baseline and decision knowledgebase rotation when
+  incremental feature specifications reach threshold (>= 50) or repository
+  version changes.
+- Implemented configurable retention policies (`keep_current_baseline`,
+  `keep_previous_baselines`, and safe non-destructive archive moves).
+- Added `ai-sdlc-usage-coach` skill and shared `usage_journal.py` runtime in AI SDLC Harness,
+  providing complete behavioral coaching, friction motif detection (rework cycles, evidence lag,
+  handoff discoverability), and high-precision execution time tracking parity across both products (50 managed skills in Harness, 29 in Loop).
+- Preserved strict zero 3rd-party integration boundary: specification state is managed exclusively
+  via Git-backed storage, and Confluence integrations remain explicitly disabled/deferred.
+- Released and integrated Loop `v0.12.0` and Harness UI `v0.2.0` as compatible
+  product baselines.
 
 ## v5.6.0 - 2026-09-28
 

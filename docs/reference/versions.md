@@ -6,7 +6,8 @@ description: Release, harness API, compatibility, and migration support matrix.
 # Supported versions
 
 | Release | Harness API | Status | Migration |
-| [`v5.6.0`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v5.6.0) | `4.1.0` | Current stable release; adds adaptive execution, Loop `v0.11.0` (usage coach, time tracking), and Harness UI `v0.1.0` | No API migration; existing paths and gates remain compatible |
+| [`v5.7.0`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v5.7.0) | `4.1.0` | Current stable release; adds persistent specification state (`ai-sdlc-spec-state`), deterministic wizard initialization, Loop `v0.12.0`, and Harness UI `v0.2.0` | No API migration; existing paths and gates remain compatible |
+| [`v5.6.0`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v5.6.0) | `4.1.0` | Previous stable release; adds adaptive execution, Loop `v0.11.0` (usage coach, time tracking), and Harness UI `v0.1.0` | No API migration; existing paths and gates remain compatible |
 | [`v4.4.0`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v4.4.0) | `4.1.0` | Previous stable release; adds a cross-platform Python bootstrap, portable Windows/POSIX locking, and a configurable project skills root for Agent Skills-compatible hosts | No API migration; existing named profiles remain unchanged |
 | [`v4.3.1`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v4.3.1) | `4.1.0` | Previous corrective release; preserves the graph explorer while satisfying the TOON-only repository boundary and strict skill-router budget on Python 3.10 and 3.13 | Update to `v4.4.0` for portable installation |
 | [`v4.3.0`](https://github.com/mikegorelikoff/ai-sdlc-harness/tree/v4.3.0) | `4.1.0` | Superseded feature release; graph exploration works, but protected CI rejects its alternate machine-encoding token and over-budget context-cache router | Update immediately to `v4.3.1`; do not move or rewrite the original tag |

@@ -203,6 +203,8 @@ Own technical design, implementation correctness, testable task boundaries, revi
 | Planning and delivery | Collaborate or resolve inputs | [`ai-sdlc-architecture`](skills/ai-sdlc-architecture.md) |
 | Planning and delivery | Collaborate or resolve inputs | [`ai-sdlc-delivery-spec-synthesis`](skills/ai-sdlc-delivery-spec-synthesis.md) |
 | Planning and delivery | Collaborate or resolve inputs | [`ai-sdlc-qa`](skills/ai-sdlc-qa.md) |
+| Planning and delivery | Collaborate or resolve inputs | [`ai-sdlc-spec-state`](skills/ai-sdlc-spec-state.md) |
+| Planning and delivery | Collaborate or resolve inputs | [`ai-sdlc-usage-coach`](skills/ai-sdlc-usage-coach.md) |
 | Planning and delivery | Collaborate or resolve inputs | [`ai-sdlc-ux`](skills/ai-sdlc-ux.md) |
 | Review and assurance | Contribute risk or review evidence | [`ai-sdlc-evidence-council`](skills/ai-sdlc-evidence-council.md) |
 | Review and assurance | Contribute risk or review evidence | [`ai-sdlc-quality-lenses`](skills/ai-sdlc-quality-lenses.md) |
