@@ -2,7 +2,22 @@
 
 ## Unreleased
 
+## v5.6.0 - 2026-09-25
+
+### Added
+
+- Added adaptive FAST/STANDARD/DEEP execution with reusable context packs,
+  monotonic escalation, bounded verification retries, and measured stage
+  evidence across Harness and Loop.
+- Added Loop-native SDD packaging and released Loop `v0.10.1` as the compatible
+  submodule baseline.
+
 ### Changed
+
+- Add conservative FAST/STANDARD/DEEP execution decisions, reusable task context,
+  monotonic escalation, bounded verification and measured stage evidence. Reuse
+  source reads within read-only decisions; Loop can run explicitly independent
+  verification commands concurrently without weakening existing quality gates.
 
 - Reinforced all Harness and Loop skill input, failure, completion and handoff
   contracts. Derive Harness lifecycle bindings from registered stages and keep

@@ -1,6 +1,6 @@
 schema: ai-sdlc-documentation-coverage/v1
 skill_count: 48
-script_count: 124
+script_count: 127
 documentation_root: docs
 
 skills[48]{skill,source,page,module,package_scripts}:
@@ -53,7 +53,7 @@ skills[48]{skill,source,page,module,package_scripts}:
   ai-sdlc-workflow,skills/ai-sdlc-workflow/SKILL.md,reference/skills/ai-sdlc-workflow.md,core,1
   ai-sdlc-working-backwards-discovery,skills/ai-sdlc-working-backwards-discovery/SKILL.md,reference/skills/ai-sdlc-working-backwards-discovery.md,core,1
 
-scripts[124]{path,owner,classification,documentation}:
+scripts[127]{path,owner,classification,documentation}:
   skills/ai-sdlc-approvals-sandbox/scripts/approval_plan.py,ai-sdlc-approvals-sandbox,skill package helper,reference/scripts.md
   skills/ai-sdlc-architecture/scripts/architecture.py,ai-sdlc-architecture,skill package helper,reference/scripts.md
   skills/ai-sdlc-ba/scripts/ba_context_scaffold.py,ai-sdlc-ba,skill package helper,reference/scripts.md
@@ -115,6 +115,7 @@ scripts[124]{path,owner,classification,documentation}:
   skills/ai-sdlc-sdd/scripts/spec_helpers.py,ai-sdlc-sdd,skill package helper,reference/scripts.md
   skills/ai-sdlc-sdd/scripts/validate_spec.py,ai-sdlc-sdd,skill package helper,reference/scripts.md
   skills/ai-sdlc-security-testing/scripts/security_review_matrix.py,ai-sdlc-security-testing,skill package helper,reference/scripts.md
+  skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_adaptive.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_artifact_helper.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_artifact_profiles.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_compatibility.py,shared runtime,canonical shared helper,reference/scripts.md
@@ -134,6 +135,7 @@ scripts[124]{path,owner,classification,documentation}:
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_safe_io.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_skill_eval.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_skill_graph.py,shared runtime,canonical shared helper,reference/scripts.md
+  skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_source_reads.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_specs_index.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_state_machine.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_step_context.py,shared runtime,canonical shared helper,reference/scripts.md
@@ -154,6 +156,7 @@ scripts[124]{path,owner,classification,documentation}:
   skills/ai-sdlc-workflow/scripts/workflow.py,ai-sdlc-workflow,skill package helper,reference/scripts.md
   skills/ai-sdlc-working-backwards-discovery/scripts/discovery_interview_plan.py,ai-sdlc-working-backwards-discovery,skill package helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/tests/install_smoke.py,shared runtime,repository validation runner,reference/scripts.md
+  skills/ai-sdlc-shared-runtime/tests/test_adaptive_execution.py,shared runtime,repository validation runner,reference/scripts.md
   skills/ai-sdlc-shared-runtime/tests/test_all_skill_scripts.py,shared runtime,repository validation runner,reference/scripts.md
   skills/ai-sdlc-shared-runtime/tests/test_artifact_scaffold.py,shared runtime,repository validation runner,reference/scripts.md
   skills/ai-sdlc-shared-runtime/tests/test_compatibility.py,shared runtime,repository validation runner,reference/scripts.md

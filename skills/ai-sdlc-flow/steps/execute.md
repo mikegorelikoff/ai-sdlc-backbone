@@ -37,3 +37,11 @@ Read the active role contract, current traced task or artifact, and selector-app
 ## Exit
 
 Start at most one allow-listed lifecycle transition, then return control to the owning skill.
+
+## Adaptive delivery coordination
+
+Explore accepts `--change-path <file>` and `--risk-signal key=value` observations.
+Its fingerprint includes the depth decision. Follow the shared adaptive contract
+for the overall delivery; a single-checkpoint Apply retains registered-stage
+requirements. Reuse one task record and compact plan for FAST/STANDARD. DEEP and
+directly requested SDD packages retain the existing lifecycle.

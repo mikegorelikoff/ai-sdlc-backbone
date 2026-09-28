@@ -1,0 +1,28 @@
+model_calls: 0
+results[2]:
+  - jobs: 1
+    median_seconds: 7.490117624998675
+    samples[3]:
+      - commands: 3
+        exits[3]: 0,0,0
+        seconds: 7.638700625000638
+      - commands: 3
+        exits[3]: 0,0,0
+        seconds: 7.472964959000819
+      - commands: 3
+        exits[3]: 0,0,0
+        seconds: 7.490117624998675
+  - jobs: 3
+    median_seconds: 5.4137467090004066
+    samples[3]:
+      - commands: 3
+        exits[3]: 0,0,0
+        seconds: 5.123070415998882
+      - commands: 3
+        exits[3]: 0,0,0
+        seconds: 5.455570124999213
+      - commands: 3
+        exits[3]: 0,0,0
+        seconds: 5.4137467090004066
+schema: ai-sdlc-adaptive-verification-benchmark/v1
+scope: "serial versus parallel ablation on current runner; identical real tests, fixture source; setup excluded"

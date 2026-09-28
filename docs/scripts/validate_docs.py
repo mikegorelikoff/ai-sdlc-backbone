@@ -66,7 +66,7 @@ CANONICAL_INSTALL = (
     'AI_SDLC_SOURCE="$HARNESS_SRC" AI_SDLC_REVISION="$HARNESS_REV" '
     '"$HARNESS_SRC/install.sh" codex-project'
 )
-CANONICAL_RELEASE_TAG = "v4.4.0"
+CANONICAL_RELEASE_TAG = "v5.6.0"
 FLOW_PAGES = {
     "flows/index.md",
     "flows/refinement.md",
@@ -388,7 +388,7 @@ def validate_onboarding(root: Path = ROOT) -> list[str]:
 
     short_install = (
         "curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/"
-        "ai-sdlc-harness/v4.4.0/install.sh | sh -s -- codex-project"
+        "ai-sdlc-harness/v5.6.0/install.sh | sh -s -- codex-project"
     )
     for relative in ("README.md", "docs/index.md", "docs/start-here/index.md"):
         path = root / relative

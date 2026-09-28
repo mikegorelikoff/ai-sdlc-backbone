@@ -50,7 +50,7 @@ deliberately refuses to overwrite a local skill edit.
 On Linux or macOS, run the updater pinned to the reviewed release:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.4.0/install.sh | sh -s -- update
+curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v5.6.0/install.sh | sh -s -- update
 ```
 
 On Windows PowerShell, use the same release and native Python bootstrap:

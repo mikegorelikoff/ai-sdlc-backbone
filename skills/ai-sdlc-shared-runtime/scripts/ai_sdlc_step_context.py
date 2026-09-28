@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+from ai_sdlc_source_reads import read_bytes, read_text, source_scope
+
 import copy
 import hashlib
 import re
@@ -406,7 +408,7 @@ def _read_text(base: Path, relative: str) -> tuple[str | None, str | None, Path 
     if not resolved.is_file():
         return None, "missing", None
     try:
-        data = resolved.read_bytes()
+        data = read_bytes(resolved)
     except OSError:
         return None, "unreadable", None
     if len(data) > 262_144:
@@ -550,6 +552,7 @@ def execution_reference(skill_root: Path, text: str) -> tuple[str, str, Path] | 
     return relative, content, path
 
 
+@source_scope
 def compile_step_context(
     *,
     root: Path,
@@ -587,7 +590,7 @@ def compile_step_context(
         selected.append(
             ContextRange(
                 path=f"{skill}/{step_path}",
-                sha256=hashlib.sha256(step_resolved.read_bytes()).hexdigest(),
+                sha256=hashlib.sha256(read_bytes(step_resolved)).hexdigest(),
                 authority="skill_instruction",
                 start_line=1,
                 end_line=len(step_text.splitlines()),
@@ -604,7 +607,7 @@ def compile_step_context(
         relative, content, path = reference
         raw_tokens += token_estimate(content)
         selected.append(ContextRange(
-            path=relative, sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+            path=relative, sha256=hashlib.sha256(read_bytes(path)).hexdigest(),
             authority="skill_instruction", start_line=1, end_line=len(content.splitlines()),
             estimated_tokens=token_estimate(content), strategy="full-source",
             reasons=("mandatory:declared-execution-contract",), matched_terms=(), content=content,
@@ -638,7 +641,7 @@ def compile_step_context(
         selected.append(
             ContextRange(
                 path=relative,
-                sha256=hashlib.sha256(resolved.read_bytes()).hexdigest(),
+                sha256=hashlib.sha256(read_bytes(resolved)).hexdigest(),
                 authority=_authority(relative),
                 start_line=start,
                 end_line=end,

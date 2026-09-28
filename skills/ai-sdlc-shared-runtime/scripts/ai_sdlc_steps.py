@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+from ai_sdlc_source_reads import read_bytes, read_text, source_scope
+
 import argparse
 import hashlib
 import re
@@ -375,7 +377,7 @@ def load_manifest(root: Path, skill: str) -> tuple[Path, dict[str, object]]:
     if path.is_symlink() or not path.is_file():
         raise ValueError("STEP_INVALID_MANIFEST: manifest must be a regular non-symlink file")
     try:
-        value = decode_toon(path.read_text(encoding="utf-8"))
+        value = decode_toon(read_text(path))
     except (OSError, ToonDecodeError) as exc:
         raise ValueError(f"STEP_INVALID_MANIFEST: {exc}") from exc
     if not isinstance(value, dict):
@@ -421,7 +423,7 @@ def load_manifest(root: Path, skill: str) -> tuple[Path, dict[str, object]]:
     steps = value["steps"]
     if not isinstance(steps, list) or len(steps) < 5:
         raise ValueError("STEP_INVALID_MANIFEST: steps must contain at least five nodes")
-    router = (skill_root / "SKILL.md").read_text(encoding="utf-8")
+    router = read_text((skill_root / "SKILL.md"))
     ids: set[str] = set()
     paths: set[str] = set()
     validated: list[dict[str, object]] = []
@@ -444,7 +446,7 @@ def load_manifest(root: Path, skill: str) -> tuple[Path, dict[str, object]]:
         step_path = _contained_file(skill_root, relative)
         if f"]({relative})" not in router:
             raise ValueError(f"{prefix}.path is not linked from SKILL.md: {relative}")
-        text = step_path.read_text(encoding="utf-8")
+        text = read_text(step_path)
         for heading in ("## Entry", "## Procedure", "## Exit"):
             if heading not in text:
                 raise ValueError(f"{prefix}.path is missing required heading {heading}")
@@ -578,10 +580,10 @@ def load_manifest(root: Path, skill: str) -> tuple[Path, dict[str, object]]:
 
 def _step_document_record(skill_root: Path, skill: str, step: dict[str, object]) -> str:
     path = _contained_file(skill_root, str(step["path"]))
-    text = path.read_text(encoding="utf-8")
+    text = read_text(path)
     tokens = (len(text) + 3) // 4
     return (
-        f"{skill}/{step['path']}:{hashlib.sha256(path.read_bytes()).hexdigest()}:"
+        f"{skill}/{step['path']}:{hashlib.sha256(read_bytes(path)).hexdigest()}:"
         f"{tokens}:{step['load']}:{step['reason']}"
     )
 
@@ -595,18 +597,18 @@ def _graph_fingerprint(
             "step": step["id"],
             "path": step["path"],
             "sha256": hashlib.sha256(
-                _contained_file(skill_root, str(step["path"])).read_bytes()
+                read_bytes(_contained_file(skill_root, str(step["path"])))
             ).hexdigest(),
         }
         for step in manifest["steps"]
     ]
     for step in manifest["steps"]:
-        text = _contained_file(skill_root, str(step["path"])).read_text(encoding="utf-8")
+        text = read_text(_contained_file(skill_root, str(step["path"])))
         reference = execution_reference(skill_root, text)
         if reference:
             relative, _content, path = reference
             documents.append({"step": step["id"], "path": relative,
-                              "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
+                              "sha256": hashlib.sha256(read_bytes(path)).hexdigest()})
     return _digest({"manifest": manifest, "documents": documents})
 
 
@@ -686,7 +688,7 @@ def _cache_settings(
         paths.append(override)
     merged: dict[str, object] = {}
     for path in paths:
-        value = decode_toon(path.read_text(encoding="utf-8"))
+        value = decode_toon(read_text(path))
         if not isinstance(value, dict) or set(value) != CACHE_POLICY_FIELDS:
             raise ValueError("CACHE_POLICY_INVALID: top-level fields are invalid")
         if value.get("schema") != CACHE_POLICY_SCHEMA:
@@ -831,7 +833,7 @@ def _build_card(
 ) -> StepCard:
     context: StepContextPack | None = None
     cache_root = _context_cache_root(root)
-    step_document = _contained_file(skill_root, str(step["path"])).read_text(encoding="utf-8")
+    step_document = read_text(_contained_file(skill_root, str(step["path"])))
     # The cache retrieval path does not yet retain sibling mandatory references.
     # Compile preflight directly until it can prove that contract's recall.
     if cache_root is not None and execution_reference(skill_root, step_document) is None:
@@ -856,7 +858,7 @@ def _build_card(
     step_fingerprint = _digest(
         {
             "step": step,
-            "document_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+            "document_sha256": hashlib.sha256(read_bytes(path)).hexdigest(),
         }
     )
     return StepCard(
@@ -884,6 +886,7 @@ def _build_card(
     )
 
 
+@source_scope
 def select_steps(
     root: Path,
     skill: str,
@@ -985,12 +988,12 @@ def select_steps(
             missing = sorted(set(step["depends_on"]) - completed)
             skipped.append(f"{step_id}:waiting-for:{'/'.join(missing)}")
     broad_tokens = sum(
-        (len(_contained_file(skill_root, str(step["path"])).read_text(encoding="utf-8")) + 3)
+        (len(read_text(_contained_file(skill_root, str(step["path"])))) + 3)
         // 4
         for step in steps
     )
     selected_tokens = sum(
-        (len(_contained_file(skill_root, str(by_id[step_id]["path"])).read_text(encoding="utf-8")) + 3)
+        (len(read_text(_contained_file(skill_root, str(by_id[step_id]["path"])))) + 3)
         // 4
         for step_id in ready
     )
@@ -1041,6 +1044,7 @@ def select_steps(
     )
 
 
+@source_scope
 def compile_run_plan(
     root: Path,
     skill: str,

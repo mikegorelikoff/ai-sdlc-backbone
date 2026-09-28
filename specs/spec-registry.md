@@ -2,6 +2,7 @@
 
 | Spec | Status | Change size | Branch | Purpose |
 | --- | --- | --- | --- | --- |
+| `specs/025-adaptive-execution` | complete | large | `feature/025-adaptive-execution` | Add risk-proportional coordination, reusable context, bounded verification and measured speed improvements across Harness and Loop. |
 | `specs/024-skill-execution-reinforcement` | complete | large | `feature/023-requirements-discovery` (existing working branch preserved; DEC-001) | Reinforce all Harness and Loop skill contracts with deterministic graph selection, context identity, evidence checks, bounded recovery, and regression evaluation. |
 | `specs/023-requirements-discovery` | complete | medium | `feature/023-requirements-discovery` | Add optional requirements discovery assistants to Harness and Loop with sourced business options and actionable stakeholder questions. |
 | `specs/001-adaptive-harness-roadmap` | active | large | `feature/001-adaptive-harness-roadmap` | Add guided navigation, adaptive rigor, evidence-backed context, reusable quality and recovery workflows, customization, optional modules, evidence council, and compatibility enforcement. |

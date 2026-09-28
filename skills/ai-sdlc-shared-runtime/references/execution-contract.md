@@ -108,3 +108,22 @@ For canonical Harness artifacts, let the owning writer maintain the leading
 and current status. Refresh metadata after changes to status, paths, source or
 validation; assumptions stay visible in quick flow and blockers stay visible in
 full flow. Metadata and indexes never replace source bodies, decisions or state.
+
+## Adaptive delivery
+
+For a whole delivery, classify once into FAST (local, understood, reversible),
+STANDARD (compact plan), or DEEP (architecture, security, migration, broad scope
+or material uncertainty). Full flow and protected policy can only raise depth.
+FAST skips separate planning/readiness/SDD; STANDARD keeps one compact task plan;
+DEEP retains the existing lifecycle. Directly requested skills and existing
+registered stages still satisfy their own contracts; omitted stages are not done.
+
+All owners reuse the same task context and source-bound evidence. Expand only
+missing context; escalate on new risk without restarting work or retry budgets.
+Prefer deterministic checks and one relevant semantic review; activate specialists
+only for their failure class. Stop on current passing evidence; allow at most two
+changed repair cycles, never repeat an unchanged failed review. Record timings
+and actual counters, with null for unavailable host telemetry.
+
+Coordinators load [adaptive execution](adaptive-execution.md) once for the shared
+helper, context sections, specialist triggers and evidence-record contract.

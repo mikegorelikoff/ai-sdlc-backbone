@@ -88,6 +88,8 @@ def current_card(
         intent=card.intent,
         feature=card.feature,
         requested_rigor=card.rigor,
+        execution_paths=tuple(card.execution["change_surface"]["paths"]),
+        risk_signals=card.execution["signals"],
         sources=refreshed_sources,
         project_context=card.project_context,
         requested_role=card.requested_role or None,
@@ -138,6 +140,8 @@ def parser() -> argparse.ArgumentParser:
     explore = sub.add_parser("explore", help="Build a read-only decision card")
     explore.add_argument("--root", type=Path, default=Path.cwd())
     explore.add_argument("--intent", required=True)
+    explore.add_argument("--change-path", action="append", default=[], help="expected change surface for adaptive classification")
+    explore.add_argument("--risk-signal", action="append", default=[], help="observed adaptive risk key=value")
     explore.add_argument("--feature", required=True)
     explore.add_argument("--role", help="Explicit canonical role id or configured alias")
     explore.add_argument("--action", help="Explicit stable action id from the deterministic menu")
@@ -215,7 +219,9 @@ def main() -> int:
             print(f"FLOW_INVALID_SOURCE: {exc}", file=sys.stderr)
             return 2
         try:
+            from ai_sdlc_adaptive import signals
             card = FLOW.build_card(
+                execution_paths=tuple(args.change_path), risk_signals=signals(args.risk_signal),
                 root=root,
                 intent=args.intent,
                 feature=args.feature,

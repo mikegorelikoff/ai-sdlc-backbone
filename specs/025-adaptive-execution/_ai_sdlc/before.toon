@@ -1,0 +1,51 @@
+samples[4]:
+  - median_seconds: 0.868744958
+    model_calls: 0
+    sample:
+      blockers[0]:
+      bytes: 25192562
+      duplicate_reads: 3517
+      reads: 3914
+      seconds: 0.868744958
+      selected_context_tokens: 3315
+      stages: 3
+    task: fix a tiny bug
+    verification_calls: 0
+  - median_seconds: 0.8238621250000007
+    model_calls: 0
+    sample:
+      blockers[0]:
+      bytes: 25271629
+      duplicate_reads: 3530
+      reads: 3927
+      seconds: 0.7994456669999996
+      selected_context_tokens: 3315
+      stages: 3
+    task: change documentation
+    verification_calls: 0
+  - median_seconds: 0.8027640829999996
+    model_calls: 0
+    sample:
+      blockers[0]:
+      bytes: 25319397
+      duplicate_reads: 3535
+      reads: 3932
+      seconds: 0.7976596250000005
+      selected_context_tokens: 3315
+      stages: 3
+    task: implement a localized feature
+    verification_calls: 0
+  - median_seconds: 0.8140565000000013
+    model_calls: 0
+    sample:
+      blockers[0]:
+      bytes: 25207108
+      duplicate_reads: 3534
+      reads: 3931
+      seconds: 0.8242395000000009
+      selected_context_tokens: 3315
+      stages: 3
+    task: implement architecture migration
+    verification_calls: 0
+schema: ai-sdlc-adaptive-benchmark/v1
+scope: "actual pre-change Harness Explore helper, Python 3.9; no model/provider execution"

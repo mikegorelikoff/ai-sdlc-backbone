@@ -23,7 +23,7 @@ selects the owning path and shows the planned writes before Apply.
 From the project you want to evaluate, run the primary Codex install action:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.4.0/install.sh | sh -s -- codex-project
+curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v5.6.0/install.sh | sh -s -- codex-project
 ```
 
 Keep verification as the next separate step in the [install guide](../how-to/install.md).

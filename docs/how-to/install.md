@@ -47,7 +47,7 @@ source remote has not passed your trust policy.
 Run this from the consumer repository:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.4.0/install.sh | sh -s -- codex-project
+curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v5.6.0/install.sh | sh -s -- codex-project
 ```
 
 Use `claude-code-project` for `.claude/skills`. The bootstrap script fetches the
@@ -85,7 +85,7 @@ certified. Review the remote Python script before piping it to an interpreter.
 Use this path when you need to inspect the exact source before execution:
 
 ```bash
-HARNESS_TAG=v4.4.0
+HARNESS_TAG=v5.6.0
 HARNESS_TMP="$(mktemp -d)"
 HARNESS_SRC="$HARNESS_TMP/ai-sdlc-harness"
 git init "$HARNESS_SRC"

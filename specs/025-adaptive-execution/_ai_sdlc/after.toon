@@ -1,0 +1,53 @@
+python: 3.9.6
+repeats: 5
+samples[4]:
+  - median_seconds: 0.5400646250000001
+    model_calls: 0
+    sample:
+      blockers[0]:
+      bytes: 2520674
+      duplicate_reads: 0
+      reads: 411
+      seconds: 0.5400646250000001
+      selected_context_tokens: 3420
+      stages: 3
+    task: fix a tiny bug
+    verification_calls: 0
+  - median_seconds: 0.5185527080000005
+    model_calls: 0
+    sample:
+      blockers[0]:
+      bytes: 2520674
+      duplicate_reads: 0
+      reads: 411
+      seconds: 0.5185527080000005
+      selected_context_tokens: 3420
+      stages: 3
+    task: change documentation
+    verification_calls: 0
+  - median_seconds: 0.5205765830000004
+    model_calls: 0
+    sample:
+      blockers[0]:
+      bytes: 2520674
+      duplicate_reads: 0
+      reads: 411
+      seconds: 0.5203661669999997
+      selected_context_tokens: 3420
+      stages: 3
+    task: implement a localized feature
+    verification_calls: 0
+  - median_seconds: 0.52978725
+    model_calls: 0
+    sample:
+      blockers[0]:
+      bytes: 2520674
+      duplicate_reads: 0
+      reads: 411
+      seconds: 0.5317891250000013
+      selected_context_tokens: 3420
+      stages: 3
+    task: implement architecture migration
+    verification_calls: 0
+schema: ai-sdlc-adaptive-benchmark/v1
+scope: actual Explore helper; no model/provider execution

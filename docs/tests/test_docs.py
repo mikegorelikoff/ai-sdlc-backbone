@@ -441,7 +441,7 @@ class DocumentationValidationTests(unittest.TestCase):
         skills = skill_sources()
         records = [script_record(path) for path in script_sources()]
         self.assertEqual(len(skills), 48)
-        self.assertEqual(len(records), 124)
+        self.assertEqual(len(records), 127)
         self.assertEqual(len(SKILL_SELECTION_BOUNDARIES), 48)
         self.assertEqual(validate_selection_contract(skills), [])
         self.assertEqual(validate_role_skill_groups(skills), [])
@@ -467,7 +467,7 @@ class DocumentationValidationTests(unittest.TestCase):
         self.assertTrue(coverage.startswith("schema: ai-sdlc-documentation-coverage/v1\n"))
         self.assertEqual(
             sum(record.classification == "canonical shared helper" for record in records),
-            29,
+            31,
         )
 
     def test_generated_catalog_rejects_missing_sections_and_paths(self) -> None:

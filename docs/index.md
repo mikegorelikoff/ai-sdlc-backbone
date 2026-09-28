@@ -50,7 +50,7 @@ workflow structure; it does not replace engineering or product judgment.
 
 Each stage produces or updates repository artifacts that the next stage can
 consume. The current unreleased source adds the core quality gate; published
-`v4.4.0` retains its prior inventory and direct validation route. [Explore the detailed workflow](how-it-works/workflow.md) or compare
+`v5.6.0` retains its prior inventory and direct validation route while adding adaptive execution. [Explore the detailed workflow](how-it-works/workflow.md) or compare
 the [quick, full, and expert paths](how-to/choose-flow.md).
 
 ## Five-minute first success
@@ -59,7 +59,7 @@ Install the skills with the Codex project profile. This path requires Git and
 Python `3.10+`:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v4.4.0/install.sh | sh -s -- codex-project
+curl -fsSL https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/v5.6.0/install.sh | sh -s -- codex-project
 ```
 
 Then validate the resulting TOON provenance:

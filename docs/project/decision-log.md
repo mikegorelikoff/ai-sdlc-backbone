@@ -5,6 +5,16 @@ description: Record the AI SDLC Harness documentation architecture, URL, governa
 
 # Documentation decision log
 
+## 2026-09-15 — Adaptive execution across Harness and Loop
+
+Document execution depth separately from quick/full interaction flags in the
+[flow contract](../reference/flow-flags.md#adaptive-execution-depth). Preserve
+public paths, existing stage-owned receipts and full workflow gates. All skills
+consume a shared execution contract; detailed coordination loads on demand.
+Keep one adaptive task evidence record, with Loop embedding it in existing state.
+Benchmark measured helper I/O and elapsed time; do not infer provider tokens or
+end-to-end delivery latency. Scope and evidence: `specs/025-adaptive-execution/`.
+
 ## 2026-09-08 — Cross-product execution reinforcement
 
 Keep semantic manifests, owning procedures, artifact profiles and deterministic

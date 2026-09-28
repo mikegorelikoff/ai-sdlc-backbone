@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+from ai_sdlc_source_reads import read_bytes, read_text, source_scope
+
 import hashlib
 import re
 import subprocess
@@ -17,6 +19,7 @@ import ai_sdlc_toon as toon_codec  # noqa: E402
 from typing import Iterable
 
 import ai_sdlc_steps
+from ai_sdlc_adaptive import classify, strategy
 
 
 SCHEMA = "ai-sdlc-flow/v3"
@@ -105,6 +108,7 @@ class DecisionCard:
     step_card: dict[str, object]
     run_plan: dict[str, object]
     run_plan_fingerprint: str
+    execution: dict[str, object]
 
 
 @dataclass(frozen=True)
@@ -237,7 +241,7 @@ def load_registry(root: Path | None = None, path: Path | None = None) -> dict[st
     if registry_path.is_symlink() or not registry_path.is_file():
         raise ValueError("FLOW_UNSAFE_SELECTOR: registry must be a regular non-symlink file")
     try:
-        value = toon_codec.loads(registry_path.read_text(encoding="utf-8"))
+        value = toon_codec.loads(read_text(registry_path))
     except (OSError, toon_codec.ToonDecodeError) as exc:
         raise ValueError(f"FLOW_INVALID_REGISTRY: {exc}") from exc
     if not isinstance(value, dict) or value.get("schema") != REGISTRY_SCHEMA:
@@ -350,7 +354,7 @@ def state_route(root: Path, feature: str, workspace: str, requested_skill: str) 
         return None
     state: dict[str, object] = {"stages": []}
     in_stages = False
-    for raw_line in path.read_text(encoding="utf-8").splitlines():
+    for raw_line in read_text(path).splitlines():
         line = raw_line.rstrip()
         if line.startswith("stages["):
             in_stages = True
@@ -410,8 +414,8 @@ def select_rigor(intent: str, *, requested: str | None = None, policy_requires_f
     reason = f"automatic {automatic}: " + ("cross-cutting or risk signal" if high_risk else "bounded low-risk intent")
     if requested:
         reason += f"; explicit {requested} override"
-    if policy_requires_full and effective == "quick":
-        effective, reason = "full", reason + "; upgraded because policy requires full"
+    if (policy_requires_full or high_risk) and effective == "quick":
+        effective, reason = "full", reason + "; upgraded because risk or policy requires full"
     if effective not in {"quick", "full"}:
         return "full", reason, (f"FLOW_UNSAFE_RIGOR: unsupported rigor {effective}",)
     return effective, reason, ()
@@ -454,7 +458,7 @@ def source_hashes(root: Path, paths: Iterable[Path]) -> tuple[str, ...]:
     for path in paths:
         resolved = path.resolve()
         resolved.relative_to(root)
-        records.append(f"{resolved.relative_to(root).as_posix()}:{hashlib.sha256(resolved.read_bytes()).hexdigest()}")
+        records.append(f"{resolved.relative_to(root).as_posix()}:{hashlib.sha256(read_bytes(resolved)).hexdigest()}")
     return tuple(sorted(records))
 
 
@@ -475,7 +479,7 @@ def project_context_status(root: Path, requested: str) -> str:
     if requested != "auto":
         return requested
     path = root.resolve() / "_ai_sdlc/context/project-context.md"
-    return f"present:sha256:{hashlib.sha256(path.read_bytes()).hexdigest()[:12]}" if path.is_file() else "not-found"
+    return f"present:sha256:{hashlib.sha256(read_bytes(path)).hexdigest()[:12]}" if path.is_file() else "not-found"
 
 
 def _action_maps(registry: dict[str, object]) -> tuple[dict[str, dict[str, object]], dict[str, dict[str, object]]]:
@@ -570,11 +574,11 @@ def select_references(
             raise ValueError(f"FLOW_UNSAFE_SELECTOR: path escapes flow package: {relative}") from exc
         if path.is_symlink() or not resolved.is_file():
             raise ValueError(f"FLOW_UNSAFE_SELECTOR: selected reference is not a regular file: {relative}")
-        tokens = (len(resolved.read_text(encoding="utf-8")) + 3) // 4
+        tokens = (len(read_text(resolved)) + 3) // 4
         if tokens > cap:
             raise ValueError(f"FLOW_SELECTOR_OVERSIZE: {relative} uses {tokens} tokens; cap is {cap}")
         token_total += tokens
-        selected.append(f"{relative}:{hashlib.sha256(resolved.read_bytes()).hexdigest()}:{tokens}:{reason}")
+        selected.append(f"{relative}:{hashlib.sha256(read_bytes(resolved)).hexdigest()}:{tokens}:{reason}")
     skill_steps = ai_sdlc_steps.select_steps(
         root,
         skill,
@@ -623,7 +627,7 @@ def broad_reference_tokens(root: Path) -> int:
     for folder in ("references", "steps"):
         for path in sorted((skill_root / folder).rglob("*")):
             if path.is_file() and not path.is_symlink() and path.suffix in {".md", ".toon"}:
-                total += (len(path.read_text(encoding="utf-8")) + 3) // 4
+                total += (len(read_text(path)) + 3) // 4
     return total
 
 
@@ -638,12 +642,14 @@ def reveal_review_context(*, independent_findings: Iterable[str], ai_rationale: 
     return {"schema": "ai-sdlc-spec-first-review/v1", "phase": "comparison", "independent_findings": findings, "ai_rationale": ai_rationale, "prior_verdict": prior_verdict}
 
 
+@source_scope
 def build_card(
     *, root: Path, intent: str, feature: str, requested_rigor: str | None = None,
     policy_requires_full: bool = False, sources: tuple[str, ...] = (),
     project_context: str = "not-provided", economics: ContextEconomics | None = None,
     requested_role: str | None = None, requested_action: str | None = None,
     flow_config: dict[str, object] | None = None, registry_path: Path | None = None,
+    execution_paths: tuple[str, ...] = (), risk_signals: dict | None = None,
 ) -> DecisionCard:
     registry = load_registry(root, registry_path)
     config = _validated_flow_config(flow_config, registry=registry)
@@ -757,11 +763,13 @@ def build_card(
         critical_retained=len(selected),
     )
     config_fingerprint = _digest(config)
+    decision = classify(intent, execution_paths, risk_signals, full=rigor == "full")
+    execution = {**decision, "strategy": strategy(decision)}
     planned = () if blockers or target is None else (target.relative_to(root.resolve()).as_posix(),)
     semantic = {
         "schema": SCHEMA, "repo_id": root.resolve().as_posix(), "intent": " ".join(intent.split()),
         "intent_class": intent_class, "feature": feature, "workspace": workspace, "stage": stage,
-        "skill": skill, "rigor": rigor, "active_role": active_role, "requested_role": requested_role_id,
+        "skill": skill, "rigor": rigor, "execution": execution, "active_role": active_role, "requested_role": requested_role_id,
         "handoff": handoff_reason, "action_id": action_id, "action_code": action_code,
         "menu_options": menu_options, "step": step, "selected": selected, "skipped": skipped,
         "selector_fingerprint": selector_fingerprint, "config_fingerprint": config_fingerprint,
@@ -820,6 +828,7 @@ def build_card(
         step_card=step_card,
         run_plan=run_plan,
         run_plan_fingerprint=run_plan_fingerprint,
+        execution=execution,
     )
 
 
