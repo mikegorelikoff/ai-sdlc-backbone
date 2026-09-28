@@ -1,7 +1,7 @@
 # SDD Spec Registry
 
 | Spec | Status | Change size | Branch | Purpose |
-| --- | --- | --- | --- | --- |
+| `specs/026-usage-coach` | active | large | `feature/023-requirements-discovery` | Add local append-only event-sourced usage journal and evidence-backed usage coach skill to AI SDLC Loop. |
 | `specs/025-adaptive-execution` | complete | large | `feature/025-adaptive-execution` | Add risk-proportional coordination, reusable context, bounded verification and measured speed improvements across Harness and Loop. |
 | `specs/024-skill-execution-reinforcement` | complete | large | `feature/023-requirements-discovery` (existing working branch preserved; DEC-001) | Reinforce all Harness and Loop skill contracts with deterministic graph selection, context identity, evidence checks, bounded recovery, and regression evaluation. |
 | `specs/023-requirements-discovery` | complete | medium | `feature/023-requirements-discovery` | Add optional requirements discovery assistants to Harness and Loop with sourced business options and actionable stakeholder questions. |
