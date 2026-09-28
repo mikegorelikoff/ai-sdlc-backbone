@@ -1,0 +1,113 @@
+artifacts/release-notes/2026-09-15-adaptive-sdlc-windows.md
+  s_8788922cf6a1c9::t_f483dda56a39ee 1-42
+docs/project/decision-log.md
+  s_8788922cf6a1c9::t_4229fd0582ccfc 8-17
+docs/reference/catalog-coverage.toon
+  s_8788922cf6a1c9::t_8d1c3376b89f5c 3,56,118,138,159
+docs/reference/flow-flags.md
+  s_8788922cf6a1c9::t_eba6cd9306de38 26-76
+docs/reference/scripts.md
+  s_8788922cf6a1c9::t_513c6ccaeb9b04 8,95,99,119,131,136
+docs/tests/test_docs.py
+  s_08c00a673bae49::t_b0db70dae85dc6 444,470
+skills/ai-sdlc-flow/scripts/flow.py
+  s_8788922cf6a1c9::t_e4575daa5d04f7 91-92,143-144,222,224
+skills/ai-sdlc-flow/steps/execute.md
+  s_8788922cf6a1c9::t_76b3d1f44a8e90 40-47
+skills/ai-sdlc-shared-runtime/references/adaptive-execution.md
+  s_8788922cf6a1c9::t_8f2b025119225b 1-65
+skills/ai-sdlc-shared-runtime/references/execution-contract.md
+  s_8788922cf6a1c9::t_251ae8a2d94e0b 111-129
+skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_adaptive.py
+  s_8788922cf6a1c9::t_1ed3c688805571 1-361
+skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_step_context.py
+  s_8788922cf6a1c9::t_08a00639b5145f 6-7,411,555,593,610,644
+skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_steps.py
+  s_8788922cf6a1c9::t_4dbfb2a7ec9140 6-7,380,426,449,583,586,600,606,611,691,836,861,889,991,996,1047
+skills/ai-sdlc-shared-runtime/tests/test_adaptive_execution.py
+  s_08c00a673bae49::t_ab522a72844a7e 1-159
+specs/025-adaptive-execution/_ai_sdlc/after.toon
+  s_8788922cf6a1c9::t_68a614bc7263b7 1-53
+specs/025-adaptive-execution/_ai_sdlc/before.toon
+  s_8788922cf6a1c9::t_2d03cfe8ec8621 1-51
+specs/025-adaptive-execution/_ai_sdlc/plan.toon
+  s_8788922cf6a1c9::t_7779c3613ce227 1-29
+specs/025-adaptive-execution/_ai_sdlc/verification-benchmark.toon
+  s_8788922cf6a1c9::t_34a742117069ac 1-28
+specs/025-adaptive-execution/benchmark.py
+  s_8788922cf6a1c9::t_256959b8231cef 1-46
+specs/025-adaptive-execution/benchmark_verify.py
+  s_8788922cf6a1c9::t_221d39752cb5e7 1-40
+specs/025-adaptive-execution/decision-log.md
+  s_8788922cf6a1c9::t_510c0adbbd2228 1-41
+specs/025-adaptive-execution/design.md
+  s_8788922cf6a1c9::t_86f30c1d18a405 1-124
+specs/025-adaptive-execution/index.md
+  s_8788922cf6a1c9::t_37496ea72fb37f 1-17
+specs/025-adaptive-execution/plan.md
+  s_8788922cf6a1c9::t_ed5dc85d0f13ef 1-83
+specs/025-adaptive-execution/qa.md
+  s_8788922cf6a1c9::t_20f355b6262873 1-80
+specs/025-adaptive-execution/requirements.md
+  s_8788922cf6a1c9::t_e65cbb70e5a0a1 1-110
+specs/025-adaptive-execution/tasks.md
+  s_8788922cf6a1c9::t_835e4f9a85b6ad 1-82
+specs/025-adaptive-execution/test-cases.md
+  s_8788922cf6a1c9::t_a8a94cac0fb2d0 1-95
+specs/_ai_sdlc/specs-index.toon
+  s_8788922cf6a1c9::t_7a5df60050e7ee 4,6,31,33,280-286
+specs/spec-registry.md
+  s_8788922cf6a1c9::t_396de52b025abd 5
+CHANGELOG.md
+  s_674e7cec5b67a6::t_8fdbbbf8a1d30b 5-14,17-21
+README.md
+  s_674e7cec5b67a6::t_22ec6557925196 32,140
+docs/how-to/install.md
+  s_674e7cec5b67a6::t_450ca5b5db9b3f 50,88
+docs/how-to/update.md
+  s_674e7cec5b67a6::t_0b880f723c5d9b 53
+docs/index.md
+  s_674e7cec5b67a6::t_b9b2aee83ced6f 53,62
+docs/scripts/validate_docs.py
+  s_674e7cec5b67a6::t_64947839d989ad 69,391
+docs/start-here/index.md
+  s_674e7cec5b67a6::t_895334927d27c0 26
+install.sh
+  s_674e7cec5b67a6::t_b05a666741a660 18,22,194
+skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_flow.py
+  s_8788922cf6a1c9::t_825942cb931ec8 6-7,22,111,244,357,417-418,461,482,577,581,630,645,652,766-767,772,831
+skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_source_reads.py
+  s_8788922cf6a1c9::t_7e8c6fa02d387c 1-53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.18",
+  "base_commit_sha": "f80a998c6cb900418c27512aa7e047988c9f115c",
+  "prompts": {},
+  "sessions": {
+    "s_08c00a673bae49": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a080b8-9892-79e1-b31e-3d8f3a8187bb",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Test <test@example.com>"
+    },
+    "s_674e7cec5b67a6": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0d813-6264-79b0-9a28-73d47510e8b5",
+        "model": "unknown"
+      },
+      "human_author": "Test <test@example.com>"
+    },
+    "s_8788922cf6a1c9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a4c3-c51c-7f73-8dcf-1571c9980eaf",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Test <test@example.com>"
+    }
+  }
+}
