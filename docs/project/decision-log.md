@@ -331,3 +331,14 @@ reviewed target release. It fails closed on missing or unsafe metadata and on
 local skill drift. Retired directories remain a manual Git-reviewed cleanup
 because absence from a new release is not sufficient proof that deleting a
 consumer path is safe.
+
+## 2026-09-28 — Release 5.6.0
+
+Release `v5.6.0` publishes adaptive FAST/STANDARD/DEEP execution depth across
+the product family, releases AI SDLC Loop `v0.11.0` with the self-observing
+`ai-sdlc-loop-usage-coach` skill and universal high-precision execution time
+tracking across all 28 skills, and introduces AI SDLC Harness UI `v0.1.0` with
+a unified VS Code Agents layout and real-time execution trajectory visualization.
+Harness API remains `4.1.0`. Existing public documentation navigation, routes,
+installed profiles, and contracts remain stable. The immutable `v5.5.0` release
+is the rollback point.

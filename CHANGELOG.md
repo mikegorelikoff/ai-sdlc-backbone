@@ -2,15 +2,18 @@
 
 ## Unreleased
 
-## v5.6.0 - 2026-09-25
+## v5.6.0 - 2026-09-28
 
 ### Added
 
 - Added adaptive FAST/STANDARD/DEEP execution with reusable context packs,
   monotonic escalation, bounded verification retries, and measured stage
   evidence across Harness and Loop.
-- Added Loop-native SDD packaging and released Loop `v0.10.1` as the compatible
-  submodule baseline.
+- Added `ai-sdlc-loop-usage-coach` with append-only session event journal,
+  friction and rework cycle detection, and universal high-precision execution
+  time tracking across all 28 Loop skills.
+- Released and integrated Loop `v0.11.0` and Harness UI `v0.1.0` as compatible
+  product baselines.
 
 ### Changed
 
