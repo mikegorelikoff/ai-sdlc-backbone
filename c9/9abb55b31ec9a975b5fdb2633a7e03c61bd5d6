@@ -1,0 +1,29 @@
+docs/reference/scripts.md
+  s_8788922cf6a1c9::t_513c6ccaeb9b04 100
+docs/tests/test_docs.py
+  s_08c00a673bae49::t_b0db70dae85dc6 470
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.18",
+  "base_commit_sha": "c99abb55b31ec9a975b5fdb2633a7e03c61bd5d6",
+  "prompts": {},
+  "sessions": {
+    "s_08c00a673bae49": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a080b8-9892-79e1-b31e-3d8f3a8187bb",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Test <test@example.com>"
+    },
+    "s_8788922cf6a1c9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a4c3-c51c-7f73-8dcf-1571c9980eaf",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Test <test@example.com>"
+    }
+  }
+}
