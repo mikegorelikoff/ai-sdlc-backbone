@@ -1,0 +1,10 @@
+"$schema": ai-sdlc-toon-contract/v1
+candidate_fields[10]: schema,hunter,scope,sources,dimensions,iteration,candidates,coverage,related_reports,signals
+consumers[3]: requirements-readiness,test-cases,code-review
+evidence_types[3]: OBSERVED,INFERRED,HYPOTHETICAL
+finding_fields[16]: signature,dimension,title,condition,expected,severity,impact,evidence_type,evidence,trace_targets,owner,next_action,review,test_refs,related_findings,reproduction
+max_iterations: 3
+producer[3]: edge-case-hunter,blind-case-hunter,bug-hunter
+schema: ai-sdlc-hunter-contract/v1
+severity[5]: critical,high,medium,low,info
+validation: ai_sdlc_hunters.evaluate

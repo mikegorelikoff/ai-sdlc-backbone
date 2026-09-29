@@ -331,6 +331,33 @@ def record_event(
                 with contextlib.suppress(Exception):
                     fcntl.flock(f.fileno(), fcntl.LOCK_UN)
 
+        # Record unified telemetry event fail-open for skill.end
+        if event_type == "skill.end":
+            with contextlib.suppress(Exception):
+                import ai_sdlc_telemetry
+                t_skill = data.get("skill", "unknown") if data else "unknown"
+                t_status = data.get("status", "success") if data else "success"
+                t_dur = data.get("duration_ms") if data else None
+                t_task = None
+                if data and (data.get("feature") or data.get("task_id")):
+                    t_task = {
+                        "id": str(data.get("feature") or data.get("task_id", "")),
+                        "type": str(data.get("task_kind", "feature")),
+                        "title": str(data.get("title", "")),
+                        "owner": str(data.get("owner", "")),
+                    }
+                t_models = data.get("models") if data else None
+                t_usage = data.get("usage_available") if data else None
+                ai_sdlc_telemetry.record_telemetry_event(
+                    skill=t_skill,
+                    status=t_status,
+                    duration_ms=t_dur,
+                    task=t_task,
+                    models=t_models,
+                    usage_available=t_usage,
+                    root=repo_root,
+                )
+
         return next_seq
     except Exception:
         # Strict fail-open contract: do not break caller under any circumstances
@@ -460,9 +487,10 @@ def track_skill(
         status = "failed"
         raise
     finally:
+        duration_ms = max(1, int((time.perf_counter() - start_mono) * 1000))
+        rec_ok = False
         try:
-            duration_ms = max(1, int((time.perf_counter() - start_mono) * 1000))
-            record_skill_end(
+            seq = record_skill_end(
                 skill,
                 status=status,
                 duration_ms=duration_ms,
@@ -473,8 +501,22 @@ def track_skill(
                 root=root,
                 **kwargs,
             )
+            rec_ok = bool(seq > 0)
         except Exception:
             pass
+        if not rec_ok:
+            with contextlib.suppress(Exception):
+                import ai_sdlc_telemetry
+                t_task = None
+                if feature:
+                    t_task = {"id": str(feature), "type": str(task_kind or "skill"), "title": "", "owner": ""}
+                ai_sdlc_telemetry.record_telemetry_event(
+                    skill=skill,
+                    status=status,
+                    duration_ms=duration_ms,
+                    task=t_task,
+                    root=root,
+                )
 
 
 def record_task_start(

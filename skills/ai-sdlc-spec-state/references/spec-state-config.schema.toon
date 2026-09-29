@@ -1,3 +1,4 @@
+"$schema": ai-sdlc-toon-contract/v1
 schema: ai-sdlc-spec-state-schema/v1
 title: AI SDLC Specification State Configuration Schema
 description: Declarative configuration schema for .sdlc.toon specification state management

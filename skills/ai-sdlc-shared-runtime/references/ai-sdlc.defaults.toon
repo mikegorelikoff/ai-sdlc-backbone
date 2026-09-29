@@ -12,3 +12,4 @@ values:
     response_style: balanced
     status_updates: milestones
     technical_depth: adaptive
+  user: {}

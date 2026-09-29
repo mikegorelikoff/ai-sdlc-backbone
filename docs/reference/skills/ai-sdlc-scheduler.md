@@ -7,7 +7,7 @@ description: Human-facing operating guide for ai-sdlc-scheduler, including input
 
 | Lifecycle position | Primary owner | Supporting roles | Module | Output |
 | --- | --- | --- | --- | --- |
-| Durable execution orchestration | Dev, Delivery | Architecture, QA, Security | `unregistered` | Canonical scheduler state, dispatch records, isolated runtime runs, and handoff evidence. |
+| Durable execution orchestration | Dev, Delivery | Architecture, QA, Security | `core` | Canonical scheduler state, dispatch records, isolated runtime runs, and handoff evidence. |
 
 ## Why it exists
 

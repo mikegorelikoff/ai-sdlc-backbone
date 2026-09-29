@@ -74,6 +74,13 @@ class ToonTests(unittest.TestCase):
                 with self.assertRaises(ToonDecodeError):
                     decode_toon(value)
 
+    def test_embedded_named_headers_and_unicode_separators(self) -> None:
+        for content in ('clarification[4]: a,b,c,d', 'rows[1]{name}:\n  value', 'quoted: "items[1]: text"'):
+            value = {"content": content, "nested": [{"content": content}], "key:with:colon": ["x"]}
+            self.assertEqual(decode_toon(encode_toon(value)), value)
+        unicode_val = {"line_break": "line1\x85line2\u2028line3\u2029line4"}
+        self.assertEqual(decode_toon(encode_toon(unicode_val)), unicode_val)
+
 
 if __name__ == "__main__":
     unittest.main()

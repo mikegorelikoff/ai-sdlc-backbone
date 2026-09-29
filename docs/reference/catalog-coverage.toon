@@ -1,6 +1,6 @@
 schema: ai-sdlc-documentation-coverage/v1
 skill_count: 50
-script_count: 133
+script_count: 139
 documentation_root: docs
 
 skills[50]{skill,source,page,module,package_scripts}:
@@ -30,7 +30,7 @@ skills[50]{skill,source,page,module,package_scripts}:
   ai-sdlc-policy,skills/ai-sdlc-policy/SKILL.md,reference/skills/ai-sdlc-policy.md,core,1
   ai-sdlc-prfaq-package-synthesis,skills/ai-sdlc-prfaq-package-synthesis/SKILL.md,reference/skills/ai-sdlc-prfaq-package-synthesis.md,core,1
   ai-sdlc-project-context,skills/ai-sdlc-project-context/SKILL.md,reference/skills/ai-sdlc-project-context.md,core,3
-  ai-sdlc-qa,skills/ai-sdlc-qa/SKILL.md,reference/skills/ai-sdlc-qa.md,core,1
+  ai-sdlc-qa,skills/ai-sdlc-qa/SKILL.md,reference/skills/ai-sdlc-qa.md,core,2
   ai-sdlc-qa-requirements-gap-review,skills/ai-sdlc-qa-requirements-gap-review/SKILL.md,reference/skills/ai-sdlc-qa-requirements-gap-review.md,core,1
   ai-sdlc-qa-traceability-and-readiness-review,skills/ai-sdlc-qa-traceability-and-readiness-review/SKILL.md,reference/skills/ai-sdlc-qa-traceability-and-readiness-review.md,core,1
   ai-sdlc-quality-lenses,skills/ai-sdlc-quality-lenses/SKILL.md,reference/skills/ai-sdlc-quality-lenses.md,core,1
@@ -40,7 +40,7 @@ skills[50]{skill,source,page,module,package_scripts}:
   ai-sdlc-research,skills/ai-sdlc-research/SKILL.md,reference/skills/ai-sdlc-research.md,research,1
   ai-sdlc-retrospective,skills/ai-sdlc-retrospective/SKILL.md,reference/skills/ai-sdlc-retrospective.md,core,1
   ai-sdlc-runtime,skills/ai-sdlc-runtime/SKILL.md,reference/skills/ai-sdlc-runtime.md,core,1
-  ai-sdlc-scheduler,skills/ai-sdlc-scheduler/SKILL.md,reference/skills/ai-sdlc-scheduler.md,unregistered,2
+  ai-sdlc-scheduler,skills/ai-sdlc-scheduler/SKILL.md,reference/skills/ai-sdlc-scheduler.md,core,2
   ai-sdlc-sdd,skills/ai-sdlc-sdd/SKILL.md,reference/skills/ai-sdlc-sdd.md,core,11
   ai-sdlc-security-testing,skills/ai-sdlc-security-testing/SKILL.md,reference/skills/ai-sdlc-security-testing.md,core,1
   ai-sdlc-shared-runtime,skills/ai-sdlc-shared-runtime/SKILL.md,reference/skills/ai-sdlc-shared-runtime.md,core,0
@@ -55,7 +55,7 @@ skills[50]{skill,source,page,module,package_scripts}:
   ai-sdlc-workflow,skills/ai-sdlc-workflow/SKILL.md,reference/skills/ai-sdlc-workflow.md,core,1
   ai-sdlc-working-backwards-discovery,skills/ai-sdlc-working-backwards-discovery/SKILL.md,reference/skills/ai-sdlc-working-backwards-discovery.md,core,1
 
-scripts[133]{path,owner,classification,documentation}:
+scripts[139]{path,owner,classification,documentation}:
   skills/ai-sdlc-approvals-sandbox/scripts/approval_plan.py,ai-sdlc-approvals-sandbox,skill package helper,reference/scripts.md
   skills/ai-sdlc-architecture/scripts/architecture.py,ai-sdlc-architecture,skill package helper,reference/scripts.md
   skills/ai-sdlc-ba/scripts/ba_context_scaffold.py,ai-sdlc-ba,skill package helper,reference/scripts.md
@@ -93,6 +93,7 @@ scripts[133]{path,owner,classification,documentation}:
   skills/ai-sdlc-project-context/scripts/context_engine.py,ai-sdlc-project-context,skill package helper,reference/scripts.md
   skills/ai-sdlc-project-context/scripts/external_spec_snapshot.py,ai-sdlc-project-context,skill package helper,reference/scripts.md
   skills/ai-sdlc-project-context/scripts/project_context.py,ai-sdlc-project-context,skill package helper,reference/scripts.md
+  skills/ai-sdlc-qa/scripts/qa_plan.py,ai-sdlc-qa,skill package helper,reference/scripts.md
   skills/ai-sdlc-qa/scripts/qa_plan_scaffold.py,ai-sdlc-qa,skill package helper,reference/scripts.md
   skills/ai-sdlc-qa-requirements-gap-review/scripts/qa_gap_scan.py,ai-sdlc-qa-requirements-gap-review,skill package helper,reference/scripts.md
   skills/ai-sdlc-qa-traceability-and-readiness-review/scripts/traceability_matrix.py,ai-sdlc-qa-traceability-and-readiness-review,skill package helper,reference/scripts.md
@@ -126,6 +127,7 @@ scripts[133]{path,owner,classification,documentation}:
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_context_benchmark.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_flow.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_handoff.py,shared runtime,canonical shared helper,reference/scripts.md
+  skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_hunters.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_install_record.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_migrate.py,shared runtime,canonical shared helper,reference/scripts.md
@@ -142,9 +144,12 @@ scripts[133]{path,owner,classification,documentation}:
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_state_machine.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_step_context.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_steps.py,shared runtime,canonical shared helper,reference/scripts.md
+  skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_telemetry.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_test_suite.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_toon.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_validation_receipt.py,shared runtime,canonical shared helper,reference/scripts.md
+  skills/ai-sdlc-shared-runtime/scripts/chat_output.py,shared runtime,canonical shared helper,reference/scripts.md
+  skills/ai-sdlc-shared-runtime/scripts/loop.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/refinement_status.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/skill_script_contract.py,shared runtime,canonical shared helper,reference/scripts.md
   skills/ai-sdlc-shared-runtime/scripts/state_machine.py,shared runtime,canonical shared helper,reference/scripts.md
@@ -186,6 +191,7 @@ scripts[133]{path,owner,classification,documentation}:
   skills/ai-sdlc-shared-runtime/tests/test_state_machine.py,shared runtime,repository validation runner,reference/scripts.md
   skills/ai-sdlc-shared-runtime/tests/test_step_context_v4.py,shared runtime,repository validation runner,reference/scripts.md
   skills/ai-sdlc-shared-runtime/tests/test_steps.py,shared runtime,repository validation runner,reference/scripts.md
+  skills/ai-sdlc-shared-runtime/tests/test_telemetry.py,shared runtime,repository validation runner,reference/scripts.md
   skills/ai-sdlc-shared-runtime/tests/test_test_suite.py,shared runtime,repository validation runner,reference/scripts.md
   skills/ai-sdlc-shared-runtime/tests/test_toon.py,shared runtime,repository validation runner,reference/scripts.md
   skills/ai-sdlc-shared-runtime/tests/test_v4_contracts.py,shared runtime,repository validation runner,reference/scripts.md

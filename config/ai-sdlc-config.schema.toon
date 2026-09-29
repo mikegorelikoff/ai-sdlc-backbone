@@ -70,6 +70,24 @@
       technical_depth:
         enum[4]: adaptive,foundational,practitioner,expert
     type: object
+  user:
+    additionalProperties: false
+    properties:
+      email:
+        type: string
+      git:
+        additionalProperties: false
+        properties:
+          email:
+            type: string
+          name:
+            type: string
+        type: object
+      name:
+        type: string
+      role:
+        enum[6]: business-analyst,product-manager,product-owner,software-architect,software-engineer,qa-engineer
+    type: object
 "$id": "https://raw.githubusercontent.com/mikegorelikoff/ai-sdlc-harness/main/skills/ai-sdlc-shared-runtime/references/ai-sdlc-config.schema.toon"
 "$schema": ai-sdlc-toon-contract/v1
 additionalProperties: false
@@ -89,6 +107,8 @@ properties:
         "$ref": #/$defs/flow
       interaction:
         "$ref": #/$defs/interaction
+      user:
+        "$ref": #/$defs/user
     type: object
 required[2]: schema,values
 title: AI SDLC presentation configuration

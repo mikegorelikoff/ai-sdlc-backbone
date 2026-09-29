@@ -186,6 +186,53 @@ class ConfigTests(unittest.TestCase):
             self.assertEqual(result.returncode, 1)
             self.assertIn("team config does not exist", result.stdout)
 
+    def test_user_identity_configuration_resolves(self) -> None:
+        """User can specify name, email, role, and git details."""
+        with tempfile.TemporaryDirectory() as temp:
+            user = Path(temp) / "user.toon"
+            write(user, {"user": {
+                "name": "Jane Developer",
+                "email": "jane@example.com",
+                "role": "software-engineer",
+                "git": {"name": "Jane D", "email": "janed@example.com"},
+            }})
+            result = self.run_config("--base", str(DEFAULTS), "--user", str(user), "--format", "toon")
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            values = toon_codec.loads(result.stdout)["values"]
+            self.assertEqual(values["user"]["name"], "Jane Developer")
+            self.assertEqual(values["user"]["email"], "jane@example.com")
+            self.assertEqual(values["user"]["role"], "software-engineer")
+            self.assertEqual(values["user"]["git"]["name"], "Jane D")
+
+    def test_user_identity_rejects_invalid_roles_and_fields(self) -> None:
+        """Invalid user roles and unknown fields fail closed."""
+        with tempfile.TemporaryDirectory() as temp:
+            user = Path(temp) / "user.toon"
+            cases = [
+                ({"user": {"role": "invalid-role"}}, "user.role must be one of"),
+                ({"user": {"unknown_field": "val"}}, "user has unknown fields: unknown_field"),
+                ({"user": {"name": 123}}, "user.name must be a string"),
+            ]
+            for val, err in cases:
+                with self.subTest(err=err):
+                    write(user, val)
+                    res = self.run_config("--base", str(DEFAULTS), "--user", str(user))
+                    self.assertEqual(res.returncode, 1)
+                    self.assertIn(err, res.stdout)
+
+    def test_user_configuration_auto_discovery(self) -> None:
+        """Resolver auto-discovers .customization.toon when --user is not passed."""
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            customization = root / ".customization.toon"
+            write(customization, {"user": {"name": "Auto Discovered", "role": "product-owner"}})
+            # Pass write-root pointing to temp directory where .customization.toon lives
+            res = self.run_config("--base", str(DEFAULTS), "--write-root", str(root), "--format", "toon")
+            self.assertEqual(res.returncode, 0, res.stdout + res.stderr)
+            data = toon_codec.loads(res.stdout)
+            self.assertEqual(data["values"]["user"]["name"], "Auto Discovered")
+            self.assertEqual(data["values"]["user"]["role"], "product-owner")
+
 
 if __name__ == "__main__":
     unittest.main()

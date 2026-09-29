@@ -26,6 +26,16 @@ INTERACTION_FIELDS = {
 }
 FLOW_FIELDS = {"role_aliases", "menu_mode", "context_selectors"}
 FLOW_SELECTOR_FIELDS = {"id", "roles", "actions", "include", "priority", "max_tokens", "reason"}
+USER_FIELDS = {"name", "email", "role", "git"}
+USER_GIT_FIELDS = {"name", "email"}
+USER_ROLES = {
+    "business-analyst",
+    "product-manager",
+    "product-owner",
+    "qa-engineer",
+    "software-architect",
+    "software-engineer",
+}
 
 
 def packaged_defaults() -> Path:
@@ -272,6 +282,37 @@ def validate_flow(values: dict[str, Any]) -> list[str]:
     return errors
 
 
+def validate_user(values: dict[str, Any]) -> list[str]:
+    """Validate the optional user identity profile after layer resolution."""
+    user = values.get("user")
+    if user is None:
+        return []
+    if not isinstance(user, dict):
+        return ["user must be an object"]
+    unknown = sorted(set(user) - USER_FIELDS)
+    errors = [f"user has unknown fields: {', '.join(unknown)}"] if unknown else []
+    for field in ("name", "email"):
+        if field in user and not isinstance(user[field], str):
+            errors.append(f"user.{field} must be a string")
+    if "role" in user:
+        if not isinstance(user["role"], str):
+            errors.append("user.role must be a string")
+        elif user["role"] not in USER_ROLES:
+            errors.append(f"user.role must be one of: {', '.join(sorted(USER_ROLES))}")
+    if "git" in user:
+        git_val = user["git"]
+        if not isinstance(git_val, dict):
+            errors.append("user.git must be an object")
+        else:
+            git_unknown = sorted(set(git_val) - USER_GIT_FIELDS)
+            if git_unknown:
+                errors.append(f"user.git has unknown fields: {', '.join(git_unknown)}")
+            for gfield in ("name", "email"):
+                if gfield in git_val and not isinstance(git_val[gfield], str):
+                    errors.append(f"user.git.{gfield} must be a string")
+    return errors
+
+
 def render_toon(values: dict[str, Any], provenance: dict[str, str], protected: list[str]) -> str:
     """Render bounded machine output with leaf provenance."""
     flat = flatten(values)
@@ -324,10 +365,30 @@ def main() -> int:
     if args.begin_state or args.complete_state:
         print("ERROR: configuration resolution is read-only; it cannot change lifecycle state")
         return 1
+
+    user_path = args.user
+    user_required = args.user is not None
+    if user_path is None:
+        candidates = [
+            Path(".customization.toon"),
+            Path.home() / ".config" / "ai-sdlc" / "config.toon",
+        ]
+        if args.write_root:
+            candidates.insert(0, args.write_root / ".customization.toon")
+        for candidate in candidates:
+            if candidate.is_file():
+                user_path = candidate
+                user_required = False
+                break
+
     layers: list[dict[str, Any]] = []
     errors: list[str] = []
-    for path, name in ((args.base, "base"), (args.team, "team"), (args.user, "user")):
-        layer, layer_errors = load_layer(path, name, path is not None)
+    for path, name, required in (
+        (args.base, "base", args.base is not None),
+        (args.team, "team", args.team is not None),
+        (user_path, "user", user_required),
+    ):
+        layer, layer_errors = load_layer(path, name, required)
         layers.append(layer)
         errors.extend(layer_errors)
     if errors:
@@ -337,6 +398,7 @@ def main() -> int:
     values, provenance, resolve_errors = resolve(*layers)
     resolve_errors.extend(validate_interaction(values))
     resolve_errors.extend(validate_flow(values))
+    resolve_errors.extend(validate_user(values))
     if resolve_errors:
         for error in resolve_errors:
             print(f"ERROR: {error}")

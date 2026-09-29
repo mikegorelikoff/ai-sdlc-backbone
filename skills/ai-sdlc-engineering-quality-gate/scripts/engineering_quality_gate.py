@@ -358,7 +358,11 @@ def _gate_artifact_route(path: str) -> bool:
 
 def _excluded_state(path: str) -> bool:
     return (
-        path == ".ai-sdlc-loop"
+        path == ".ai"
+        or path.startswith(".ai/")
+        or path == ".ai-sdlc"
+        or path.startswith(".ai-sdlc/")
+        or path == ".ai-sdlc-loop"
         or path.startswith(".ai-sdlc-loop/")
         or path.startswith(".ai-sdlc/engineering-quality-gate/")
         or _gate_artifact_route(path)

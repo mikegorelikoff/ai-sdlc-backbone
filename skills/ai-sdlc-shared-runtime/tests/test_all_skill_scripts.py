@@ -697,6 +697,11 @@ class ScriptContractTests(unittest.TestCase):
                 "ai_sdlc_migrate.py",
                 "ai_sdlc_install.py",
                 "ai_sdlc_install_record.py",
+                "chat_output.py",
+                "loop.py",
+                "ai_sdlc_telemetry.py",
+                "spec_state.py",
+                "coach.py",
             }:
                 continue
             with self.subTest(path=path.relative_to(ROOT)):

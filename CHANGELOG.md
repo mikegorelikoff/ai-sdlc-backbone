@@ -1,5 +1,21 @@
 # Changelog
 
+## v5.8.0 - 2026-09-29
+
+### Added
+
+- Implemented unified global skill execution time-series telemetry in pure TOON format (`skills/ai-sdlc-shared-runtime/scripts/ai_sdlc_telemetry.py`).
+- Automatic time-series event capture on every skill invocation and stage completion persisted to `.ai/telemetry/sessions.toon`.
+- Strict zero-token fabrication invariant (`usage_available: false` and empty models list when usage counters are unavailable from runner/model).
+- In-place backward-compatible extension of `ai-sdlc-config/v1` (`config/ai-sdlc-config.schema.toon`, defaults, and parser) to support user identity profile (`values.user`: name, email, role, git: {name, email}).
+- Consolidate overlapping skills and shared runtimes across `ai-sdlc-backbone` and `ai-sdlc-loop`:
+  - Fixed broken SDD path in Loop's `check_commit_ready.py`.
+  - Promoted TOON codec regex boundary check and Unicode line-break escaping into canonical `ai_sdlc_toon.py`.
+  - Registered `ai-sdlc-scheduler` in `modules/core/module.toon`.
+  - Ported structured QA planning (`ai-sdlc-qa-plan/v1`) from Loop into Backbone `ai-sdlc-qa`.
+  - Synced shared utilities (`chat_output.py`, `ai_sdlc_hunters.py`, `loop.py`) into Backbone shared runtime.
+- Released and integrated Loop `v0.13.0`.
+
 ## v5.7.0 - 2026-09-28
 
 ### Added

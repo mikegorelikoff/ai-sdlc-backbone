@@ -5,6 +5,15 @@ description: Record the AI SDLC Harness documentation architecture, URL, governa
 
 # Documentation decision log
 
+## 2026-09-29 — Release 5.8.0: Unified Pure TOON Telemetry and Skill Consolidation
+
+Release `v5.8.0` establishes a single unified global skill execution time-series telemetry capability across `ai-sdlc-backbone` and `ai-sdlc-loop`.
+All persistent telemetry is stored in pure TOON format (`.ai/telemetry/sessions.toon`) using monotonic 26-character Crockford Base32 ULIDs,
+POSIX `fcntl.flock` file locking, and zero token fabrication (`usage_available: false` when metrics are absent).
+The existing `ai-sdlc-config/v1` schema is extended in-place to capture user profile identity (`values.user`: name, email, role, git: {name, email}).
+Cross-repository skill consolidation resolves path bugs in Loop (`check_commit_ready.py`), registers `ai-sdlc-scheduler` in `modules/core/module.toon`,
+promotes TOON codec hardening, brings structured QA planning to Backbone, and integrates Loop `v0.13.0`.
+
 ## 2026-09-28 — Release 5.7.0
 
 Release `v5.7.0` publishes `ai-sdlc-spec-state` and `ai-sdlc-usage-coach` across the Harness core module (expanding the catalog to 50 skills),

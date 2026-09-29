@@ -109,6 +109,7 @@ Paths beginning with `skills/` below are canonical **source-checkout** forms for
 
 | Helper | Purpose | Direct starting point | Repository effect |
 | --- | --- | --- | --- |
+| [`qa_plan.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-qa/scripts/qa_plan.py) | Create a canonical TOON QA plan for AI SDLC. | `python3 skills/ai-sdlc-qa/scripts/qa_plan.py --help` | May write only through an explicit mutation mode; start with `--help`, check, preview, or emit. |
 | [`qa_plan_scaffold.py`](https://github.com/mikegorelikoff/ai-sdlc-harness/blob/main/skills/ai-sdlc-qa/scripts/qa_plan_scaffold.py) | Compress requirements or diffs into QA planning signals. | `Imported helper; use the owning skill rather than invoking it directly.` | Read-only/reporting by default; inspect `--help` and the owning skill before direct use. |
 
 The owning agent normally runs these helpers. A human uses the direct starting point for diagnosis or reproduction after inspecting `--help` and repository policy.

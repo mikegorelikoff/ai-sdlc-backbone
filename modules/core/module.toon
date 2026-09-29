@@ -6,7 +6,7 @@ id: core
 kind: core
 requires[0]:
 schema: ai-sdlc-module/v1
-skills[44]{name,path}:
+skills[45]{name,path}:
   ai-sdlc-approvals-sandbox,skills/ai-sdlc-approvals-sandbox
   ai-sdlc-ba,skills/ai-sdlc-ba
   ai-sdlc-backlog-decomposition-and-task-planning,skills/ai-sdlc-backlog-decomposition-and-task-planning
@@ -39,6 +39,7 @@ skills[44]{name,path}:
   ai-sdlc-retrospective,skills/ai-sdlc-retrospective
   ai-sdlc-host-adapter,skills/ai-sdlc-host-adapter
   ai-sdlc-runtime,skills/ai-sdlc-runtime
+  ai-sdlc-scheduler,skills/ai-sdlc-scheduler
   ai-sdlc-workflow,skills/ai-sdlc-workflow
   ai-sdlc-sdd,skills/ai-sdlc-sdd
   ai-sdlc-security-testing,skills/ai-sdlc-security-testing
